@@ -1,0 +1,11 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css';
+@import 'theme';
+
+html,
+body {
+    height: 100%;
+    background-color: $primary-color;
+    color: $text-color;
+    margin: 0 0 0 0;
+}

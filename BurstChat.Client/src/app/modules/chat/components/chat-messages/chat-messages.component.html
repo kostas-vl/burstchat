@@ -1,0 +1,9 @@
+<div #messagesContainer class="container chat-messages-container" [scrollTop]="messagesContainer.scrollHeight">
+
+    <div *ngFor="let message of messages">
+
+        <app-chat-message [message]="message"></app-chat-message>
+
+    </div>
+
+</div>

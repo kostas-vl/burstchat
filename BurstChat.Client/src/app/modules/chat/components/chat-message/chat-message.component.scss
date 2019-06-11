@@ -1,0 +1,16 @@
+@import '../../../../../scss/theme.scss';
+
+.bubble {
+    background-color: $secondary-color;
+    border-radius: 10px;
+    padding: 15px 15px 15px 15px;
+    margin: 10px 10px 10px 10px;
+}
+
+.message-avatar {
+    font-size: 32px;
+}
+
+.message-date-posted {
+    padding-left: 5px;
+}

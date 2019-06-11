@@ -1,0 +1,48 @@
+@import '../../../scss/theme';
+
+.sidebar {
+    position: fixed !important;
+    overflow: auto;
+    height: 100%;
+    width: $sidebar-width;
+    transform: translateX(0);
+    z-index: 1;
+    background-color: $secondary-color;
+    -webkit-transition: transform $layout-animation-speed;
+    transition: transform $layout-animation-speed;
+}
+
+.sidebar-hidden {
+    transform: translateX(calc($sidebar-width * -1));
+}
+
+.sidebar-header {
+    background-color: $accent-color;
+    padding-top: 60px;
+    padding-bottom: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
+    color: white;
+    text-align: center;
+}
+
+.sidebar-logo {
+    font-size: 40px;
+}
+
+.sidebar-content {
+    padding-top: 30px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.sidebar-user-list {
+    padding-left: 30px;
+    padding-right: 30px;
+    align-content: center;
+}
+
+.user-avatar {
+    font-size: 26px;
+}

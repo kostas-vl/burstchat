@@ -1,0 +1,37 @@
+<div class="bubble" *ngIf="message">
+
+    <div class="row" *ngIf="message">
+
+        <div class="column column-5 text-center">
+
+            <fa-icon class="message-avatar" icon="comment"></fa-icon>
+
+        </div>
+
+        <div class="column column-95">
+
+            <div>
+
+                <strong>{{message.user}}</strong>
+
+                <small class="message-date-posted text-muted">{{message.datePosted}}</small>
+
+                <small *ngIf="message.edited">
+
+                    <i>(Edited)</i>
+
+                </small>
+
+            </div>
+
+            <div>
+
+                {{message.content}}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

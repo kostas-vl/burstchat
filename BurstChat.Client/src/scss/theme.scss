@@ -1,0 +1,44 @@
+$primary-color: #2d303f;
+$secondary-color: #1c1f28;
+$accent-color: #9b4dca;
+$text-color: white;
+$text-muted-color: #777777;
+
+$sidebar-width: 300px;
+$layout-animation-speed: 0.4s;
+
+$chat-input-height: 88px;
+
+input {
+    background-color: $primary-color;    
+    color: white;
+    border-color: white;
+}
+
+textarea {
+    background-color: $primary-color;    
+    color: white;
+    border-color: white;
+}
+
+.text-muted {
+    color: $text-muted-color;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.column-5 {
+    flex: 0 0 5%;
+    max-width: 5%;
+}
+
+.column-95 {
+    flex: 0 0 95%;
+    max-width: 95%;
+}

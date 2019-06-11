@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "BurstChat.Api"
+		},
+		{
+			"path": "BurstChat.Signal"
+		},
+		{
+			"path": "BurstChat.Shared"
+		},
+		{
+			"path": "BurstChat.Client"
+		}
+	],
+    "settings": {}
+}
