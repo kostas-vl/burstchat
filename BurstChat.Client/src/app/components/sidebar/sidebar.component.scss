@@ -1,5 +1,7 @@
 @import '../../../scss/theme';
 
+$minor-width: 90px;
+
 .sidebar {
     position: fixed !important;
     overflow: auto;
@@ -17,32 +19,50 @@
 }
 
 .sidebar-header {
-    background-color: $accent-color;
-    padding-top: 60px;
-    padding-bottom: 30px;
-    padding-left: 40px;
-    padding-right: 40px;
-    color: white;
-    text-align: center;
+    position: fixed !important;
+    width: 100% !important;
+    display: flex;
+    flex-direction: row;
 }
 
 .sidebar-logo {
-    font-size: 40px;
+    text-align: center;
+    font-size: 22px;
+    background-color: $accent-color;
+    height: 55px;
+    width: $minor-width;
+    padding-top: 10px;
+}
+
+.sidebar-title {
+    background-color: $accent-light-color;
+    font-size: 22px;
+    font-weight: 600;
+    height: 55px;
+    padding-top: 10px;    
+    padding-left: 20px;
+    flex-grow: 9;
 }
 
 .sidebar-content {
-    padding-top: 30px;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
+    height: 100%;
+    padding-top: 55px;
+    display: flex;
+    flex-direction: row;
 }
 
-.sidebar-user-list {
+.sidebar-servers {
+    text-align: center;
+    background-color: $dark-color;
+    height: 100%;
+    width: $minor-width;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.sidebar-users {
+    padding-top: 10px;
+    padding-bottom: 10px;
     padding-left: 30px;
     padding-right: 30px;
-    align-content: center;
-}
-
-.user-avatar {
-    font-size: 26px;
 }
