@@ -28,6 +28,22 @@ namespace BurstChat.Api
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services
+                .AddDbContext<BurstChatContext>(options =>
+                {
+                    var databaseConfiguration = Configuration.GetSection("Database");
+                    var provider = databaseConfiguration["Provider"];
+                    var connection = databaseConfiguration["ConnectionString"];
+                    switch (proivider)
+                    {
+                        case "sqlite":
+                            options.UseSqlite(connection);
+                            break;
+                        default:
+                            break;
+                    }
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

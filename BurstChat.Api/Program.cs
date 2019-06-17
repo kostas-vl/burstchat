@@ -22,6 +22,10 @@ namespace BurstChat.Api
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost
                 .CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
+                })
                 .UseKestrel()
                 .UseStartup<Startup>();
     }

@@ -1,3 +1,6 @@
 # Build Artifacts
 obj/
 bin/
+
+# Settings file dependent to user.
+appsettings.Database.json
