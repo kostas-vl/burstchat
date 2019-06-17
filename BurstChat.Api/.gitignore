@@ -4,3 +4,6 @@ bin/
 
 # Settings file dependent to user.
 appsettings.Database.json
+
+# Sqlite database files.
+**/*.db

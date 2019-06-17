@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BurstChat.Shared.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +14,19 @@ namespace BurstChat.Api.Controllers
     [Route("/api/servers")]
     public class ServersController : ControllerBase
     {
-        private ILogger<ServersController> _logger;
+        private readonly ILogger<ServersController> _logger;
+        private readonly BurstChatContext _burstChatContext;
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
         /// </summary>
-        public ServersController(ILogger<ServersController> logger)
+        public ServersController(
+            ILogger<ServersController> logger,
+            BurstChatContext burstChatContext
+        )
         {
             _logger = logger;
+            _burstChatContext = burstChatContext;
         }
 
         /// <summary>

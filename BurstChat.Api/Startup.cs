@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurstChat.Shared.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,10 +37,19 @@ namespace BurstChat.Api
                     var databaseConfiguration = Configuration.GetSection("Database");
                     var provider = databaseConfiguration["Provider"];
                     var connection = databaseConfiguration["ConnectionString"];
-                    switch (proivider)
+                    switch (provider)
                     {
                         case "sqlite":
-                            options.UseSqlite(connection);
+                            options.UseSqlite(connection, dbContextOptions => 
+                            {
+                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                            });
+                            break;
+                        case "sqlserver":
+                            options.UseSqlServer(connection, dbContextOptions =>
+                            {
+                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                            });
                             break;
                         default:
                             break;

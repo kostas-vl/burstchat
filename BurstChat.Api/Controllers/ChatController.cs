@@ -1,5 +1,6 @@
 using System;
-using BurstChat.Shared.Models;
+using BurstChat.Shared.Context;
+using BurstChat.Shared.Schema.Chat;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -14,13 +15,18 @@ namespace BurstChat.Api.Controllers
     public class ChatController : Controller
     {
         private readonly ILogger<ChatController> _logger;
+        private readonly BurstChatContext _burstChatContext;
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
         /// </summary>
-        public ChatController(ILogger<ChatController> logger)
+        public ChatController(
+            ILogger<ChatController> logger,
+            BurstChatContext burstChatContext
+        )
         {
             _logger = logger;
+            _burstChatContext = burstChatContext;
         }
 
         /// <summary>
