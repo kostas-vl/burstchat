@@ -1,4 +1,5 @@
 using System;
+using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Schema.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +17,18 @@ namespace BurstChat.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        private readonly BurstChatContext _burstChatContext;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
         /// </summary>
         public UserController(
             ILogger<UserController> logger,
-            BurstChatContext burstChatContext
+            IUserService userService
         )
         {
             _logger = logger;
-            _burstChatContext = burstChatContext;
+            _userService = userService;
         }
 
         /// <summary>
