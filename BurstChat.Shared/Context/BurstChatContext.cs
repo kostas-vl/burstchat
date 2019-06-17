@@ -1,18 +1,47 @@
 using System;
+using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace BurstChat.Shared.Context
 {
+    /// <summary>
+    /// This class represents the burst chat database context and all of its tables.
+    /// </summary>
     public class BurstChatContext : DbContext
     {
+        public DbSet<Message> Messages
+        {
+            get; set;
+        }
+
         public DbSet<Server> Servers
         {
             get; set;
         }
 
+        public DbSet<Subscription> Subscriptions
+        {
+            get; set;
+        }
+
+        public DbSet<Channel> Channels
+        {
+            get; set;
+        }
+
+        public DbSet<ChannelDetails> ChannelDetails
+        {
+            get; set;
+        }
+
         public DbSet<User> Users
+        {
+            get; set;
+        }
+
+        public DbSet<PrivateGroupMessage> PrivateGroupMessage
         {
             get; set;
         }
@@ -29,7 +58,48 @@ namespace BurstChat.Shared.Context
         /// <param name="builder">The model instance provided</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // setting the relationships of the Message model.
+            builder
+                .Entity<Message>()
+                .HasOne(m => m.User)
+                .WithMany(u => u.Messages)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey(m => m.UserId)
+                .IsRequired();
 
+            // setting the relationships of the Channel model.
+            builder
+                .Entity<Channel>()
+                .HasOne(c => c.Details)
+                .WithOne(c => c.Channel)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey<ChannelDetails>(c => c.ChannelId)
+                .IsRequired();
+
+            builder
+                .Entity<Channel>()
+                .HasOne(c => c.Server)
+                .WithMany(s => s.Channels)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey(c => c.ServerId)
+                .IsRequired();
+
+            // setting the relationships of the Subscription model.
+            builder
+                .Entity<Subscription>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.SubscribedServers)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey(s => s.UserId)
+                .IsRequired();
+
+            builder
+                .Entity<Subscription>()
+                .HasOne(s => s.Server)
+                .WithMany(s => s.SubscribedUsers)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey(s => s.ServerId)
+                .IsRequired();
         }
     }
 }

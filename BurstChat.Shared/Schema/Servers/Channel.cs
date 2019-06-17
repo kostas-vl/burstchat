@@ -27,6 +27,14 @@ namespace BurstChat.Shared.Schema.Servers
         }
 
         /// <summary>
+        /// This is a reference navigation property of the server.
+        /// </summary>
+        public Server Server 
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// The name of the channel.
         /// </summary>
         public string Name
@@ -51,9 +59,9 @@ namespace BurstChat.Shared.Schema.Servers
         }
 
         /// <summary>
-        /// All messages posted to the channel.
+        /// Detail information about the channel.
         /// </summary>
-        public List<ChannelMessage> Messages
+        public ChannelDetails Details
         {
             get; set;
         }

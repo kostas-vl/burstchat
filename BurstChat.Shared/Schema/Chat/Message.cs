@@ -1,15 +1,16 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using BurstChat.Shared.Schema.Users;
 
-namespace BurstChat.Shared.Schema.Servers
+namespace BurstChat.Shared.Schema.Chat
 {
     /// <summary>
-    /// This class represents a message of a chat channel.
+    /// This class represents a message sent by a user.
     /// </summary>
-    public class ChannelMessage
+    public class Message
     {
         /// <summary>
-        ///  The id of the message.
+        /// The id of the message.
         /// </summary>
         [Key]
         public long Id
@@ -18,17 +19,17 @@ namespace BurstChat.Shared.Schema.Servers
         }
 
         /// <summary>
-        /// The id of the channel to which the message was posted.
+        /// The id of the user that sent the message.
         /// </summary>
-        public int ChannelId
+        public long UserId
         {
             get; set;
         }
 
         /// <summary>
-        /// The id of the user that posted the message.
+        /// This is a reference navigation property of the user.
         /// </summary>
-        public long UserId
+        public User User
         {
             get; set;
         }
@@ -42,7 +43,7 @@ namespace BurstChat.Shared.Schema.Servers
         }
 
         /// <summary>
-        /// A flag specifying if the message was edited.
+        /// A flag specifying whether the message was edited by the user.
         /// </summary>
         public bool Edited
         {

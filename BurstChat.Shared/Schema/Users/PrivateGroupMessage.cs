@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Servers;
+using BurstChat.Shared.Schema.Users;
 
 namespace BurstChat.Shared.Schema.Users
 {
     /// <summary>
-    /// This class represents a user.
+    /// This class represents a direct message sent from 2 users.
     /// </summary>
-    public class User
+    public class PrivateGroupMessage
     {
         /// <summary>
-        /// The id of the user.
+        /// The id of the direct message.
         /// </summary>
         [Key]
         public long Id
@@ -21,15 +21,7 @@ namespace BurstChat.Shared.Schema.Users
         }
 
         /// <summary>
-        /// The email of the user.
-        /// </summary>        
-        public string Email
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// The name of the user.
+        /// The name of the private group.
         /// </summary>
         public string Name
         {
@@ -37,15 +29,7 @@ namespace BurstChat.Shared.Schema.Users
         }
 
         /// <summary>
-        /// The password of the user.
-        /// </summary>
-        public string Password
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// The date that the user was created.
+        /// The date the group was created.
         /// </summary>
         public DateTime DateCreated
         {
@@ -53,17 +37,19 @@ namespace BurstChat.Shared.Schema.Users
         }
 
         /// <summary>
-        /// The list of messages sent from the user.
+        /// The list of users that are part of the private message group. This property in the context
+        /// of entity framework is a single navigation property.
         /// </summary>
-        public List<Message> Messages
+        public List<User> Users
         {
             get; set;
         }
-
+        
         /// <summary>
-        /// The list of subscribed servers.
+        /// The list of message between the two participants. This property in the context
+        /// of entity framework is a single navigation property.
         /// </summary>
-        public List<Subscription> SubscribedServers
+        public List<Message> Messages
         {
             get; set;
         }
