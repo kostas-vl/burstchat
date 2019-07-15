@@ -1,4 +1,6 @@
 using System;
+using BurstChat.Api.Errors;
+using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Schema.Users;
@@ -39,7 +41,16 @@ namespace BurstChat.Api.Controllers
         [HttpGet("single/{id:long}")]
         public IActionResult Get(long id)
         {
-            return Ok();
+            try
+            {
+                var monad = _userService.Select(id);
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
         }
     }
 }

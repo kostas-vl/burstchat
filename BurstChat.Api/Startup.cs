@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurstChat.Api.Services.BCryptService;
+using BurstChat.Api.Services.ChannelsService;
+using BurstChat.Api.Services.ServersService;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
 using Microsoft.AspNetCore.Builder;
@@ -29,6 +32,11 @@ namespace BurstChat.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddSingleton<IBCryptService, BCryptProvider>();
+
+            services
+                .AddScoped<IChannelsService, ChannelsProvider>()
+                .AddScoped<IServersService, ServersProvider>()
                 .AddScoped<IUserService, UserProvider>();
 
             services

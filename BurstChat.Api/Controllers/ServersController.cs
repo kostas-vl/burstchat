@@ -1,6 +1,8 @@
 using System;
-using System.Collections.Generic;
-using BurstChat.Shared.Context;
+using BurstChat.Api.Errors;
+using BurstChat.Api.Extensions;
+using BurstChat.Api.Services.ServersService;
+using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -10,32 +12,123 @@ namespace BurstChat.Api.Controllers
     /// This controllers exposes endpoints for listing, subscribing and leaving servers.
     /// </summary>
     [ApiController]
-    [Produces("application/json")]
     [Route("/api/servers")]
+    [Produces("application/json")]
     public class ServersController : ControllerBase
     {
         private readonly ILogger<ServersController> _logger;
-        private readonly BurstChatContext _burstChatContext;
+        private readonly IServersService _serversService;
 
         /// <summary>
-        /// Executes any necessary start up code for the controller.
+        ///   Executes any necessary start up code for the controller.
         /// </summary>
         public ServersController(
             ILogger<ServersController> logger,
-            BurstChatContext burstChatContext
+            IServersService serversService
         )
         {
             _logger = logger;
-            _burstChatContext = burstChatContext;
+            _serversService = serversService;
         }
 
         /// <summary>
-        /// Fetches all the currently subscribed servers.
+        ///   This method will fetch any available information about a server based on the provided id.
         /// </summary>
-        /// <returns>A enumerable of servers</returns>
-        public IEnumerable<object> GetSubcribed()
+        /// <param name="serverId">The id of the target server</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("{serverId:int}")]
+        public IActionResult Get(int serverId) 
         {
-            return new object[0];
+            try
+            {
+                var monad = _serversService.Get(serverId);
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will create a new server based on the instance provided.
+        /// </summary>
+        /// <param name="server">The server instance to be created</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpPost]
+        public IActionResult Post([FromBody] Server server)
+        {
+            try
+            {
+                var monad = _serversService.Insert(server);
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will update the properties of an existing server based on the provided instance.
+        /// </summary>
+        /// <param name="server">The server instance of which the properties will be used for the update</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpPut]
+        public IActionResult Put([FromBody] Server server)
+        {
+            try
+            {
+                var monad = _serversService.Update(server);
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will remove an exising server based on the provided id.
+        /// </summary>
+        /// <param name="server">The id of the server to be removed</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpDelete("{serverId:int}")]
+        public IActionResult Delete(int serverId)
+        {
+            try
+            {
+                var monad = _serversService.Delete(serverId);
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will fetch all subscribed servers of a user based on the provided user id.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("/subscribed/{userId:long}")]
+        public IActionResult GetSubscribed(long userId)
+        {
+            try
+            {
+                var monad = _serversService.GetSubscribedServers(userId);
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
         }
     }
 }
