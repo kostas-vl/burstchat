@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurstChat.Api.Services.BCryptService;
 using BurstChat.Api.Services.ChannelsService;
+using BurstChat.Api.Services.ModelValidationService;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
@@ -38,6 +39,9 @@ namespace BurstChat.Api
                 .AddScoped<IChannelsService, ChannelsProvider>()
                 .AddScoped<IServersService, ServersProvider>()
                 .AddScoped<IUserService, UserProvider>();
+
+            services
+                .AddTransient<IModelValidationService, ModelValidationProvider>();
 
             services
                 .AddMvc()

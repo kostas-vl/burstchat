@@ -11,11 +11,19 @@ namespace BurstChat.Api.Services.UserService
     public interface IUserService
     {
         /// <summary>
-        ///   Registers a new user based on the provided instance.
+        ///   This method return a User instance based on the id provided.
         /// </summary>
-        /// <param name="user">The user instance to be registered</param>
+        /// <param name="id">The id of the user</param>
+        /// <returns>An either monad of a User instance or an Error instance</returns>
+        Either<User, Error> Get(long id);
+
+        /// <summary>
+        ///   Registers a new user based on the provided parameters.
+        /// </summary>
+        /// <param name="email">The email of the new user</param>
+        /// <param name="password">The password of the new user</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Insert(User user);
+        Either<Unit, Error> Insert(string email, string password);
 
         /// <summary>
         ///   Updates infomation about an existing user based on the user instance provided.
@@ -25,20 +33,6 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="user">The user instance to be updated in the database</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> Update(User user);
-
-        /// <summary>
-        ///   This method return a User instance based on the id provided.
-        /// </summary>
-        /// <param name="id">The id of the user</param>
-        /// <returns>An either monad of a User instance or an Error instance</returns>
-        Either<User, Error> Select(long id);
-
-        /// <summary>
-        ///   This method fetches the instance of a registered user based on the provided email.
-        /// </summary>
-        /// <param name="email">The email that will be used for the search</param>
-        /// <returns>An either monad</returns>
-        Either<User, Error> SelectByEmail(string email);
 
         /// <summary>
         ///   Deletes a registered user from the database based on the provided user instance.
@@ -59,9 +53,9 @@ namespace BurstChat.Api.Services.UserService
         /// <summary>
         ///   Changes the current hashed password of the user to the one provided.
         /// </summary>
-        /// <param name="id">The id of the user</param>
+        /// <param name="oneTimePass">The one time password of the user</param>
         /// <param name="password">The string value of the password that will be hashed</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> ChangePassword(long id, string password);
+        Either<Unit, Error> ChangePassword(string oneTimePass, string password);
     }
 }

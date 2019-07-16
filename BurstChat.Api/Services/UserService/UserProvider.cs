@@ -7,6 +7,7 @@ using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Users;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BurstChat.Api.Services.UserService
@@ -35,15 +36,49 @@ namespace BurstChat.Api.Services.UserService
         }
 
         /// <summary>
-        ///   Registers a new user based on the provided instance.
+        ///   This method return a User instance based on the id provided.
         /// </summary>
-        /// <param name="user">The user instance to be registered</param>
-        /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(User user)
+        /// <param name="id">The id of the user</param>
+        /// <returns>An either monad of a User instance or an Error instance</returns>
+        public Either<User, Error> Get(long id)
         {
             try
             {
-                user.Password = _bcryptService.GenerateHash(user.Password);
+                var user = _burstChatContext
+                    .Users
+                    .FirstOrDefault(u => u.Id == id);
+
+                if (user != null)
+                    return new Success<User, Error>(user);
+                else
+                    return new Failure<User, Error>(SystemErrors.Exception());
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<User, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   Registers a new user based on the provided parameters.
+        /// </summary>
+        /// <param name="email">The email of the new user</param>
+        /// <param name="password">The password of the new user</param>
+        /// <returns>An either monad</returns>
+        public Either<Unit, Error> Insert(string email, string password)
+        {
+            try
+            {
+                var hashedPassword = _bcryptService.GenerateHash(password);
+
+                var user = new User
+                {
+                    Email = email,
+                    Name = string.Empty,
+                    Password = hashedPassword,
+                    DateCreated = DateTime.Now
+                };
 
                 _burstChatContext.Users.Add(user);
                 _burstChatContext.SaveChanges();
@@ -66,23 +101,17 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
-                var storedUser = _burstChatContext 
-                    .Users
-                    .FirstOrDefault(u => u.Id == user.Id);
+                var userId = user?.Id ?? default(long);
 
-                if (storedUser != null)
-                {
-                    storedUser.Email = user.Email;
-                    storedUser.Name = user.Name;
+                return Get(userId)
+                    .Bind(storedUser =>
+                    {
+                        storedUser.Email = user.Email;
+                        storedUser.Name = user.Name;
 
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<Unit, Error>(new Unit());
-                }
-                else
-                {
-                    return new Failure<Unit, Error>(SystemErrors.Exception());
-                }
+                        _burstChatContext.SaveChanges();
+                        return new Success<Unit, Error>(new Unit());
+                    });
             }
             catch (Exception e)
             {
@@ -90,65 +119,6 @@ namespace BurstChat.Api.Services.UserService
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
-
-        /// <summary>
-        ///   This method return a User instance based on the id provided.
-        /// </summary>
-        /// <param name="id">The id of the user</param>
-        /// <returns>An either monad of a User instance or an Error instance</returns>
-        public Either<User, Error> Select(long id)
-        {
-            try
-            {
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Id == id);
-
-                if (user != null)
-                {
-                    return new Success<User, Error>(user);
-                }
-                else
-                {
-                    return new Failure<User, Error>(SystemErrors.Exception());
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        ///   This method fetches the instance of a registered user based on the provided email.
-        /// </summary>
-        /// <param name="email">The email that will be used for the search</param>
-        /// <returns>An either monad</returns>
-        public Either<User, Error> SelectByEmail(string email)
-        {
-            try
-            {
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Email == email);
-
-                if (user != null)
-                {
-                    return new Success<User, Error>(user);
-                }
-                else
-                {
-                    return new Failure<User, Error>(SystemErrors.Exception());
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
-
 
         /// <summary>
         ///   Deletes a registered user from the database based on the provided user instance.
@@ -159,19 +129,12 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Id == id);
-
-                if (user != null)
-                {
-                    _burstChatContext.Remove(user);
-                    return new Success<Unit, Error>(new Unit());
-                }
-                else
-                {
-                    return new Failure<Unit, Error>(SystemErrors.Exception());
-                }
+                return Get(id)
+                    .Bind(user => 
+                    {
+                        _burstChatContext.Remove(user);
+                        return new Success<Unit, Error>(new Unit());
+                    });
             }
             catch (Exception e)
             {
@@ -196,18 +159,13 @@ namespace BurstChat.Api.Services.UserService
                     .FirstOrDefault(u => u.Email == email);
 
                 if (user == null)
-                {
                     return new Failure<User, Error>(SystemErrors.Exception());
-                }
 
-                if (_bcryptService.VerifyHash(password, user.Password))  
-                {
-                    return new Success<User, Error>(user);
-                }
-                else
-                {
+                var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
+                if (!passwordIsValid)  
                     return new Failure<User, Error>(SystemErrors.Exception());
-                }
+
+                return new Success<User, Error>(user);
             }
             catch (Exception e)
             {
@@ -219,28 +177,30 @@ namespace BurstChat.Api.Services.UserService
         /// <summary>
         ///   Changes the current hashed password of the user to the one provided.
         /// </summary>
-        /// <param name="id">The id of the user</param>
+        /// <param name="oneTimePass">The one time password of the user</param>
         /// <param name="password">The string value of the password that will be hashed</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> ChangePassword(long id, string password)
+        public Either<Unit, Error> ChangePassword(string oneTimePass, string password)
         {
             try
             {
                 var user = _burstChatContext
                     .Users
-                    .FirstOrDefault(u => u.Id == id);
+                    .Include(u => u.OneTimePasswords
+                                   .Where(o => _bcryptService.VerifyHash(oneTimePass, o.OTP)))
+                    .FirstOrDefault();
 
                 if (user != null)
                 {
-                    user.Password = _bcryptService.GenerateHash(password);
+                    var hashedPassword = _bcryptService.GenerateHash(password);
+
+                    user.Password = hashedPassword;
                     _burstChatContext.SaveChanges();
 
                     return new Success<Unit, Error>(new Unit());
                 }
-                else 
-                {
+                else
                     return new Failure<Unit, Error>(SystemErrors.Exception());
-                }
             }
             catch (Exception e)
             {
