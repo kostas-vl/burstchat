@@ -46,6 +46,11 @@ namespace BurstChat.Shared.Context
             get; set;
         }
 
+        public DbSet<OneTimePassword> OneTimePassword
+        {
+            get; set;
+        }
+
         /// <summary>
         /// Executes the necessary start up code for the burst chat database context.
         /// </summary>

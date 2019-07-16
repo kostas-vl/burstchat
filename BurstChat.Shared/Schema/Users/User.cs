@@ -67,5 +67,13 @@ namespace BurstChat.Shared.Schema.Users
         {
             get; set;
         }
+
+        /// <summary>
+        ///   The list of one time passwords issued by the user.
+        /// </summary>
+        public List<OneTimePassword> OneTimePasswords
+        {
+            get; set;
+        }
     }
 }
