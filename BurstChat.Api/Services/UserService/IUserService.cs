@@ -11,11 +11,18 @@ namespace BurstChat.Api.Services.UserService
     public interface IUserService
     {
         /// <summary>
-        ///   This method return a User instance based on the id provided.
+        ///   This method returns a User instance if the provided id belongs to one.
         /// </summary>
         /// <param name="id">The id of the user</param>
         /// <returns>An either monad of a User instance or an Error instance</returns>
         Either<User, Error> Get(long id);
+
+        /// <summary>
+        ///   This method returns a User instance if the provided email belongs to one.
+        /// </summary>
+        /// <param name="email">The email of the user</param>
+        /// <returns>An either monad</returns>
+        Either<User, Error> Get(string email);
 
         /// <summary>
         ///   Registers a new user based on the provided parameters.
@@ -49,6 +56,14 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="password">The password of the user</param>
         /// <returns>An either monad</returns>
         Either<User, Error> Validate(string email, string password);
+
+        /// <summary>
+        ///   This method will validate the provided email and if a user is registered with it
+        ///   a new one time password will be generated for him and sent via email.
+        /// </summary>
+        /// <param name="email">The email of the user</param>
+        /// <returns>An either monad</returns>
+        Either<Unit, Error> IssueOneTimePassword(string email);
 
         /// <summary>
         ///   Changes the current hashed password of the user to the one provided.

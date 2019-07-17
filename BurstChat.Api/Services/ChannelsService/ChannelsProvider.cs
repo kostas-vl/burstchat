@@ -52,13 +52,9 @@ namespace BurstChat.Api.Services.ChannelsService
                     .FirstOrDefault(c => c.Id == channelId);
 
                 if (channel != null)
-                {
                     return new Success<Channel, Error>(channel);
-                }
                 else
-                {
                     return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
-                }
             }
             catch (Exception e)
             {
@@ -146,7 +142,9 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                return Get(channel.Id)
+                var channelId = channel?.Id ?? default(int);
+
+                return Get(channelId)
                     .Bind(channelEntry => 
                     {
                         channelEntry.Name = channel.Name;
@@ -192,9 +190,7 @@ namespace BurstChat.Api.Services.ChannelsService
                             return new Success<Unit, Error>(new Unit());
                         }
                         else
-                        {
                             return new Failure<Unit, Error>(ChannelErrors.ChannelMessageNotFound());
-                        }
                     });
             }
             catch (Exception e)

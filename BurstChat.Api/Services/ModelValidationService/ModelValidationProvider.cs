@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Mail;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Api.Errors;
@@ -13,16 +14,17 @@ namespace BurstChat.Api.Services.ModelValidationService
     public class ModelValidationProvider : IModelValidationService
     {
         /// <summary>
-        ///   This method will check the provided password under all neccessary rules.
+        ///   This method will check if the provided credentials instance has a value.
         /// </summary>
-        /// <param name="password">The password value</param>
-        /// <returns>A boolean that represents if the password meets all requirements</returns>
-        private bool PasswordIsValid(string password) =>
-            !String.IsNullOrEmpty(password)
-            && !String.IsNullOrWhiteSpace(password)
-            && password.Length >= 12
-            && password.Any(c => Char.IsLetterOrDigit(c))
-            && password.Any(c => Char.IsSymbol(c));
+        /// <param name="credentials">The credentials instance to be checked</param>
+        /// <returns>An either monad</returns>
+        public Either<Credentials, Error> CredentialsHasValue(Credentials credentials)
+        {
+            if (credentials != null)
+                return new Success<Credentials, Error>(credentials);
+            else
+                return new Failure<Credentials, Error>(ModelErrors.CredentialsNotProvided());
+        }
 
         /// <summary> 
         ///   This method will check if the provided registration instance has a value.
@@ -36,7 +38,49 @@ namespace BurstChat.Api.Services.ModelValidationService
             else
                 return new Failure<Registration, Error>(SystemErrors.Exception());
         }
-       
+
+        /// <summary>
+        ///   This method will check the provided email under all necessary rules.
+        /// </summary>
+        /// <param name="email">The email value</param>
+        /// <returns>A boolean that represents if the password meets all requirements</returns>
+        private bool EmailIsValid(string email)
+        {
+            var notEmpty = !String.IsNullOrEmpty(email) 
+                           && !String.IsNullOrWhiteSpace(email);
+
+            if (notEmpty)
+            {
+                try
+                {
+                    var address = new MailAddress(email);
+                }
+                catch
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///   This method will check if the credentials email has a proper value.
+        /// </summary>
+        /// <param name="credentials">The credentials instance that contains the email</param>
+        /// <returns>An either monad</returns>
+        private Either<Credentials, Error> EmailIsValid(Credentials credentials)
+        {
+            var emailHasValue = EmailIsValid(credentials.Email);
+
+            if (emailHasValue)
+                return new Success<Credentials, Error>(credentials);
+            else
+                return new Failure<Credentials, Error>(ModelErrors.EmailInvalid());
+        }
+
         /// <summary>
         ///   This method will check if the registration email has a value.
         /// </summary>
@@ -44,13 +88,40 @@ namespace BurstChat.Api.Services.ModelValidationService
         /// <returns>An either monad</returns>
         private Either<Registration, Error> EmailIsValid(Registration registration)
         {
-            var emailHasValue = !String.IsNullOrEmpty(registration.Email) 
-                                && !String.IsNullOrWhiteSpace(registration.Email);
+            var emailHasValue = EmailIsValid(registration.Email);
 
             if (emailHasValue)
                 return new Success<Registration, Error>(registration);
             else
-                return new Failure<Registration, Error>(SystemErrors.Exception());
+                return new Failure<Registration, Error>(ModelErrors.EmailInvalid());
+        }
+
+        /// <summary>
+        ///   This method will check the provided password under all neccessary rules.
+        /// </summary>
+        /// <param name="password">The password value</param>
+        /// <returns>A boolean that represents if the password meets all requirements</returns>
+        private bool PasswordIsValid(string password) =>
+            !String.IsNullOrEmpty(password)
+            && !String.IsNullOrWhiteSpace(password)
+            && password.Length >= 12
+            && password.Any(c => Char.IsLetterOrDigit(c))
+            && password.Any(c => Char.IsSymbol(c));
+
+        /// <summary>
+        ///   This method will check whether the password in the credentials instance satisfies all the
+        ///   appropriate rules.
+        /// </summary>
+        /// <param name="credentials">The credentials instance from which the password will be checked</param>
+        /// <returns>An either monad</returns>
+        private Either<Credentials, Error> PasswordIsValid(Credentials credentials)
+        {
+            var passwordIsValid = PasswordIsValid(credentials.Password);
+
+            if (passwordIsValid)
+                return new Success<Credentials, Error>(credentials);
+            else
+                return new Failure<Credentials, Error>(ModelErrors.PasswordInvalid());
         }
 
         /// <summary>
@@ -148,6 +219,16 @@ namespace BurstChat.Api.Services.ModelValidationService
             else
                 return new Failure<ChangePassword, Error>(SystemErrors.Exception());
         }
+
+        /// <summary>
+        ///   This method will perform a series of validations on the provided credentails instance
+        ///   and return the appropriate Either monad.
+        /// </summary>
+        /// <param name="credentials">The credentials model instance to be validated</param>
+        public Either<Credentials, Error> ValidateCredentials(Credentials credentials) =>
+            CredentialsHasValue(credentials)
+                .Bind(EmailIsValid)
+                .Bind(PasswordIsValid);
 
         /// <summary>
         ///   This method will perform a series of validation on the provided registation instance

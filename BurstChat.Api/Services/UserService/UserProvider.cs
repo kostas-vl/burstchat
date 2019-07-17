@@ -36,7 +36,7 @@ namespace BurstChat.Api.Services.UserService
         }
 
         /// <summary>
-        ///   This method return a User instance based on the id provided.
+        ///   This method returns a User instance if the provided id belongs to one.
         /// </summary>
         /// <param name="id">The id of the user</param>
         /// <returns>An either monad of a User instance or an Error instance</returns>
@@ -51,7 +51,32 @@ namespace BurstChat.Api.Services.UserService
                 if (user != null)
                     return new Success<User, Error>(user);
                 else
-                    return new Failure<User, Error>(SystemErrors.Exception());
+                    return new Failure<User, Error>(UserErrors.UserNotFound());
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<User, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method returns a User instance if the provided email belongs to one.
+        /// </summary>
+        /// <param name="email">The email of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<User, Error> Get(string email)
+        {
+            try
+            {
+                var user = _burstChatContext
+                    .Users
+                    .FirstOrDefault(u => u.Email == email);
+
+                if (user != null)
+                    return new Success<User, Error>(user);
+                else
+                    return new Failure<User, Error>(UserErrors.UserNotFound());
             }
             catch (Exception e)
             {
@@ -70,6 +95,9 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
+                if (Get(email) is Success<User, Error>)
+                    return new Failure<Unit, Error>(UserErrors.UserAlreadyExists());
+
                 var hashedPassword = _bcryptService.GenerateHash(password);
 
                 var user = new User
@@ -154,24 +182,60 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Email == email);
 
-                if (user == null)
-                    return new Failure<User, Error>(SystemErrors.Exception());
+                return Get(email)
+                    .Bind<User>(user => 
+                    {
+                        var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
 
-                var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
-                if (!passwordIsValid)  
-                    return new Failure<User, Error>(SystemErrors.Exception());
+                        if (!passwordIsValid)  
+                            return new Failure<User, Error>(SystemErrors.Exception());
 
-                return new Success<User, Error>(user);
+                        return new Success<User, Error>(user);
+                    });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
                 return new Failure<User, Error>(SystemErrors.Exception());
             }           
+        }
+
+        /// <summary>
+        ///   This method will validate the provided email and if a user is registered with it
+        ///   a new one time password will be generated for him and sent via email.
+        /// </summary>
+        /// <param name="email">The email of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<Unit, Error> IssueOneTimePassword(string email)
+        {
+            try
+            {
+                return Get(email)
+                    .Bind(user =>
+                    {
+                        var dateCreated = DateTime.Now;
+                        var timedOneTimePass = "111111";
+                        var oneTimePassword = new OneTimePassword
+                        {
+                            OTP = _bcryptService.GenerateHash(timedOneTimePass),
+                            DateCreated = dateCreated,
+                            ExpirationDate = dateCreated.AddMinutes(15) 
+                        };
+
+                        user.OneTimePasswords
+                            .Add(oneTimePassword);
+
+                        _burstChatContext.SaveChanges();
+
+                        return new Success<Unit, Error>(new Unit());
+                    });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
         }
 
         /// <summary>
@@ -192,6 +256,11 @@ namespace BurstChat.Api.Services.UserService
 
                 if (user != null)
                 {
+                    var oneTimePassword = user.OneTimePasswords.First();
+
+                    if (oneTimePassword.ExpirationDate > DateTime.Now)
+                        new Failure<Unit, Error>(UserErrors.UserOneTimePasswordExpired());
+
                     var hashedPassword = _bcryptService.GenerateHash(password);
 
                     user.Password = hashedPassword;
@@ -200,7 +269,7 @@ namespace BurstChat.Api.Services.UserService
                     return new Success<Unit, Error>(new Unit());
                 }
                 else
-                    return new Failure<Unit, Error>(SystemErrors.Exception());
+                    return new Failure<Unit, Error>(UserErrors.UserOneTimePasswordInvalid());
             }
             catch (Exception e)
             {

@@ -11,6 +11,13 @@ namespace BurstChat.Api.Services.ModelValidationService
     public interface IModelValidationService
     {
         /// <summary>
+        ///   This method will perform a series of validations on the provided credentails instance
+        ///   and return the appropriate Either monad.
+        /// </summary>
+        /// <param name="credentials">The credentials model instance to be validated</param>
+        Either<Credentials, Error> ValidateCredentials(Credentials credentials);
+
+        /// <summary>
         ///   This method will perform a series of validation on the provided registation instance
         ///   and return the appropriate Either monad.
         /// </summary>

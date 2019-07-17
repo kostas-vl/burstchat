@@ -144,6 +144,21 @@ namespace BurstChat.Api.Controllers
             }
         }
 
+        public IActionResult IssueOneTimePassword([FromBody] string email)
+        {
+            try
+            {
+                var monad = _userService.IssueOneTimePassword(email);
+
+                return this.UnwrapMonad(monad);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return BadRequest(SystemErrors.Exception());
+            }
+        }
+
         /// <summary>
         ///   This method will change the password of a user based on the provided parameters.
         /// </summary>

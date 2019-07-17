@@ -49,13 +49,9 @@ namespace BurstChat.Api.Services.ServersService
                     .FirstOrDefault(s => s.Id == serverId);
 
                 if (server != null)
-                {
                     return new Success<Server, Error>(server);
-                }
                 else
-                {
                     return new Failure<Server, Error>(ServerErrors.ServerNotFound());
-                }
             }
             catch (Exception e)
             {
@@ -133,14 +129,15 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                return Get(server.Id).Bind(s =>
-                {
-                    s.Name = server.Name;
+                return Get(server.Id)
+                    .Bind(s =>
+                    {
+                        s.Name = server.Name;
 
-                    _burstChatContext.SaveChanges();
+                        _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
-                });
+                        return new Success<Unit, Error>(new Unit());
+                    });
             }
             catch (Exception e)
             {
