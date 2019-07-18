@@ -17,8 +17,24 @@ namespace BurstChat.Api.Errors
                                                            ErrorType.Validation,
                                                            "The password needs to be atleast 12 characters long and contain one character, number and symbol");
 
+        public static Error ConfirmPasswordInvalid() => new Error(ErrorLevel.Critical,
+                                                                  ErrorType.Validation,
+                                                                  "Both password and confirm password need to be the same");
+
+        public static Error OneTimePasswordNotProvided() => new Error(ErrorLevel.Critical,
+                                                                      ErrorType.Validation,
+                                                                      "One time password was not provided");
+
         public static Error CredentialsNotProvided() => new Error(ErrorLevel.Critical,
                                                                   ErrorType.Validation,
                                                                   "Credentials were not provided");
+
+        public static Error RegistrationNotProvided() => new Error(ErrorLevel.Critical,
+                                                                   ErrorType.Validation,
+                                                                   "Registration information was not provided");
+
+        public static Error ChangePasswordNotProvided() => new Error(ErrorLevel.Critical,
+                                                                     ErrorType.Validation,
+                                                                     "Password change information was not provided");
     }
 }

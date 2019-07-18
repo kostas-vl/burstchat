@@ -36,7 +36,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (registration != null)
                 return new Success<Registration, Error>(registration);
             else
-                return new Failure<Registration, Error>(SystemErrors.Exception());
+                return new Failure<Registration, Error>(ModelErrors.RegistrationNotProvided());
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (passwordIsValid)
                 return new Success<Registration, Error>(registration);
             else
-                return new Failure<Registration, Error>(SystemErrors.Exception());
+                return new Failure<Registration, Error>(ModelErrors.PasswordInvalid());
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (confirmPasswordIsValid)
                 return new Success<Registration, Error>(registration);
             else
-                return new Failure<Registration, Error>(SystemErrors.Exception());
+                return new Failure<Registration, Error>(ModelErrors.ConfirmPasswordInvalid());
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (changePassword != null)
                 return new Success<ChangePassword, Error>(changePassword);
             else
-                return new Failure<ChangePassword, Error>(SystemErrors.Exception());
+                return new Failure<ChangePassword, Error>(ModelErrors.ChangePasswordNotProvided());
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (oneTimePassIsValid)
                 return new Success<ChangePassword, Error>(changePassword);
             else
-                return new Failure<ChangePassword, Error>(SystemErrors.Exception());
+                return new Failure<ChangePassword, Error>(ModelErrors.OneTimePasswordNotProvided());
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (newPasswordIsValid)
                 return new Success<ChangePassword, Error>(changePassword);
             else
-                return new Failure<ChangePassword, Error>(SystemErrors.Exception());
+                return new Failure<ChangePassword, Error>(ModelErrors.PasswordInvalid());
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             if (confirmationIsValid)
                 return new Success<ChangePassword, Error>(changePassword);
             else
-                return new Failure<ChangePassword, Error>(SystemErrors.Exception());
+                return new Failure<ChangePassword, Error>(ModelErrors.ConfirmPasswordInvalid());
         }
 
         /// <summary>
