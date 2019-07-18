@@ -39,16 +39,8 @@ namespace BurstChat.Api.Controllers
         [HttpGet("{serverId:int}")]
         public IActionResult Get(int serverId) 
         {
-            try
-            {
-                var monad = _serversService.Get(serverId);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _serversService.Get(serverId);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -59,16 +51,8 @@ namespace BurstChat.Api.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Server server)
         {
-            try
-            {
-                var monad = _serversService.Insert(server);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _serversService.Insert(server);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -79,16 +63,8 @@ namespace BurstChat.Api.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] Server server)
         {
-            try
-            {
-                var monad = _serversService.Update(server);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _serversService.Update(server);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -99,36 +75,8 @@ namespace BurstChat.Api.Controllers
         [HttpDelete("{serverId:int}")]
         public IActionResult Delete(int serverId)
         {
-            try
-            {
-                var monad = _serversService.Delete(serverId);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        ///   This method will fetch all subscribed servers of a user based on the provided user id.
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An IActionResult instance</returns>
-        [HttpGet("/subscribed/{userId:long}")]
-        public IActionResult GetSubscribed(long userId)
-        {
-            try
-            {
-                var monad = _serversService.GetSubscribedServers(userId);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _serversService.Delete(serverId);
+            return this.UnwrapMonad(monad);
         }
     }
 }

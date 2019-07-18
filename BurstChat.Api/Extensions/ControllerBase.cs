@@ -1,4 +1,5 @@
 using System;
+using BurstChat.Api.Errors;
 using BurstChat.Shared.Monads;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,7 @@ namespace BurstChat.Api.Extensions
                     return controller.BadRequest(failure.Value);
 
                 default:
-                    throw new NotImplementedException();
+                    return controller.BadRequest(SystemErrors.Exception());
             }
         }
 
@@ -54,7 +55,7 @@ namespace BurstChat.Api.Extensions
                     return controller.BadRequest(failure.Value);
 
                 default:
-                    throw new NotImplementedException();
+                    return controller.BadRequest(SystemErrors.Exception());
             }
         }
     }

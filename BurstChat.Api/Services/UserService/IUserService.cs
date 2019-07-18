@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
+using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
 
 namespace BurstChat.Api.Services.UserService
@@ -72,5 +74,12 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="password">The string value of the password that will be hashed</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> ChangePassword(string oneTimePass, string password);
+
+        /// <summary>
+        ///   This method will return all available subscribed servers of a user.
+        /// <summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId);
     }
 }

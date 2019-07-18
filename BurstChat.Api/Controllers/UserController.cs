@@ -46,16 +46,8 @@ namespace BurstChat.Api.Controllers
         [HttpGet("{id:long}")]
         public IActionResult Get(long id)
         {
-            try
-            {
-                var monad = _userService.Get(id);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _userService.Get(id);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -66,19 +58,11 @@ namespace BurstChat.Api.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Registration registration)
         {
-            try
-            {
-                var monad = _modelValidationService
-                    .ValidateRegistration(registration)
-                    .Bind(r => _userService.Insert(r.Email, r.Password));
+            var monad = _modelValidationService
+                .ValidateRegistration(registration)
+                .Bind(r => _userService.Insert(r.Email, r.Password));
 
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -89,16 +73,8 @@ namespace BurstChat.Api.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] User user)
         {
-            try
-            {
-                var monad = _userService.Update(user);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _userService.Update(user);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -109,16 +85,8 @@ namespace BurstChat.Api.Controllers
         [HttpDelete("{id:long}")]
         public IActionResult Delete(long id)
         {
-            try
-            {
-                var monad = _userService.Delete(id);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _userService.Delete(id);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -130,33 +98,22 @@ namespace BurstChat.Api.Controllers
         [HttpPost("validate")]
         public IActionResult Validate([FromBody] Credentials credentials)
         {
-            try
-            {
-                var email = credentials?.Email;
-                var password = credentials?.Password;
-                var monad = _userService.Validate(email, password);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var email = credentials?.Email;
+            var password = credentials?.Password;
+            var monad = _userService.Validate(email, password);
+            return this.UnwrapMonad(monad);
         }
 
+        /// <summary>
+        ///   This method will create a new one time password for a user registered with the provided email
+        ///   and it will be sent to the said mail.
+        /// </summary>
+        /// <param name="email">The email of the user</param>
+        /// <returns>An IActionResult instance</returns>
         public IActionResult IssueOneTimePassword([FromBody] string email)
         {
-            try
-            {
-                var monad = _userService.IssueOneTimePassword(email);
-
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _userService.IssueOneTimePassword(email);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -167,19 +124,23 @@ namespace BurstChat.Api.Controllers
         [HttpPost("/password/change")]
         public IActionResult ChangePassword([FromBody] ChangePassword changePassword)
         {
-            try
-            {
-                var monad = _modelValidationService
-                    .ValidateChangePassword(changePassword)
-                    .Bind(c => _userService.ChangePassword(c.OneTimePassword, c.NewPassword));
+            var monad = _modelValidationService
+                .ValidateChangePassword(changePassword)
+                .Bind(c => _userService.ChangePassword(c.OneTimePassword, c.NewPassword));
 
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///   This method will fetch all subscribed servers of a user based on the provided user id.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("{userId:long}/subscriptions")]
+        public IActionResult GetSubscribedServers(long userId)
+        {
+            var monad = _userService.GetSubscribedServers(userId);
+            return this.UnwrapMonad(monad);
         }
     }
 }

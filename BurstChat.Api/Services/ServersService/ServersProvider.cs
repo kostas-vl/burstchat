@@ -145,29 +145,5 @@ namespace BurstChat.Api.Services.ServersService
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
-
-        /// <summary>
-        ///   This method will return all available subscribed servers of a user.
-        /// <summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId)
-        {
-            try 
-            {
-                var servers = _burstChatContext
-                    .Servers
-                    .Include(server => server.SubscribedUsers
-                                             .Where(subscription => subscription.UserId == userId))
-                    .ToList();
-
-                return new Success<IEnumerable<Server>, Error>(servers);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return new Failure<IEnumerable<Server>, Error>(SystemErrors.Exception());
-            }
-        }
     }
 }

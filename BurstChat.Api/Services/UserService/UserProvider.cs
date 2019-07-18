@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using BurstChat.Api.Errors;
 using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.BCryptService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
+using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -275,6 +277,30 @@ namespace BurstChat.Api.Services.UserService
             {
                 _logger.LogException(e);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will return all available subscribed servers of a user.
+        /// <summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId)
+        {
+            try 
+            {
+                var servers = _burstChatContext
+                    .Servers
+                    .Include(server => server.SubscribedUsers
+                                             .Where(subscription => subscription.UserId == userId))
+                    .ToList();
+
+                return new Success<IEnumerable<Server>, Error>(servers);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<Server>, Error>(SystemErrors.Exception());
             }
         }
     }

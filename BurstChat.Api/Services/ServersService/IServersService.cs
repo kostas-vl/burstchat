@@ -41,12 +41,5 @@ namespace BurstChat.Api.Services.ServersService
         /// <param name="server">The server instance from which the information update will be based upon</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> Update(Server server);
-
-        /// <summary>
-        ///   This method will return all available subscribed servers of a user.
-        /// <summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An either monad</returns>
-        Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId);
     }
 }

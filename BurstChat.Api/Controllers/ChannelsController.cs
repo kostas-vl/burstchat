@@ -42,16 +42,8 @@ namespace BurstChat.Api.Controllers
         [HttpGet("{channelId:int")]
         public IActionResult Get(int channelId)
         {
-            try
-            {
-                var monad = _channelsService.Get(channelId);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _channelsService.Get(channelId);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -65,16 +57,8 @@ namespace BurstChat.Api.Controllers
         [HttpPost]
         public IActionResult Post(int serverId, [FromBody] Channel channel)
         {
-            try
-            {
-                var monad = _channelsService.Insert(serverId, channel);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _channelsService.Insert(serverId, channel);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -85,16 +69,8 @@ namespace BurstChat.Api.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] Channel channel)
         {
-            try
-            {
-                var monad = _channelsService.Update(channel);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _channelsService.Update(channel);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -105,16 +81,8 @@ namespace BurstChat.Api.Controllers
         [HttpDelete("{channelId:int}")]
         public IActionResult Delete(int channelId)
         {
-            try
-            {
-                var monad = _channelsService.Delete(channelId);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _channelsService.Delete(channelId);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -126,16 +94,8 @@ namespace BurstChat.Api.Controllers
         [HttpPost("{channelId:int}/message")]
         public IActionResult PostMessage(int channelId, [FromBody] Message message)
         {
-            try
-            {
-                var monad = _channelsService.InsertMessage(channelId, message);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _channelsService.InsertMessage(channelId, message);
+            return this.UnwrapMonad(monad);
         }
 
         /// <summary>
@@ -148,16 +108,8 @@ namespace BurstChat.Api.Controllers
         [HttpPut("{channelId:int}/message")] 
         public IActionResult PutMessage(int channelId, [FromBody] Message message)
         {
-            try
-            {
-                var monad = _channelsService.UpdateMessage(channelId, message);
-                return this.UnwrapMonad(monad);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return BadRequest(SystemErrors.Exception());
-            }
+            var monad = _channelsService.UpdateMessage(channelId, message);
+            return this.UnwrapMonad(monad);
         }
     }
 }
