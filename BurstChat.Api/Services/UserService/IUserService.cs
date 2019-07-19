@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
+using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
 
@@ -81,5 +82,22 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
         Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId);
+
+        /// <summary>
+        ///   This method will return all private groups that the user with the provided user id
+        ///   is part of.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId);
+
+        /// <summary>
+        ///   This method will return all private group messages that have been posted. The group will be validated
+        ///   against a requesting user of which the id is provided.
+        /// </summary>
+        /// <param name="userId">The id of requesting user of the group</param>
+        /// <param name="groupId">The id of the target private group</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<Message>, Error> GetPrivateGroupMessages(long userId, long groupId);
     }
 }

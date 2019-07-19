@@ -7,6 +7,7 @@ using BurstChat.Api.Services.BCryptService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
+using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
 using Microsoft.EntityFrameworkCore;
@@ -301,6 +302,68 @@ namespace BurstChat.Api.Services.UserService
             {
                 _logger.LogException(e);
                 return new Failure<IEnumerable<Server>, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will return all private group that the user with the provided user id
+        ///   is part of.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId)
+        {
+            try
+            {
+                return Get(userId)
+                    .Bind(user => 
+                    {
+                        var group = _burstChatContext
+                            .PrivateGroupMessage
+                            .Include(pmg => pmg.Users
+                                               .Where(u => u.Id == user.Id))
+                            .Include(pmg => pmg.Messages)
+                            .ToList();
+
+                        return new Success<IEnumerable<PrivateGroupMessage>, Error>(group);
+                    });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<PrivateGroupMessage>, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will return all private group messages that have been posted. The group will be validated
+        ///   against a requesting user of which the id is provided.
+        /// </summary>
+        /// <param name="userId">The id of requesting user of the group</param>
+        /// <param name="groupId">The id of the target private group</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<Message>, Error> GetPrivateGroupMessages(long userId, long groupId)
+        {
+            try
+            {
+                return Get(userId)
+                    .Bind(user =>
+                    {
+                        var group = _burstChatContext
+                            .PrivateGroupMessage
+                            .Include(pmg => pmg.Messages)
+                            .FirstOrDefault(pmg => pmg.Id == groupId);
+
+                        return group != null
+                            ? new Success<IEnumerable<Message>, Error>(group.Messages)
+                            : new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception())
+                            as Either<IEnumerable<Message>, Error>;
+                    });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
             }
         }
     }
