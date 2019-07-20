@@ -154,19 +154,5 @@ namespace BurstChat.Api.Controllers
             var monad = _userService.GetPrivateGroups(userId);
             return this.UnwrapMonad(monad);
         }
-
-        /// <summary>
-        ///   This method will fetch all available messages of a group based on the provided id. Also a user id
-        ///   will be provided that will be used in the search of the group.
-        /// </summary>
-        /// <param name="userId">The id of a user that is a member of the group</param>
-        /// <param name="groupId">The id of the target group</param>
-        /// <returns>An IActionResult instance</returns>
-        [HttpGet("{userId:long}/group/{groupId:long}/messages")]
-        public IActionResult GetPrivateGroupMessages(long userId, long groupId)
-        {
-            var monad = _userService.GetPrivateGroupMessages(userId, groupId);
-            return this.UnwrapMonad(monad);
-        }
     }
 }

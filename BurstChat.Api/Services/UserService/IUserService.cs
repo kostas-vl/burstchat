@@ -90,14 +90,5 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
         Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId);
-
-        /// <summary>
-        ///   This method will return all private group messages that have been posted. The group will be validated
-        ///   against a requesting user of which the id is provided.
-        /// </summary>
-        /// <param name="userId">The id of requesting user of the group</param>
-        /// <param name="groupId">The id of the target private group</param>
-        /// <returns>An either monad</returns>
-        Either<IEnumerable<Message>, Error> GetPrivateGroupMessages(long userId, long groupId);
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BurstChat.Api.Services.BCryptService;
 using BurstChat.Api.Services.ChannelsService;
 using BurstChat.Api.Services.ModelValidationService;
+using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
@@ -37,6 +38,7 @@ namespace BurstChat.Api
 
             services
                 .AddScoped<IChannelsService, ChannelsProvider>()
+                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
                 .AddScoped<IServersService, ServersProvider>()
                 .AddScoped<IUserService, UserProvider>();
 
