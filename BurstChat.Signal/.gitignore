@@ -1,3 +1,8 @@
 # Build Artifacts
 obj/
 bin/
+
+# User specific files
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Domains.json

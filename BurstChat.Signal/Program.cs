@@ -20,6 +20,10 @@ namespace BurstChat.Signal
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost
                 .CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
+                })
                 .ConfigureLogging(logging =>
                 {
                     logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);

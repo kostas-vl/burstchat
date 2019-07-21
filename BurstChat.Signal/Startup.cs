@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
+using BurstChat.Signal.Services.PrivateGroupMessaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,6 +28,12 @@ namespace BurstChat.Signal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+                .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
+
+            services
+                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>();
+
             services.AddSignalR();
 
             services
@@ -37,7 +45,7 @@ namespace BurstChat.Signal
                 options.AddPolicy("CorsPolicy", builder =>
                 {
                     var acceptedDomains = Configuration
-                        .GetSection("AcceptedDomains")
+                        .GetSection("AcceptedDomains:Cors")
                         .Get<string[]>();
                     if (acceptedDomains != null && acceptedDomains.Count() > 0)
                     {
