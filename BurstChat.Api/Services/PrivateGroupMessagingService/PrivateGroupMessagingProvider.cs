@@ -54,7 +54,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                 if (privateGroup != null)
                     return new Success<PrivateGroupMessage, Error>(privateGroup);
                 else
-                    return new Failure<PrivateGroupMessage, Error>(SystemErrors.Exception());
+                    return new Failure<PrivateGroupMessage, Error>(PrivateGroupMessageErrors.GroupNotFound());
             }
             catch (Exception e)
             {
@@ -93,7 +93,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                     return new Success<Unit, Error>(new Unit());
                 }
                 else
-                    return new Failure<Unit, Error>(SystemErrors.Exception());
+                    return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupNotFound());
             }
             catch (Exception e)
             {
@@ -215,7 +215,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                 if (privateGroup != null)
                     return new Success<IEnumerable<Message>, Error>(privateGroup.Messages);
                 else
-                    return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
+                    return new Failure<IEnumerable<Message>, Error>(PrivateGroupMessageErrors.GroupNotFound());
             }
             catch (Exception e)
             {
@@ -286,7 +286,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                             return new Success<Unit, Error>(new Unit());
                         }
                         else
-                            return new Failure<Unit, Error>(SystemErrors.Exception());
+                            return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
                     });
             }
             catch (Exception e)
@@ -323,7 +323,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                             return new Success<Unit, Error>(new Unit());
                         }
                         else
-                            return new Failure<Unit, Error>(SystemErrors.Exception());
+                            return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
                     });
             }
             catch (Exception e)

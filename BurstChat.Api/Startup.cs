@@ -58,7 +58,7 @@ namespace BurstChat.Api
                     switch (provider)
                     {
                         case "sqlite":
-                            options.UseSqlite(connection, dbContextOptions => 
+                            options.UseSqlite(connection, dbContextOptions =>
                             {
                                 dbContextOptions.MigrationsAssembly("BurstChat.Api");
                             });
@@ -72,6 +72,25 @@ namespace BurstChat.Api
                         default:
                             break;
                     }
+                });
+
+            services
+                .AddCors(options =>
+                {
+                    options.AddPolicy("CorsPolicy", builder =>
+                    {
+                        var acceptedDomains = Configuration
+                            .GetSection("AcceptedDomains")
+                            .Get<string[]>();
+                        if (acceptedDomains != null && acceptedDomains.Count() > 0)
+                        {
+                            builder
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .WithOrigins(acceptedDomains)
+                                .AllowCredentials();
+                        }
+                    });
                 });
         }
 
@@ -89,6 +108,7 @@ namespace BurstChat.Api
             }
 
             application
+                .UseCors("CorsPolicy")
                 .UseMvc();
         }
     }
