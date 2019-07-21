@@ -25,7 +25,7 @@ namespace BurstChat.Api
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
-                    config.AddJsonFile("appsettings.Domains.json", options: false, reloadOnChange: false);
+                    config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
                 })
                 .UseKestrel()
                 .UseStartup<Startup>();

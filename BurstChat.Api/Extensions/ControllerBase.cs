@@ -1,5 +1,5 @@
 using System;
-using BurstChat.Api.Errors;
+using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using Microsoft.AspNetCore.Mvc;
 
