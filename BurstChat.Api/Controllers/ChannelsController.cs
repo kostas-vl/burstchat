@@ -90,6 +90,7 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
         /// <returns>An IActionResult instance</returns>
+        [HttpGet("{channelId:int}/messages")]
         public IActionResult GetMessages(int channelId)
         {
             var monad = _channelsService.GetMessages(channelId);
@@ -102,7 +103,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="channelId">The id of the target channel</param>
         /// <param name="message">The message to be added</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPost("{channelId:int}/message")]
+        [HttpPost("{channelId:int}/messages")]
         public IActionResult PostMessage(int channelId, [FromBody] Message message)
         {
             var monad = _channelsService.InsertMessage(channelId, message);
@@ -116,7 +117,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="channelId">The id of the target channel</param>
         /// <param name="message">The message to be updated</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPut("{channelId:int}/message")] 
+        [HttpPut("{channelId:int}/messages")] 
         public IActionResult PutMessage(int channelId, [FromBody] Message message)
         {
             var monad = _channelsService.UpdateMessage(channelId, message);
@@ -128,6 +129,7 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="channelId">The id of the channel</param>
         /// <returns>An IActionResult instance</returns>
+        [HttpDelete("{channelId:int}/messages")]
         public IActionResult DeleteMessage(int channelId, [FromBody] Message message)
         {
             var monad = _channelsService.DeleteMessage(channelId, message);
