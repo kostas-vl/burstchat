@@ -53,16 +53,16 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="message">The message to be sent to connected users</param>
         /// <returns>A task instance</returns>
-        public async Task PostMessage(long groupId, Message message)
+        public async Task PostPrivateGroupMessage(long groupId, Message message)
         {
             var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.MessageReceived(message);
+                await Clients.All.PrivateGroupMessageReceived(message);
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.MessageReceived(message);
+                await Clients.Caller.PrivateGroupMessageReceived(message);
             else
-                await Clients.Caller.MessageReceived(message);
+                await Clients.Caller.PrivateGroupMessageReceived(message);
         }
 
         /// <summary>
@@ -70,16 +70,16 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="message">The message that was edited and will be sent to connected users</param>
         /// <returns>A task instance</returns>
-        public async Task PutMessage(long groupId, Message message)
+        public async Task PutPrivateGroupMessage(long groupId, Message message)
         {
             var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.MessageEdited(message);
+                await Clients.All.PrivateGroupMessageEdited(message);
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.MessageEdited(failure.Value);
+                await Clients.Caller.PrivateGroupMessageEdited(failure.Value);
             else
-                await Clients.Caller.MessageEdited(SystemErrors.Exception());
+                await Clients.Caller.PrivateGroupMessageEdited(SystemErrors.Exception());
         }
 
         /// <summary>
@@ -87,16 +87,16 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="message">The message to be deleted and sent to connected users</param>
         /// <returns>A task instance</returns>
-        public async Task DeleteMessage(long groupId, Message message)
+        public async Task DeletePrivateGroupMessage(long groupId, Message message)
         {
             var monad = await _privateGroupMessagingService.DeleteAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.MessageDeleted(message);
+                await Clients.All.PrivateGroupMessageDeleted(message);
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.MessageDeleted(failure.Value);
+                await Clients.Caller.PrivateGroupMessageDeleted(failure.Value);
             else
-                await Clients.Caller.MessageDeleted(SystemErrors.Exception());
+                await Clients.Caller.PrivateGroupMessageDeleted(SystemErrors.Exception());
         }
     }
 }

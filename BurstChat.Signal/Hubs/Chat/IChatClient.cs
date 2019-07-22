@@ -32,7 +32,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="message">The message to be sent to connected users</param>
         /// <returns>A task instance</returns>
-        Task MessageReceived(Message message);
+        Task PrivateGroupMessageReceived(Message message);
 
         /// <summary>
         ///   The caller is informed that the message he sent wasn't posted and received by the other members
@@ -40,34 +40,34 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
-        Task MessageReceived(Error error);
+        Task PrivateGroupMessageReceived(Error error);
 
         /// <summary>
         ///   All users are informed for an edit to an existing message of a group.
         /// </summary>
         /// <param name="message">The message that was edited and will be sent to connected users</param>
         /// <returns>A task instance</returns>
-        Task MessageEdited(Message message);
+        Task PrivateGroupMessageEdited(Message message);
 
         /// <summary>
         ///   The caller is informed that an edit to an existing message could not be sent to a group.
         /// </summary>
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
-        Task MessageEdited(Error error);
+        Task PrivateGroupMessageEdited(Error error);
 
         /// <summary>
         ///   All users are informed that an existing message of a group was deleted.
         /// </summary>
         /// <param name="message">The message that was deleted and will be sent to connected users</param>
         /// <returns>A task instance</returns>
-        Task MessageDeleted(Message message);
+        Task PrivateGroupMessageDeleted(Message message);
 
         /// <summary>
         ///   The caller is informed that a delete to an existing message could not be sent to a group.
         /// </summary>
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
-        Task MessageDeleted(Error error);
+        Task PrivateGroupMessageDeleted(Error error);
     }
 }
