@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
+using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +33,8 @@ namespace BurstChat.Signal
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
 
             services
-                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>();
+                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
+                .AddScoped<IChannelsService, ChannelsProvider>();
 
             services.AddSignalR();
 
