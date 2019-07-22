@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
@@ -28,19 +29,33 @@ namespace BurstChat.Api.Services.ChannelsService
         Either<Unit, Error> Insert(int serverId, Channel channel);
 
         /// <summary>
+        ///   This method will update the information of a channel based on the provided parameters.
+        /// </summary>
+        /// <param name="channel">The channel instance to be updated</param>
+        /// <returns>An either monad</returns>
+        Either<Unit, Error> Update(Channel channel);
+
+        /// <summary>
+        ///   This method will remove a channel from the database based on the provided parameters.
+        /// </summary>
+        /// <param name="channelId">The id of the channel to be deleted</param>
+        /// <returns>An either monad</returns>
+        Either<Unit, Error> Delete(int channelId);
+
+        /// <summary>
+        ///   This method will return all messages posted in a channel based on the provided channel id.
+        /// </summary>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<Message>, Error> GetMessages(int channelId);
+
+        /// <summary>
         ///   This method will insert a new message sent to the channel provided.
         /// </summary>
         /// <param name="channelId">The id of the channel to which the message will be inserted</param>
         /// <param name="message">The message to be inserted</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> InsertMessage(int channelId, Message message);
-
-        /// <summary>
-        ///   This method will update the information of a channel based on the provided parameters.
-        /// </summary>
-        /// <param name="channel">The channel instance to be updated</param>
-        /// <returns>An either monad</returns>
-        Either<Unit, Error> Update(Channel channel);
 
         /// <summary>
         ///   This method will update the contents of the provided message on the provided channel.
@@ -51,10 +66,11 @@ namespace BurstChat.Api.Services.ChannelsService
         Either<Unit, Error> UpdateMessage(int channelId, Message message);
 
         /// <summary>
-        ///   This method will remove a channel from the database based on the provided parameters.
+        ///   This method will remove an existing message from a channel based on the provided id.
         /// </summary>
-        /// <param name="channelId">The id of the channel to be deleted</param>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <param name="message">The message to be deleted</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Delete(int channelId);
+        Either<Unit, Error> DeleteMessage(int channelId, Message message);
     }
 }

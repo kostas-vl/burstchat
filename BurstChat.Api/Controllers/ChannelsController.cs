@@ -86,6 +86,17 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
+        ///   This method will fetch all messages posted on a channel.
+        /// </summary>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <returns>An IActionResult instance</returns>
+        public IActionResult GetMessages(int channelId)
+        {
+            var monad = _channelsService.GetMessages(channelId);
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
         ///   This method will add a new message to the channel.
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
@@ -109,6 +120,17 @@ namespace BurstChat.Api.Controllers
         public IActionResult PutMessage(int channelId, [FromBody] Message message)
         {
             var monad = _channelsService.UpdateMessage(channelId, message);
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///   This method will delete an existing message from a channel.
+        /// </summary>
+        /// <param name="channelId">The id of the channel</param>
+        /// <returns>An IActionResult instance</returns>
+        public IActionResult DeleteMessage(int channelId, [FromBody] Message message)
+        {
+            var monad = _channelsService.DeleteMessage(channelId, message);
             return this.UnwrapMonad(monad);
         }
     }

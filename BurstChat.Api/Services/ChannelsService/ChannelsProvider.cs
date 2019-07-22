@@ -103,36 +103,6 @@ namespace BurstChat.Api.Services.ChannelsService
         }
 
         /// <summary>
-        ///   This method will insert a new message sent to the channel provided.
-        /// </summary>
-        /// <param name="channelId">The id of the channel to which the message will be inserted</param>
-        /// <param name="message">The message to be inserted</param>
-        /// <returns>An either monad</returns>
-        public Either<Unit, Error> InsertMessage(int channelId, Message message)
-        {
-            try
-            {
-                return Get(channelId)
-                    .Bind(channel => 
-                    {
-                        channel
-                            .Details
-                            .Messages
-                            .Add(message);
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Unit, Error>(new Unit());
-                    });
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
         ///   This method will update the information of a channel based on the provided parameters.
         /// </summary>
         /// <param name="channel">The channel instance to be updated</param>
@@ -149,6 +119,73 @@ namespace BurstChat.Api.Services.ChannelsService
                     {
                         channelEntry.Name = channel.Name;
                         channelEntry.IsPublic = channel.IsPublic;
+
+                        _burstChatContext.SaveChanges();
+
+                        return new Success<Unit, Error>(new Unit());
+                    });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will remove a channel from the database based on the provided parameters.
+        /// </summary>
+        /// <param name="channelId">The id channel to be deleted</param>
+        /// <returns>An either monad</returns>
+        public Either<Unit, Error> Delete(int channelId)
+        {
+            try
+            {
+                return Get(channelId)
+                    .Bind(channel => 
+                    {
+                        _burstChatContext
+                            .Channels
+                            .Remove(channel);
+
+                        _burstChatContext.SaveChanges();
+
+                        return new Success<Unit, Error>(new Unit());
+                    });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will return all messages posted in a channel based on the provided channel id.
+        /// </summary>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<Message>, Error> GetMessages(int channelId) =>
+            Get(channelId)
+                .Bind(channel => new Success<IEnumerable<Message>, Error>(channel.Details.Messages));
+
+        /// <summary>
+        ///   This method will insert a new message sent to the channel provided.
+        /// </summary>
+        /// <param name="channelId">The id of the channel to which the message will be inserted</param>
+        /// <param name="message">The message to be inserted</param>
+        /// <returns>An either monad</returns>
+        public Either<Unit, Error> InsertMessage(int channelId, Message message)
+        {
+            try
+            {
+                return Get(channelId)
+                    .Bind(channel => 
+                    {
+                        channel
+                            .Details
+                            .Messages
+                            .Add(message);
 
                         _burstChatContext.SaveChanges();
 
@@ -201,20 +238,22 @@ namespace BurstChat.Api.Services.ChannelsService
         }
 
         /// <summary>
-        ///   This method will remove a channel from the database based on the provided parameters.
+        ///   This method will remove an existing message from a channel based on the provided id.
         /// </summary>
-        /// <param name="channelId">The id channel to be deleted</param>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <param name="message">The message to be deleted</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Delete(int channelId)
+        public Either<Unit, Error> DeleteMessage(int channelId, Message message)
         {
             try
             {
                 return Get(channelId)
                     .Bind(channel => 
                     {
-                        _burstChatContext
-                            .Channels
-                            .Remove(channel);
+                        channel
+                            .Details
+                            .Messages
+                            .Remove(message);
 
                         _burstChatContext.SaveChanges();
 
