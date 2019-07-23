@@ -5,8 +5,8 @@
  */
 export interface IMessage {
 
+    userId: number;
     content: string;
-    user: string;
     datePosted: Date | string;
     edited: boolean;
 

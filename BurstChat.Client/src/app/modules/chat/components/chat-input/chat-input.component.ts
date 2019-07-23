@@ -38,13 +38,13 @@ export class ChatInputComponent implements OnInit {
     public onEnterKeyPressed() {
         if (this.inputContent) {
             const message: IMessage = {
-                user: 'hoodi',
+                userId: 0,
                 content: this.inputContent,
                 datePosted: new Date(),
                 edited: false
             };
 
-            this.chatService.sendMessage(message);
+            this.chatService.postPrivateGroupMessage(message);
 
             this.inputContent = undefined;
         }

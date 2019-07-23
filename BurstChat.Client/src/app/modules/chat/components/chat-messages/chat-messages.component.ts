@@ -37,7 +37,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.onMessageReceivedSubscription = this
             .chatService
-            .onMessageReceivedObservable
+            .onAllPrivateGroupMessagesReceived
             .subscribe(_ => this.onMessageReceived(_));
     }
 
@@ -53,13 +53,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Handles the occurance of a new message sent from the server.
+     * Handles the entire payload of messages posted to a chat.
      * @private
-     * @param {IMessage} message The message received from the server.
+     * @param {IMessage[]} messages The messages received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessageReceived(message: IMessage) {
-        this.messages.push(message);
+    private onMessageReceived(messages: IMessage[]) {
+        this.messages = messages;
     }
 
 }
