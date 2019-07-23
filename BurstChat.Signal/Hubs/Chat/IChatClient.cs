@@ -69,5 +69,62 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageDeleted(Error error);
+
+        /// <summary>
+        ///   The caller is informed about all messages posted on a channel.
+        /// </summary>
+        /// <param name="messages">The messages posted</param>
+        /// <returns>A task instance</returns>
+        Task AllChannelMessagesReceived(IEnumerable<Message> messages);
+
+        /// <summary>
+        ///   The caller is informed of an error that prevented him from receiving the messages of
+        ///   a channel.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A task instance</returns>
+        Task AllChannelMessagesReceived(Error error);
+
+        /// <summary>
+        ///   All users of a channel are informed that a new message was posted.
+        /// </summary>
+        /// <param name="message">The message that was posted</param>
+        /// <returns>A task instance</returns>
+        Task ChannelMessageReceived(Message message);
+
+        /// <summary>
+        ///   The caller is informed of an error when posting a new message to a channel.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A task instance</returns>
+        Task ChannelMessageReceived(Error error);
+
+        /// <summary>
+        ///   All users of a channel are informed that a message was edited.
+        /// </summary>
+        /// <param name="message">The message that was edited</param>
+        /// <returns>A task instance</returns>
+        Task ChannelMessageEdited(Message message);
+
+        /// <summary>
+        ///   The caller is informed of an error that occured while editing a message of a channel.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A task instance</returns>
+        Task ChannelMessageEdited(Error error);
+
+        /// <summary>
+        ///   All users of a channel are informed of a message that was deleted.
+        /// </summary>
+        /// <param name="message">The message that was deleted</param>
+        /// <returns>A task instance</returns>
+        Task ChannelMessageDeleted(Message message);
+
+        /// <summary>
+        ///   The caller is informed that an error occured while deleting a message of a channel.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A task instance</returns>
+        Task ChannelMessageDeleted(Error error);
     }
 }

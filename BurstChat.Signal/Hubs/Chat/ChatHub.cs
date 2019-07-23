@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -17,17 +18,20 @@ namespace BurstChat.Signal.Hubs.Chat
     {
         private readonly ILogger<ChatHub> _logger;
         private readonly IPrivateGroupMessagingService _privateGroupMessagingService;
+        private readonly IChannelsService _channelsService;
 
         /// <summary>
         ///   Executes any necessary start up code for the hub.
         /// </summary>
         public ChatHub(
             ILogger<ChatHub> logger,
-            IPrivateGroupMessagingService privateGroupMessagingService
+            IPrivateGroupMessagingService privateGroupMessagingService,
+            IChannelsService channelsService
         )
         {
             _logger = logger;
             _privateGroupMessagingService = privateGroupMessagingService;
+            _channelsService = channelsService;
         }
 
         /// <summary>
@@ -97,6 +101,77 @@ namespace BurstChat.Signal.Hubs.Chat
                 await Clients.Caller.PrivateGroupMessageDeleted(failure.Value);
             else
                 await Clients.Caller.PrivateGroupMessageDeleted(SystemErrors.Exception());
+        }
+
+        /// <summary>
+        ///   Informs the caller of all messages posted to a channel.
+        /// </summary>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <returns>A task instance</returns>
+        public async Task GetAllChannelMessages(int channelId)
+        {
+            var monad = await _channelsService.GetAllAsync(channelId);
+
+            if (monad is Success<IEnumerable<Message>, Error> success)
+                await Clients.Caller.AllChannelMessagesReceived(success.Value);
+            else if (monad is Failure<IEnumerable<Message>, Error> failure)
+                await Clients.Caller.AllChannelMessagesReceived(failure.Value);
+            else
+                await Clients.Caller.AllChannelMessagesReceived(SystemErrors.Exception());
+        }
+
+        /// <summary>
+        ///   Informs the users of a channel about a new message that was posted.
+        /// </summary>
+        /// <param name="channelId">The id of the channel</param>
+        /// <param name="message">The message to be posted</param>
+        /// <returns>A task instance</returns>
+        public async Task PostChannelMessage(int channelId, Message message)
+        {
+            var monad = await _channelsService.PostAsync(channelId, message);
+
+            if (monad is Success<Unit, Error> success)
+                await Clients.All.ChannelMessageReceived(message);
+            else if (monad is Failure<Unit, Error> failure)
+                await Clients.Caller.ChannelMessageReceived(failure.Value);
+            else 
+                await Clients.Caller.ChannelMessageReceived(SystemErrors.Exception());
+        }
+
+        /// <summary>
+        ///   Informs the users of a channel that a message was edited.
+        /// </summary>
+        /// <param name="channelId">The id of the channel</param>
+        /// <param name="message">The message to be edited</param>
+        /// <returns>A task instance</returns>
+        public async Task PutChannelMessage(int channelId, Message message)
+        {
+            var monad = await _channelsService.PutAsync(channelId, message);
+
+            if (monad is Success<Unit, Error> success)
+                await Clients.All.ChannelMessageEdited(message);
+            else if (monad is Failure<Unit, Error> failure)
+                await Clients.Caller.ChannelMessageEdited(failure.Value);
+            else
+                await Clients.Caller.ChannelMessageEdited(SystemErrors.Exception());
+        }
+
+        /// <summary>
+        ///   Informs the users of a channel that a message was deleted.
+        /// </summary>
+        /// <param name="channelId">The id of the channel</param>
+        /// <param name="message">The message to be deleted</param>
+        /// <returns>A task instance</returns>
+        public async Task DeleteChannelMessage(int channelId, Message message)
+        {
+            var monad = await _channelsService.DeleteAsync(channelId, message);
+
+            if (monad is Success<Unit, Error> success)
+                await Clients.All.ChannelMessageDeleted(message);
+            else if (monad is Failure<Unit, Error> failure)
+                await Clients.Caller.ChannelMessageDeleted(failure.Value);
+            else 
+                await Clients.Caller.ChannelMessageDeleted(SystemErrors.Exception());
         }
     }
 }
