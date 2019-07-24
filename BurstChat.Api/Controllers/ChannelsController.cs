@@ -39,7 +39,7 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpGet("{channelId:int")]
+        [HttpGet("{channelId:int}")]
         public IActionResult Get(int channelId)
         {
             var monad = _channelsService.Get(channelId);

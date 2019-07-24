@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurstChat.Api.Options;
 using BurstChat.Api.Services.BCryptService;
 using BurstChat.Api.Services.ChannelsService;
 using BurstChat.Api.Services.ModelValidationService;
@@ -33,6 +34,10 @@ namespace BurstChat.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+                .Configure<DatabaseOptions>(Configuration.GetSection("Database"))
+                .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
+
             services
                 .AddSingleton<IBCryptService, BCryptProvider>();
 
@@ -80,7 +85,7 @@ namespace BurstChat.Api
                     options.AddPolicy("CorsPolicy", builder =>
                     {
                         var acceptedDomains = Configuration
-                            .GetSection("AcceptedDomains")
+                            .GetSection("AcceptedDomains:Cors")
                             .Get<string[]>();
                         if (acceptedDomains != null && acceptedDomains.Count() > 0)
                         {
