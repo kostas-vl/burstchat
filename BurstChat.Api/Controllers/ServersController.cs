@@ -2,6 +2,7 @@ using System;
 using BurstChat.Api.Errors;
 using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.ServersService;
+using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="serverId">The id of the target server</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("{serverId:int}")]
+        [ProducesResponseType(typeof(Server), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get(int serverId) 
         {
             var monad = _serversService.Get(serverId);
@@ -49,6 +52,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="server">The server instance to be created</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post([FromBody] Server server)
         {
             var monad = _serversService.Insert(server);
@@ -61,6 +66,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="server">The server instance of which the properties will be used for the update</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Put([FromBody] Server server)
         {
             var monad = _serversService.Update(server);
@@ -73,6 +80,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="server">The id of the server to be removed</param>
         /// <returns>An IActionResult instance</returns>
         [HttpDelete("{serverId:int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Delete(int serverId)
         {
             var monad = _serversService.Delete(serverId);

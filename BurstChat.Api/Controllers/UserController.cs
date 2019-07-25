@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using BurstChat.Api.Errors;
 using BurstChat.Api.Extensions;
 using BurstChat.Api.Models;
 using BurstChat.Api.Services.ModelValidationService;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
+using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Users;
+using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -44,6 +47,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="id">The id of the target user.</param>
         /// <returns>An implementation instance of IActionResult</returns>
         [HttpGet("{id:long}")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get(long id)
         {
             var monad = _userService.Get(id);
@@ -56,6 +61,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="registration">The registration parameters</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post([FromBody] Registration registration)
         {
             var monad = _modelValidationService
@@ -71,6 +78,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="user">The user instance to be user in the update</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Put([FromBody] User user)
         {
             var monad = _userService.Update(user);
@@ -83,6 +92,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="id">The id of the user to be delete</param>
         /// <returns>An IActionResult instance</returns>
         [HttpDelete("{id:long}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Delete(long id)
         {
             var monad = _userService.Delete(id);
@@ -96,6 +107,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="credentials">The credentials to be checked</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost("validate")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Validate([FromBody] Credentials credentials)
         {
             var email = credentials?.Email;
@@ -110,6 +123,9 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <returns>An IActionResult instance</returns>
+        [HttpPost("/password/reset")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult IssueOneTimePassword([FromBody] string email)
         {
             var monad = _userService.IssueOneTimePassword(email);
@@ -122,6 +138,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="changePassword">The change password properties</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost("/password/change")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult ChangePassword([FromBody] ChangePassword changePassword)
         {
             var monad = _modelValidationService
@@ -137,6 +155,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="userId">The id of the user</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("{userId:long}/subscriptions")]
+        [ProducesResponseType(typeof(IEnumerable<Server>), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetSubscribedServers(long userId)
         {
             var monad = _userService.GetSubscribedServers(userId);
@@ -149,6 +169,8 @@ namespace BurstChat.Api.Controllers
         /// <param name="userId">The id of the user</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("{userId:long}/groups")]
+        [ProducesResponseType(typeof(IEnumerable<PrivateGroupMessage>), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetPrivateGroups(long userId)
         {
             var monad = _userService.GetPrivateGroups(userId);

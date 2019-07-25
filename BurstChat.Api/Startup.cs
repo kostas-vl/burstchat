@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace BurstChat.Api
 {
@@ -97,6 +98,11 @@ namespace BurstChat.Api
                         }
                     });
                 });
+
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v1", new Info { Title = "BurstChat API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,6 +121,15 @@ namespace BurstChat.Api
             application
                 .UseCors("CorsPolicy")
                 .UseMvc();
+            
+            application.UseSwagger();
+
+            application.UseSwaggerUI(config =>
+            {
+                config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat V1");
+            });
+
+            application.UseStaticFiles();
         }
     }
 }
