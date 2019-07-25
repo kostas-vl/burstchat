@@ -1,0 +1,15 @@
+@import '../../../../../scss/theme';
+
+main {
+    position: relative;
+    height: 100%;
+    max-width: 100%;
+    margin-left: $sidebar-width;
+    color: white;
+    -webkit-transition: margin-left $layout-animation-speed; /* Safari */
+    transition: margin-left $layout-animation-speed;
+}
+
+.main-full {
+    margin-left: 0;
+}

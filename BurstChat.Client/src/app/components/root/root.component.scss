@@ -1,19 +1,1 @@
-@import '../../../scss/theme';
 
-main {
-    position: relative;
-    height: 100%;
-    max-width: 100%;
-    margin-left: $sidebar-width;
-    // padding-top: 20px;
-    // padding-bottom: 20px;
-    // padding-left: 20px;
-    // padding-right: 20px;
-    color: white;
-    -webkit-transition: margin-left $layout-animation-speed; /* Safari */
-    transition: margin-left $layout-animation-speed;  
-}
-
-.main-full {
-    margin-left: 0;
-}

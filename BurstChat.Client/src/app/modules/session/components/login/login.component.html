@@ -1,0 +1,95 @@
+<div class="login-card-container h-100">
+
+  <app-card class="login-card">
+
+    <app-card-header class="login-card-header">
+
+      <fa-icon icon="dragon"></fa-icon>
+
+    </app-card-header>
+
+    <app-card-body>
+
+      <div class="login-card-body">
+
+        <div class="row">
+
+          <div class="column column-75 text-muted">
+
+            <small>Provide your email and password to login in BurstChat.</small>
+
+          </div>
+
+        </div>
+
+        <br>
+
+        <div class="row">
+
+          <div class="column column-100">
+
+            <input class="w-100" type="text" placeholder="EMAIL" [disabled]="loading" [(ngModel)]="credentials.email">
+
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="column column-100">
+
+            <input class="w-100" type="password" placeholder="PASSWORD" [disabled]="loading" [(ngModel)]="credentials.password">
+
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="column column-100">
+
+            <small>
+
+              <a routerLink="/session/reset">Forgot your password?</a>
+
+            </small>
+
+          </div>
+
+        </div>
+
+    </div>
+
+    </app-card-body>
+
+    <app-card-footer>
+
+      <div class="row">
+
+        <div class="column column-100">
+
+          <button class="button w-100" [disabled]="loading" (click)="onLogin()">LOGIN</button>
+
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="column column-100 text-center">
+
+          <small>
+
+            <a routerLink="/session/register">Dont have an account? Register now!</a>
+
+          </small>
+
+        </div>
+
+      </div>
+
+    </app-card-footer>
+
+  </app-card>
+
+</div>

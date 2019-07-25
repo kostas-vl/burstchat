@@ -4,13 +4,21 @@ import { environment } from 'src/environments/environment';
 
 const routes: Routes = [
     {
-        path: 'chat',
-        loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
+        path: 'core',
+        loadChildren: () => import('src/app/modules/burst/burst.module').then(m => m.BurstModule)
+    },
+    {
+        path: 'session',
+        loadChildren: () => import('src/app/modules/session/session.module').then(m => m.SessionModule)
     },
     {
         path: '',
-        redirectTo: '/chat',
+        redirectTo: '/session/login',
         pathMatch: 'full'
+    },
+    {
+      path: '**',
+      redirectTo: '/session/login'
     }
 ];
 

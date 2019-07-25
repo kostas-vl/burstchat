@@ -1,0 +1,22 @@
+@import '../../../../../scss/theme';
+
+.login-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 400px;
+}
+
+.login-card-header {
+    text-align: center;
+    font-size: 30px;
+    color: $accent-color;
+}
+
+.login-card-body {
+    padding-top: 40px;
+}
+

@@ -1,0 +1,22 @@
+@import '../../../../../scss/theme';
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-card {
+    width: 400px;
+}
+
+.register-card-header {
+    text-align: center;
+    font-size: 30px;
+    color: $accent-color;
+}
+
+.register-card-body {
+    padding-top: 40px;
+}
+

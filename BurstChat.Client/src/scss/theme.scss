@@ -4,7 +4,6 @@ $dark-color: #171921;
 $accent-color: #9b4dca;
 $accent-light-color: #bc5df7;
 
-
 $text-color: white;
 $text-muted-color: #777777;
 
@@ -14,15 +13,20 @@ $layout-animation-speed: 0.4s;
 $chat-input-height: 88px;
 
 input {
-    background-color: $primary-color;    
+    background-color: $primary-color;
+    color: white;
+    border-color: transparent;
+}
+
+textarea {
+    background-color: $primary-color;
     color: white;
     border-color: white;
 }
 
-textarea {
-    background-color: $primary-color;    
-    color: white;
-    border-color: white;
+blockquote {
+    background-color: $secondary-color;
+    border-left-color: $accent-color;
 }
 
 .text-muted {
@@ -31,6 +35,10 @@ textarea {
 
 .text-center {
     text-align: center;
+}
+
+.h-100 {
+    height: 100%;
 }
 
 .w-100 {
