@@ -2,9 +2,15 @@
 
   <app-card class="register-card">
 
-    <app-card-header class="register-card-header">
+    <app-card-header>
 
-      <fa-icon icon="dragon"></fa-icon>
+      <div class="register-card-header">
+
+        <fa-icon icon="dragon" *ngIf="!loading"></fa-icon>
+
+        <div class="loader" *ngIf="loading"></div>
+
+      </div>
 
     </app-card-header>
 
@@ -64,7 +70,7 @@
 
         <div class="column column-100">
 
-          <button class="button w-100" (click)="onRegister()">REGISTER</button>
+          <button class="button w-100" [disabled]="loading" (click)="onRegister()">REGISTER</button>
 
         </div>
 

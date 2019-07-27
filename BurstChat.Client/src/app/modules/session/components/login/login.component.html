@@ -2,9 +2,15 @@
 
   <app-card class="login-card">
 
-    <app-card-header class="login-card-header">
+    <app-card-header>
 
-      <fa-icon icon="dragon"></fa-icon>
+      <div class="login-card-header">
+
+        <fa-icon icon="dragon" *ngIf="!loading"></fa-icon>
+
+        <div class="loader" *ngIf="loading"></div>
+
+      </div>
 
     </app-card-header>
 

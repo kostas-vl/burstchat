@@ -18,6 +18,10 @@ input {
     border-color: transparent;
 }
 
+input:disabled {
+    color: $text-muted-color;
+}
+
 textarea {
     background-color: $primary-color;
     color: white;
@@ -25,7 +29,7 @@ textarea {
 }
 
 blockquote {
-    background-color: $secondary-color;
+    background-color: $dark-color;
     border-left-color: $accent-color;
 }
 
@@ -54,3 +58,4 @@ blockquote {
     flex: 0 0 95%;
     max-width: 95%;
 }
+

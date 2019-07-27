@@ -1,0 +1,22 @@
+<blockquote class="notification">
+
+  <div>
+    <span *ngIf="notification">{{notification.title}}</span>
+
+    <br>
+
+    <small class="text-muted" *ngIf="notification && notification.content">{{notification.content}}</small>
+
+  </div>
+
+  <div class="notification-close">
+
+    <button class="button button-clear" (click)="close()">
+
+      close
+
+    </button>
+
+  </div>
+
+</blockquote>

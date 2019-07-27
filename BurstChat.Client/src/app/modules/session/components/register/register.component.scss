@@ -1,4 +1,5 @@
 @import '../../../../../scss/theme';
+@import '../../../../../scss/loader';
 
 .register-container {
     display: flex;
@@ -11,9 +12,11 @@
 }
 
 .register-card-header {
-    text-align: center;
     font-size: 30px;
     color: $accent-color;
+    display: flex;
+    justify-content: center;
+    height: 50px;
 }
 
 .register-card-body {

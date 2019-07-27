@@ -1,4 +1,5 @@
 @import '../../../../../scss/theme';
+@import '../../../../../scss/loader';
 
 .login-card-container {
     display: flex;
@@ -11,9 +12,11 @@
 }
 
 .login-card-header {
-    text-align: center;
     font-size: 30px;
     color: $accent-color;
+    display: flex;
+    justify-content: center;
+    height: 50px;
 }
 
 .login-card-body {

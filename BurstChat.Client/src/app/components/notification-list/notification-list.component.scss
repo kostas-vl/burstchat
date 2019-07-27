@@ -1,0 +1,12 @@
+.notification-list-container {
+    width: 100%;
+    position: absolute;
+    bottom: 5px;
+    display: flex;
+    justify-content: center;
+}
+.notification-list {
+    background: transparent;
+    z-index: 3000;
+    width: 400px;
+}
