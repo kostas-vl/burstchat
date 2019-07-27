@@ -192,7 +192,7 @@ namespace BurstChat.Api.Services.UserService
                         var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
 
                         if (!passwordIsValid)  
-                            return new Failure<User, Error>(SystemErrors.Exception());
+                            return new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
 
                         return new Success<User, Error>(user);
                     });
@@ -214,25 +214,29 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
-                return Get(email)
-                    .Bind(user =>
-                    {
-                        var dateCreated = DateTime.Now;
-                        var timedOneTimePass = "111111";
-                        var oneTimePassword = new OneTimePassword
-                        {
-                            OTP = _bcryptService.GenerateHash(timedOneTimePass),
-                            DateCreated = dateCreated,
-                            ExpirationDate = dateCreated.AddMinutes(15) 
-                        };
+                var user = _burstChatContext
+                    .Users
+                    .Include(u => u.OneTimePasswords)
+                    .FirstOrDefault(u => u.Email == email);
 
-                        user.OneTimePasswords
-                            .Add(oneTimePassword);
+                if (user == null)
+                    return new Failure<Unit, Error>(UserErrors.UserNotFound());
 
-                        _burstChatContext.SaveChanges();
+                var dateCreated = DateTime.Now;
+                var timedOneTimePass = "111111";
+                var oneTimePassword = new OneTimePassword
+                {
+                    OTP = _bcryptService.GenerateHash(timedOneTimePass),
+                    DateCreated = dateCreated,
+                    ExpirationDate = dateCreated.AddMinutes(15) 
+                };
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                user.OneTimePasswords
+                    .Add(oneTimePassword);
+
+                _burstChatContext.SaveChanges();
+
+                return new Success<Unit, Error>(new Unit());
             }
             catch (Exception e)
             {
@@ -251,18 +255,25 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
-                var user = _burstChatContext
+                var hashedOneTImePass = _bcryptService.GenerateHash(oneTimePass);
+
+                var users = _burstChatContext
                     .Users
-                    .Include(u => u.OneTimePasswords
-                                   .Where(o => _bcryptService.VerifyHash(oneTimePass, o.OTP)))
-                    .FirstOrDefault();
+                    .Include(u => u.OneTimePasswords);
+
+                var user = users
+                    .FirstOrDefault(u => u.OneTimePasswords
+                                          .Where(o => o.ExpirationDate >= DateTime.Now)
+                                          .Any(o => _bcryptService.VerifyHash(o.OTP, oneTimePass)));
 
                 if (user != null)
                 {
-                    var oneTimePassword = user.OneTimePasswords.First();
+                    var oneTimePassword = user
+                        .OneTimePasswords
+                        .FirstOrDefault(o => _bcryptService.VerifyHash(o.OTP, hashedOneTImePass));
 
-                    if (oneTimePassword.ExpirationDate > DateTime.Now)
-                        new Failure<Unit, Error>(UserErrors.UserOneTimePasswordExpired());
+                    if (oneTimePassword.ExpirationDate < DateTime.Now)
+                        return new Failure<Unit, Error>(UserErrors.UserOneTimePasswordExpired());
 
                     var hashedPassword = _bcryptService.GenerateHash(password);
 

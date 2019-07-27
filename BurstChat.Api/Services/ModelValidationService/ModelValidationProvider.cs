@@ -105,8 +105,7 @@ namespace BurstChat.Api.Services.ModelValidationService
             !String.IsNullOrEmpty(password)
             && !String.IsNullOrWhiteSpace(password)
             && password.Length >= 12
-            && password.Any(c => Char.IsLetterOrDigit(c))
-            && password.Any(c => Char.IsSymbol(c));
+            && password.Any(c => Char.IsLetterOrDigit(c));
 
         /// <summary>
         ///   This method will check whether the password in the credentials instance satisfies all the

@@ -123,7 +123,7 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPost("/password/reset")]
+        [HttpPost("password/reset")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult IssueOneTimePassword([FromBody] string email)
@@ -137,7 +137,7 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="changePassword">The change password properties</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPost("/password/change")]
+        [HttpPost("password/change")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult ChangePassword([FromBody] ChangePassword changePassword)
