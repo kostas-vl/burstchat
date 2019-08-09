@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Security.Claims;
 using BurstChat.Api.Errors;
 using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.BCryptService;
@@ -344,6 +345,25 @@ namespace BurstChat.Api.Services.UserService
                 _logger.LogException(e);
                 return new Failure<IEnumerable<PrivateGroupMessage>, Error>(SystemErrors.Exception());
             }
+        }
+
+        /// <summary>
+        ///   This method will fetch all appropriate user claims based on the provided instance.
+        /// </summary>
+        /// <param name="user">The user instance</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<Claim>, Error> GetClaims(User user)
+        {
+            if (user == null)
+                return new Failure<IEnumerable<Claim>, Error>(null);
+
+            var claims = new Claim[]
+            {
+                new Claim("email", user.Email),
+                new Claim("username", user.Name)
+            };
+
+            return new Success<IEnumerable<Claim>, Error>(claims);
         }
     }
 }

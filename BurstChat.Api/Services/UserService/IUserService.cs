@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
@@ -90,5 +91,12 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
         Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId);
+
+        /// <summary>
+        ///   This method will fetch all appropriate user claims based on the provided instance.
+        /// </summary>
+        /// <param name="user">The user instance</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<Claim>, Error> GetClaims(User user);
     }
 }
