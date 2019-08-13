@@ -5,6 +5,10 @@ bin/
 # Settings file dependent to user.
 appsettings.Database.json
 appsettings.Domain.json
+appsettings.IdentitySecrets.json
 
 # Sqlite database files.
 **/*.db
+
+# Editor Configuration
+.vscode/**

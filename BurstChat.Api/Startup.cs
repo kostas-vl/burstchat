@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurstChat.Api.Extensions;
 using BurstChat.Api.Options;
 using BurstChat.Api.Services.BCryptService;
 using BurstChat.Api.Services.ChannelsService;
+using BurstChat.Api.Services.IdentityServices;
 using BurstChat.Api.Services.ModelValidationService;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
 using IdentityServer4;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -85,7 +89,9 @@ namespace BurstChat.Api
                 .AddScoped<IChannelsService, ChannelsProvider>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
                 .AddScoped<IServersService, ServersProvider>()
-                .AddScoped<IUserService, UserProvider>();
+                .AddScoped<IUserService, UserProvider>()
+                .AddScoped<IProfileService, BurstChatProfileService>()
+                .AddScoped<IResourceOwnerPasswordValidator, BurstChatResourceOwnerPasswordValidator>();
 
             services
                 .AddTransient<IModelValidationService, ModelValidationProvider>();
@@ -137,6 +143,7 @@ namespace BurstChat.Api
             if (env.IsDevelopment())
             {
                 application.UseDeveloperExceptionPage();
+                application.UseBurstChatDevelopmentResources(Configuration);
             }
             else
             {

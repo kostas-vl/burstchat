@@ -15,7 +15,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
-namespace BurstChat.Api.Services.IdentityService
+namespace BurstChat.Api.Services.IdentityServices
 {
     /// <summary>
     ///   This class is the BurstChat Api service implementation of the IResourceOwnerPasswordValidator interface.
