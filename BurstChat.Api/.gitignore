@@ -12,3 +12,6 @@ appsettings.IdentitySecrets.json
 
 # Editor Configuration
 .vscode/**
+
+# The development certificate for Identity Server
+certificate.pfx

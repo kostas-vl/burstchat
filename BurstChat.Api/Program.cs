@@ -26,7 +26,8 @@ namespace BurstChat.Api
                 {
                     config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
                     config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
-                    config.AddJsonFile("appsettings.IdentitySecrets.json", optional: false, reloadOnChange: false);
+                    config.AddJsonFile("appsettings.IdentitySecrets.json", optional: true, reloadOnChange: false);
+                    config.AddJsonFile("appsettings.SigningCredentials.json", optional: false, reloadOnChange: false);
                 })
                 .UseKestrel()
                 .UseStartup<Startup>();

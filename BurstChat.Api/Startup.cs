@@ -105,6 +105,20 @@ namespace BurstChat.Api
 
             services
                 .AddIdentityServer()
+                .AddBurstChatSigningCredentials(options =>
+                {
+                    var x509Configuration = Configuration
+                        .GetSection("X509");
+
+                    var path = x509Configuration
+                        .GetValue<string>("Path");
+
+                    var password = x509Configuration
+                        .GetValue<string>("Password");
+
+                    options.Path = path;
+                    options.Password = password;
+                })
                 .AddConfigurationStore(options => options.ConfigureDbContext = ConfigureDatabaseContext)
                 .AddOperationalStore(options => options.ConfigureDbContext = ConfigureDatabaseContext);
 
@@ -143,7 +157,12 @@ namespace BurstChat.Api
             if (env.IsDevelopment())
             {
                 application.UseDeveloperExceptionPage();
-                application.UseBurstChatDevelopmentResources(Configuration);
+                application.UseBurstChatDevelopmentResources(options =>
+                {
+                    Configuration
+                        .GetSection("Secrets")
+                        .Bind(options);
+                });
             }
             else
             {

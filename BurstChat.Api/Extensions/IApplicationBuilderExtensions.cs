@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BurstChat.Api.Options;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -25,13 +26,12 @@ namespace BurstChat.Api.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        private static void AddDevelopmentWebClient(ConfigurationDbContext context, IConfiguration configuration)
+        private static void AddDevelopmentWebClient(ConfigurationDbContext context, IdentitySecretsOptions identitySecretsOptions)
         {
             var creationDate = DateTime.Now;
             var webClientId = "burstchat.web.client";
-            var webClientSecret = configuration
-                .GetSection("ClientSecrets")
-                .GetValue<string>(webClientId);
+            var webClientSecret = identitySecretsOptions
+                .ClientSecrets[webClientId];
 
             var webClient = new Client
             {
@@ -93,8 +93,6 @@ namespace BurstChat.Api.Extensions
             context
                 .Clients
                 .Add(webClient);
-
-            context.SaveChanges();
         }
 
         /// <summary>
@@ -102,13 +100,12 @@ namespace BurstChat.Api.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        public static void AddDevelopmentApiResource(ConfigurationDbContext context, IConfiguration configuration)
+        public static void AddDevelopmentApiResource(ConfigurationDbContext context, IdentitySecretsOptions identitySecretsOptions)
         {
             var creationDate = DateTime.Now;
             var apiName = "burstchat.api";
-            var apiSecret = configuration
-                .GetSection("ApiSecrets")
-                .GetValue<string>(apiName);
+            var apiSecret = identitySecretsOptions
+                .ApiSecrets[apiName];
 
             var apiResource = new ApiResource
             {
@@ -144,8 +141,6 @@ namespace BurstChat.Api.Extensions
             context
                 .ApiResources
                 .Add(apiResource);
-
-            context.SaveChanges();
         }
 
         /// <summary>
@@ -153,13 +148,12 @@ namespace BurstChat.Api.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        public static void AddDevelopmentSignalResource(ConfigurationDbContext context, IConfiguration configuration)
+        public static void AddDevelopmentSignalResource(ConfigurationDbContext context, IdentitySecretsOptions identitySecretsOptions)
         {
             var creationDate = DateTime.Now;
             var signalName = "burstchat.signal";
-            var signalSecret = configuration
-                .GetSection("ApiSecrets")
-                .GetValue<string>(signalName);
+            var signalSecret = identitySecretsOptions
+                .ApiSecrets[signalName];
 
             var signalResource = new ApiResource
             {
@@ -195,16 +189,13 @@ namespace BurstChat.Api.Extensions
             context
                 .ApiResources
                 .Add(signalResource);
-
-            context.SaveChanges();
         }
 
         /// <summary>
         ///     This method creates the IdentityResource for the openid and profile scopes with all the neccessary configuration.
         /// </summary>
         /// <param name="context">The configuration database context</param>
-        /// <param name="configuration">The application settings configuration</param>
-        private static void AddDevelopmentIdentityResources(ConfigurationDbContext context, IConfiguration configuration)
+        private static void AddDevelopmentIdentityResources(ConfigurationDbContext context)
         {
             var creationDate = DateTime.Now;
             var openIdResource = new IdentityResource
@@ -227,9 +218,7 @@ namespace BurstChat.Api.Extensions
 
             context
                 .IdentityResources
-                .AddRange(new []{ openIdResource, profileResource });
-
-            context.SaveChanges();
+                .AddRange(new [] { openIdResource, profileResource });
         }
 
         /// <summary>
@@ -237,9 +226,12 @@ namespace BurstChat.Api.Extensions
         ///     ensure the existance of clients and api configuration.
         /// </summary>
         /// <param name="application">The application builder instance</param>
-        /// <param name="configuration">The application settings configuration</param>
-        public static void UseBurstChatDevelopmentResources(this IApplicationBuilder application, IConfiguration configuration)
+        /// <param name="secretsCallback">The callback that will populate the identity secrets options</param>
+        public static void UseBurstChatDevelopmentResources(this IApplicationBuilder application, Action<IdentitySecretsOptions> secretsCallback)
         {
+            var identitySecretsOptions = new IdentitySecretsOptions();
+            secretsCallback(identitySecretsOptions);
+
             var serviceScopeFactory = application
                 .ApplicationServices
                 .GetService<IServiceScopeFactory>();
@@ -283,12 +275,12 @@ namespace BurstChat.Api.Extensions
                 foreach (var identity in identities)
                     context.IdentityResources.Remove(identity);
 
-                context.SaveChanges();
+                AddDevelopmentWebClient(context, identitySecretsOptions);
+                AddDevelopmentApiResource(context, identitySecretsOptions);
+                AddDevelopmentSignalResource(context, identitySecretsOptions);
+                AddDevelopmentIdentityResources(context);   
 
-                AddDevelopmentWebClient(context, configuration);
-                AddDevelopmentApiResource(context, configuration);
-                AddDevelopmentSignalResource(context, configuration);
-                AddDevelopmentIdentityResources(context, configuration);   
+                context.SaveChanges();
             }
         }
     }
