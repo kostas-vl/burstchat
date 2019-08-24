@@ -5,7 +5,6 @@ bin/
 # Settings file dependent to user.
 appsettings.Database.json
 appsettings.Domain.json
-appsettings.IdentitySecrets.json
 
 # Sqlite database files.
 **/*.db
@@ -13,5 +12,3 @@ appsettings.IdentitySecrets.json
 # Editor Configuration
 .vscode/**
 
-# The development certificate for Identity Server
-certificate.pfx
