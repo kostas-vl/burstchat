@@ -1,8 +1,8 @@
 using System;
 using BurstChat.Api.Errors;
-using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Errors;
+using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

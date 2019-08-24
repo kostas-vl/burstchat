@@ -1,11 +1,10 @@
 using System;
 using System.Security.Claims;
-using BurstChat.Api.Errors;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using Microsoft.AspNetCore.Http;
 
-namespace BurstChat.Api.Extensions
+namespace BurstChat.Shared.Extensions
 {
     /// <summary>
     ///   This class contains extensions methods for an HttpContext instance.

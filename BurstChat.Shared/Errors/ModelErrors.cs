@@ -1,7 +1,7 @@
 using System;
 using BurstChat.Shared.Errors;
 
-namespace BurstChat.IdentityServer.Errors
+namespace BurstChat.Shared.Errors
 {
     /// <summary>
     ///   This class contains static methods that represent errors associated with api model errors when the 

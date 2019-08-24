@@ -1,9 +1,9 @@
 using System;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
-using BurstChat.IdentityServer.Models;
+using BurstChat.Shared.Models;
 
-namespace BurstChat.IdentityServer.Services.ModelValidationService
+namespace BurstChat.Shared.Services.ModelValidationService
 {
     /// <summary>
     ///   This interface exposes methods for validating various API models.

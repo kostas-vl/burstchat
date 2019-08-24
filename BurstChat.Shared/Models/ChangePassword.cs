@@ -1,6 +1,6 @@
 using System;
 
-namespace BurstChat.IdentityServer.Models
+namespace BurstChat.Shared.Models
 {
     /// <summary>
     ///   This class contains properties for change password operation of a user.

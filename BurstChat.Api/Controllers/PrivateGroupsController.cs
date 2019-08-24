@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Shared.Errors;
+using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Users;
 using Microsoft.AspNetCore.Authorization;

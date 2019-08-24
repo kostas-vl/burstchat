@@ -1,6 +1,6 @@
 using System;
 
-namespace BurstChat.IdentityServer.Models
+namespace BurstChat.Shared.Models
 {
     /// <summary>
     ///   This class contains properties for representing a user name and password of a user.

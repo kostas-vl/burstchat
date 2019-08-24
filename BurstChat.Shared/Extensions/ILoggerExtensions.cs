@@ -4,7 +4,7 @@ using BurstChat.Shared.Errors;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 
-namespace BurstChat.IdentityServer.Extensions
+namespace BurstChat.Shared.Extensions
 {
     /// <summary>
     /// This static class contains a collection of static methods for the ILogger interface.

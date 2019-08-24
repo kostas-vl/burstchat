@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using System.Net.Mail;
-using BurstChat.IdentityServer.Errors;
-using BurstChat.IdentityServer.Models;
 using BurstChat.Shared.Errors;
+using BurstChat.Shared.Models;
 using BurstChat.Shared.Monads;
 
-namespace BurstChat.IdentityServer.Services.ModelValidationService
+namespace BurstChat.Shared.Services.ModelValidationService
 {
     /// <summary>
     ///   This class is the base implementation of the IModelValidationService.

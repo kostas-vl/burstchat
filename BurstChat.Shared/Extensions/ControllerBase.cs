@@ -3,7 +3,7 @@ using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BurstChat.IdentityServer.Extensions
+namespace BurstChat.Shared.Extensions
 {
     /// <summary>
     ///   This class contains static methods that extends the functionality of a ControllerBase instance.

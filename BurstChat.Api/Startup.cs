@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BurstChat.Api.Extensions;
 using BurstChat.Api.Options;
 using BurstChat.Api.Services.ChannelsService;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Api.Services.ServersService;
-using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
+using BurstChat.Shared.Extensions;
+using BurstChat.Shared.Services.BCryptService;
+using BurstChat.Shared.Services.ModelValidationService;
+using BurstChat.Shared.Services.UserService;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,9 +52,13 @@ namespace BurstChat.Api
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
 
             services
+                .AddSingleton<IBCryptService, BCryptProvider>();
+
+            services
                 .AddScoped<IChannelsService, ChannelsProvider>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
                 .AddScoped<IServersService, ServersProvider>()
+                .AddScoped<IModelValidationService, ModelValidationProvider>()
                 .AddScoped<IUserService, UserProvider>();
 
             services

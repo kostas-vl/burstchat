@@ -1,6 +1,6 @@
 using System;
 
-namespace BurstChat.IdentityServer.Models
+namespace BurstChat.Shared.Models
 {
     /// <summary>
     ///   This class contains all properties required for the registration of a new user.

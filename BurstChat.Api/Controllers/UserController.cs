@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using BurstChat.Api.Errors;
-using BurstChat.Api.Extensions;
-using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
+using BurstChat.Shared.Extensions;
+using BurstChat.Shared.Services.UserService;
 using BurstChat.Shared.Schema.Users;
 using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Authorization;
