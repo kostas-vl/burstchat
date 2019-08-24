@@ -4,15 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurstChat.Api.Extensions;
 using BurstChat.Api.Options;
-using BurstChat.Api.Services.BCryptService;
 using BurstChat.Api.Services.ChannelsService;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Api.Services.UserService;
 using BurstChat.Shared.Context;
-using IdentityServer4;
-using IdentityServer4.Services;
-using IdentityServer4.Validation;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -53,9 +50,6 @@ namespace BurstChat.Api
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
 
             services
-                .AddSingleton<IBCryptService, BCryptProvider>();
-
-            services
                 .AddScoped<IChannelsService, ChannelsProvider>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
                 .AddScoped<IServersService, ServersProvider>()
@@ -64,6 +58,16 @@ namespace BurstChat.Api
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services
+                .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options => 
+                {
+                    options.Authority = Configuration.GetSection("AccessTokenValidation:Authority").Get<string>();
+                    options.ApiName = Configuration.GetSection("AccessTokenValidation:ApiName").Get<string>();
+                    options.ApiSecret = Configuration.GetSection("AccessTokenValidation:ApiSecret").Get<string>();
+                    options.RequireHttpsMetadata = false;
+                });
 
             services
                 .AddDbContext<BurstChatContext>(options =>
@@ -134,6 +138,8 @@ namespace BurstChat.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 application.UseHsts();
             }
+
+            application.UseAuthentication();
 
             application
                 .UseCors("CorsPolicy")

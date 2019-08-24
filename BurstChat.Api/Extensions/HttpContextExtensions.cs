@@ -22,13 +22,17 @@ namespace BurstChat.Api.Extensions
         {
             try 
             {
-                var subject = context
+                var subjectClaim = context
                     .User
                     .FindFirst("sub");
 
-                var userId = Convert.ToInt64(subject);
-
-                return new Success<long, Error>(userId);
+                if (subjectClaim != null)
+                {
+                    var userId = Convert.ToInt64(subjectClaim.Value);
+                    return new Success<long, Error>(userId);
+                }
+                else
+                    return new Failure<long, Error>(UserErrors.UserNotFound());
             }
             catch 
             {

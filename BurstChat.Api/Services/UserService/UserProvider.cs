@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using BurstChat.Api.Errors;
 using BurstChat.Api.Extensions;
-using BurstChat.Api.Services.BCryptService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
@@ -23,20 +22,17 @@ namespace BurstChat.Api.Services.UserService
     {
         private readonly ILogger<UserProvider> _logger;
         private readonly BurstChatContext _burstChatContext;
-        private readonly IBCryptService _bcryptService;
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
         /// </summary>
         public UserProvider(
             ILogger<UserProvider> logger,
-            BurstChatContext burstChatContext,
-            IBCryptService bcryptService
+            BurstChatContext burstChatContext
         )
         {
             _logger = logger;
             _burstChatContext = burstChatContext;
-            _bcryptService = bcryptService;
         }
 
         /// <summary>
@@ -48,6 +44,8 @@ namespace BurstChat.Api.Services.UserService
         {
             try
             {
+                _logger.LogInformation($"New user request with id: {id}");
+
                 var user = _burstChatContext
                     .Users
                     .FirstOrDefault(u => u.Id == id);
