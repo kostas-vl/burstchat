@@ -1,0 +1,18 @@
+# Build Artifacts
+obj/
+bin/
+
+# Settings file dependent to user.
+appsettings.Database.json
+appsettings.Domains.json
+appsettings.IdentitySecrets.json
+appsettings.SigningCredentials.json
+
+# Sqlite database files.
+**/*.db
+
+# Editor Configuration
+.vscode/**
+
+# The development certificate for Identity Server
+certificate.pfx
