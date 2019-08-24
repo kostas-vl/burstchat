@@ -4,6 +4,7 @@ using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Servers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -12,6 +13,7 @@ namespace BurstChat.Api.Controllers
     /// <summary>
     /// This controllers exposes endpoints for listing, subscribing and leaving servers.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("/api/servers")]
     [Produces("application/json")]

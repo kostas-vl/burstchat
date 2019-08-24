@@ -6,6 +6,7 @@ using BurstChat.Api.Services.ChannelsService;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,6 +16,7 @@ namespace BurstChat.Api.Controllers
     ///   This class represents an ASPNET Core controller that exposes endpoints for
     ///   registering and posting messages to server channels.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("/api/channels")]
     [Produces("application/json")]

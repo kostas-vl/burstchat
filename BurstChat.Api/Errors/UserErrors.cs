@@ -12,21 +12,5 @@ namespace BurstChat.Api.Errors
         public static Error UserNotFound() => new Error(ErrorLevel.Critical,
                                                         ErrorType.Validation,
                                                         "The user was not found");
-
-        public static Error UserAlreadyExists() => new Error(ErrorLevel.Critical,
-                                                             ErrorType.Validation,
-                                                             "The email is already registered");
-
-        public static Error UserPasswordDidNotMatch() => new Error(ErrorLevel.Critical,
-                                                                   ErrorType.Validation,
-                                                                   "The email or password is incorrect");
-
-        public static Error UserOneTimePasswordInvalid() => new Error(ErrorLevel.Critical,
-                                                                      ErrorType.Validation,
-                                                                      "The one time password is invalid");
-
-        public static Error UserOneTimePasswordExpired() => new Error(ErrorLevel.Critical,
-                                                                      ErrorType.Validation,
-                                                                      "The one time password has expired");
     }
 }

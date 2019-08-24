@@ -29,14 +29,6 @@ namespace BurstChat.Api.Services.UserService
         Either<User, Error> Get(string email);
 
         /// <summary>
-        ///   Registers a new user based on the provided parameters.
-        /// </summary>
-        /// <param name="email">The email of the new user</param>
-        /// <param name="password">The password of the new user</param>
-        /// <returns>An either monad</returns>
-        Either<Unit, Error> Insert(string email, string password);
-
-        /// <summary>
         ///   Updates infomation about an existing user based on the user instance provided.
         ///   This method will update only non security specific information.
         ///   If the user needs to alter his existing password the ChangePassword method needs to be used.
@@ -53,31 +45,6 @@ namespace BurstChat.Api.Services.UserService
         Either<Unit, Error> Delete(long id);
 
         /// <summary>
-        ///   This method will validate the provided email and password in order to
-        ///   find any user that has registered these credentials.
-        /// </summary>
-        /// <param name="email">The email of the user</param>
-        /// <param name="password">The password of the user</param>
-        /// <returns>An either monad</returns>
-        Either<User, Error> Validate(string email, string password);
-
-        /// <summary>
-        ///   This method will validate the provided email and if a user is registered with it
-        ///   a new one time password will be generated for him and sent via email.
-        /// </summary>
-        /// <param name="email">The email of the user</param>
-        /// <returns>An either monad</returns>
-        Either<Unit, Error> IssueOneTimePassword(string email);
-
-        /// <summary>
-        ///   Changes the current hashed password of the user to the one provided.
-        /// </summary>
-        /// <param name="oneTimePass">The one time password of the user</param>
-        /// <param name="password">The string value of the password that will be hashed</param>
-        /// <returns>An either monad</returns>
-        Either<Unit, Error> ChangePassword(string oneTimePass, string password);
-
-        /// <summary>
         ///   This method will return all available subscribed servers of a user.
         /// <summary>
         /// <param name="userId">The id of the user</param>
@@ -91,12 +58,5 @@ namespace BurstChat.Api.Services.UserService
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
         Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId);
-
-        /// <summary>
-        ///   This method will fetch all appropriate user claims based on the provided instance.
-        /// </summary>
-        /// <param name="user">The user instance</param>
-        /// <returns>An either monad</returns>
-        Either<IEnumerable<Claim>, Error> GetClaims(User user);
-    }
+   }
 }

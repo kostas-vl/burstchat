@@ -5,6 +5,7 @@ using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BurstChat.Api.Controllers
@@ -13,6 +14,7 @@ namespace BurstChat.Api.Controllers
     ///   This class represents an ASPNET Core controller that exposes endpoints for interacting with
     ///   data of private groups.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Produces("application/json")]
     [Route("/api/groups")]

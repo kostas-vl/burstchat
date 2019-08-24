@@ -6,8 +6,6 @@ using BurstChat.Api.Extensions;
 using BurstChat.Api.Options;
 using BurstChat.Api.Services.BCryptService;
 using BurstChat.Api.Services.ChannelsService;
-using BurstChat.Api.Services.IdentityServices;
-using BurstChat.Api.Services.ModelValidationService;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Api.Services.UserService;
@@ -45,34 +43,6 @@ namespace BurstChat.Api
         }
 
         /// <summary>
-        ///   Executes the neccessary configuration code for the BurstChat database context.
-        /// </summary>
-        /// <param name="options">The BurstChat database context options</param>
-        private void ConfigureDatabaseContext(DbContextOptionsBuilder options)
-        {
-            var databaseConfiguration = Configuration.GetSection("Database");
-            var provider = databaseConfiguration["Provider"];
-            var connection = databaseConfiguration["ConnectionString"];
-            switch (provider)
-            {
-                case "sqlite":
-                    options.UseSqlite(connection, dbContextOptions =>
-                    {
-                        dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                    });
-                    break;
-                case "sqlserver":
-                    options.UseSqlServer(connection, dbContextOptions =>
-                    {
-                        dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                    });
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
         ///   This method gets called by the runtime. Use this method to add services to the container.
         /// </summary>
         /// <param name="services">The services collection to be used for the configuration</param>
@@ -89,25 +59,39 @@ namespace BurstChat.Api
                 .AddScoped<IChannelsService, ChannelsProvider>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
                 .AddScoped<IServersService, ServersProvider>()
-                .AddScoped<IUserService, UserProvider>()
-                .AddScoped<IProfileService, BurstChatProfileService>()
-                .AddScoped<IResourceOwnerPasswordValidator, BurstChatResourceOwnerPasswordValidator>();
-
-            services
-                .AddTransient<IModelValidationService, ModelValidationProvider>();
+                .AddScoped<IUserService, UserProvider>();
 
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services
-                .AddDbContext<BurstChatContext>(ConfigureDatabaseContext);
+                .AddDbContext<BurstChatContext>(options =>
+                {
+                    var databaseOptions = new DatabaseOptions();
 
-            services
-                .AddIdentityServer()
-                .AddBurstChatSigningCredentials(options => Configuration.GetSection("X509").Bind(options))
-                .AddConfigurationStore(options => options.ConfigureDbContext = ConfigureDatabaseContext)
-                .AddOperationalStore(options => options.ConfigureDbContext = ConfigureDatabaseContext);
+                    Configuration
+                        .GetSection("Database")
+                        .Bind(databaseOptions);
+
+                    switch (databaseOptions.Provider)
+                    {
+                        case "sqlite":
+                            options.UseSqlite(databaseOptions.ConnectionString, dbContextOptions =>
+                            {
+                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                            });
+                            break;
+                        case "sqlserver":
+                            options.UseSqlServer(databaseOptions.ConnectionString, dbContextOptions =>
+                            {
+                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
 
             services
                 .AddCors(options =>
@@ -144,15 +128,12 @@ namespace BurstChat.Api
             if (env.IsDevelopment())
             {
                 application.UseDeveloperExceptionPage();
-                application.UseBurstChatDevelopmentResources(options => Configuration.GetSection("Secrets").Bind(options));
             }
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 application.UseHsts();
             }
-
-            application.UseIdentityServer();
 
             application
                 .UseCors("CorsPolicy")
