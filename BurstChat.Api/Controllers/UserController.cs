@@ -18,6 +18,7 @@ namespace BurstChat.Api.Controllers
     /// user data.
     /// </summary>
     [ApiController]
+    [Authorize]
     [Produces("application/json")]
     [Route("api/user")]
     public class UserController : ControllerBase
@@ -41,7 +42,6 @@ namespace BurstChat.Api.Controllers
         ///   This method fetches information about an authenticated user.
         /// </summary>
         /// <returns>An implementation instance of IActionResult</returns>
-        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -58,7 +58,6 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="user">The user instance to be user in the update</param>
         /// <returns>An IActionResult instance</returns>
-        [Authorize]
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -73,7 +72,6 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="id">The id of the user to be delete</param>
         /// <returns>An IActionResult instance</returns>
-        [Authorize]
         [HttpDelete("{id:long}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -91,7 +89,6 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An IActionResult instance</returns>
-        [Authorize]
         [HttpGet("subscriptions")]
         [ProducesResponseType(typeof(IEnumerable<Server>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -109,7 +106,6 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An IActionResult instance</returns>
-        [Authorize]
         [HttpGet("groups")]
         [ProducesResponseType(typeof(IEnumerable<PrivateGroupMessage>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
