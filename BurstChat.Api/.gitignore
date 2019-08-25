@@ -2,9 +2,8 @@
 obj/
 bin/
 
-# Settings file dependent to user.
-appsettings.Database.json
-appsettings.Domains.json
+# Production settings.
+appsettings.Production.json
 
 # Sqlite database files.
 **/*.db

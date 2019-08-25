@@ -23,6 +23,7 @@ namespace BurstChat.Signal
                 .ConfigureAppConfiguration(config =>
                 {
                     config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
+                    config.AddJsonFile("appsettings.AccessTokenValidation.json", optional: false, reloadOnChange: false);
                 })
                 .ConfigureLogging(logging =>
                 {

@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { AuthenticationGuardService } from 'src/app/services/authentication-guard/authentication-guard.service';
 
 const routes: Routes = [
     {
         path: 'core',
-        loadChildren: () => import('src/app/modules/burst/burst.module').then(m => m.BurstModule)
+        loadChildren: () => import('src/app/modules/burst/burst.module').then(m => m.BurstModule),
+        canActivate: [AuthenticationGuardService]
     },
     {
         path: 'session',
@@ -13,7 +15,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: '/session/login',
+        redirectTo: '/core/chat',
         pathMatch: 'full'
     },
     {

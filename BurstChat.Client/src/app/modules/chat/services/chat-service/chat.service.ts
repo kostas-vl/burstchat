@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection, LogLevel } from '@aspnet/signalr';
 import { Subject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { IMessage } from 'src/app/models/chat/message';
-import { environment } from 'src/environments/environment';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 /**
  * This class represents an angular service that connects to the remote signalr server and trasmits messages related to
@@ -56,7 +57,7 @@ export class ChatService {
      * Creates an instance of ChatService.
      * @memberof ChatService
      */
-    constructor() { }
+    constructor(private storageService: StorageService) { }
 
     /**
      * This method will process the data sent by a server signal and if the data is not of instance
@@ -78,8 +79,11 @@ export class ChatService {
      */
     public InitializeConnection(): void {
         try {
+            const tokenInfo = this.storageService.getTokenInfo();
             const builder = new HubConnectionBuilder();
-            builder.withUrl('/chat');
+            builder.withUrl('/chat', {
+                accessTokenFactory: () => tokenInfo.accessToken
+            });
 
             if (!environment.production) {
                 builder.configureLogging(LogLevel.Information);

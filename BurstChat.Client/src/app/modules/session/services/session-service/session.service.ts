@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from  '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from  '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Credentials } from 'src/app/models/user/credentials';
 import { Registration } from 'src/app/models/user/registration';
@@ -29,7 +29,7 @@ export class SessionService {
     public register(data: Registration): Observable<{}> {
         return this
             .httpClient
-            .post('/api/user', data);
+            .post('/connect/register', data);
     }
 
     /**
@@ -40,9 +40,23 @@ export class SessionService {
      * @returns {Observable} An observable instance.
      */
     public validate(data: Credentials): Observable<any> {
+        const body = new HttpParams()
+            .set("client_id", "burstchat.web.client")
+            .set("client_secret", "secret")
+            .set("scope", "openid profile offline_access burstchat.api burstchat.signal")
+            .set("grant_type", "password")
+            .set("username", data.email)
+            .set("password", data.password);
+
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+            })
+        };
+
         return this
             .httpClient
-            .post('/api/user/validate', data);
+            .post('/connect/token', body.toString(), httpOptions);
     }
 
     /**
@@ -60,7 +74,7 @@ export class SessionService {
         };
         return this
             .httpClient
-            .post('/api/user/password/reset', "'" + email + "'", httpOptions);
+            .post('/connect/password/reset', "'" + email + "'", httpOptions);
     }
 
     /**
@@ -73,7 +87,7 @@ export class SessionService {
     public changePassword(data: ChangePassword): Observable<{}> {
         return this
             .httpClient
-            .post('/api/user/password/change', data);
+            .post('/connect/password/change', data);
     }
 
 }

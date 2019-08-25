@@ -48,6 +48,7 @@ export class ResetPasswordComponent implements OnInit {
             .subscribe(
                 () => this.router.navigateByUrl('/session/change'),
                 error => {
+                    console.log(error);
                     const apiError = tryParseError(error.error);
                     const notification: Notification = {
                         title: 'An error occured',

@@ -2,7 +2,5 @@
 obj/
 bin/
 
-# User specific files
-appsettings.Development.json
+# Production settings
 appsettings.Production.json
-appsettings.Domains.json

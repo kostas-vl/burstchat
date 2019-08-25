@@ -99,7 +99,11 @@ namespace BurstChat.IdentityServer
                 .AddDbContext<BurstChatContext>(ConfigureDatabaseContext("BurstChat.Api"));
 
             services
-                .AddIdentityServer()
+                .AddIdentityServer(options =>
+                {
+                    options.IssuerUri = "http://localhost:5002";
+                    options.PublicOrigin = "http://localhost:5002";
+                })
                 .AddBurstChatSigningCredentials(options => Configuration.GetSection("X509").Bind(options))
                 .AddConfigurationStore(options => options.ConfigureDbContext = ConfigureDatabaseContext("IdentityServer.ConfigurationDbContext"))
                 .AddOperationalStore(options => options.ConfigureDbContext = ConfigureDatabaseContext("IdentityServer.PersistedGrantDbContext"));

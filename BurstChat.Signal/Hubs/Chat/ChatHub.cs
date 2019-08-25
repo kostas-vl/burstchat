@@ -6,6 +6,7 @@ using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -14,6 +15,7 @@ namespace BurstChat.Signal.Hubs.Chat
     /// <summary>
     ///   This class is a SignalR hub that is responsible for message of the delivered to the users of the chat.
     /// </summary>
+    [Authorize]
     public class ChatHub : Hub<IChatClient>
     {
         private readonly ILogger<ChatHub> _logger;

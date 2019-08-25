@@ -1,11 +1,18 @@
 {
-    "/api": {
-        "target": "http://localhost:5000",
-        "secure": false
+    "/connect/*": {
+        "target": "http://localhost:5002",
+        "secure": false,
+        "logLevel": "debug"
     },
-    "/chat": {
+    "/api/*": {
+        "target": "http://localhost:5000",
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/chat/*": {
         "target": "http://localhost:5001",
         "secure": false,
-        "ws": true
+        "ws": true,
+        "logLevel": "debug"
     }
 }

@@ -6,6 +6,7 @@ using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -19,12 +20,15 @@ namespace BurstChat.Signal
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
+        /// <summary>
+        ///   Creates a new instance of Startup.
+        /// </summary>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -41,6 +45,16 @@ namespace BurstChat.Signal
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services
+                .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = Configuration.GetSection("AccessTokenValidation:Authority").Get<string>();
+                    options.ApiName = Configuration.GetSection("AccessTokenValidation:ApiName").Get<string>();
+                    options.ApiSecret = Configuration.GetSection("AccessTokenValidation:ApiSecret").Get<string>();
+                    options.RequireHttpsMetadata = false;
+                });
 
             services.AddCors(options =>
             {
@@ -73,6 +87,8 @@ namespace BurstChat.Signal
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 application.UseHsts();
             }
+
+            application.UseAuthentication();
 
             application
                 .UseCors("CorsPolicy")

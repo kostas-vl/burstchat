@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
+using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Signal.Extensions;
