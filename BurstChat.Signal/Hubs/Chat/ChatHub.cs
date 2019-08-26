@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Shared.Schema.Servers;
+using BurstChat.Shared.Schema.Users;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using Microsoft.AspNetCore.Authorization;
@@ -37,11 +39,27 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
+        ///   Adds a new connection to a signalr group that is based on the id of a private BurstChat group.
+        /// </summary>
+        /// <param name="groupId">The id of the target group</param>
+        /// <returns>A Task instance</returns>
+        public async Task AddToPrivateGroupConnection(long groupId)
+        {
+            var monad = await _privateGroupMessagingService.GetPrivateGroupAsync(groupId);
+
+            if (monad is Success<PrivateGroupMessage, Error>)
+            {
+                var groupName = groupId.ToString();
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            }
+        }
+
+        /// <summary>
         ///   Sends a new message to the caller that contains either all the messages posted to a
         ///   group or an error explaining why the operation wasn't completed properly.
         /// </summary>
         /// <param name="groupId">The id of the target group</param>
-        /// <returns>A Task instance</returns>
+        /// <returns>A task instance</returns>
         public async Task GetAllPrivateGroupMessages(long groupId)
         {
             var monad = await _privateGroupMessagingService.GetAllAsync(groupId);
@@ -55,16 +73,17 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        /// Sends a new message to all users from the parameters provided.
+        ///   Sends a new message to all users from the parameters provided.
         /// </summary>
         /// <param name="message">The message to be sent to connected users</param>
         /// <returns>A task instance</returns>
         public async Task PostPrivateGroupMessage(long groupId, Message message)
         {
+            var groupName = groupId.ToString();
             var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.PrivateGroupMessageReceived(message);
+                await Clients.Group(groupName).PrivateGroupMessageReceived(message);
             else if (monad is Failure<Unit, Error> failure)
                 await Clients.Caller.PrivateGroupMessageReceived(message);
             else
@@ -78,10 +97,11 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PutPrivateGroupMessage(long groupId, Message message)
         {
+            var groupName = groupId.ToString();
             var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.PrivateGroupMessageEdited(message);
+                await Clients.Groups(groupName).PrivateGroupMessageEdited(message);
             else if (monad is Failure<Unit, Error> failure)
                 await Clients.Caller.PrivateGroupMessageEdited(failure.Value);
             else
@@ -95,14 +115,31 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task DeletePrivateGroupMessage(long groupId, Message message)
         {
+            var groupName = groupId.ToString();
             var monad = await _privateGroupMessagingService.DeleteAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.PrivateGroupMessageDeleted(message);
+                await Clients.Groups(groupName).PrivateGroupMessageDeleted(message);
             else if (monad is Failure<Unit, Error> failure)
                 await Clients.Caller.PrivateGroupMessageDeleted(failure.Value);
             else
                 await Clients.Caller.PrivateGroupMessageDeleted(SystemErrors.Exception());
+        }
+
+        /// <summary>
+        ///   Adds a new connection to a signalr group based on the provided channel id.
+        /// </summary>
+        /// <param name="channelId">The id of the target channel</param>
+        /// <returns>A task instance</returns>
+        public async Task AddToChannelConnection(int channelId)
+        {
+            var monad = await _channelsService.GetChannelAsync(channelId);
+
+            if (monad is Success<Channel, Error>)
+            {
+                var groupName = channelId.ToString();
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            }
         }
 
         /// <summary>
@@ -130,10 +167,11 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PostChannelMessage(int channelId, Message message)
         {
+            var groupName = channelId.ToString();
             var monad = await _channelsService.PostAsync(channelId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.ChannelMessageReceived(message);
+                await Clients.Groups(groupName).ChannelMessageReceived(message);
             else if (monad is Failure<Unit, Error> failure)
                 await Clients.Caller.ChannelMessageReceived(failure.Value);
             else 
@@ -148,10 +186,11 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PutChannelMessage(int channelId, Message message)
         {
+            var groupName = channelId.ToString();
             var monad = await _channelsService.PutAsync(channelId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.ChannelMessageEdited(message);
+                await Clients.Groups(groupName).ChannelMessageEdited(message);
             else if (monad is Failure<Unit, Error> failure)
                 await Clients.Caller.ChannelMessageEdited(failure.Value);
             else
@@ -166,10 +205,11 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task DeleteChannelMessage(int channelId, Message message)
         {
+            var groupName = channelId.ToString();
             var monad = await _channelsService.DeleteAsync(channelId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.All.ChannelMessageDeleted(message);
+                await Clients.Groups(groupName).ChannelMessageDeleted(message);
             else if (monad is Failure<Unit, Error> failure)
                 await Clients.Caller.ChannelMessageDeleted(failure.Value);
             else 

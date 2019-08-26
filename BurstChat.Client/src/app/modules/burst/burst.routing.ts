@@ -8,7 +8,11 @@ const routes: Routes = [
         component: LayoutComponent,
         children: [
             {
-                path: 'chat',
+                path: 'chat/private/:id',
+                loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
+            },
+            {
+                path: 'chat/channel/:id',
                 loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
             }
         ]

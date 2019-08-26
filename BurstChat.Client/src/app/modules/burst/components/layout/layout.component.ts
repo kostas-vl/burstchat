@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from 'src/app/modules/burst/services/user/user.service';
 
 /**
  * This class represents an angular component that displays on screen all components of
@@ -17,12 +18,15 @@ export class LayoutComponent implements OnInit {
      * Creates an instance of LayoutComponent.
      * @memberof LayoutComponent
      */
-    constructor() { }
+    constructor(private userService: UserService) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof LayoutComponent
      */
-    public ngOnInit() { }
+    public ngOnInit() {
+        this.userService
+            .getUser();
+    }
 
 }

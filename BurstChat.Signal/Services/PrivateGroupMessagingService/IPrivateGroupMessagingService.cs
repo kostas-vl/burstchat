@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Shared.Schema.Users;
 
 namespace BurstChat.Signal.Services.PrivateGroupMessaging
 {
@@ -12,6 +13,13 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
     /// </summary>
     public interface IPrivateGroupMessagingService
     {
+        /// <summary>
+        ///   This method will fetch information about a private group based on the provided id.
+        /// </summary>
+        /// <param name="groupId">The id of the private group</param>
+        /// <returns>A task that encapsulates an either monad</returns>
+        Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(long groupId);
+
         /// <summary>
         ///   This method will fetch all messages of a private group based on the provided id.
         /// </summary>

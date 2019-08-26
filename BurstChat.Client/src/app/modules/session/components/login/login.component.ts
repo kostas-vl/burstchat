@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
             .subscribe(
                 data => {
                     if (data) {
-                        const tokenInfo: TokenInfo = {
+                        this.storageService.tokenInfo = {
                             idToken: data['id_token'] || null,
                             accessToken: data['access_token'],
                             expiresIn: data['expires_in'],
@@ -60,7 +60,6 @@ export class LoginComponent implements OnInit {
                             scope: data['scope'],
                             tokenType: data['token_type']
                         };
-                        this.storageService.storeTokenInfo(tokenInfo);
                         this.router.navigateByUrl('/core/chat');
                     } else {
                         const notification: Notification = {

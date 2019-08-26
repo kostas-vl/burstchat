@@ -6,6 +6,7 @@ using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Shared.Schema.Users;
 using BurstChat.Signal.Extensions;
 using BurstChat.Signal.Options;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,30 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         {
             _logger = logger;
             _acceptedDomains = acceptedDomains.Value;
+        }
+
+        /// <summary>
+        ///   This method will fetch information about a private group based on the provided id.
+        /// </summary>
+        /// <param name="groupId">The id of the private group</param>
+        /// <returns>A task that encapsulates an either monad</returns>
+        public async Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(long groupId)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/groups/{groupId}";
+                    var httpResponse = await client.GetAsync(url);
+
+                    return await httpResponse.ParseBurstChatApiResponseAsync<PrivateGroupMessage>();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<PrivateGroupMessage, Error>(SystemErrors.Exception());
+            }
         }
 
         /// <summary>

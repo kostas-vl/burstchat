@@ -25,7 +25,9 @@ export class AuthenticationGuardService implements CanActivate {
      * @returns { boolean } The boolean that specifies whether a route can be accessed.
      */
     public canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        const tokenInfo = this.storageService.getTokenInfo();
+        const tokenInfo = this
+            .storageService
+            .tokenInfo;
         return tokenInfo !== null && tokenInfo.accessToken !== null;
     }
 

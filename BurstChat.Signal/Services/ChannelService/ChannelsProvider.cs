@@ -7,6 +7,7 @@ using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Shared.Schema.Servers;
 using BurstChat.Signal.Extensions;
 using BurstChat.Signal.Options;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,30 @@ namespace BurstChat.Signal.Services.ChannelsService
         {
             _logger = logger;
             _acceptedDomains = acceptedDomains.Value;
+        }
+ 
+        /// <summary>
+        ///   This method will fetch information about a channel based on the provided id.
+        /// </summary>
+        /// <param name="channelId">The id of the channel</param>
+        /// <returns>A task that encapsulates an either monad</returns>
+        public async Task<Either<Channel, Error>> GetChannelAsync(int channelId)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/channels/{channelId}";
+                    var httpResponse = await client.GetAsync(url);
+
+                    return await httpResponse.ParseBurstChatApiResponseAsync<Channel>();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Channel, Error>(SystemErrors.Exception());
+            }
         }
 
         /// <summary>

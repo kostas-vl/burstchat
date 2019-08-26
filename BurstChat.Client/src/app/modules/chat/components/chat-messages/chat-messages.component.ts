@@ -1,6 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IMessage } from 'src/app/models/chat/message';
+import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
+import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
 
 /**
@@ -23,6 +25,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     public bottomIndex = 0;
 
     public messages: IMessage[] = [];
+
+    @Input()
+    public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
 
     /**
      * Creates an instance of ChatMessagesComponent.

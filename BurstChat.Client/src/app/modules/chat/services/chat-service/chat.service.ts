@@ -3,6 +3,8 @@ import { HubConnectionBuilder, HubConnection, LogLevel } from '@aspnet/signalr';
 import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
+import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
+import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { IMessage } from 'src/app/models/chat/message';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
@@ -79,10 +81,9 @@ export class ChatService {
      */
     public InitializeConnection(): void {
         try {
-            const tokenInfo = this.storageService.getTokenInfo();
             const builder = new HubConnectionBuilder();
             builder.withUrl('/chat', {
-                accessTokenFactory: () => tokenInfo.accessToken
+                accessTokenFactory: () => this.storageService.tokenInfo.accessToken
             });
 
             if (!environment.production) {
@@ -132,6 +133,19 @@ export class ChatService {
         if (this.connection) {
             this.connection.stop();
         }
+    }
+
+    /**
+     * Adds the current established connection to a group defined by the provided private group id.
+     * @memberof ChatService
+     * @param {number} groupId The id of the private group.
+     */
+    public addSelfToPrivateGroup(groupId: number) {
+      if (this.connection) {
+          this.connection
+              .invoke('addToPrivateGroupConnection', groupId)
+              .catch(error => console.log(error));
+      }
     }
 
     /**

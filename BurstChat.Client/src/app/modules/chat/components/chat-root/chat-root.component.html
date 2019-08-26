@@ -1,7 +1,13 @@
-<div class="chat-container">
+<div class="chat-container" *ngIf="!noChatFound">
 
-    <app-chat-messages></app-chat-messages>
-    
-    <app-chat-input></app-chat-input>
+    <app-chat-messages [options]="options"></app-chat-messages>
+
+    <app-chat-input [options]="options"></app-chat-input>
+
+</div>
+
+<div *ngIf="noChatFound">
+
+
 
 </div>

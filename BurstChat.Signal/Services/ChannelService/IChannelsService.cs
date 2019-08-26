@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Shared.Schema.Servers;
 
 namespace BurstChat.Signal.Services.ChannelsService
 {
@@ -12,6 +13,13 @@ namespace BurstChat.Signal.Services.ChannelsService
     /// </summary>
     public interface IChannelsService
     {
+        /// <summary>
+        ///   This method will fetch information about a channel based on the provided id.
+        /// </summary>
+        /// <param name="channelId">The id of the channel</param>
+        /// <returns>A task that encapsulates an either monad</returns>
+        Task<Either<Channel, Error>> GetChannelAsync(int channelId);
+
         /// <summary>
         ///   This method will fetch all messages of a channels based on the provided id.
         /// </summary>
