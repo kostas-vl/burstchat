@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Notification } from 'src/app/models/notify/notification';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
+import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
 
 /**
@@ -31,6 +33,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      */
     constructor(
         private activatedRoute: ActivatedRoute,
+        private notifyService: NotifyService,
         private chatService: ChatService
     ) { }
 
@@ -69,6 +72,13 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                 }
 
                 this.noChatFound = true;
+
+                const notification: Notification = {
+                    title: "No active chat found",
+                    content: "Consider joining a channel or start a new private chat!"
+                };
+                this.notifyService
+                    .notify(notification);
            });
     }
 

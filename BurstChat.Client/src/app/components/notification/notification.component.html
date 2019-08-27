@@ -1,6 +1,7 @@
 <blockquote class="notification">
 
   <div>
+
     <span *ngIf="notification">{{notification.title}}</span>
 
     <br>
@@ -11,9 +12,9 @@
 
   <div class="notification-close">
 
-    <button class="button button-clear" (click)="close()">
+    <button class="button button-clear button-icon" (click)="close()">
 
-      close
+      <fa-icon icon="times"></fa-icon>
 
     </button>
 

@@ -1,0 +1,29 @@
+@import '../../../../../scss/theme';
+
+.user-info {
+    background-color: $accent-light-color;
+    height: 100%;
+    padding-left: 6px;
+    padding-right: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.user-logo {
+    font-size: 30px;
+    padding-right: 6px;
+}
+
+.creds {
+    max-width: 150px;
+    font-size: 10px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.actions {
+    align-self: flex-end;
+    margin-left: auto !important;
+}

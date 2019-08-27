@@ -1,0 +1,29 @@
+<div class="user-info">
+
+    <div class="user-logo">
+
+      <fa-icon icon="user-circle"></fa-icon>
+
+    </div>
+
+    <div class="creds">
+
+      <span *ngIf="user">{{user.email}}</span>
+
+      <br>
+
+      <span *ngIf="user"># {{user.id}}</span>
+
+    </div>
+
+    <div class="actions">
+
+      <button class="button button-icon">
+
+        <fa-icon icon="ellipsis-v"></fa-icon>
+
+      </button>
+
+    </div>
+
+</div>

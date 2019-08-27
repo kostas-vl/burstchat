@@ -33,6 +33,17 @@ blockquote {
     border-left-color: $accent-color;
 }
 
+.button-icon {
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 18px;
+}
+
+.button-icon-lg {
+    @extend .button-icon;
+    font-size: 26px;
+}
+
 .text-muted {
     color: $text-muted-color;
 }

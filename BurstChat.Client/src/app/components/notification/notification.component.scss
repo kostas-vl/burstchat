@@ -1,3 +1,5 @@
+@import '../../../scss/theme';
+
 .notification {
     position: inherit;
     width: 400px;
@@ -8,6 +10,3 @@
     margin-left: auto !important;
 }
 
-.button-close {
-    font-size: 18px;
-}
