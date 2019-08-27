@@ -14,6 +14,10 @@ const routes: Routes = [
             {
                 path: 'chat/channel/:id',
                 loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
+            },
+            {
+                path: 'chat',
+                loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
             }
         ]
     }

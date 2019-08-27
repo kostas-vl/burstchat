@@ -3,8 +3,7 @@ import { HubConnectionBuilder, HubConnection, LogLevel } from '@aspnet/signalr';
 import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
-import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
-import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
+import { Payload } from 'src/app/models/signal/payload';
 import { IMessage } from 'src/app/models/chat/message';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
@@ -19,21 +18,21 @@ export class ChatService {
 
     private connection?: HubConnection;
 
-    private allPrivateGroupMessagesReceivedSource = new Subject<IMessage[]>();
+    private allPrivateGroupMessagesReceivedSource = new Subject<Payload<IMessage[]>>();
 
-    private privateGroupMessageReceivedSource = new Subject<IMessage>();
+    private privateGroupMessageReceivedSource = new Subject<Payload<IMessage>>();
 
-    private privateGroupMessageEditedSource = new Subject<IMessage>();
+    private privateGroupMessageEditedSource = new Subject<Payload<IMessage>>();
 
-    private privateGroupMessageDeletedSource = new Subject<IMessage>();
+    private privateGroupMessageDeletedSource = new Subject<Payload<IMessage>>();
 
-    private allChannelMessagesReceivedSource = new Subject<IMessage[]>();
+    private allChannelMessagesReceivedSource = new Subject<Payload<IMessage[]>>();
 
-    private channelMessageReceivedSource = new Subject<IMessage>();
+    private channelMessageReceivedSource = new Subject<Payload<IMessage>>();
 
-    private channelMessageEditedSource = new Subject<IMessage>();
+    private channelMessageEditedSource = new Subject<Payload<IMessage>>();
 
-    private channelMessageDeletedSource = new Subject<IMessage>();
+    private channelMessageDeletedSource = new Subject<Payload<IMessage>>();
 
     private errorSource = new Subject<BurstChatError>();
 
@@ -64,14 +63,16 @@ export class ChatService {
     /**
      * This method will process the data sent by a server signal and if the data is not of instance
      * BurstChatError then the next method will be called from the provided subject.
-     * @typeparam T The type of data sent by the server.
-     * @param {T | BurstChatError} data The data sent by the server.
-     * @param Subject<T> source The subject to be executed.
+     * @private
+     * @template T The success type contained within the payload.
+     * @param {(Payload<T | BurstChatError>)} payload The payload sent fron the signal server.
+     * @param {Subject<T>} source The subject to be executed.
+     * @memberof ChatService
      */
-    private ProcessSignal<T>(data: T | BurstChatError, source: Subject<T>): void {
-        const error = tryParseError(data);
+    private ProcessSignal<T>(payload: Payload<T | BurstChatError>, source: Subject<Payload<T>>): void {
+        const error = tryParseError(payload.content);
         if (!error) {
-            source.next(data as T);
+            source.next(payload as Payload<T>);
         }
     }
 
@@ -161,10 +162,11 @@ export class ChatService {
     }
     /**
      * Sends a new chat message to the server in order to be trasmitted to all users of a private group.
+     * @param {number} groupId The id of the target group.
      * @param {IMessage} message The message to be sent.
      * @memberof ChatService
      */
-    public postPrivateGroupMessage(message: IMessage): void {
+    public postPrivateGroupMessage(groupId: number, message: IMessage): void {
         if (this.connection) {
             this.connection
                 .invoke('postPrivateGroupMessage', message)

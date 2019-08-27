@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IMessage } from 'src/app/models/chat/message';
+import { Payload } from 'src/app/models/signal/payload';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
@@ -43,7 +44,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         this.onMessageReceivedSubscription = this
             .chatService
             .onAllPrivateGroupMessagesReceived
-            .subscribe(_ => this.onMessageReceived(_));
+            .subscribe(payload => this.onMessageReceived(payload));
     }
 
     /**
@@ -60,11 +61,23 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     /**
      * Handles the entire payload of messages posted to a chat.
      * @private
-     * @param {IMessage[]} messages The messages received from the server.
+     * @param {Payload<IMessage[]>} payload A payload with the messages received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessageReceived(messages: IMessage[]) {
-        this.messages = messages;
+    private onMessageReceived(payload: Payload<IMessage[]>) {
+        const signalGroupId = +payload.signalGroup;
+
+        if (this.options instanceof PrivateGroupConnectionOptions) {
+            if (this.options.privateGroupId === signalGroupId)
+                this.messages = payload.content;
+            return;
+        }
+
+        if (this.options instanceof ChannelConnectionOptions) {
+            if (this.options.channelId === signalGroupId)
+                this.messages = payload.content;
+            return;
+        }
     }
 
 }

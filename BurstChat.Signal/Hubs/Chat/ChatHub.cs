@@ -6,6 +6,7 @@ using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
+using BurstChat.Signal.Models;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using Microsoft.AspNetCore.Authorization;
@@ -49,8 +50,8 @@ namespace BurstChat.Signal.Hubs.Chat
 
             if (monad is Success<PrivateGroupMessage, Error>)
             {
-                var groupName = groupId.ToString();
-                await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+                var signalGroup = groupId.ToString();
+                await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
             }
         }
 
@@ -65,11 +66,32 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _privateGroupMessagingService.GetAllAsync(groupId);
 
             if (monad is Success<IEnumerable<Message>, Error> success)
-                await Clients.Caller.AllPrivateGroupMessages(success.Value);
+            {
+                var payload = new Payload<IEnumerable<Message>>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = success.Value
+                };
+                await Clients.Caller.AllPrivateGroupMessages(payload);
+            }
             else if (monad is Failure<IEnumerable<Message>, Error> failure)
-                await Clients.Caller.AllPrivateGroupMessages(failure.Value);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.AllPrivateGroupMessages(payload);
+            }
             else
-                await Clients.Caller.AllPrivateGroupMessages(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.AllPrivateGroupMessages(payload);
+            }
         }
 
         /// <summary>
@@ -79,15 +101,35 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PostPrivateGroupMessage(long groupId, Message message)
         {
-            var groupName = groupId.ToString();
             var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.Group(groupName).PrivateGroupMessageReceived(message);
+            {
+                var payload = new Payload<Message>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = message
+                };
+                await Clients.Group(payload.SignalGroup).PrivateGroupMessageReceived(payload);
+            }
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.PrivateGroupMessageReceived(message);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.PrivateGroupMessageReceived(payload);
+            }
             else
-                await Clients.Caller.PrivateGroupMessageReceived(message);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.PrivateGroupMessageReceived(payload);
+            }
         }
 
         /// <summary>
@@ -97,15 +139,35 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PutPrivateGroupMessage(long groupId, Message message)
         {
-            var groupName = groupId.ToString();
             var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.Groups(groupName).PrivateGroupMessageEdited(message);
+            {
+                var payload = new Payload<Message>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = message
+                };
+                await Clients.Groups(payload.SignalGroup).PrivateGroupMessageEdited(payload);
+            }
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.PrivateGroupMessageEdited(failure.Value);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.PrivateGroupMessageEdited(payload);
+            }
             else
-                await Clients.Caller.PrivateGroupMessageEdited(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.PrivateGroupMessageEdited(payload);
+            }
         }
 
         /// <summary>
@@ -115,15 +177,35 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task DeletePrivateGroupMessage(long groupId, Message message)
         {
-            var groupName = groupId.ToString();
             var monad = await _privateGroupMessagingService.DeleteAsync(groupId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.Groups(groupName).PrivateGroupMessageDeleted(message);
+            {
+                var payload = new Payload<Message>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = message
+                };
+                await Clients.Groups(payload.SignalGroup).PrivateGroupMessageDeleted(payload);
+            }
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.PrivateGroupMessageDeleted(failure.Value);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.PrivateGroupMessageDeleted(payload);
+            }
             else
-                await Clients.Caller.PrivateGroupMessageDeleted(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = groupId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.PrivateGroupMessageDeleted(payload);
+            }
         }
 
         /// <summary>
@@ -152,11 +234,32 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _channelsService.GetAllAsync(channelId);
 
             if (monad is Success<IEnumerable<Message>, Error> success)
-                await Clients.Caller.AllChannelMessagesReceived(success.Value);
+            {
+                var payload = new Payload<IEnumerable<Message>>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = success.Value
+                };
+                await Clients.Caller.AllChannelMessagesReceived(payload);
+            }
             else if (monad is Failure<IEnumerable<Message>, Error> failure)
-                await Clients.Caller.AllChannelMessagesReceived(failure.Value);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.AllChannelMessagesReceived(payload);
+            }
             else
-                await Clients.Caller.AllChannelMessagesReceived(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.AllChannelMessagesReceived(payload);
+            }
         }
 
         /// <summary>
@@ -171,11 +274,32 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _channelsService.PostAsync(channelId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.Groups(groupName).ChannelMessageReceived(message);
+            {
+                var payload = new Payload<Message>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = message
+                };
+                await Clients.Groups(payload.SignalGroup).ChannelMessageReceived(payload);
+            }
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.ChannelMessageReceived(failure.Value);
-            else 
-                await Clients.Caller.ChannelMessageReceived(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.ChannelMessageReceived(payload);
+            }
+            else
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.ChannelMessageReceived(payload);
+            }
         }
 
         /// <summary>
@@ -186,15 +310,35 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PutChannelMessage(int channelId, Message message)
         {
-            var groupName = channelId.ToString();
             var monad = await _channelsService.PutAsync(channelId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.Groups(groupName).ChannelMessageEdited(message);
+            {
+                var payload = new Payload<Message>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = message
+                };
+                await Clients.Groups(payload.SignalGroup).ChannelMessageEdited(payload);
+            }
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.ChannelMessageEdited(failure.Value);
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.ChannelMessageEdited(payload);
+            }
             else
-                await Clients.Caller.ChannelMessageEdited(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.ChannelMessageEdited(payload);
+            }
         }
 
         /// <summary>
@@ -205,15 +349,35 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task DeleteChannelMessage(int channelId, Message message)
         {
-            var groupName = channelId.ToString();
             var monad = await _channelsService.DeleteAsync(channelId, message);
 
             if (monad is Success<Unit, Error> success)
-                await Clients.Groups(groupName).ChannelMessageDeleted(message);
+            {
+                var payload = new Payload<Message>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = message
+                };
+                await Clients.Groups(payload.SignalGroup).ChannelMessageDeleted(payload);
+            }
             else if (monad is Failure<Unit, Error> failure)
-                await Clients.Caller.ChannelMessageDeleted(failure.Value);
-            else 
-                await Clients.Caller.ChannelMessageDeleted(SystemErrors.Exception());
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = failure.Value
+                };
+                await Clients.Caller.ChannelMessageDeleted(payload);
+            }
+            else
+            {
+                var payload = new Payload<Error>
+                {
+                    SignalGroup = channelId.ToString(),
+                    Content = SystemErrors.Exception()
+                };
+                await Clients.Caller.ChannelMessageDeleted(payload);
+            }
         }
     }
 }

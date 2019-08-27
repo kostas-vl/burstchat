@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
+import { Component, OnInit, Input } from '@angular/core';
 import { IMessage } from 'src/app/models/chat/message';
+import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
+import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
+import { StorageService } from 'src/app/services/storage/storage.service';
+import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
 
 /**
  * This class represents an angular component that displays an input to which a user that send
@@ -18,11 +21,17 @@ export class ChatInputComponent implements OnInit {
 
     public inputContent?: string;
 
+    @Input()
+    public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
+
     /**
      * Creates an instance of ChatInputComponent.
      * @memberof ChatInputComponent
      */
-    constructor(private chatService: ChatService) { }
+    constructor(
+        private storageService: StorageService,
+        private chatService: ChatService
+    ) { }
 
     /**
      * Executes any necessary start up code for the component.
@@ -44,9 +53,19 @@ export class ChatInputComponent implements OnInit {
                 edited: false
             };
 
-            this.chatService.postPrivateGroupMessage(message);
+            if (this.options instanceof PrivateGroupConnectionOptions) {
+                const groupId = this.options.privateGroupId;
+                this.chatService.postPrivateGroupMessage(groupId, message);
+                this.inputContent = undefined;
+                return;
+            }
 
-            this.inputContent = undefined;
+            if (this.options instanceof ChannelConnectionOptions) {
+                const channelId  = this.options.channelId;
+                this.chatService.postChannelMessage(channelId, message);
+                this.inputContent = undefined;
+                return;
+            }
         }
     }
 
