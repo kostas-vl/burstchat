@@ -1,10 +1,19 @@
 @import '../../../../../scss/theme';
 
+.button-clear {
+    color: white;
+}
+
+.button-clear:hover {
+    background-color: $accent-color;
+    color: white;
+}
+
 .user-info {
     background-color: $accent-light-color;
     height: 100%;
     padding-left: 6px;
-    padding-right: 6px;
+    padding-right: 1px;
     display: flex;
     align-items: center;
 }
