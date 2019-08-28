@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { IMessage } from 'src/app/models/chat/message';
+import { Message } from 'src/app/models/chat/message';
 import { Payload } from 'src/app/models/signal/payload';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
@@ -25,7 +25,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     public bottomIndex = 0;
 
-    public messages: IMessage[] = [];
+    public messages: Message[] = [];
 
     @Input()
     public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
@@ -61,20 +61,24 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     /**
      * Handles the entire payload of messages posted to a chat.
      * @private
-     * @param {Payload<IMessage[]>} payload A payload with the messages received from the server.
+     * @param {Payload<Message[]>} payload A payload with the messages received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessageReceived(payload: Payload<IMessage[]>) {
-        const signalGroupId = +payload.signalGroup;
-
+    private onMessageReceived(payload: Payload<Message[]>) {
         if (this.options instanceof PrivateGroupConnectionOptions) {
-            if (this.options.privateGroupId === signalGroupId)
+            const signalGroup = +payload
+                .signalGroup
+                .split('privateGroup:')[1];
+            if (this.options.privateGroupId === signalGroup)
                 this.messages = payload.content;
             return;
         }
 
         if (this.options instanceof ChannelConnectionOptions) {
-            if (this.options.channelId === signalGroupId)
+            const signalGroup = +payload
+                .signalGroup
+                .split('channel:')[1];
+            if (this.options.channelId === signalGroup)
                 this.messages = payload.content;
             return;
         }

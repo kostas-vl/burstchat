@@ -27,6 +27,8 @@ export class LayoutComponent implements OnInit {
     public ngOnInit() {
         this.userService
             .getUser();
+        this.userService
+            .getSubscriptions();
     }
 
 }

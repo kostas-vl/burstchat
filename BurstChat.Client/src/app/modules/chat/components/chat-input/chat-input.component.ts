@@ -1,8 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { IMessage } from 'src/app/models/chat/message';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Message } from 'src/app/models/chat/message';
+import { User } from 'src/app/models/user/user';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
 
 /**
@@ -17,7 +20,11 @@ import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.ser
     templateUrl: './chat-input.component.html',
     styleUrls: ['./chat-input.component.scss']
 })
-export class ChatInputComponent implements OnInit {
+export class ChatInputComponent implements OnInit, OnDestroy {
+
+    private userSubscription?: Subscription;
+
+    private user?: User;
 
     public inputContent?: string;
 
@@ -30,6 +37,7 @@ export class ChatInputComponent implements OnInit {
      */
     constructor(
         private storageService: StorageService,
+        private userService: UserService,
         private chatService: ChatService
     ) { }
 
@@ -37,7 +45,27 @@ export class ChatInputComponent implements OnInit {
      * Executes any necessary start up code for the component.
      * @memberof ChatInputComponent
      */
-    public ngOnInit() { }
+    public ngOnInit() {
+        this.userSubscription = this
+            .userService
+            .userObservable
+            .subscribe(user => {
+                if (user) {
+                    this.user = user;
+                }
+            });
+    }
+
+    /**
+     * Executes any neccessary code for the destruction of the component.
+     * @memberof ChatInputComponent
+     */
+    public ngOnDestroy() {
+        if (this.userSubscription) {
+            this.userSubscription
+                .unsubscribe();
+        }
+    }
 
     /**
      * When the enter key is pressed in the message box and the input content has a value a new message is sent
@@ -45,9 +73,10 @@ export class ChatInputComponent implements OnInit {
      * @memberof ChatInputComponent
      */
     public onEnterKeyPressed() {
-        if (this.inputContent) {
-            const message: IMessage = {
-                userId: 0,
+        if (this.user && this.inputContent) {
+            const message: Message = {
+                id: 0,
+                userId: this.user.id,
                 content: this.inputContent,
                 datePosted: new Date(),
                 edited: false

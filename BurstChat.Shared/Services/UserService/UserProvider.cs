@@ -187,8 +187,9 @@ namespace BurstChat.Shared.Services.UserService
             {
                 var servers = _burstChatContext
                     .Servers
-                    .Include(server => server.SubscribedUsers
-                                             .Where(subscription => subscription.UserId == userId))
+                    .Include(server => server.SubscribedUsers)
+                    .Where(server => server.SubscribedUsers
+                                           .Any(subscription => subscription.UserId == userId))
                     .ToList();
 
                 return new Success<IEnumerable<Server>, Error>(servers);

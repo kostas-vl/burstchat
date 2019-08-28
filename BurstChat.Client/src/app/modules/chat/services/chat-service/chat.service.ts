@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { Payload } from 'src/app/models/signal/payload';
-import { IMessage } from 'src/app/models/chat/message';
+import { Message } from 'src/app/models/chat/message';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
 /**
@@ -18,21 +18,21 @@ export class ChatService {
 
     private connection?: HubConnection;
 
-    private allPrivateGroupMessagesReceivedSource = new Subject<Payload<IMessage[]>>();
+    private allPrivateGroupMessagesReceivedSource = new Subject<Payload<Message[]>>();
 
-    private privateGroupMessageReceivedSource = new Subject<Payload<IMessage>>();
+    private privateGroupMessageReceivedSource = new Subject<Payload<Message>>();
 
-    private privateGroupMessageEditedSource = new Subject<Payload<IMessage>>();
+    private privateGroupMessageEditedSource = new Subject<Payload<Message>>();
 
-    private privateGroupMessageDeletedSource = new Subject<Payload<IMessage>>();
+    private privateGroupMessageDeletedSource = new Subject<Payload<Message>>();
 
-    private allChannelMessagesReceivedSource = new Subject<Payload<IMessage[]>>();
+    private allChannelMessagesReceivedSource = new Subject<Payload<Message[]>>();
 
-    private channelMessageReceivedSource = new Subject<Payload<IMessage>>();
+    private channelMessageReceivedSource = new Subject<Payload<Message>>();
 
-    private channelMessageEditedSource = new Subject<Payload<IMessage>>();
+    private channelMessageEditedSource = new Subject<Payload<Message>>();
 
-    private channelMessageDeletedSource = new Subject<Payload<IMessage>>();
+    private channelMessageDeletedSource = new Subject<Payload<Message>>();
 
     private errorSource = new Subject<BurstChatError>();
 
@@ -163,10 +163,10 @@ export class ChatService {
     /**
      * Sends a new chat message to the server in order to be trasmitted to all users of a private group.
      * @param {number} groupId The id of the target group.
-     * @param {IMessage} message The message to be sent.
+     * @param {Message} message The message to be sent.
      * @memberof ChatService
      */
-    public postPrivateGroupMessage(groupId: number, message: IMessage): void {
+    public postPrivateGroupMessage(groupId: number, message: Message): void {
         if (this.connection) {
             this.connection
                 .invoke('postPrivateGroupMessage', message)
@@ -177,9 +177,9 @@ export class ChatService {
     /**
      * Signals for a new edit to an existing message in a private group.
      * @param {number} groupId The id of the private group.
-     * @param {IMessage} message The edited message.
+     * @param {Message} message The edited message.
      */
-    public editPrivateGroupMessage(groupId: number, message: IMessage): void {
+    public editPrivateGroupMessage(groupId: number, message: Message): void {
         if (this.connection) {
             this.connection
                 .invoke('putPrivateGroupMessage', groupId, message)
@@ -190,9 +190,9 @@ export class ChatService {
     /**
      * Signals for a delete on an existing message of a private group.
      * @param {number} groupId The id of the private group.
-     * @param {IMessage} message The message to be deleted.
+     * @param {Message} message The message to be deleted.
      */
-    public deletePrivateGroupMessage(groupId: number, message: IMessage): void {
+    public deletePrivateGroupMessage(groupId: number, message: Message): void {
         if (this.connection) {
             this.connection
                 .invoke('deletePrivateGroupMessage', groupId, message)
@@ -215,9 +215,9 @@ export class ChatService {
     /**
      * Signals for a new message to be posted to a channel.
      * @param {number} channelId The id of the channel.
-     * @param {IMessage} message The message to be posted.
+     * @param {Message} message The message to be posted.
      */
-    public postChannelMessage(channelId: number, message: IMessage): void {
+    public postChannelMessage(channelId: number, message: Message): void {
         if (this.connection) {
             this.connection
                 .invoke('postChannelMessage', channelId, message)
@@ -228,9 +228,9 @@ export class ChatService {
     /**
      * Signals for a new edit on an existing message of a channel.
      * @param {number} channelId The id of the channel.
-     * @param {IMessage} message The edited message.
+     * @param {Message} message The edited message.
      */
-    public putChannelMessage(channelId: number, message: IMessage): void {
+    public putChannelMessage(channelId: number, message: Message): void {
         if (this.connection) {
             this.connection
                 .invoke('putChannelMessage', channelId, message)
@@ -241,9 +241,9 @@ export class ChatService {
     /**
      * Signals for a delete of a message on a channel.
      * @param {number} channelId The id of the channel.
-     * @param {IMessage} message The message to be deleted.
+     * @param {Message} message The message to be deleted.
      */
-    public deleteChannelMessage(channelId: number, message: IMessage): void {
+    public deleteChannelMessage(channelId: number, message: Message): void {
         if (this.connection) {
             this.connection
                 .invoke('deleteChannelMessage', channelId, message)

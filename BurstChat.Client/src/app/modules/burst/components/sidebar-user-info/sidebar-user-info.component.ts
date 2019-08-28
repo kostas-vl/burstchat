@@ -34,7 +34,11 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
         this.userSubscription = this
             .userService
             .userObservable
-            .subscribe(user => this.user = user);
+            .subscribe(user => {
+                if (user) {
+                    this.user = user;
+                }
+            });
     }
 
     /**

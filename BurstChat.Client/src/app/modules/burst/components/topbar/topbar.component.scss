@@ -1,0 +1,16 @@
+@import '../../../../../scss/theme';
+
+.topbar {
+    position: fixed !important;
+    left: $sidebar-width !important;
+    right: 0 !important;
+    height: 55px;
+    background-color: $dark-color;
+    display: flex;
+    align-items: center;
+}
+
+.right-actions {
+    align-self: center;
+    margin-left: auto !important;
+}

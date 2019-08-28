@@ -9,6 +9,7 @@ import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
+import { TopbarComponent } from 'src/app/modules/burst/components/topbar/topbar.component';
 import { ServerListComponent } from 'src/app/modules/burst/components/server-list/server-list.component';
 import { ServerComponent } from 'src/app/modules/burst/components/server/server.component';
 import { UserListComponent } from 'src/app/modules/burst/components/user-list/user-list.component';
@@ -26,6 +27,7 @@ import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.
         LayoutComponent,
         SidebarComponent,
         SidebarUserInfoComponent,
+        TopbarComponent,
         ServerListComponent,
         ServerComponent,
         UserListComponent,
