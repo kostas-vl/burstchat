@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Server } from 'src/app/models/servers/server';
 
 /**
  * This class represents an angular component that displays on screen a subscribed server.
@@ -12,6 +13,9 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./server.component.scss']
 })
 export class ServerComponent implements OnInit {
+
+    @Input()
+    public server?: Server;
 
     /**
      * Creates an instance of ServerComponent.

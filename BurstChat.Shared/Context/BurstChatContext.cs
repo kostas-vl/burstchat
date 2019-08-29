@@ -88,23 +88,6 @@ namespace BurstChat.Shared.Context
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey(c => c.ServerId)
                 .IsRequired();
-
-            // setting the relationships of the Subscription model.
-            builder
-                .Entity<Subscription>()
-                .HasOne(s => s.User)
-                .WithMany(u => u.SubscribedServers)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasForeignKey(s => s.UserId)
-                .IsRequired();
-
-            builder
-                .Entity<Subscription>()
-                .HasOne(s => s.Server)
-                .WithMany(s => s.SubscribedUsers)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasForeignKey(s => s.ServerId)
-                .IsRequired();
         }
     }
 }

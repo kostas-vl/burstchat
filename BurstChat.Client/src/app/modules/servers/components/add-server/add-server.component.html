@@ -1,0 +1,39 @@
+<div class="burst-container add-server">
+
+  <app-card class="add-server-card">
+
+    <app-card-header>
+
+      <div class="add-server-header">
+
+        <div *ngIf="!loading">Add a new server</div>
+
+        <div class="loader" *ngIf="loading"></div>
+
+      </div>
+
+    </app-card-header>
+
+    <app-card-body>
+
+      <div class="row">
+
+        <div class="column column-100">
+
+          <input type="text" placeholder="Server name..." [disabled]="loading" [(ngModel)]="server.name">
+
+        </div>
+
+      </div>
+
+    </app-card-body>
+
+    <app-card-footer>
+
+      <button class="button w-100"i [disabled]="loading" (click)="onPost()">CREATE</button>
+
+    </app-card-footer>
+
+  </app-card>
+
+</div>

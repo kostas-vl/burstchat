@@ -58,7 +58,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post([FromBody] Server server)
         {
-            var monad = _serversService.Insert(server);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.Insert(userId, server));
+
             return this.UnwrapMonad(monad);
         }
 

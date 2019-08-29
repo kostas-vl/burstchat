@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
@@ -24,7 +25,10 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * Creates an instance of ServerListComponent.
      * @memberof ServerListComponent
      */
-    constructor(private userService: UserService) { }
+    constructor(
+        private router: Router,
+        private userService: UserService
+    ) { }
 
     /**
      * Executes any necessary start up code for the component.
@@ -46,6 +50,14 @@ export class ServerListComponent implements OnInit, OnDestroy {
             this.subscribedServersSubscription
                 .unsubscribe();
         }
+    }
+
+    /**
+     * Handles the new server button click event.
+     * @memberof ServerListComponent
+     */
+    public onNew(): void {
+        this.router.navigateByUrl('/core/servers/add');
     }
 
 }

@@ -45,7 +45,7 @@ namespace BurstChat.Shared.Schema.Servers
         /// <summary>
         /// The list of subscribed users.
         /// </summary>
-        public List<Subscription> SubscribedUsers
+        public List<Subscription> Subscriptions
         {
             get; set;
         }

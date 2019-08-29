@@ -1,13 +1,17 @@
 @import '../../../../../scss/theme';
 
 .topbar {
+    background-color: $dark-color;
     position: fixed !important;
     left: $sidebar-width !important;
     right: 0 !important;
     height: 55px;
-    background-color: $dark-color;
+    z-index: 2000;
     display: flex;
     align-items: center;
+    -webkit-box-shadow: 2px 6px 5px -5px rgba(0, 0, 0, 0.5);
+    -mox-box-shadow: 2px 6px 5px -5px rgba(0, 0, 0, 0.5);
+    box-shadow: 2px 6px 5px -5px rgba(0, 0, 0, 0.5);
 }
 
 .right-actions {

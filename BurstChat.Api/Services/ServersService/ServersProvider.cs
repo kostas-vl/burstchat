@@ -45,7 +45,7 @@ namespace BurstChat.Api.Services.ServersService
                 var server = _burstChatContext
                     .Servers
                     .Include(s => s.Channels)
-                    .Include(s => s.SubscribedUsers)
+                    .Include(s => s.Subscriptions)
                     .FirstOrDefault(s => s.Id == serverId);
 
                 if (server != null)
@@ -92,16 +92,24 @@ namespace BurstChat.Api.Services.ServersService
         /// <summary>
         ///   This method store information about a new server based on the provided Server instance.
         /// </summary>
+        /// <param name="userId">The id of the user that creates the server</param>
         /// <param name="server">The server instance of which the information will be stored in the database</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(Server server)
+        public Either<Unit, Error> Insert(long userId, Server server)
         {
             try
             {
                 var serverEntry = new Server
                 {
                     Name = server.Name,
-                    DateCreated = server.DateCreated
+                    DateCreated = server.DateCreated,
+                    Subscriptions = new List<Subscription> 
+                    { 
+                        new Subscription
+                        {
+                            UserId = userId
+                        }
+                    }
                 };
 
                 _burstChatContext

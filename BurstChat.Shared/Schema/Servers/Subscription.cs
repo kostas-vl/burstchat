@@ -25,25 +25,9 @@ namespace BurstChat.Shared.Schema.Servers
         }
 
         /// <summary>
-        /// This is a reference navigation property for the user.
-        /// </summary>
-        public User User
-        {
-            get; set;
-        }
-
-        /// <summary>
         /// The id of the server.
         /// </summary>
         public int ServerId
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// This is a reference navigation property for the server.
-        /// </summary>
-        public Server Server
         {
             get; set;
         }
