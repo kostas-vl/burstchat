@@ -29,8 +29,11 @@ textarea {
 }
 
 blockquote {
-    background-color: $dark-color;
-    border-left-color: $accent-color;
+    background-color: $secondary-color;
+    border: 1px solid $dark-color;
+    border-left: 2px solid $accent-color;
+    padding-right: 5px;
+    margin: 5px 0 0 0;
 }
 
 .burst-container {
@@ -40,12 +43,14 @@ blockquote {
     position: relative;
     width: 100%;
     padding-top: 75px;
+    padding-bottom: 40px;
 }
 
 .button-icon {
     padding-left: 15px;
     padding-right: 15px;
     font-size: 18px;
+    width: 48px !important;
 }
 
 .button-icon-lg {
@@ -67,6 +72,10 @@ blockquote {
 
 .w-100 {
     width: 100%;
+}
+
+.ml-auto {
+    margin-left: auto !important;
 }
 
 .column-5 {

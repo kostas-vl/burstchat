@@ -7,7 +7,6 @@ import { ChannelDetails } from 'src/app/models/servers/channel-details';
 export interface Channel {
 
     id: number;
-    serverId: number;
     name: string;
     isPublic: boolean;
     dateCreated: Date | string;

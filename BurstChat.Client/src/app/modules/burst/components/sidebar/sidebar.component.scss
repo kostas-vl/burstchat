@@ -54,9 +54,6 @@ $minor-width: 90px;
     width: $minor-width;
 }
 
-.sidebar-users {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 30px;
-    padding-right: 30px;
+.sidebar-channels {
+    flex-grow: 9;
 }

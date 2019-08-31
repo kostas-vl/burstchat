@@ -1,0 +1,17 @@
+@import '../../../../../scss/theme';
+
+.channel-list-container {
+    width: 100%;
+}
+
+.channel-list-server {
+    background-color: $dark-color;
+    height: 55px;
+    padding-top: 5px;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+

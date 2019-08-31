@@ -19,22 +19,6 @@ namespace BurstChat.Shared.Schema.Servers
         }
 
         /// <summary>
-        /// The id of the server that the channel belongs.
-        /// </summary>
-        public int ServerId
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// This is a reference navigation property of the server.
-        /// </summary>
-        public Server Server 
-        {
-            get; set;
-        }
-
-        /// <summary>
         /// The name of the channel.
         /// </summary>
         public string Name

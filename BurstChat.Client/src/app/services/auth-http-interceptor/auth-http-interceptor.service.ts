@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
@@ -45,7 +45,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
                     this.router
                         .navigateByUrl('/session/login');
                 }
-                return of(value);
+                return throwError(value);
             }));
     }
 

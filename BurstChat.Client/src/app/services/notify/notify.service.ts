@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { BurstChatError } from 'src/app/models/errors/error';
 import { Notification } from 'src/app/models/notify/notification';
 
 /**
@@ -30,6 +31,22 @@ export class NotifyService {
         if (data) {
             this.notifySource
                 .next(data);
+        }
+    }
+
+    /**
+     * This method will invoke a new notification on screen based on the provided
+     * BurstChat error.
+     * @memberof NotifyService
+     * @param {BurstChatError | null} The error instance.
+     */
+    public notifyError(error: BurstChatError | null): void {
+        if (error) {
+            const notification: Notification = {
+                title: 'An error occured',
+                content: error.message
+            };
+            this.notify(notification);
         }
     }
 

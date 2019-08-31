@@ -19,22 +19,6 @@ namespace BurstChat.Shared.Schema.Servers
         {
             get; set;
         }
-        
-        /// <summary>
-        /// The id of the channel to which the message was posted.
-        /// </summary>
-        public int ChannelId
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// This is a reference navigation property of the channel.
-        /// </summary>
-        public Channel Channel 
-        {
-            get; set;
-        }
 
         /// <summary>
         /// The list of users that are members of the channel. In the context of entity framework

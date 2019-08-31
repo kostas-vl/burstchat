@@ -19,7 +19,11 @@ export class BurstChatError {
 export function tryParseError(data: any): BurstChatError | null {
     try {
         const error = Object.assign(new Error(), data);
-        return error;
+        if (error && error.level && error.type && error.message) {
+            return error;
+        } else {
+            return null;
+        }
     } catch {
         return null;
     }

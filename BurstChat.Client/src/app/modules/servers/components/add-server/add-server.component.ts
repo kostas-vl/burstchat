@@ -3,7 +3,7 @@ import { Notification } from 'src/app/models/notify/notification';
 import { tryParseError } from 'src/app/models/errors/error';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ServersService } from 'src/app/modules/servers/services/servers/servers.service';
+import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 
 /**
  * This class represents an angular component that displays a form for creating a new BurstChat server.
@@ -40,7 +40,6 @@ export class AddServerComponent implements OnInit {
      * @memberof AddServerComponent
      */
     public onPost() {
-
         if (!this.server.name) {
             const notification: Notification = {
                 title: 'An error occured',
@@ -54,7 +53,7 @@ export class AddServerComponent implements OnInit {
         this.loading = true;
 
         this.serversService
-            .postServer(this.server)
+            .post(this.server)
             .subscribe(
                 () => {
                     const notification: Notification = {

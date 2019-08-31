@@ -51,13 +51,17 @@ namespace BurstChat.Api.Migrations
 
                     b.Property<DateTime>("DateCreated");
 
+                    b.Property<int?>("DetailsId");
+
                     b.Property<bool>("IsPublic");
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("ServerId");
+                    b.Property<int?>("ServerId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DetailsId");
 
                     b.HasIndex("ServerId");
 
@@ -69,12 +73,7 @@ namespace BurstChat.Api.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ChannelId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ChannelId")
-                        .IsUnique();
 
                     b.ToTable("ChannelDetails");
                 });
@@ -189,18 +188,13 @@ namespace BurstChat.Api.Migrations
 
             modelBuilder.Entity("BurstChat.Shared.Schema.Servers.Channel", b =>
                 {
-                    b.HasOne("BurstChat.Shared.Schema.Servers.Server", "Server")
-                        .WithMany("Channels")
-                        .HasForeignKey("ServerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
+                    b.HasOne("BurstChat.Shared.Schema.Servers.ChannelDetails", "Details")
+                        .WithMany()
+                        .HasForeignKey("DetailsId");
 
-            modelBuilder.Entity("BurstChat.Shared.Schema.Servers.ChannelDetails", b =>
-                {
-                    b.HasOne("BurstChat.Shared.Schema.Servers.Channel", "Channel")
-                        .WithOne("Details")
-                        .HasForeignKey("BurstChat.Shared.Schema.Servers.ChannelDetails", "ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("BurstChat.Shared.Schema.Servers.Server")
+                        .WithMany("Channels")
+                        .HasForeignKey("ServerId");
                 });
 
             modelBuilder.Entity("BurstChat.Shared.Schema.Servers.Subscription", b =>

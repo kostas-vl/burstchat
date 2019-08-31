@@ -71,23 +71,6 @@ namespace BurstChat.Shared.Context
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey(m => m.UserId)
                 .IsRequired();
-
-            // setting the relationships of the Channel model.
-            builder
-                .Entity<Channel>()
-                .HasOne(c => c.Details)
-                .WithOne(c => c.Channel)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasForeignKey<ChannelDetails>(c => c.ChannelId)
-                .IsRequired();
-
-            builder
-                .Entity<Channel>()
-                .HasOne(c => c.Server)
-                .WithMany(s => s.Channels)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasForeignKey(c => c.ServerId)
-                .IsRequired();
         }
     }
 }

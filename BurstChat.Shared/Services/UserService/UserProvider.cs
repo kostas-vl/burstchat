@@ -187,6 +187,7 @@ namespace BurstChat.Shared.Services.UserService
             {
                 var servers = _burstChatContext
                     .Servers
+                    .Include(server => server.Channels)
                     .Include(server => server.Subscriptions)
                     .Where(server => server.Subscriptions
                                            .Any(subscription => subscription.UserId == userId))

@@ -10,9 +10,9 @@ import { Server } from 'src/app/models/servers/server';
 @Injectable()
 export class ServersService {
 
-    private serverSource = new BehaviorSubject<Server | null>(null);
+    private activeServerSource = new BehaviorSubject<Server | null>(null);
 
-    public serverObservable = this.serverSource.asObservable();
+    public activeServerObservable = this.activeServerSource.asObservable();
 
     /**
      * Creates a new instance of ServersService.
@@ -20,19 +20,27 @@ export class ServersService {
      */
     constructor(private httpClient: HttpClient) { }
 
-    /**
-     * Request information about an existing server and invokes the proper subject in order to
-     * inform any observers.
+     /**
+     * Informs all observers of the active server about its new value.
      * @memberof ServersService
-     * @param {number} id The id of the target server.
      */
-    public getServer(id: number): void {
-        this.httpClient
-            .get<Server>(`/api/servers/${id}`)
-            .subscribe(server => {
-                this.serverSource
-                    .next(server);
-            });
+    public setActiveServer(server: Server | null) {
+        if (server) {
+            this.activeServerSource
+                .next(server);
+        }
+    }
+
+    /**
+     * Requests to the BurstChat API all information about a server based on the provided id and returns
+     * an observable that will be invoked when the requests completes.
+     * @memberof ServersService
+     * @returns {Observable<Server>} The observable to be invoked.
+     */
+    public get(serverId: number): Observable<Server> {
+        return this
+            .httpClient
+            .get<Server>(`/api/servers/${serverId}`);
     }
 
     /**
@@ -42,7 +50,7 @@ export class ServersService {
      * @param {Server} server The server instance that will be added.
      * @returns An obserable.
      */
-    public postServer(server: Server): Observable<{}> {
+    public post(server: Server): Observable<{}> {
         return this
             .httpClient
             .post('/api/servers', server);
@@ -54,7 +62,7 @@ export class ServersService {
      * @param {Server} server The server instance to be updated.
      * @returns An obseravable.
      */
-    public putServer(server: Server): Observable<{}> {
+    public put(server: Server): Observable<{}> {
         return this
             .httpClient
             .put('/api/servers', server);
@@ -64,13 +72,13 @@ export class ServersService {
      * Requests the deletion of an existing server and returns an observable that will be invoked after the request
      * completes.
      * @memberof ServersService
-     * @param {Server} server The server instance to be deleted.
+     * @param {number} serverId The id of the server to be deleted.
      * @returns An observable.
      */
-    public deleteServer(server: Server): Observable<{}> {
+    public delete(serverId: number): Observable<{}> {
         return this
             .httpClient
-            .delete(`/api/servers/${server.id}`);
+            .delete(`/api/servers/${serverId}`);
     }
 
 }

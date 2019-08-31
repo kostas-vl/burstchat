@@ -1,0 +1,29 @@
+<div class="channel-list-container" *ngIf="server">
+
+  <div class="channel-list-server">
+
+      <div>
+
+        {{server.name}}
+
+      </div>
+
+      <div class="ml-auto">
+
+        <button class="button button-icon button-clear" (click)="onEditServer()">
+
+          <fa-icon icon="pen-square"></fa-icon>
+
+        </button>
+
+      </div>
+
+  </div>
+
+  <div *ngFor="let channel of server.channels">
+
+    <app-channel [channel]="channel"></app-channel>
+
+  </div>
+
+</div>
