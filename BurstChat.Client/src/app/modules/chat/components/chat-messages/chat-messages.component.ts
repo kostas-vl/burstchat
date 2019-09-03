@@ -19,7 +19,13 @@ import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.ser
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
 
+    private onSelfAddedToGroupSubscription?: Subscription;
+
+    private onAllMessagesReceivedSubscription?: Subscription;
+
     private onMessageReceivedSubscription?: Subscription;
+
+    private internalOptions?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
 
     public topIndex = 0;
 
@@ -28,7 +34,44 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     public messages: Message[] = [];
 
     @Input()
-    public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
+    public set options(value: PrivateGroupConnectionOptions | ChannelConnectionOptions) {
+        this.internalOptions = value;
+        this.unsubscribeAll();
+
+        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
+            this.onSelfAddedToGroupSubscription = this
+                .chatService
+                .onSelfAddedToPrivateGroup
+                .subscribe(() => this.onSelfAddedToGroup());
+
+            this.onAllMessagesReceivedSubscription = this
+                .chatService
+                .onAllPrivateGroupMessagesReceived
+                .subscribe(payload => this.onMessagesReceived(payload));
+
+            this.onMessageReceivedSubscription = this
+                .chatService
+                .onPrivateGroupMessageReceived
+                .subscribe(payload => this.onMessageReceived(payload));
+        }
+
+        if (this.internalOptions instanceof ChannelConnectionOptions) {
+            this.onSelfAddedToGroupSubscription = this
+                .chatService
+                .onSelfAddedToChannel
+                .subscribe(() => this.onSelfAddedToGroup());
+
+            this.onAllMessagesReceivedSubscription = this
+                .chatService
+                .onAllChannelMessagesReceived
+                .subscribe(payload => this.onMessagesReceived(payload));
+
+            this.onMessageReceivedSubscription = this
+                .chatService
+                .onChannelMessageReceived
+                .subscribe(payload => this.onMessageReceived(payload));
+        }
+    }
 
     /**
      * Creates an instance of ChatMessagesComponent.
@@ -40,21 +83,53 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * Executes any necessary start up code for the component.
      * @memberof ChatMessagesComponent
      */
-    public ngOnInit() {
-        this.onMessageReceivedSubscription = this
-            .chatService
-            .onAllPrivateGroupMessagesReceived
-            .subscribe(payload => this.onMessageReceived(payload));
-    }
+    public ngOnInit(): void { }
 
     /**
      * Executes any necessary code for the destruction of the component.
      * @memberof ChatMessagesComponent
      */
-    public ngOnDestroy() {
+    public ngOnDestroy(): void {
+        this.unsubscribeAll();
+    }
+
+    /**
+     * Unsubscribes all instanciated subscriptions of the component.
+     * @memberof ChatMessagesComponent
+     */
+    private unsubscribeAll(): void {
+        if (this.onSelfAddedToGroupSubscription) {
+            this.onSelfAddedToGroupSubscription
+                .unsubscribe();
+        }
+
+        if (this.onAllMessagesReceivedSubscription) {
+            this.onAllMessagesReceivedSubscription
+                .unsubscribe();
+        }
+
         if (this.onMessageReceivedSubscription) {
             this.onMessageReceivedSubscription
                 .unsubscribe();
+        }
+    }
+
+    /**
+     * Handles the successful connection to a signal group.
+     * @private
+     * @memberof ChatMessagesComponent
+     */
+    private onSelfAddedToGroup(): void {
+        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
+            const id = this.internalOptions.privateGroupId;
+            this.chatService.getAllPrivateGroupMessages(id);
+            return;
+        }
+
+        if (this.internalOptions instanceof ChannelConnectionOptions) {
+            const id = this.internalOptions.channelId;
+            this.chatService.getAllChannelMessages(id);
+            return;
         }
     }
 
@@ -64,22 +139,54 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @param {Payload<Message[]>} payload A payload with the messages received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessageReceived(payload: Payload<Message[]>) {
-        if (this.options instanceof PrivateGroupConnectionOptions) {
+    private onMessagesReceived(payload: Payload<Message[]>): void {
+        console.log(payload);
+        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup
                 .split('privateGroup:')[1];
-            if (this.options.privateGroupId === signalGroup)
+            if (this.internalOptions.privateGroupId === signalGroup)
                 this.messages = payload.content;
             return;
         }
 
-        if (this.options instanceof ChannelConnectionOptions) {
+        if (this.internalOptions instanceof ChannelConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup
                 .split('channel:')[1];
-            if (this.options.channelId === signalGroup)
+            if (this.internalOptions.channelId === signalGroup)
                 this.messages = payload.content;
+            return;
+        }
+    }
+
+    /**
+     * Handles the payload of a new message posted to the chat.
+     * @private
+     * @param {Payload<Message>} payload The payload with the new message received from the server.
+     * @memberof ChatMessagesComponent
+     */
+    private onMessageReceived(payload: Payload<Message>): void {
+        console.log(payload);
+        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
+            const signalGroup = +payload
+                .signalGroup
+                .split('privateGroup:')[1];
+            if (this.internalOptions.privateGroupId === signalGroup) {
+                const message = payload.content;
+                this.messages.push(message);
+            }
+            return;
+        }
+
+        if (this.internalOptions instanceof ChannelConnectionOptions) {
+            const signalGroup = +payload
+                .signalGroup
+                .split('channel:')[1];
+            if (this.internalOptions.channelId === signalGroup) {
+                const message = payload.content;
+                this.messages.push(message);
+            }
             return;
         }
     }

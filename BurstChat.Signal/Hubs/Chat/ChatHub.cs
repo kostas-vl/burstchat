@@ -60,12 +60,14 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A Task instance</returns>
         public async Task AddToPrivateGroupConnection(long groupId)
         {
-            var monad = await _privateGroupMessagingService.GetPrivateGroupAsync(groupId);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _privateGroupMessagingService.GetPrivateGroupAsync(httpContext, groupId);
 
             if (monad is Success<PrivateGroupMessage, Error>)
             {
                 var signalGroup = PrivateGroupSignalName(groupId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
+                await Clients.Caller.SelfAddedToPrivateGroup();
             }
         }
 
@@ -77,7 +79,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task GetAllPrivateGroupMessages(long groupId)
         {
-            var monad = await _privateGroupMessagingService.GetAllAsync(groupId);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _privateGroupMessagingService.GetAllAsync(httpContext, groupId);
             var signalGroup = PrivateGroupSignalName(groupId);
 
             if (monad is Success<IEnumerable<Message>, Error> success)
@@ -116,7 +119,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PostPrivateGroupMessage(long groupId, Message message)
         {
-            var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _privateGroupMessagingService.PostAsync(httpContext, groupId, message);
             var signalGroup = PrivateGroupSignalName(groupId);
 
             if (monad is Success<Unit, Error> success)
@@ -155,7 +159,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PutPrivateGroupMessage(long groupId, Message message)
         {
-            var monad = await _privateGroupMessagingService.PostAsync(groupId, message);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _privateGroupMessagingService.PostAsync(httpContext, groupId, message);
             var signalGroup = PrivateGroupSignalName(groupId);
 
             if (monad is Success<Unit, Error> success)
@@ -194,7 +199,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task DeletePrivateGroupMessage(long groupId, Message message)
         {
-            var monad = await _privateGroupMessagingService.DeleteAsync(groupId, message);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _privateGroupMessagingService.DeleteAsync(httpContext, groupId, message);
             var signalGroup = PrivateGroupSignalName(groupId);
 
             if (monad is Success<Unit, Error> success)
@@ -233,12 +239,14 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task AddToChannelConnection(int channelId)
         {
-            var monad = await _channelsService.GetChannelAsync(channelId);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _channelsService.GetChannelAsync(httpContext, channelId);
 
             if (monad is Success<Channel, Error>)
             {
                 var signalGroup = ChannelSignalName(channelId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
+                await Clients.Caller.SelfAddedToChannel();
             }
         }
 
@@ -249,7 +257,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task GetAllChannelMessages(int channelId)
         {
-            var monad = await _channelsService.GetAllAsync(channelId);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _channelsService.GetAllAsync(httpContext, channelId);
             var signalGroup = ChannelSignalName(channelId);
 
             if (monad is Success<IEnumerable<Message>, Error> success)
@@ -289,7 +298,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PostChannelMessage(int channelId, Message message)
         {
-            var monad = await _channelsService.PostAsync(channelId, message);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _channelsService.PostAsync(httpContext, channelId, message);
             var signalGroup = ChannelSignalName(channelId);
 
             if (monad is Success<Unit, Error> success)
@@ -329,7 +339,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task PutChannelMessage(int channelId, Message message)
         {
-            var monad = await _channelsService.PutAsync(channelId, message);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _channelsService.PutAsync(httpContext, channelId, message);
             var signalGroup = ChannelSignalName(channelId);
 
             if (monad is Success<Unit, Error> success)
@@ -369,7 +380,8 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A task instance</returns>
         public async Task DeleteChannelMessage(int channelId, Message message)
         {
-            var monad = await _channelsService.DeleteAsync(channelId, message);
+            var httpContext = Context.GetHttpContext();
+            var monad = await _channelsService.DeleteAsync(httpContext, channelId, message);
             var signalGroup = ChannelSignalName(channelId);
 
             if (monad is Success<Unit, Error> success)

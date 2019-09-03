@@ -13,6 +13,7 @@
         "target": "http://localhost:5001",
         "secure": false,
         "ws": true,
+        "changeOrigin": true,
         "logLevel": "debug"
     }
 }

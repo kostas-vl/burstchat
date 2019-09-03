@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Channel } from 'src/app/models/servers/channel';
 
 /**
@@ -20,12 +21,22 @@ export class ChannelComponent implements OnInit {
      * Creates a new instance of ChannelComponent.
      * @memberof ChannelComponent
      */
-    constructor() { }
+    constructor(private router: Router) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof ChannelComponent
      */
-    public ngOnInit() { }
+    public ngOnInit(): void { }
+
+    /**
+     * Handles the channel container click event.
+     * @memberofChannelComponent
+     */
+    public onSelect(): void {
+        if (this.channel) {
+            this.router.navigateByUrl(`/core/chat/channel/${this.channel.id}`);
+        }
+    }
 
 }

@@ -14,6 +14,11 @@ namespace BurstChat.Signal.Hubs.Chat
     public interface IChatClient
     {
         /// <summary>
+        ///   Informs the caller that his connection id was added to a signal group.
+        /// </summary>
+        Task SelfAddedToPrivateGroup();
+
+        /// <summary>
         ///   The caller is informed about all messages posted on a private group.
         /// </summary>
         /// <param name="messages">The messages of the group that will be delivered to the caller</param>
@@ -70,6 +75,11 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageDeleted(Payload<Error> error);
+
+        /// <summary>
+        ///   Informs the caller that his connection id was added to a signal group.
+        /// </summary>
+        Task SelfAddedToChannel();
 
         /// <summary>
         ///   The caller is informed about all messages posted on a channel.

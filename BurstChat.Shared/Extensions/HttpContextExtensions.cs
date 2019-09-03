@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
@@ -36,6 +38,27 @@ namespace BurstChat.Shared.Extensions
             catch 
             {
                 return new Failure<long, Error>(UserErrors.UserNotFound());
+            }
+        }
+
+        /// <summary>
+        ///   This method will fetch the value of a Bearer access token based on the instance of the HttpContext.
+        /// </summary>
+        /// <param name="context">The http context instance</param>
+        public static string GetAccessToken(this HttpContext context)
+        {
+            try
+            {
+                return context
+                    .Request
+                    .Headers["Authorization"]
+                    .ToString()
+                    .Split("Bearer ")
+                    .Last();
+            }
+            catch
+            {
+                return null;
             }
         }
     }

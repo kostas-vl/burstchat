@@ -56,21 +56,5 @@ namespace BurstChat.Shared.Context
         /// </summary>
         public BurstChatContext(DbContextOptions<BurstChatContext> options)
             : base(options) { }
-
-        /// <summary>
-        /// Overrides the base OnModelCreating in order to configure the intricate relationships between entities.
-        /// </summary>
-        /// <param name="builder">The model instance provided</param>
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            // setting the relationships of the Message model.
-            builder
-                .Entity<Message>()
-                .HasOne(m => m.User)
-                .WithMany(u => u.Messages)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasForeignKey(m => m.UserId)
-                .IsRequired();
-        }
     }
 }

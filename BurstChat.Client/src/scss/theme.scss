@@ -12,6 +12,9 @@ $layout-animation-speed: 0.4s;
 
 $chat-input-height: 88px;
 
+$z-level-1: 1000;
+$z-level-2: 2000;
+
 input {
     background-color: $primary-color;
     color: white;
@@ -42,8 +45,9 @@ blockquote {
     padding: 0 2.0rem;
     position: relative;
     width: 100%;
-    padding-top: 75px;
-    padding-bottom: 40px;
+    height: 100%;
+    padding-top: 65px;
+    padding-bottom: 95px;
 }
 
 .button-icon {

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Notification } from 'src/app/models/notify/notification';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
@@ -23,6 +23,8 @@ export class ChatRootComponent implements OnInit, OnDestroy {
 
     private routeParametersSubscription?: Subscription;
 
+    private onConnectedSubscription?: Subscription;
+
     public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
 
     public noChatFound = false;
@@ -32,6 +34,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     constructor(
+        private router: Router,
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
         private chatService: ChatService
@@ -42,14 +45,32 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnInit() {
+        this.onConnectedSubscription = this
+            .chatService
+            .onConnected
+            .subscribe(() => {
+                if (this.options instanceof PrivateGroupConnectionOptions) {
+                    const id = this.options.privateGroupId;
+                    this.chatService.addSelfToPrivateGroup(id);
+                    return;
+                }
+
+                if (this.options instanceof ChannelConnectionOptions) {
+                    const id = this.options.channelId;
+                    this.chatService.addSelfToChannel(id);
+                    return;
+                }
+            });
+
         this.routeParametersSubscription = this
             .activatedRoute
             .paramMap
             .subscribe(params => {
                 const id = +params.get('id');
+                console.log(`route: ${this.activatedRoute.outlet} with id ${id}`);
                 const isPrivateChat = this
-                    .activatedRoute
-                    .outlet
+                    .router
+                    .url
                     .includes("private");
 
                 if (isPrivateChat) {
@@ -60,8 +81,8 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                 }
 
                 const isChannelChat = this
-                    .activatedRoute
-                    .outlet
+                    .router
+                    .url
                     .includes("channel");
 
                 if (isChannelChat) {
@@ -87,6 +108,11 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnDestroy() {
+        if (this.onConnectedSubscription) {
+            this.onConnectedSubscription
+                .unsubscribe();
+        }
+
         if (this.routeParametersSubscription) {
             this.routeParametersSubscription
                 .unsubscribe();

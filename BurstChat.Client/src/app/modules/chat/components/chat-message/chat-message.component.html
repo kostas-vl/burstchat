@@ -14,7 +14,7 @@
 
                 <strong>{{message.user}}</strong>
 
-                <small class="message-date-posted text-muted">{{message.datePosted}}</small>
+                <small class="message-date-posted text-muted">{{message.datePosted | date}}</small>
 
                 <small *ngIf="message.edited">
 

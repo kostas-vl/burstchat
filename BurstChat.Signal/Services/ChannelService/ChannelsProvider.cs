@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,11 +7,11 @@ using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
-using BurstChat.Signal.Extensions;
-using BurstChat.Signal.Options;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using BurstChat.Signal.Services.ApiInteropService;
+using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace BurstChat.Signal.Services.ChannelsService
 {
@@ -22,36 +21,34 @@ namespace BurstChat.Signal.Services.ChannelsService
     public class ChannelsProvider : IChannelsService
     {
         private readonly ILogger<ChannelsProvider> _logger;
-        private readonly AcceptedDomainsOptions _acceptedDomains;
+        private readonly BurstChatApiInteropService _apiInteropService;
 
         /// <summary>
         ///   Executes any neccessary start up code for the service.
         /// </summary>
         public ChannelsProvider(
             ILogger<ChannelsProvider> logger,
-            IOptions<AcceptedDomainsOptions> acceptedDomains
+            BurstChatApiInteropService apiInteropService
         )
         {
             _logger = logger;
-            _acceptedDomains = acceptedDomains.Value;
+            _apiInteropService = apiInteropService;
         }
- 
+
         /// <summary>
         ///   This method will fetch information about a channel based on the provided id.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Channel, Error>> GetChannelAsync(int channelId)
+        public async Task<Either<Channel, Error>> GetChannelAsync(HttpContext context, int channelId)
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/channels/{channelId}";
-                    var httpResponse = await client.GetAsync(url);
+                var method = HttpMethod.Get;
+                var url = $"api/channels/{channelId}";
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync<Channel>();
-                }
+                return await _apiInteropService.SendAsync<Channel>(context, method, url);
             }
             catch (Exception e)
             {
@@ -63,19 +60,17 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <summary>
         ///   This method will fetch all messages of a channels based on the provided id.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<IEnumerable<Message>, Error>> GetAllAsync(int channelId)
+        public async Task<Either<IEnumerable<Message>, Error>> GetAllAsync(HttpContext context, int channelId)
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/channels/{channelId}/messages";
-                    var httpResponse = await client.GetAsync(url);
+                var method = HttpMethod.Get;
+                var url = $"api/channels/{channelId}/messages";
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync<IEnumerable<Message>>();
-                }
+                return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
             }
             catch (Exception e)
             {
@@ -88,22 +83,20 @@ namespace BurstChat.Signal.Services.ChannelsService
         ///   This method will post a new message to a channel based on the provided channel id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be posted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> PostAsync(int channelId, Message message)
+        public async Task<Either<Unit, Error>> PostAsync(HttpContext context, int channelId, Message message)
         {
             try
             {
+                var method = HttpMethod.Post;
+                var url = $"api/channels/{channelId}/messages";
                 var jsonMessage = JsonConvert.SerializeObject(message);
-                using (var client = new HttpClient())
-                using (var requestContent = new StringContent(jsonMessage))
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/channels/{channelId}/messages";
-                    var httpResponse = await client.PostAsync(url, requestContent);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync();
-                }
+                return await _apiInteropService.SendAsync(context, method, url, content);
             }
             catch (Exception e)
             {
@@ -116,19 +109,25 @@ namespace BurstChat.Signal.Services.ChannelsService
         ///  This method will edit an existing message of a channel based on the provided channel id 
         ///  and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be edited</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> PutAsync(int channelId, Message message)
+        public async Task<Either<Unit, Error>> PutAsync(HttpContext context, int channelId, Message message)
         {
-            var jsonMessage = JsonConvert.SerializeObject(message);
-            using (var client = new HttpClient())
-            using (var requestContent = new StringContent(jsonMessage))
+            try
             {
-                var url = $"{_acceptedDomains.BurstChatApiDomain}/api/channels/{channelId}/messages";
-                var httpResponse = await client.PutAsync(url, requestContent);
+                var method = HttpMethod.Put;
+                var url = $"api/channels/{channelId}/messages";
+                var jsonMessage = JsonConvert.SerializeObject(message);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                return await httpResponse.ParseBurstChatApiResponseAsync();
+                return await _apiInteropService.SendAsync(context, method, url, content);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
 
@@ -136,25 +135,20 @@ namespace BurstChat.Signal.Services.ChannelsService
         ///   This method will delete an existing message from a channel based on the provided channel id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be deleted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> DeleteAsync(int channelId, Message message)
+        public async Task<Either<Unit, Error>> DeleteAsync(HttpContext context, int channelId, Message message)
         {
             try
             {
+                var method = HttpMethod.Delete;
+                var url = $"api/channels/{channelId}/messages";
                 var jsonMessage = JsonConvert.SerializeObject(message);
-                using (var client = new HttpClient())
-                using (var request = new HttpRequestMessage())
-                using (var requestContent = new StringContent(jsonMessage))
-                {
-                    request.Method = HttpMethod.Delete;
-                    request.RequestUri = new Uri($"{_acceptedDomains.BurstChatApiDomain}/api/channels/{channelId}/messages");
-                    request.Content = requestContent;
-                    var httpResponse = await client.SendAsync(request);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync();
-                }
+                return await _apiInteropService.SendAsync(context, method, url, content);
             }
             catch (Exception e)
             {

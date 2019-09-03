@@ -49,6 +49,7 @@ namespace BurstChat.Api.Services.ChannelsService
                 var channel = _burstChatContext
                     .Channels
                     .Include(c => c.Details)
+                    .ThenInclude(d => d.Messages)
                     .FirstOrDefault(c => c.Id == channelId);
 
                 if (channel != null)

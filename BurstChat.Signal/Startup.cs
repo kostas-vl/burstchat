@@ -5,16 +5,21 @@ using System.Threading.Tasks;
 using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
 using BurstChat.Signal.Services.ChannelsService;
+using BurstChat.Signal.Services.HttpMessageHandlers;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using BurstChat.Signal.Services.ApiInteropService;
 
 namespace BurstChat.Signal
 {
@@ -34,17 +39,25 @@ namespace BurstChat.Signal
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services
+                .AddSignalR();
+
+            services
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
 
             services
+                .AddScoped<BurstChatApiInteropService>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
                 .AddScoped<IChannelsService, ChannelsProvider>();
 
-            services.AddSignalR();
+            services
+                .AddHttpContextAccessor();
 
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddHttpClient<BurstChatApiInteropService>();
 
             services
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)

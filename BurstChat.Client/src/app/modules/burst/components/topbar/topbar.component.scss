@@ -6,7 +6,7 @@
     left: $sidebar-width !important;
     right: 0 !important;
     height: 55px;
-    z-index: 2000;
+    z-index: $z-level-2;
     display: flex;
     align-items: center;
     -webkit-box-shadow: 2px 6px 5px -5px rgba(0, 0, 0, 0.5);

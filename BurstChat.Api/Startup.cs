@@ -67,13 +67,7 @@ namespace BurstChat.Api
 
             services
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options => 
-                {
-                    options.Authority = Configuration.GetSection("AccessTokenValidation:Authority").Get<string>();
-                    options.ApiName = Configuration.GetSection("AccessTokenValidation:ApiName").Get<string>();
-                    options.ApiSecret = Configuration.GetSection("AccessTokenValidation:ApiSecret").Get<string>();
-                    options.RequireHttpsMetadata = false;
-                });
+                .AddIdentityServerAuthentication(options => Configuration.GetSection("AccessTokenValidation").Bind(options));
 
             services
                 .AddDbContext<BurstChatContext>(options =>

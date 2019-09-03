@@ -5,6 +5,7 @@ using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Users;
+using Microsoft.AspNetCore.Http;
 
 namespace BurstChat.Signal.Services.PrivateGroupMessaging
 {
@@ -16,42 +17,47 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         /// <summary>
         ///   This method will fetch information about a private group based on the provided id.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(long groupId);
+        Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(HttpContext context, long groupId);
 
         /// <summary>
         ///   This method will fetch all messages of a private group based on the provided id.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<IEnumerable<Message>, Error>> GetAllAsync(long groupId);
+        Task<Either<IEnumerable<Message>, Error>> GetAllAsync(HttpContext context, long groupId);
 
         /// <summary>
         ///   This method will post a new message to a private group based on the provided group id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message to be posted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> PostAsync(long groupId, Message message);
+        Task<Either<Unit, Error>> PostAsync(HttpContext context, long groupId, Message message);
 
         /// <summary>
         ///   This method will edit an existing message of a private group based on the provided group id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message to be edited</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> PutAsync(long groupId, Message message);
+        Task<Either<Unit, Error>> PutAsync(HttpContext context, long groupId, Message message);
 
         /// <summary>
         ///   This method will delete an existing message of a private group based on the provided group id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message to be deleted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> DeleteAsync(long groupId, Message message);
+        Task<Either<Unit, Error>> DeleteAsync(HttpContext context, long groupId, Message message);
     }
 }

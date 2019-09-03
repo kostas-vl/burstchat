@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Users;
-using BurstChat.Signal.Extensions;
-using BurstChat.Signal.Options;
+using BurstChat.Signal.Services.ApiInteropService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace BurstChat.Signal.Services.PrivateGroupMessaging
@@ -21,36 +21,34 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
     public class PrivateGroupMessagingProvider : IPrivateGroupMessagingService
     {
         private readonly ILogger<PrivateGroupMessagingProvider> _logger;
-        private readonly AcceptedDomainsOptions _acceptedDomains;
-      
+        private readonly BurstChatApiInteropService _apiInteropService;
+
         /// <summary>
         ///   Executes any neccessary start up code for the service.
         /// </summary>
         public PrivateGroupMessagingProvider(
             ILogger<PrivateGroupMessagingProvider> logger,
-            IOptions<AcceptedDomainsOptions> acceptedDomains
+            BurstChatApiInteropService apiInteropService
         )
         {
             _logger = logger;
-            _acceptedDomains = acceptedDomains.Value;
+            _apiInteropService = apiInteropService;
         }
 
         /// <summary>
         ///   This method will fetch information about a private group based on the provided id.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(long groupId)
+        public async Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(HttpContext context, long groupId)
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/groups/{groupId}";
-                    var httpResponse = await client.GetAsync(url);
+                var url = $"/api/groups/{groupId}";
+                var method = HttpMethod.Get;
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync<PrivateGroupMessage>();
-                }
+                return await _apiInteropService.SendAsync<PrivateGroupMessage>(context, method, url);
             }
             catch (Exception e)
             {
@@ -62,19 +60,17 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         /// <summary>
         ///   This method will fetch all messages of a private group based on the provided id.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<IEnumerable<Message>, Error>> GetAllAsync(long groupId)
+        public async Task<Either<IEnumerable<Message>, Error>> GetAllAsync(HttpContext context, long groupId)
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/groups/{groupId}";
-                    var httpResponse = await client.GetAsync(url);
+                var url = $"/api/groups/{groupId}";
+                var method = HttpMethod.Get;
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync<IEnumerable<Message>>();
-                }
+                return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
             }
             catch (Exception e)
             {
@@ -87,22 +83,20 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         ///   This method will post a new message to a private group based on the provided group id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message to be posted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> PostAsync(long groupId, Message message)
+        public async Task<Either<Unit, Error>> PostAsync(HttpContext context, long groupId, Message message)
         {
             try
             {
+                var url = $"/api/groups/{groupId}/messages";
+                var method = HttpMethod.Post;
                 var jsonMessage = JsonConvert.SerializeObject(message);
-                using (var client = new HttpClient())
-                using (var requestContent = new StringContent(jsonMessage))
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/api/groups/{groupId}/messages";
-                    var httpResponse = await client.PostAsync(url, requestContent);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync();
-                }
+                return await _apiInteropService.SendAsync(context, method, url, content);
             }
             catch (Exception e)
             {
@@ -115,22 +109,20 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         ///   This method will edit an existing message of a private group based on the provided group id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message to be edited</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> PutAsync(long groupId, Message message)
+        public async Task<Either<Unit, Error>> PutAsync(HttpContext context, long groupId, Message message)
         {
             try
             {
+                var method = HttpMethod.Put;
+                var url = $"/api/groups/{groupId}/messages";
                 var jsonMessage = JsonConvert.SerializeObject(message);
-                using (var client = new HttpClient())
-                using (var requestContent = new StringContent(jsonMessage))
-                {
-                    var url = $"{_acceptedDomains.BurstChatApiDomain}/groups/{groupId}/messages";
-                    var httpResponse = await client.PutAsync(url, requestContent);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync();
-                }
+                return await _apiInteropService.SendAsync(context, method, url, content);
             }
             catch (Exception e)
             {
@@ -143,25 +135,20 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         ///   This method will delete an existing message of a private group based on the provided group id
         ///   and message.
         /// </summary>
+        /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message to be deleted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> DeleteAsync(long groupId, Message message)
+        public async Task<Either<Unit, Error>> DeleteAsync(HttpContext context, long groupId, Message message)
         {
             try
             {
+                var method = HttpMethod.Delete;
+                var url = $"/api/groups/{groupId}/messages";
                 var jsonMessage = JsonConvert.SerializeObject(message);
-                using (var client = new HttpClient())
-                using (var request = new HttpRequestMessage())
-                using (var requestContent = new StringContent(jsonMessage))
-                {
-                    request.Method = HttpMethod.Delete;
-                    request.RequestUri = new Uri($"{_acceptedDomains.BurstChatApiDomain}/groups/{groupId}/messages");
-                    request.Content = requestContent;
-                    var httpResponse = await client.SendAsync(request);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                    return await httpResponse.ParseBurstChatApiResponseAsync();
-                }
+                return await _apiInteropService.SendAsync(context, method, url, content);
             }
             catch (Exception e)
             {

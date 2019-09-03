@@ -6,6 +6,7 @@ import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { Payload } from 'src/app/models/signal/payload';
 import { Message } from 'src/app/models/chat/message';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { NotifyService } from 'src/app/services/notify/notify.service';
 
 /**
  * This class represents an angular service that connects to the remote signalr server and trasmits messages related to
@@ -18,6 +19,10 @@ export class ChatService {
 
     private connection?: HubConnection;
 
+    private connectedSource = new Subject();
+
+    private selfAddedToPrivateGroupSource = new Subject();
+
     private allPrivateGroupMessagesReceivedSource = new Subject<Payload<Message[]>>();
 
     private privateGroupMessageReceivedSource = new Subject<Payload<Message>>();
@@ -25,6 +30,8 @@ export class ChatService {
     private privateGroupMessageEditedSource = new Subject<Payload<Message>>();
 
     private privateGroupMessageDeletedSource = new Subject<Payload<Message>>();
+
+    private selfAddedToChannelSource = new Subject();
 
     private allChannelMessagesReceivedSource = new Subject<Payload<Message[]>>();
 
@@ -36,6 +43,10 @@ export class ChatService {
 
     private errorSource = new Subject<BurstChatError>();
 
+    public onConnected = this.connectedSource.asObservable();
+
+    public onSelfAddedToPrivateGroup = this.selfAddedToPrivateGroupSource.asObservable();
+
     public onAllPrivateGroupMessagesReceived = this.allPrivateGroupMessagesReceivedSource.asObservable();
 
     public onPrivateGroupMessageReceived = this.privateGroupMessageReceivedSource.asObservable();
@@ -43,6 +54,8 @@ export class ChatService {
     public onPrivateGroupMessageEdited = this.privateGroupMessageEditedSource.asObservable();
 
     public onPrivateGroupMessageDeleted = this.privateGroupMessageDeletedSource.asObservable();
+
+    public onSelfAddedToChannel = this.selfAddedToChannelSource.asObservable();
 
     public onAllChannelMessagesReceived = this.allChannelMessagesReceivedSource.asObservable();
 
@@ -58,7 +71,10 @@ export class ChatService {
      * Creates an instance of ChatService.
      * @memberof ChatService
      */
-    constructor(private storageService: StorageService) { }
+    constructor(
+        private storageService: StorageService,
+        private notifyService: NotifyService
+    ) { }
 
     /**
      * This method will process the data sent by a server signal and if the data is not of instance
@@ -73,6 +89,8 @@ export class ChatService {
         const error = tryParseError(payload.content);
         if (!error) {
             source.next(payload as Payload<T>);
+        } else {
+            this.notifyService.notifyError(error);
         }
     }
 
@@ -98,6 +116,9 @@ export class ChatService {
         }
 
         this.connection
+            .on('selfAddedToPrivateGroup', () => this.selfAddedToPrivateGroupSource.next());
+
+        this.connection
             .on('allPrivateGroupMessagesReceived', data => this.ProcessSignal(data, this.allPrivateGroupMessagesReceivedSource));
 
         this.connection
@@ -108,6 +129,9 @@ export class ChatService {
 
         this.connection
             .on('privateGroupMessageDeleted', data => this.ProcessSignal(data, this.privateGroupMessageDeletedSource));
+
+        this.connection
+            .on('selfAddedToChannel', () => this.selfAddedToChannelSource.next());
 
         this.connection
             .on('allChannelMessagesReceived', data => this.ProcessSignal(data, this.allChannelMessagesReceivedSource));
@@ -123,6 +147,7 @@ export class ChatService {
 
         this.connection
             .start()
+            .then(() => this.connectedSource.next())
             .catch(error => console.log(error));
     }
 
@@ -142,11 +167,11 @@ export class ChatService {
      * @param {number} groupId The id of the private group.
      */
     public addSelfToPrivateGroup(groupId: number) {
-      if (this.connection) {
-          this.connection
-              .invoke('addToPrivateGroupConnection', groupId)
-              .catch(error => console.log(error));
-      }
+        if (this.connection) {
+            this.connection
+                .invoke('addToPrivateGroupConnection', groupId)
+                .catch(error => console.log(error));
+        }
     }
 
     /**
@@ -199,6 +224,20 @@ export class ChatService {
                 .catch(error => console.log(error));
         }
     }
+
+    /**
+     * Adds the current established connection to a group defined by the provided channel id.
+     * @memberof ChatService
+     * @param {number} channelId The id of the channel.
+     */
+    public addSelfToChannel(channelId: number) {
+        if (this.connection) {
+            this.connection
+                .invoke('addToChannelConnection', channelId)
+                .catch(error => console.log(error));
+        }
+    }
+
 
     /**
      * Signals for all the messages of a channel to be received.
