@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HubConnectionBuilder, HubConnection, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@aspnet/signalr';
 import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
@@ -99,6 +99,11 @@ export class ChatService {
      * @memberof ChatService
      */
     public InitializeConnection(): void {
+        if (this.connection && this.connection.state === HubConnectionState.Connected) {
+            this.connectedSource.next();
+            return;
+        }
+
         try {
             const builder = new HubConnectionBuilder();
             builder.withUrl('/chat', {
@@ -156,7 +161,7 @@ export class ChatService {
      * @memberof ChatService
      */
     public DisposeConnection(): void {
-        if (this.connection) {
+        if (this.connection && this.connection.state === HubConnectionState.Connected) {
             this.connection.stop();
         }
     }

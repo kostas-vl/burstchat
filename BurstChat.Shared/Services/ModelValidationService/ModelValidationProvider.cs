@@ -39,6 +39,22 @@ namespace BurstChat.Shared.Services.ModelValidationService
         }
 
         /// <summary>
+        ///   This method will check if the provided registration instance has a valid user name provided.
+        /// </summary>
+        /// <param name="registration">The registration instance that the user name will be checked</param>
+        /// <returns>An either monad</returns>
+        private Either<Registration, Error> NameIsValid(Registration registration)
+        {
+            var nameHasValue = !String.IsNullOrEmpty(registration.Name)
+                               && !String.IsNullOrWhiteSpace(registration.Name);
+
+            if (nameHasValue)
+                return new Success<Registration, Error>(registration);
+            else
+                return new Failure<Registration, Error>(ModelErrors.NameInvalid());
+        }
+
+        /// <summary>
         ///   This method will check the provided email under all necessary rules.
         /// </summary>
         /// <param name="email">The email value</param>
@@ -236,6 +252,7 @@ namespace BurstChat.Shared.Services.ModelValidationService
         /// <returns>An either monad</returns>
         public Either<Registration, Error> ValidateRegistration(Registration registration) =>
             RegistrationHasValue(registration)
+                .Bind(NameIsValid)
                 .Bind(EmailIsValid)
                 .Bind(PasswordIsValid)
                 .Bind(ConfirmPasswordIsValid);

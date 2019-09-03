@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BurstChat.Shared.Context
 {
     /// <summary>
-    /// This class represents the burst chat database context and all of its tables.
+    ///   This class represents the burst chat database context and all of its tables.
     /// </summary>
     public class BurstChatContext : DbContext
     {
@@ -52,7 +52,7 @@ namespace BurstChat.Shared.Context
         }
 
         /// <summary>
-        /// Executes the necessary start up code for the burst chat database context.
+        ///   Executes the necessary start up code for the burst chat database context.
         /// </summary>
         public BurstChatContext(DbContextOptions<BurstChatContext> options)
             : base(options) { }

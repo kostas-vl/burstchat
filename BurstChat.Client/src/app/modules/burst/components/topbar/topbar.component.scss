@@ -15,6 +15,6 @@
 }
 
 .right-actions {
-    align-self: center;
-    margin-left: auto !important;
+    @extend .ml-auto;
+    align-self: center;    
 }

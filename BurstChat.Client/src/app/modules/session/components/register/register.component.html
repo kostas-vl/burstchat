@@ -34,6 +34,16 @@
 
           <div class="column column-100">
 
+            <input type="text" placeholder="Name" [disabled]="loading" [(ngModel)]="registration.Name">
+
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="column column-100">
+
             <input type="email" placeholder="EMAIL" [disabled]="loading" [(ngModel)]="registration.email">
 
           </div>

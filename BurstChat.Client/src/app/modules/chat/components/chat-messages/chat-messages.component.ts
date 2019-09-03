@@ -140,7 +140,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>): void {
-        console.log(payload);
         if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup
@@ -167,7 +166,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessageReceived(payload: Payload<Message>): void {
-        console.log(payload);
         if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup

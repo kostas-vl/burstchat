@@ -6,6 +6,7 @@
 export class Registration {
 
     public email = '';
+    public name = '';
     public password = '';
     public confirmPassword = '';
 

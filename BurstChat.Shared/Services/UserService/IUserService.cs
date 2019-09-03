@@ -32,9 +32,10 @@ namespace BurstChat.Shared.Services.UserService
         ///   Registers a new user based on the provided parameters.
         /// </summary>
         /// <param name="email">The email of the new user</param>
+        /// <param name="name">The name of the new user</param>
         /// <param name="password">The password of the new user</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Insert(string email, string password);
+        Either<Unit, Error> Insert(string email, string name, string password);
 
         /// <summary>
         ///   Updates infomation about an existing user based on the user instance provided.

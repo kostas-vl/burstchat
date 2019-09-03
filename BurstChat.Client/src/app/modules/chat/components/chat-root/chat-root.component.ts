@@ -67,7 +67,6 @@ export class ChatRootComponent implements OnInit, OnDestroy {
             .paramMap
             .subscribe(params => {
                 const id = +params.get('id');
-                console.log(`route: ${this.activatedRoute.outlet} with id ${id}`);
                 const isPrivateChat = this
                     .router
                     .url

@@ -50,6 +50,7 @@ namespace BurstChat.Api.Services.ChannelsService
                     .Channels
                     .Include(c => c.Details)
                     .ThenInclude(d => d.Messages)
+                    .ThenInclude(m => m.User)
                     .FirstOrDefault(c => c.Id == channelId);
 
                 if (channel != null)
@@ -183,6 +184,8 @@ namespace BurstChat.Api.Services.ChannelsService
                 return Get(channelId)
                     .Bind(channel => 
                     {
+                        message.User = null;
+                        
                         channel
                             .Details
                             .Messages

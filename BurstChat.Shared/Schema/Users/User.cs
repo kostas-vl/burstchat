@@ -55,14 +55,6 @@ namespace BurstChat.Shared.Schema.Users
         }
 
         /// <summary>
-        /// The list of messages sent from the user.
-        /// </summary>
-        public List<Message> Messages
-        {
-            get; set;
-        }
-
-        /// <summary>
         /// The list of subscribed servers.
         /// </summary>
         public List<Subscription> Subscriptions

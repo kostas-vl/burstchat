@@ -8,6 +8,14 @@ namespace BurstChat.Shared.Models
     public class Registration
     {
         /// <summary>
+        ///   The name that is displayed on clients.
+        /// </summary>
+        public string Name
+        {
+            get; set;
+        }
+
+        /// <summary>
         ///   The email of the new user. It will be also his username for any authentication
         ///   process.
         /// </summary>

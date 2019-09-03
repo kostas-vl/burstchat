@@ -27,6 +27,14 @@ namespace BurstChat.Shared.Schema.Chat
         }
 
         /// <summary>
+        ///   This is a reference navigation property of the user.
+        /// </summary>
+        public User User
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// The content of the message.
         /// </summary>
         public string Content

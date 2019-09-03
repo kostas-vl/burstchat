@@ -48,15 +48,9 @@ export class RegisterComponent implements OnInit {
             .register(this.registration)
             .subscribe(
                 () => this.router.navigateByUrl('/session/login'),
-                error => {
-                    const apiError = tryParseError(error.error);
-                    const notification: Notification = {
-                        title: 'An error occured',
-                        content: apiError !== null
-                            ? apiError.message
-                            : 'Please try to register again in a few seconds.'
-                    };
-                    this.notifyService.notify(notification);
+                httpError => {
+                    const error = tryParseError(httpError.error);
+                    this.notifyService.notifyError(error);
                     this.loading = false;
                 }
             );

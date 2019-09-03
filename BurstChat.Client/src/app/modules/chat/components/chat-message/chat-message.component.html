@@ -2,17 +2,11 @@
 
     <div class="row" *ngIf="message">
 
-        <div class="column column-5 text-center">
-
-            <fa-icon class="message-avatar" icon="comment"></fa-icon>
-
-        </div>
-
-        <div class="column column-95">
+        <div class="column column-100">
 
             <div>
 
-                <strong>{{message.user}}</strong>
+                <strong>{{message.user.name}}</strong>
 
                 <small class="message-date-posted text-muted">{{message.datePosted | date}}</small>
 

@@ -9,6 +9,10 @@ namespace BurstChat.Shared.Errors
     /// </summary>
     public static class ModelErrors
     {
+        public static Error NameInvalid() => new Error(ErrorLevel.Critical,
+                                                       ErrorType.Validation,
+                                                       "The user name is not valid");
+
         public static Error EmailInvalid() => new Error(ErrorLevel.Critical,
                                                         ErrorType.Validation,
                                                         "The email is not a valid format");

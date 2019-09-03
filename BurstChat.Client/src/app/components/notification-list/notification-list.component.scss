@@ -1,12 +1,15 @@
+@import '../../../scss/theme';
+
 .notification-list-container {
     width: 100%;
     position: fixed;
     bottom: 5px;
+    z-index: $z-level-3;
     display: flex;
     justify-content: center;
 }
+
 .notification-list {
     background: transparent;
-    z-index: 3000;
     width: 400px;
 }

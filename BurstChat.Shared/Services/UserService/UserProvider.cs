@@ -94,9 +94,10 @@ namespace BurstChat.Shared.Services.UserService
         ///   Registers a new user based on the provided parameters.
         /// </summary>
         /// <param name="email">The email of the new user</param>
+        /// <param name="name">The name of the new user</param>
         /// <param name="password">The password of the new user</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(string email, string password)
+        public Either<Unit, Error> Insert(string email, string name, string password)
         {
             try
             {
@@ -108,7 +109,7 @@ namespace BurstChat.Shared.Services.UserService
                 var user = new User
                 {
                     Email = email,
-                    Name = string.Empty,
+                    Name = name,
                     Password = hashedPassword,
                     DateCreated = DateTime.Now
                 };
