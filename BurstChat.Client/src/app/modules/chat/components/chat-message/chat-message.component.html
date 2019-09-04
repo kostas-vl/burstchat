@@ -1,25 +1,26 @@
-<div class="bubble" *ngIf="message">
+<div class="bubble">
 
-    <div class="row" *ngIf="message">
+    <div class="row">
 
         <div class="column column-100">
 
             <div>
 
-                <strong>{{message.user.name}}</strong>
+                <strong>{{messageCluster.user.name}}</strong>
 
-                <small class="message-date-posted text-muted">{{message.datePosted | date}}</small>
+                <small class="message-date-posted text-muted">{{messageCluster.datePosted | date}}</small>
 
-                <small *ngIf="message.edited">
+                <!-- <small *ngIf="message.edited">
 
                     <i>(Edited)</i>
 
-                </small>
+                </small> -->
 
             </div>
 
-            <div>
+            <div *ngFor="let message of messageCluster.messages">
 
+                <small class="message-date-posted text-muted">[{{message.datePosted | date:'shortTime'}}]</small>
                 {{message.content}}
 
             </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
+import { MessageCluster } from 'src/app/models/chat/message-cluster';
 import { Payload } from 'src/app/models/signal/payload';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
@@ -31,7 +32,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     public bottomIndex = 0;
 
-    public messages: Message[] = [];
+    public messages: MessageCluster[] = [];
 
     @Input()
     public set options(value: PrivateGroupConnectionOptions | ChannelConnectionOptions) {
@@ -95,6 +96,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     /**
      * Unsubscribes all instanciated subscriptions of the component.
+     * @private
      * @memberof ChatMessagesComponent
      */
     private unsubscribeAll(): void {
@@ -112,6 +114,48 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.onMessageReceivedSubscription
                 .unsubscribe();
         }
+    }
+
+    private isSameDay(clusterDate: Date | string, messageDate: Date | string) {
+        const clusterProperDate: Date = clusterDate instanceof Date 
+            ? clusterDate
+            : new Date(clusterDate);
+        const messageProperDate: Date = messageDate instanceof Date
+            ? messageDate
+            : new Date(messageDate);
+        const isSameDay =
+            clusterProperDate.getFullYear() === messageProperDate.getFullYear()
+            && clusterProperDate.getMonth() === messageProperDate.getMonth()
+            && clusterProperDate.getDate() === messageProperDate.getDate();
+
+        return isSameDay;
+    }
+
+    /**
+     * This method will add a new message to the appropriate cluster or create a new one based on the provided parameters.
+     * This method mutates the provided cluster list.
+     * @private
+     * @param {MessageCluster[]} clusterList The cluster list with all the current messsages.
+     * @param {Message} message The message posted.
+     * @returns The modified cluster list.
+     * @memberof ChatMessagesComponent
+     */
+    private addMessageToCluster(clusterList: MessageCluster[], message: Message) {
+        const lastEntry = clusterList[clusterList.length - 1];
+
+        if (lastEntry && lastEntry.user.id === message.userId && this.isSameDay(lastEntry.datePosted, message.datePosted)) {
+            lastEntry
+                .messages
+                .push(message);
+        } else {
+            clusterList.push({
+                user: message.user,
+                datePosted: message.datePosted,
+                messages: [message]
+            });
+        }
+
+        return clusterList;
     }
 
     /**
@@ -140,22 +184,30 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>): void {
+        let messages: Message[] = [];
         if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup
                 .split('privateGroup:')[1];
-            if (this.internalOptions.privateGroupId === signalGroup)
-                this.messages = payload.content;
-            return;
+            if (this.internalOptions.privateGroupId === signalGroup) {
+                messages = payload.content;
+            }
         }
 
         if (this.internalOptions instanceof ChannelConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup
                 .split('channel:')[1];
-            if (this.internalOptions.channelId === signalGroup)
-                this.messages = payload.content;
-            return;
+            if (this.internalOptions.channelId === signalGroup) {
+                messages = payload.content;
+            }
+        }
+
+        if (messages.length > 0) {
+            this.messages = messages
+                .reduce((previous, current, _) => this.addMessageToCluster(previous, current), ([] as MessageCluster[]));
+        } else {
+            this.messages = [];
         }
     }
 
@@ -166,15 +218,15 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessageReceived(payload: Payload<Message>): void {
+        let message: Message;
+
         if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             const signalGroup = +payload
                 .signalGroup
                 .split('privateGroup:')[1];
             if (this.internalOptions.privateGroupId === signalGroup) {
-                const message = payload.content;
-                this.messages.push(message);
+                message = payload.content;
             }
-            return;
         }
 
         if (this.internalOptions instanceof ChannelConnectionOptions) {
@@ -182,10 +234,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
                 .signalGroup
                 .split('channel:')[1];
             if (this.internalOptions.channelId === signalGroup) {
-                const message = payload.content;
-                this.messages.push(message);
+                message = payload.content;
             }
-            return;
+        }
+
+        if (message) {
+            this.messages = this.addMessageToCluster(this.messages, message);
         }
     }
 

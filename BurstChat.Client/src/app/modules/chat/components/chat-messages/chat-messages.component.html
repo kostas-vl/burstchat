@@ -1,8 +1,8 @@
 <div #messagesContainer class="burst-container" [scrollTop]="messagesContainer.scrollHeight">
 
-    <div *ngFor="let message of messages">
+    <div *ngFor="let cluster of messages">
 
-        <app-chat-message [message]="message"></app-chat-message>
+        <app-chat-message [messageCluster]="cluster"></app-chat-message>
 
     </div>
 

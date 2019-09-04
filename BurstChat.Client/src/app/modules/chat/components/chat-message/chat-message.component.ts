@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Message } from 'src/app/models/chat/message';
+import { MessageCluster } from 'src/app/models/chat/message-cluster';
 
 /**
  * This class represents an angular component that displays on screen a message from a user.
@@ -15,7 +15,7 @@ import { Message } from 'src/app/models/chat/message';
 export class ChatMessageComponent implements OnInit {
 
     @Input()
-    public message?: Message;
+    public messageCluster?: MessageCluster;
 
     /**
      * Creates an instance of ChatMessageComponent.
