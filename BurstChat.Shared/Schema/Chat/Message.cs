@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using BurstChat.Shared.Schema.Users;
 
@@ -38,6 +39,14 @@ namespace BurstChat.Shared.Schema.Chat
         /// The content of the message.
         /// </summary>
         public string Content
+        {
+            get; set;
+        }
+
+        /// <summary>
+        ///     The links posted in the message.
+        /// </summary>
+        public List<Link> Links
         {
             get; set;
         }

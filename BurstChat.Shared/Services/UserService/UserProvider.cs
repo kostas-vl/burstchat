@@ -164,7 +164,7 @@ namespace BurstChat.Shared.Services.UserService
             try
             {
                 return Get(id)
-                    .Bind(user => 
+                    .Bind(user =>
                     {
                         _burstChatContext.Remove(user);
                         return new Success<Unit, Error>(new Unit());
@@ -184,7 +184,7 @@ namespace BurstChat.Shared.Services.UserService
         /// <returns>An either monad</returns>
         public Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId)
         {
-            try 
+            try
             {
                 var servers = _burstChatContext
                     .Servers
@@ -214,7 +214,7 @@ namespace BurstChat.Shared.Services.UserService
             try
             {
                 return Get(userId)
-                    .Bind(user => 
+                    .Bind(user =>
                     {
                         var group = _burstChatContext
                             .PrivateGroupMessage
@@ -245,11 +245,11 @@ namespace BurstChat.Shared.Services.UserService
             try
             {
                 return Get(email)
-                    .Bind<User>(user => 
+                    .Bind<User>(user =>
                     {
                         var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
 
-                        if (!passwordIsValid)  
+                        if (!passwordIsValid)
                             return new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
 
                         return new Success<User, Error>(user);
@@ -259,7 +259,7 @@ namespace BurstChat.Shared.Services.UserService
             {
                 _logger.LogException(e);
                 return new Failure<User, Error>(SystemErrors.Exception());
-            }           
+            }
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace BurstChat.Shared.Services.UserService
                 {
                     OTP = _bcryptService.GenerateHash(timedOneTimePass),
                     DateCreated = dateCreated,
-                    ExpirationDate = dateCreated.AddMinutes(15) 
+                    ExpirationDate = dateCreated.AddMinutes(15)
                 };
 
                 user.OneTimePasswords
@@ -342,6 +342,87 @@ namespace BurstChat.Shared.Services.UserService
                 }
                 else
                     return new Failure<Unit, Error>(UserErrors.UserOneTimePasswordInvalid());
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///     Fetches all invitations sent to a user based on the provided id.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<Invitation>, Error> GetInvitations(long userId)
+        {
+            try
+            {
+                var invitations = _burstChatContext
+                    .Invitations
+                    .Where(i => i.UserId == userId)
+                    .ToList();
+
+                return new Success<IEnumerable<Invitation>, Error>(invitations);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<Invitation>, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///     This method will validate the provided invitation against the provided user.
+        /// </summary>
+        /// <param name="invitation">The server invitation to be validated</param>
+        /// <returns>An either monad</returns>
+        public Either<Invitation, Error> ValidateInvitation(long userId, Invitation invitation)
+        {
+            if (invitation != null && userId == invitation.UserId)
+                return new Success<Invitation, Error>(invitation);
+            else
+                return new Failure<Invitation, Error>(Shared.Errors.UserErrors.CouldNotUpdateInvitation());
+        }
+
+        /// <summary>
+        ///     This method will updated the Accepted or Declined propery of an existing invitation based on the instance
+        ///     provided.
+        /// </summary>
+        /// <param name="invitation">The server invitation to be updated</param>
+        /// <returns>An either monad</returns>
+        public Either<Unit, Error> UpdateInvitation(Invitation invitation)
+        {
+            try
+            {
+                var storedInvitation = _burstChatContext
+                    .Invitations
+                    .FirstOrDefault(i => i.Id == invitation.Id);
+
+                if (storedInvitation == null)
+                    return new Failure<Unit, Error>(UserErrors.CouldNotUpdateInvitation());
+
+                storedInvitation.Accepted = invitation.Accepted;
+                storedInvitation.Declined = invitation.Declined;
+                storedInvitation.DateUpdated = DateTime.Now;
+
+                if (storedInvitation.Accepted)
+                {
+                    var subscription = new Subscription
+                    {
+                        ServerId = storedInvitation.ServerId,
+                        UserId = storedInvitation.UserId,
+                    };
+
+                    _burstChatContext
+                        .Subscriptions
+                        .Add(subscription);
+                }
+
+                _burstChatContext.SaveChanges();
+
+                return new Success<Unit, Error>(new Unit());
             }
             catch (Exception e)
             {

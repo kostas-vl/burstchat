@@ -28,5 +28,9 @@ namespace BurstChat.Shared.Errors
         public static Error UserOneTimePasswordExpired() => new Error(ErrorLevel.Critical,
                                                                       ErrorType.Validation,
                                                                       "The one time password has expired");
+
+        public static Error CouldNotUpdateInvitation() => new Error(ErrorLevel.Critical,
+                                                                    ErrorType.DataProcess,
+                                                                    "Could not update invitation");
     }
 }

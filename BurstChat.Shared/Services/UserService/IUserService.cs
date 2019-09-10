@@ -47,7 +47,7 @@ namespace BurstChat.Shared.Services.UserService
         Either<Unit, Error> Update(User user);
 
         /// <summary>
-        ///   Deletes a registered user from the database based on the provided user instance.
+        ///   Deletes a registered user from the database based on the provided user id.
         /// </summary>
         /// <param name="id">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -61,8 +61,7 @@ namespace BurstChat.Shared.Services.UserService
         Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId);
 
         /// <summary>
-        ///   This method will return all private groups that the user with the provided user id
-        ///   is part of.
+        ///   This method will return all private groups that the user is part of.
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -92,6 +91,28 @@ namespace BurstChat.Shared.Services.UserService
         /// <param name="password">The string value of the password that will be hashed</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> ChangePassword(string oneTimePass, string password);
+
+        /// <summary>
+        ///     Fetches all invitations sent to a user based on the provided id.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<Invitation>, Error> GetInvitations(long userId);
+
+        /// <summary>
+        ///     This method will validate the provided invitation against the provided user.
+        /// </summary>
+        /// <param name="invitation">The server invitation to be validated</param>
+        /// <returns>An either monad</returns>
+        Either<Invitation, Error> ValidateInvitation(long userId, Invitation invitation);
+
+        /// <summary>
+        ///     This method will updated the Accepted or Declined propery of an existing invitation based on the instance
+        ///     provided.
+        /// </summary>
+        /// <param name="invitation">The server invitation to be updated</param>
+        /// <returns>An either monad</returns>
+        Either<Unit, Error> UpdateInvitation(Invitation invitation);
 
         /// <summary>
         ///   This method will fetch all appropriate user claims based on the provided instance.

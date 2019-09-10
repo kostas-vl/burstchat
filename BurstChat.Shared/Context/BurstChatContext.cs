@@ -16,12 +16,22 @@ namespace BurstChat.Shared.Context
             get; set;
         }
 
+        public DbSet<Link> Links
+        {
+            get; set;
+        }
+
         public DbSet<Server> Servers
         {
             get; set;
         }
 
         public DbSet<Subscription> Subscriptions
+        {
+            get; set;
+        }
+
+        public DbSet<Invitation> Invitations
         {
             get; set;
         }
