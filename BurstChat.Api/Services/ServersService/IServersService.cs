@@ -42,5 +42,20 @@ namespace BurstChat.Api.Services.ServersService
         /// <param name="server">The server instance from which the information update will be based upon</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> Update(Server server);
+
+        /// <summary>
+        ///     Fetches all invitations sent for a server based on the provided id.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<Invitation>, Error> GetInvitations(int serverId);
+
+        /// <summary>
+        ///     This method will create a new server invitation entry based on the provided parameters.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="userId">The id of the target user</param>
+        /// <returns>An either monad</returns>
+        Either<Unit, Error> InsertInvitation(int serverId, long userId);
     }
 }

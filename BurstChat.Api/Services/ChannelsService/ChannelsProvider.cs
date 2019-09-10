@@ -38,6 +38,25 @@ namespace BurstChat.Api.Services.ChannelsService
         }
 
         /// <summary>
+        ///     Queries the content of the provided message and returns a list of found links in it.
+        /// </summary>
+        /// <param name="message">The message instance of which the content will be queried</param>
+        /// <returns>A list of links</returns>
+        private List<Link> GetLinksFromContent(Message message)
+        {
+            return message
+                .Content
+                .Split(" ")
+                .Where(word => Uri.TryCreate(word, UriKind.RelativeOrAbsolute, out _))
+                .Select(uri => new Link
+                {
+                    Url = uri,
+                    DateCreated = DateTime.Now
+                })
+                .ToList();
+        }
+
+        /// <summary>
         ///   This method will return the data of a channel based on the provided channel id.
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
@@ -78,7 +97,7 @@ namespace BurstChat.Api.Services.ChannelsService
             {
                 return _serversService
                     .Get(serverId)
-                    .Bind(server => 
+                    .Bind(server =>
                     {
                         var channelEntry = new Channel
                         {
@@ -117,7 +136,7 @@ namespace BurstChat.Api.Services.ChannelsService
                 var channelId = channel?.Id ?? default(int);
 
                 return Get(channelId)
-                    .Bind(channelEntry => 
+                    .Bind(channelEntry =>
                     {
                         channelEntry.Name = channel.Name;
                         channelEntry.IsPublic = channel.IsPublic;
@@ -144,7 +163,7 @@ namespace BurstChat.Api.Services.ChannelsService
             try
             {
                 return Get(channelId)
-                    .Bind(channel => 
+                    .Bind(channel =>
                     {
                         _burstChatContext
                             .Channels
@@ -182,10 +201,11 @@ namespace BurstChat.Api.Services.ChannelsService
             try
             {
                 return Get(channelId)
-                    .Bind(channel => 
+                    .Bind(channel =>
                     {
                         message.User = null;
-                        
+                        message.Links = GetLinksFromContent(message);
+
                         channel
                             .Details
                             .Messages
@@ -224,6 +244,7 @@ namespace BurstChat.Api.Services.ChannelsService
                         if (messageEntry != null)
                         {
                             messageEntry.Content = message.Content;
+                            message.Links = GetLinksFromContent(message);
                             messageEntry.Edited = true;
 
                             _burstChatContext.SaveChanges();
@@ -252,7 +273,7 @@ namespace BurstChat.Api.Services.ChannelsService
             try
             {
                 return Get(channelId)
-                    .Bind(channel => 
+                    .Bind(channel =>
                     {
                         channel
                             .Details

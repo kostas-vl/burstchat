@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BurstChat.Api.Errors;
-using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Services.UserService;
@@ -115,6 +113,40 @@ namespace BurstChat.Api.Controllers
                 .GetUserId()
                 .Bind(_userService.GetPrivateGroups);
 
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///     Fetches all invitations sent to the user.
+        /// </summary>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("invitations")]
+        [ProducesResponseType(typeof(IEnumerable<Invitation>), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult GetInvitations()
+        {
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(_userService.GetInvitations);
+
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///     Updates the response of a user to a sent server invitation.
+        /// </summary>
+        /// <param name="invitation">The invitation instance to be used for the update</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpPut("invitations")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult UpdateInvitation([FromBody] Invitation invitation)
+        {
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _userService.ValidateInvitation(userId, invitation))
+                .Bind(_userService.UpdateInvitation);
+            
             return this.UnwrapMonad(monad);
         }
     }

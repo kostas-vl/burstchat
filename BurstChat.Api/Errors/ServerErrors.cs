@@ -9,11 +9,14 @@ namespace BurstChat.Api.Errors
     /// </summary>
     public static class ServerErrors
     {
-        /// <summary>
-        ///   This method infrorm the application that a server was not found based on an executed operation.
-        /// </summary>
         public static Error ServerNotFound() => new Error(ErrorLevel.Critical, 
                                                           ErrorType.DataProcess,
                                                           "The server was not found");
+
+        public static Error UserAlreadyMember() => new Error(ErrorLevel.Critical,
+                                                             ErrorType.DataProcess,
+                                                             "The user is already a member of the server");
+
+
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BurstChat.Api.Migrations
 {
-    public partial class InitialMilestoneMigration : Migration
+    public partial class InitialMilestone2Migration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -107,6 +107,36 @@ namespace BurstChat.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Invitations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ServerId = table.Column<int>(nullable: false),
+                    UserId = table.Column<long>(nullable: false),
+                    Accepted = table.Column<bool>(nullable: false),
+                    Declined = table.Column<bool>(nullable: false),
+                    DateUpdated = table.Column<DateTime>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Invitations_Servers_ServerId",
+                        column: x => x.ServerId,
+                        principalTable: "Servers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Invitations_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
@@ -190,6 +220,27 @@ namespace BurstChat.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Links",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Url = table.Column<string>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    MessageId = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Links", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Links_Messages_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Messages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Channels_DetailsId",
                 table: "Channels",
@@ -199,6 +250,21 @@ namespace BurstChat.Api.Migrations
                 name: "IX_Channels_ServerId",
                 table: "Channels",
                 column: "ServerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_ServerId",
+                table: "Invitations",
+                column: "ServerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_UserId",
+                table: "Invitations",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Links_MessageId",
+                table: "Links",
+                column: "MessageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChannelDetailsId",
@@ -247,13 +313,19 @@ namespace BurstChat.Api.Migrations
                 name: "Channels");
 
             migrationBuilder.DropTable(
-                name: "Messages");
+                name: "Invitations");
+
+            migrationBuilder.DropTable(
+                name: "Links");
 
             migrationBuilder.DropTable(
                 name: "OneTimePassword");
 
             migrationBuilder.DropTable(
                 name: "Subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "Servers");

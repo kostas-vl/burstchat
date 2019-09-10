@@ -9,14 +9,32 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BurstChat.Api.Migrations
 {
     [DbContext(typeof(BurstChatContext))]
-    [Migration("20190903154611_RemovedUserFromMessages")]
-    partial class RemovedUserFromMessages
+    [Migration("20190910182245_InitialMilestone2Migration")]
+    partial class InitialMilestone2Migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity("BurstChat.Shared.Schema.Chat.Link", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<long?>("MessageId");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("Links");
+                });
 
             modelBuilder.Entity("BurstChat.Shared.Schema.Chat.Message", b =>
                 {
@@ -78,6 +96,32 @@ namespace BurstChat.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ChannelDetails");
+                });
+
+            modelBuilder.Entity("BurstChat.Shared.Schema.Servers.Invitation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Accepted");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime?>("DateUpdated");
+
+                    b.Property<bool>("Declined");
+
+                    b.Property<int>("ServerId");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("BurstChat.Shared.Schema.Servers.Server", b =>
@@ -172,6 +216,13 @@ namespace BurstChat.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("BurstChat.Shared.Schema.Chat.Link", b =>
+                {
+                    b.HasOne("BurstChat.Shared.Schema.Chat.Message")
+                        .WithMany("Links")
+                        .HasForeignKey("MessageId");
+                });
+
             modelBuilder.Entity("BurstChat.Shared.Schema.Chat.Message", b =>
                 {
                     b.HasOne("BurstChat.Shared.Schema.Servers.ChannelDetails")
@@ -182,8 +233,8 @@ namespace BurstChat.Api.Migrations
                         .WithMany("Messages")
                         .HasForeignKey("PrivateGroupMessageId");
 
-                    b.HasOne("BurstChat.Shared.Schema.Users.User")
-                        .WithMany("Messages")
+                    b.HasOne("BurstChat.Shared.Schema.Users.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -197,6 +248,19 @@ namespace BurstChat.Api.Migrations
                     b.HasOne("BurstChat.Shared.Schema.Servers.Server")
                         .WithMany("Channels")
                         .HasForeignKey("ServerId");
+                });
+
+            modelBuilder.Entity("BurstChat.Shared.Schema.Servers.Invitation", b =>
+                {
+                    b.HasOne("BurstChat.Shared.Schema.Servers.Server", "Server")
+                        .WithMany()
+                        .HasForeignKey("ServerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BurstChat.Shared.Schema.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BurstChat.Shared.Schema.Servers.Subscription", b =>

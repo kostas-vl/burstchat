@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BurstChat.Api.Errors;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Errors;
@@ -90,6 +91,35 @@ namespace BurstChat.Api.Controllers
         public IActionResult Delete(int serverId)
         {
             var monad = _serversService.Delete(serverId);
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///     Fetches all invitations sent out to users to join the server specified in the provided parameter.`
+        /// </summary>
+        /// <param name="serverId">The id of the target server</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("{serverId:int}/invitations")]
+        [ProducesResponseType(typeof(IEnumerable<Invitation>), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult GetInvitations(int serverId)
+        {
+            var monad = _serversService.GetInvitations(serverId);
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///     Creates a new invitation to a user for the specified server.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="userId">The id of the target user</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpPost("{serverId:int}/invitations")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult InsertInvitation(int serverId, [FromBody] long userId)
+        {
+            var monad = _serversService.InsertInvitation(serverId, userId);
             return this.UnwrapMonad(monad);
         }
     }

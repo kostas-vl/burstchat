@@ -71,11 +71,11 @@ namespace BurstChat.Api.Services.ServersService
             try
             {
                 return Get(serverId)
-                    .Bind(server => 
+                    .Bind(server =>
                     {
-                         _burstChatContext 
-                            .Servers
-                            .Remove(server);
+                        _burstChatContext
+                           .Servers
+                           .Remove(server);
 
                         _burstChatContext.SaveChanges();
 
@@ -103,8 +103,8 @@ namespace BurstChat.Api.Services.ServersService
                 {
                     Name = server.Name,
                     DateCreated = server.DateCreated,
-                    Subscriptions = new List<Subscription> 
-                    { 
+                    Subscriptions = new List<Subscription>
+                    {
                         new Subscription
                         {
                             UserId = userId
@@ -138,9 +138,78 @@ namespace BurstChat.Api.Services.ServersService
             try
             {
                 return Get(server.Id)
-                    .Bind(s =>
+                    .Bind(serverEntry =>
                     {
-                        s.Name = server.Name;
+                        serverEntry.Name = server.Name;
+
+                        _burstChatContext.SaveChanges();
+
+                        return new Success<Unit, Error>(new Unit());
+                    });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///     Fetches all invitations sent for a server based on the provided id.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<Invitation>, Error> GetInvitations(int serverId)
+        {
+            try
+            {
+                var invitations = _burstChatContext
+                    .Invitations
+                    .Where(i => i.ServerId == serverId)
+                    .ToList();
+
+                return new Success<IEnumerable<Invitation>, Error>(invitations);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<Invitation>, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///     This method will create a new server invitation entry based on the provided parameters.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="userId">The id of the target user</param>
+        /// <returns>An either monad</returns>
+        public Either<Unit, Error> InsertInvitation(int serverId, long userId)
+        {
+            try
+            {
+                return Get(serverId)
+                    .Bind<Unit>(server =>
+                    {
+                        var userExists = server
+                            .Subscriptions
+                            .Any(s => s.UserId == userId);
+
+                        if (userExists)
+                            return new Failure<Unit, Error>(ServerErrors.UserAlreadyMember());
+
+                        var invitation = new Invitation
+                        {
+                            ServerId = serverId,
+                            UserId = userId,
+                            Accepted = false,
+                            Declined = false,
+                            DateUpdated = null,
+                            DateCreated = DateTime.Now
+                        };
+
+                        _burstChatContext
+                            .Invitations
+                            .Add(invitation);
 
                         _burstChatContext.SaveChanges();
 
