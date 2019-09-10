@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Chat;
+using BurstChat.Shared.Schema.Servers;
 using BurstChat.Signal.Models;
 
 namespace BurstChat.Signal.Hubs.Chat
@@ -13,6 +14,49 @@ namespace BurstChat.Signal.Hubs.Chat
     /// </summary>
     public interface IChatClient
     {
+        /// <summary>
+        ///     Informs the caller of all the invitations sent to him.
+        /// </summary>
+        /// <param name="invitations">The server invitations that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task Invitations(IEnumerable<Invitation> invitations);
+
+        /// <summary>
+        ///     The called is informed about an error occured while trying to fetch all invitations
+        ///     sent to him.
+        /// </summary>
+        /// <param name="error">The error that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task Invitations(Error error);
+
+        /// <summary>
+        ///     Informs a user about a new invitation that was sent to him.
+        /// </summary>
+        /// <param name="invitation">The server invitation that will be delivered to the user</param>
+        /// <returns>A task instance</returns>
+        Task NewInvitation(Invitation invitation);
+
+        /// <summary>
+        ///     Informs the caller about an error that occured while trying to send a new invitation.
+        /// </summary>
+        /// <param name="error">The error that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task NewInvitation(Error error);
+
+        /// <summary>
+        ///     Informs all users of a server that a new invitation was accepted by a user.
+        /// </summary>
+        /// <param name="invitation">The invitation that will be delivered to the users</param>
+        /// <returns>A task instance</returns>
+        Task UpdatedInvitation(Invitation invitation);
+
+        /// <summary>
+        ///     Informs the caller about an error that occured while trying to modify an invitation.
+        /// </summary>
+        /// <param name="error">The error that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task UpdatedInvitation(Error error);
+
         /// <summary>
         ///   Informs the caller that his connection id was added to a signal group.
         /// </summary>
