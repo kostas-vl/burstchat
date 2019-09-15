@@ -58,7 +58,7 @@ namespace BurstChat.Shared.Services.UserService
         /// <summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
-        Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId);
+        Either<IEnumerable<Server>, Error> GetSubscriptions(long userId);
 
         /// <summary>
         ///   This method will return all private groups that the user is part of.

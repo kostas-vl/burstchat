@@ -15,6 +15,20 @@ namespace BurstChat.Signal.Hubs.Chat
     public interface IChatClient
     {
         /// <summary>
+        ///     Informs the caller that the new server that was requested has been created successfully.
+        /// </summary>
+        /// <param name="server">The server instance that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task AddedServer(Server server);
+
+        /// <summary>
+        ///     informs the caller that the new server that was requested could not be created.
+        /// </summary>
+        /// <param name="error">The error that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task AddedServer(Error error);
+
+        /// <summary>
         ///     Informs the caller of all the invitations sent to him.
         /// </summary>
         /// <param name="invitations">The server invitations that will be delivered to the caller</param>

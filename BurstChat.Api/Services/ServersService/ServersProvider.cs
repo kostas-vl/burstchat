@@ -95,7 +95,7 @@ namespace BurstChat.Api.Services.ServersService
         /// <param name="userId">The id of the user that creates the server</param>
         /// <param name="server">The server instance of which the information will be stored in the database</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(long userId, Server server)
+        public Either<Server, Error> Insert(long userId, Server server)
         {
             try
             {
@@ -118,12 +118,12 @@ namespace BurstChat.Api.Services.ServersService
 
                 _burstChatContext.SaveChanges();
 
-                return new Success<Unit, Error>(new Unit());
+                return new Success<Server, Error>(serverEntry);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Server, Error>(SystemErrors.Exception());
             }
         }
 

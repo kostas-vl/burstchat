@@ -29,7 +29,7 @@ export class UserService {
      * Requests information about the user from the BurstChat API.
      * @memberof UserService
      */
-    public getUser(): void {
+    public getUser() {
         this.httpClient
             .get<User>('/api/user')
             .subscribe(data => this.userSource.next(data));
@@ -39,7 +39,7 @@ export class UserService {
      * Requests the subscribed server of the current authenticate user.
      * @memberof UserService
      */
-    public getSubscriptions(): void {
+    public getSubscriptions() {
         this.httpClient
             .get<Server[]>('/api/user/subscriptions')
             .subscribe(data => this.subscriptionsSource.next(data));

@@ -55,7 +55,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="server">The server instance to be created</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Server), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post([FromBody] Server server)
         {

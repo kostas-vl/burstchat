@@ -33,7 +33,7 @@ namespace BurstChat.Api.Services.ServersService
         /// <param name="userId">The id of the user that creates the server</param>
         /// <param name="server">The server instance of which the information will be stored in the database</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Insert(long userId, Server server);
+        Either<Server, Error> Insert(long userId, Server server);
 
         /// <summary>
         ///   This method will update information about an existing server based on the provided server

@@ -90,11 +90,11 @@ namespace BurstChat.Api.Controllers
         [HttpGet("subscriptions")]
         [ProducesResponseType(typeof(IEnumerable<Server>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult GetSubscribedServers()
+        public IActionResult GetSubscriptions()
         {
             var monad = HttpContext
                 .GetUserId()
-                .Bind(_userService.GetSubscribedServers);
+                .Bind(_userService.GetSubscriptions);
 
             return this.UnwrapMonad(monad);
         }

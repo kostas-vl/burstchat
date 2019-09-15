@@ -4,6 +4,7 @@ import { Subject, BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { Payload } from 'src/app/models/signal/payload';
+import { Server } from 'src/app/models/servers/server';
 import { Message } from 'src/app/models/chat/message';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -21,6 +22,8 @@ export class ChatService {
     private connection?: HubConnection;
 
     private onConnectedSource = new Subject();
+
+    private addedServerSource = new Subject<Server>();
 
     private invitationsSource = new BehaviorSubject<Invitation[]>([]);
 
@@ -51,6 +54,8 @@ export class ChatService {
     private errorSource = new Subject<BurstChatError>();
 
     public onConnected = this.onConnectedSource.asObservable();
+
+    public addedServer = this.addedServerSource.asObservable();
 
     public invitations = this.invitationsSource.asObservable();
 
@@ -147,6 +152,9 @@ export class ChatService {
         }
 
         this.connection
+            .on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource));
+
+        this.connection
             .on('invitations', data => this.ProcessRawSignal(data, this.invitationsSource));
 
         this.connection
@@ -198,6 +206,19 @@ export class ChatService {
     public DisposeConnection(): void {
         if (this.connection && this.connection.state === HubConnectionState.Connected) {
             this.connection.stop();
+        }
+    }
+
+    /**
+     * Creates a new BurstChat server based on the provided instance.
+     * @param {Server} server The server instance to be created.
+     * @memberof ChatService
+     */
+    public addServer(server: Server) {
+        if (this.connection) {
+            this.connection
+                .invoke('addServer', server)
+                .catch(error => console.log(error));
         }
     }
 

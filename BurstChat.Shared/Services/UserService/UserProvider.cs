@@ -182,7 +182,7 @@ namespace BurstChat.Shared.Services.UserService
         /// <summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Server>, Error> GetSubscribedServers(long userId)
+        public Either<IEnumerable<Server>, Error> GetSubscriptions(long userId)
         {
             try
             {

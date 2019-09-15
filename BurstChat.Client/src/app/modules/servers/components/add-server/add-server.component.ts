@@ -1,20 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Notification } from 'src/app/models/notify/notification';
-import { tryParseError } from 'src/app/models/errors/error';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays a form for creating a new BurstChat server.
  * @class AddServerComponent
  */
 @Component({
-  selector: 'app-add-server',
-  templateUrl: './add-server.component.html',
-  styleUrls: ['./add-server.component.scss']
+    selector: 'app-add-server',
+    templateUrl: './add-server.component.html',
+    styleUrls: ['./add-server.component.scss']
 })
-export class AddServerComponent implements OnInit {
+export class AddServerComponent implements OnInit, OnDestroy {
+
+    private addedServerSubscription?: Subscription;
 
     public server: Server = new BurstChatServer();
 
@@ -26,14 +28,40 @@ export class AddServerComponent implements OnInit {
      */
     constructor(
         private notifyService: NotifyService,
-        private serversService: ServersService
+        private chatService: ChatService
     ) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof AddServerComponent
      */
-    public ngOnInit() { }
+    public ngOnInit() {
+        this.addedServerSubscription = this
+            .chatService
+            .addedServer
+            .subscribe(server => {
+                if (server.name === this.server.name) {
+                    const notification: Notification = {
+                        title: 'Success',
+                        content: `The server ${this.server.name} was created successfully`
+                    };
+                    this.notifyService.notify(notification);
+                    this.server = new BurstChatServer();
+                    this.loading = false;
+                }
+            });
+    }
+
+    /**
+     * Executes any neccessary code for the destruction of the component.
+     * @memberof AddServerComponent
+     */
+    public ngOnDestroy() {
+        if (this.addedServerSubscription) {
+            this.addedServerSubscription
+                .unsubscribe();
+        }
+    }
 
     /**
      * Handles the create button click event.
@@ -52,33 +80,8 @@ export class AddServerComponent implements OnInit {
 
         this.loading = true;
 
-        this.serversService
-            .post(this.server)
-            .subscribe(
-                () => {
-                    const notification: Notification = {
-                        title: 'Success',
-                        content: `The server ${this.server.name} was created successfully`
-                    };
-                    this.notifyService
-                        .notify(notification);
-                    this.server = new BurstChatServer();
-                    this.loading = false;
-                },
-                httpError => {
-                  const error = tryParseError(httpError.error);
-                  const content = error
-                      ? error.message
-                      : '';
-                  const notification: Notification = {
-                      title: 'An error occured',
-                      content: content
-                  };
-                  this.notifyService
-                      .notify(notification);
-                  this.loading = false;
-                }
-            );
+        this.chatService
+            .addServer(this.server);
     }
 
 }

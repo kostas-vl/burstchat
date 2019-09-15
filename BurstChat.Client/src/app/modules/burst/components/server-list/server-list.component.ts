@@ -24,6 +24,10 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
     private subscribedServersSubscription?: Subscription;
 
+    private activeServerSubscription?: Subscription;
+
+    private addedServerSubscription?: Subscription;
+
     private updateInvitationSubscription?: Subscription;
 
     private user?: User;
@@ -60,6 +64,21 @@ export class ServerListComponent implements OnInit, OnDestroy {
             .subscriptions
             .subscribe(servers => this.servers = servers);
 
+        this.activeServerSubscription = this
+            .serversService
+            .activeServer
+            .subscribe(server => {
+                let serverInList = this.servers.find(s => server && s.id === server.id);
+                if (serverInList) {
+                    serverInList = server;
+                }
+            });
+
+        this.addedServerSubscription = this
+            .chatService
+            .addedServer
+            .subscribe(server => this.servers.push(server));
+
         this.updateInvitationSubscription = this
             .chatService
             .updatedInvitation
@@ -84,6 +103,16 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
         if (this.subscribedServersSubscription) {
             this.subscribedServersSubscription
+                .unsubscribe();
+        }
+
+        if (this.activeServerSubscription) {
+            this.activeServerSubscription
+                .unsubscribe();
+        }
+
+        if (this.addedServerSubscription) {
+            this.addedServerSubscription
                 .unsubscribe();
         }
 

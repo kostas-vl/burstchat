@@ -19,5 +19,13 @@ namespace BurstChat.Signal.Services.ServerService
         /// <param name="serverId">The id of the target server</param>
         /// <returns>A task of an either monad</returns>
         Task<Either<Server, Error>> GetAsync(HttpContext context, int serverId);
+
+        /// <summary>
+        ///     Requests the createion of a new server based on the provided id.
+        /// </summary>
+        /// <param name="context">The current http context</param>
+        /// <param name="server">The server instance to be created</param>
+        /// <returns>A task of an either monad</returns>
+        Task<Either<Server, Error>> PostAsync(HttpContext context, Server server);
     }
 }
