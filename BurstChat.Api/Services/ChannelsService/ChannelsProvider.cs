@@ -38,22 +38,45 @@ namespace BurstChat.Api.Services.ChannelsService
         }
 
         /// <summary>
+        ///     Queries the content of the provided message and returns its content with all links removed..
+        /// </summary>
+        /// <param name="message">The message instance of which the content will be queried</param>
+        /// <returns>The string content</returns>
+        private string RemoveLinksFromContent(Message message)
+        {
+            var words = message
+                .Content
+                .Split(" ");
+
+            var normilizedContent = words
+                .Where(word => !Uri.TryCreate(word, UriKind.Absolute, out _))
+                .ToList()
+                .Aggregate(String.Empty, (current, next) => $"{current} {next}");
+
+            return normilizedContent;
+        }
+
+        /// <summary>
         ///     Queries the content of the provided message and returns a list of found links in it.
         /// </summary>
         /// <param name="message">The message instance of which the content will be queried</param>
         /// <returns>A list of links</returns>
         private List<Link> GetLinksFromContent(Message message)
         {
-            return message
+            var words = message
                 .Content
-                .Split(" ")
-                .Where(word => Uri.TryCreate(word, UriKind.RelativeOrAbsolute, out _))
+                .Split(" ");
+
+            var links = words
+                .Where(word => Uri.TryCreate(word, UriKind.Absolute, out _))
                 .Select(uri => new Link
                 {
                     Url = uri,
                     DateCreated = DateTime.Now
                 })
                 .ToList();
+
+            return links;
         }
 
         /// <summary>
@@ -68,8 +91,11 @@ namespace BurstChat.Api.Services.ChannelsService
                 var channel = _burstChatContext
                     .Channels
                     .Include(c => c.Details)
-                    .ThenInclude(d => d.Messages)
-                    .ThenInclude(m => m.User)
+                        .ThenInclude(d => d.Messages)
+                            .ThenInclude(m => m.Links)
+                    .Include(d => d.Details)
+                        .ThenInclude(m => m.Messages)
+                            .ThenInclude(m => m.User)
                     .FirstOrDefault(c => c.Id == channelId);
 
                 if (channel != null)
@@ -196,7 +222,7 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <param name="channelId">The id of the channel to which the message will be inserted</param>
         /// <param name="message">The message to be inserted</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> InsertMessage(int channelId, Message message)
+        public Either<Message, Error> InsertMessage(int channelId, Message message)
         {
             try
             {
@@ -205,6 +231,7 @@ namespace BurstChat.Api.Services.ChannelsService
                     {
                         message.User = null;
                         message.Links = GetLinksFromContent(message);
+                        message.Content = RemoveLinksFromContent(message);
 
                         channel
                             .Details
@@ -213,13 +240,13 @@ namespace BurstChat.Api.Services.ChannelsService
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<Message, Error>(message);
                     });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
 

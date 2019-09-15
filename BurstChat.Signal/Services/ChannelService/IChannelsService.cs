@@ -38,7 +38,7 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be posted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> PostAsync(HttpContext context, int channelId, Message message);
+        Task<Either<Message, Error>> PostAsync(HttpContext context, int channelId, Message message);
 
         /// <summary>
         ///  This method will edit an existing message of a channel based on the provided channel id 

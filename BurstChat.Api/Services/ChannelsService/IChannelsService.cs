@@ -55,7 +55,7 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <param name="channelId">The id of the channel to which the message will be inserted</param>
         /// <param name="message">The message to be inserted</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> InsertMessage(int channelId, Message message);
+        Either<Message, Error> InsertMessage(int channelId, Message message);
 
         /// <summary>
         ///   This method will update the contents of the provided message on the provided channel.

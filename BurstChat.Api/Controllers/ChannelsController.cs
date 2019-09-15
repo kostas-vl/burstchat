@@ -118,7 +118,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="message">The message to be added</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost("{channelId:int}/messages")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PostMessage(int channelId, [FromBody] Message message)
         {

@@ -419,16 +419,16 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _channelsService.PostAsync(httpContext, channelId, message);
             var signalGroup = ChannelSignalName(channelId);
 
-            if (monad is Success<Unit, Error> success)
+            if (monad is Success<Message, Error> success)
             {
                 var payload = new Payload<Message>
                 {
                     SignalGroup = signalGroup,
-                    Content = message
+                    Content = success.Value
                 };
                 await Clients.Groups(signalGroup).ChannelMessageReceived(payload);
             }
-            else if (monad is Failure<Unit, Error> failure)
+            else if (monad is Failure<Message, Error> failure)
             {
                 var payload = new Payload<Error>
                 {

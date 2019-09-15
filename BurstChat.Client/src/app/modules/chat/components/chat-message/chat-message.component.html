@@ -10,18 +10,25 @@
 
                 <small class="message-date-posted text-muted">{{messageCluster.datePosted | date}}</small>
 
-                <!-- <small *ngIf="message.edited">
-
-                    <i>(Edited)</i>
-
-                </small> -->
-
             </div>
 
             <div *ngFor="let message of messageCluster.messages">
 
                 <small class="message-date-posted text-muted">[{{message.datePosted | date:'shortTime'}}]</small>
+
                 {{message.content}}
+
+                <span *ngFor="let link of message.links">
+
+                    <a [attr.href]="link.url" target="_blank">{{link.url}}</a>
+
+                </span>
+
+                <small *ngIf="message.edited">
+
+                    <i>(Edited)</i>
+
+                </small>
 
             </div>
 

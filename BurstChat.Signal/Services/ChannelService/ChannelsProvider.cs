@@ -87,7 +87,7 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be posted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> PostAsync(HttpContext context, int channelId, Message message)
+        public async Task<Either<Message, Error>> PostAsync(HttpContext context, int channelId, Message message)
         {
             try
             {
@@ -96,12 +96,12 @@ namespace BurstChat.Signal.Services.ChannelsService
                 var jsonMessage = JsonConvert.SerializeObject(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                return await _apiInteropService.SendAsync(context, method, url, content);
+                return await _apiInteropService.SendAsync<Message>(context, method, url, content);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
 
