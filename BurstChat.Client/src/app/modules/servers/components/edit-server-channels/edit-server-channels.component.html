@@ -1,0 +1,60 @@
+<div class="row">
+
+    <div class="column">
+
+        Channels
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-80">
+
+        <input type="text" placeholder="Name" [(ngModel)]="newChannelName">
+
+    </div>
+
+    <div class="column column-20">
+
+        <button class="button w-100" (click)="onAddChannel()">Add</button>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-100">
+
+        <div class="entity-list">
+
+            <span class="text-muted" *ngIf="server.channels.length === 0">
+
+                There are no channels on this server. Why dont you make one?
+
+            </span>
+
+            <div class="entity" *ngFor="let channel of server.channels; let i = index">
+
+                <div>
+
+                    {{channel.name}} <span class="text-muted">#{{channel.id}} <small>Created at
+                            {{channel.dateCreated | date}}</small></span>
+
+                </div>
+
+                <div class="ml-auto">
+
+                    <button class="button button-clear">DELETE</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -112,7 +112,7 @@ namespace BurstChat.Shared.Services.UserService
         /// </summary>
         /// <param name="invitation">The server invitation to be updated</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> UpdateInvitation(Invitation invitation);
+        Either<Invitation, Error> UpdateInvitation(Invitation invitation);
 
         /// <summary>
         ///   This method will fetch all appropriate user claims based on the provided instance.

@@ -93,3 +93,16 @@ blockquote {
     max-width: 95%;
 }
 
+.entity-list {
+    background-color: $dark-color;
+    height: 400px;
+    overflow-y: scroll;
+}
+
+.entity {
+    border-bottom: 1px solid $secondary-color;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

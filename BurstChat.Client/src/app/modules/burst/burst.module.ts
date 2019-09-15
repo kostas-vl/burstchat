@@ -6,9 +6,6 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSmile, faDragon, faUserCircle, faCog, faPlus, faPenSquare, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
-import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { ChannelsService } from 'src/app/modules/burst/services/channels/channels.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
 import { TopbarComponent } from 'src/app/modules/burst/components/topbar/topbar.component';
@@ -36,9 +33,6 @@ import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.
         ChannelComponent
     ],
     providers: [
-        UserService,
-        ServersService,
-        ChannelsService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthHttpInterceptor,

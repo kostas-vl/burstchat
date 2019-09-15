@@ -4,9 +4,10 @@
     width: 100%;
     position: fixed;
     bottom: 5px;
+    right: 5px;
     z-index: $z-level-3;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
 .notification-list {

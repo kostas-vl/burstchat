@@ -1,0 +1,39 @@
+<div class="row">
+
+    <div class="column column-100">
+
+        Users
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-80">
+
+        <input type="text" placeholder="Name" [(ngModel)]="newUserId">
+
+    </div>
+
+    <div class="column column-20">
+
+        <button class="button w-100" (click)="onSendInvite()">SEND INVITE</button>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-100">
+
+        <div class="entity-list">
+
+            <span class="text-muted">Could not load users of server.</span>
+
+        </div>
+
+    </div>
+
+</div>

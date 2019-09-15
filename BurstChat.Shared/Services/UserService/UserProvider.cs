@@ -361,7 +361,9 @@ namespace BurstChat.Shared.Services.UserService
             {
                 var invitations = _burstChatContext
                     .Invitations
-                    .Where(i => i.UserId == userId)
+                    .Include(i => i.Server)
+                    .Include(i => i.User)
+                    .Where(i => i.UserId == userId && !i.Accepted && !i.Declined)
                     .ToList();
 
                 return new Success<IEnumerable<Invitation>, Error>(invitations);
@@ -392,16 +394,18 @@ namespace BurstChat.Shared.Services.UserService
         /// </summary>
         /// <param name="invitation">The server invitation to be updated</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> UpdateInvitation(Invitation invitation)
+        public Either<Invitation, Error> UpdateInvitation(Invitation invitation)
         {
             try
             {
                 var storedInvitation = _burstChatContext
                     .Invitations
+                    .Include(i => i.Server)
+                    .Include(i => i.User)
                     .FirstOrDefault(i => i.Id == invitation.Id);
 
                 if (storedInvitation == null)
-                    return new Failure<Unit, Error>(UserErrors.CouldNotUpdateInvitation());
+                    return new Failure<Invitation, Error>(UserErrors.CouldNotUpdateInvitation());
 
                 storedInvitation.Accepted = invitation.Accepted;
                 storedInvitation.Declined = invitation.Declined;
@@ -422,12 +426,12 @@ namespace BurstChat.Shared.Services.UserService
 
                 _burstChatContext.SaveChanges();
 
-                return new Success<Unit, Error>(new Unit());
+                return new Success<Invitation, Error>(storedInvitation);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Invitation, Error>(SystemErrors.Exception());
             }
         }
 

@@ -56,6 +56,6 @@ namespace BurstChat.Api.Services.ServersService
         /// <param name="serverId">The id of the server</param>
         /// <param name="userId">The id of the target user</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> InsertInvitation(int serverId, long userId);
+        Either<Invitation, Error> InsertInvitation(int serverId, long userId);
     }
 }

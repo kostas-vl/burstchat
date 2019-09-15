@@ -15,9 +15,9 @@ export class UserService {
 
     private subscriptionsSource = new BehaviorSubject<Server[]>([]);
 
-    public userObservable = this.userSource.asObservable();
+    public user = this.userSource.asObservable();
 
-    public subscriptionsObservable = this.subscriptionsSource.asObservable();
+    public subscriptions = this.subscriptionsSource.asObservable();
 
     /**
      * Creates a new instance of UserService.

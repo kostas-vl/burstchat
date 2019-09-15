@@ -1,5 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Notification } from 'src/app/models/notify/notification';
+import { Invitation } from 'src/app/models/servers/invitation';
+import { NotifyService } from 'src/app/services/notify/notify.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { ChannelsService } from 'src/app/modules/burst/services/channels/channels.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays on screen all components of
@@ -8,27 +15,99 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss']
+    selector: 'app-layout',
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.scss'],
+    providers: [UserService, ServersService, ChannelsService, ChatService]
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
+
+    private onConnectedSubscription?: Subscription;
+
+    private invitationsSubscription?: Subscription;
+
+    private newInvitationSubscription?: Subscription;
 
     /**
      * Creates an instance of LayoutComponent.
      * @memberof LayoutComponent
      */
-    constructor(private userService: UserService) { }
+    constructor(
+        private notifyService: NotifyService,
+        private userService: UserService,
+        private chatService: ChatService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof LayoutComponent
      */
     public ngOnInit() {
+        this.onConnectedSubscription = this
+            .chatService
+            .onConnected
+            .subscribe(() => this.chatService.getInvitations());
+
+        this.invitationsSubscription = this
+            .chatService
+            .invitations
+            .subscribe(data => {
+                if (data.length > 0) {
+                    data.forEach(invite => this.onInvite(invite));
+                }
+            });
+
+        this.newInvitationSubscription = this
+            .chatService
+            .newInvitation
+            .subscribe(invite => this.onInvite(invite));
+
         this.userService
             .getUser();
+
         this.userService
             .getSubscriptions();
+
+        this.chatService
+            .InitializeConnection();
+    }
+
+    /**
+     * Executes any neccessary code for the destruction of the component.
+     * @memberof LayoutComponent
+     */
+    public ngOnDestroy() {
+        if (this.onConnectedSubscription) {
+            this.onConnectedSubscription
+                .unsubscribe();
+        }
+
+        if (this.invitationsSubscription) {
+            this.invitationsSubscription
+                .unsubscribe();
+        }
+
+        if (this.newInvitationSubscription) {
+            this.newInvitationSubscription
+                .unsubscribe();
+        }
+
+        this.chatService
+            .DisposeConnection();
+    }
+
+    /**
+     * Handles an incoming invitation to the user.
+     * @private
+     * @param {Invitation} invitation The invitation instance.
+     * @memberof LayoutComponent
+     */
+    private onInvite(invitation: Invitation) {
+        const notification: Notification = {
+            title: 'New invite',
+            content: `A user has invited you to join the server: ${invitation.server.name}`
+        };
+        this.notifyService.notify(notification);
     }
 
 }

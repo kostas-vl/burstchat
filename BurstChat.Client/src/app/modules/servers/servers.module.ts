@@ -7,6 +7,8 @@ import { ServersRoutingModule } from 'src/app/modules/servers/servers.routing';
 import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
 import { AddServerComponent } from 'src/app/modules/servers/components/add-server/add-server.component';
 import { EditServerComponent } from 'src/app/modules/servers/components/edit-server/edit-server.component';
+import { EditServerChannelsComponent } from 'src/app/modules/servers/components/edit-server-channels/edit-server-channels.component';
+import { EditServerUsersComponent } from 'src/app/modules/servers/components/edit-server-users/edit-server-users.component';
 
 @NgModule({
     imports: [
@@ -18,7 +20,9 @@ import { EditServerComponent } from 'src/app/modules/servers/components/edit-ser
     ],
     declarations: [
         AddServerComponent,
-        EditServerComponent
+        EditServerComponent,
+        EditServerChannelsComponent,
+        EditServerUsersComponent
     ],
     providers: [
         {

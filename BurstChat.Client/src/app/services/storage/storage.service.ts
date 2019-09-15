@@ -18,7 +18,7 @@ export class StorageService {
      * @returns { TokenInfo | null } The TokenInfo instance or null if none is stored.
      */
     public get tokenInfo(): TokenInfo | null {
-        const rawTokenInfo = localStorage.getItem("tokenInfo");
+        const rawTokenInfo = localStorage.getItem('tokenInfo');
         return JSON.parse(rawTokenInfo) as TokenInfo | null;
     }
 
@@ -30,7 +30,7 @@ export class StorageService {
     public set tokenInfo(info: TokenInfo) {
         if (info) {
             const rawTokenInfo = JSON.stringify(info);
-            localStorage.setItem("tokenInfo", rawTokenInfo);
+            localStorage.setItem('tokenInfo', rawTokenInfo);
         }
     }
 
@@ -40,7 +40,7 @@ export class StorageService {
      * @returns { PrivateGroupConnectionOptions | ChannelConnectionOptions | null } The chat connection options found or null.
      */
     public get activeChat(): PrivateGroupConnectionOptions | ChannelConnectionOptions | null{
-        const rawOptions = localStorage.getItem("activeChat");
+        const rawOptions = localStorage.getItem('activeChat');
         const isPrivateOptions = rawOptions.hasOwnProperty('privateGroupId');
         if (isPrivateOptions) {
             const options = Object.assign(new PrivateGroupConnectionOptions(), rawOptions);
@@ -77,7 +77,7 @@ export class StorageService {
      * @memberof StorageService
      */
     public clear(): void {
-        localStorage.removeItem("tokenInfo");
+        localStorage.removeItem('tokenInfo');
     }
 
 }

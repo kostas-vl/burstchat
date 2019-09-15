@@ -39,7 +39,7 @@ export class ChannelListComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.activeServerSubscription = this
             .serversService
-            .activeServerObservable
+            .activeServer
             .subscribe(server => {
                 if (server) {
                     this.server = server;

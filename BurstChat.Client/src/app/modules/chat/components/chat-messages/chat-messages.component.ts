@@ -5,7 +5,7 @@ import { MessageCluster } from 'src/app/models/chat/message-cluster';
 import { Payload } from 'src/app/models/signal/payload';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
-import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays on screen the messages of the chat.
@@ -117,7 +117,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     private isSameDay(clusterDate: Date | string, messageDate: Date | string) {
-        const clusterProperDate: Date = clusterDate instanceof Date 
+        const clusterProperDate: Date = clusterDate instanceof Date
             ? clusterDate
             : new Date(clusterDate);
         const messageProperDate: Date = messageDate instanceof Date

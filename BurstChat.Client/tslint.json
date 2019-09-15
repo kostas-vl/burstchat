@@ -4,7 +4,7 @@
     "indent": [
       true,
       "spaces",
-      4
+      8
     ],
     "array-type": false,
     "arrow-parens": false,

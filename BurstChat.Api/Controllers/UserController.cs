@@ -137,7 +137,7 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="invitation">The invitation instance to be used for the update</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPut("invitations")]
+        [HttpPut("invitation")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult UpdateInvitation([FromBody] Invitation invitation)

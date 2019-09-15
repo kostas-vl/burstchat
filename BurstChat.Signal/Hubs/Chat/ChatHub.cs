@@ -106,17 +106,18 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <summary>
         ///     Sends to a user a new server invitation.
         /// </summary>
-        /// <param name="invitation">The invitation details instance</param>
+        /// <param name="server">The id of the server the invitation is from</param>
+        /// <param name="userId">The id of the user the invitation will be sent</param>
         /// <returns>A Task instance</returns>
-        public async Task SendInvitation(Invitation invitation)
+        public async Task SendInvitation(int serverId, long userId)
         {
             var httpContext = Context.GetHttpContext();
-            var userId = httpContext.GetUserId().ToString();
-            var monad = await _invitationsService.InsertAsync(httpContext, invitation);
+            var requestingUserId = httpContext.GetUserId().ToString();
+            var monad = await _invitationsService.InsertAsync(httpContext, serverId, userId);
 
-            if (monad is Success<Unit, Error>)
-                await Clients.User(userId).NewInvitation(invitation);
-            else if (monad is Failure<Unit, Error> failure)
+            if (monad is Success<Invitation, Error> success)
+                await Clients.User(requestingUserId).NewInvitation(success.Value);
+            else if (monad is Failure<Invitation, Error> failure)
                 await Clients.Caller.NewInvitation(failure.Value);
             else
                 await Clients.Caller.NewInvitation(SystemErrors.Exception());
@@ -127,17 +128,22 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="invitation">The invitation to be updated</param>
         /// <returns>A Task instance</returns>
-        public async Task AcceptInvitation(Invitation invitation)
+        public async Task UpdateInvitation(Invitation invitation)
         {
             var httpContext = Context.GetHttpContext();
             var monad = await _invitationsService.UpdateAsync(httpContext, invitation);
 
-            if (monad is Success<Unit, Error> && invitation.Accepted)
+            if (monad is Success<Invitation, Error> success)
             {
-                var signalGroup = ServerSignalName(invitation.ServerId);
-                await Clients.Group(signalGroup).UpdatedInvitation(invitation);
+                var value = success.Value;
+                var signalGroup = ServerSignalName(value.ServerId);
+
+                if (value.Accepted)
+                    await Clients.Group(signalGroup).UpdatedInvitation(value);
+                else
+                    await Clients.Caller.UpdatedInvitation(value);
             }
-            else if (monad is Failure<Unit, Error> failure)
+            else if (monad is Failure<Invitation, Error> failure)
                 await Clients.Caller.UpdatedInvitation(failure.Value);
             else
                 await Clients.Caller.UpdatedInvitation(SystemErrors.Exception());

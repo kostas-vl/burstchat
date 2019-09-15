@@ -6,7 +6,7 @@ import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays an input to which a user that send
@@ -48,7 +48,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.userSubscription = this
             .userService
-            .userObservable
+            .user
             .subscribe(user => {
                 if (user) {
                     this.user = user;

@@ -12,7 +12,7 @@ export class ServersService {
 
     private activeServerSource = new BehaviorSubject<Server | null>(null);
 
-    public activeServerObservable = this.activeServerSource.asObservable();
+    public activeServer = this.activeServerSource.asObservable();
 
     /**
      * Creates a new instance of ServersService.
@@ -20,7 +20,7 @@ export class ServersService {
      */
     constructor(private httpClient: HttpClient) { }
 
-     /**
+    /**
      * Informs all observers of the active server about its new value.
      * @memberof ServersService
      */

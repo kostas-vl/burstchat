@@ -5,7 +5,7 @@ import { Notification } from 'src/app/models/notify/notification';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displauys a series of messages between users.
@@ -16,14 +16,11 @@ import { ChatService } from 'src/app/modules/chat/services/chat-service/chat.ser
 @Component({
     selector: 'app-chat-root',
     templateUrl: './chat-root.component.html',
-    styleUrls: ['./chat-root.component.scss'],
-    providers: [ChatService]
+    styleUrls: ['./chat-root.component.scss']
 })
 export class ChatRootComponent implements OnInit, OnDestroy {
 
     private routeParametersSubscription?: Subscription;
-
-    private onConnectedSubscription?: Subscription;
 
     public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
 
@@ -45,23 +42,6 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnInit() {
-        this.onConnectedSubscription = this
-            .chatService
-            .onConnected
-            .subscribe(() => {
-                if (this.options instanceof PrivateGroupConnectionOptions) {
-                    const id = this.options.privateGroupId;
-                    this.chatService.addSelfToPrivateGroup(id);
-                    return;
-                }
-
-                if (this.options instanceof ChannelConnectionOptions) {
-                    const id = this.options.channelId;
-                    this.chatService.addSelfToChannel(id);
-                    return;
-                }
-            });
-
         this.routeParametersSubscription = this
             .activatedRoute
             .paramMap
@@ -70,32 +50,32 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                 const isPrivateChat = this
                     .router
                     .url
-                    .includes("private");
+                    .includes('private');
 
                 if (isPrivateChat) {
                     this.options = new PrivateGroupConnectionOptions();
                     this.options.privateGroupId = id;
-                    this.chatService.InitializeConnection();
+                    this.chatService.addSelfToPrivateGroup(id);
                     return;
                 }
 
                 const isChannelChat = this
                     .router
                     .url
-                    .includes("channel");
+                    .includes('channel');
 
                 if (isChannelChat) {
                     this.options = new ChannelConnectionOptions();
                     this.options.channelId = id;
-                    this.chatService.InitializeConnection();
+                    this.chatService.addSelfToChannel(id);
                     return;
                 }
 
                 this.noChatFound = true;
 
                 const notification: Notification = {
-                    title: "No active chat found",
-                    content: "Consider joining a channel or start a new private chat!"
+                    title: 'No active chat found',
+                    content: 'Consider joining a channel or start a new private chat!'
                 };
                 this.notifyService
                     .notify(notification);
@@ -107,18 +87,10 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnDestroy() {
-        if (this.onConnectedSubscription) {
-            this.onConnectedSubscription
-                .unsubscribe();
-        }
-
         if (this.routeParametersSubscription) {
             this.routeParametersSubscription
                 .unsubscribe();
         }
-
-        this.chatService
-            .DisposeConnection();
     }
 
 }

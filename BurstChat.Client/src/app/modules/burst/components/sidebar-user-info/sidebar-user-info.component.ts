@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
@@ -18,13 +19,16 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
 
     private userSubscription?: Subscription;
 
-    public user?: User
+    public user?: User;
 
     /**
      * Creates a new instance of SidebarUserInfoComponent.
      * @memberof SidebarUserInfoComponent
      */
-    constructor(private userService: UserService) { }
+    constructor(
+        private router: Router,
+        private userService: UserService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -33,7 +37,7 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.userSubscription = this
             .userService
-            .userObservable
+            .user
             .subscribe(user => {
                 if (user) {
                     this.user = user;
@@ -50,6 +54,14 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
             this.userSubscription
                 .unsubscribe();
         }
+    }
+
+    /**
+     * Handles the edit user button click event.
+     * @memberof SidebarUserInfoComponent
+     */
+    public onEditUser() {
+        this.router.navigateByUrl('/core/user');
     }
 
 }

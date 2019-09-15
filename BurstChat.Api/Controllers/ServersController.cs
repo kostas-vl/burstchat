@@ -114,7 +114,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="serverId">The id of the server</param>
         /// <param name="userId">The id of the target user</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPost("{serverId:int}/invitations")]
+        [HttpPost("{serverId:int}/invitation")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult InsertInvitation(int serverId, [FromBody] long userId)

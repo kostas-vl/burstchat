@@ -50,7 +50,7 @@ export class NotificationListComponent implements OnInit, OnDestroy {
      * Handles the onClose event of a notification component.
      * @memberof NotificationListComponent
      */
-    public onCloseNotification(index: number): void {
+    public onDismissNotification(index: number): void {
         this.notifications.splice(index, 1);
     }
 

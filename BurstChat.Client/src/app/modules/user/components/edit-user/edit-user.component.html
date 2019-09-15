@@ -1,0 +1,44 @@
+<div class="burst-container" *ngIf="user">
+
+    <app-card>
+
+        <app-card-body>
+
+            <div class="row">
+
+                <div class="column column-100">
+
+                    <span class="user-logo">
+
+                        <fa-icon icon="user-circle"></fa-icon>
+
+                    </span>
+
+                    {{user.name}} <span class="text-muted">#{{user.id}} <small class="text-muted">Joined
+                            {{user.dateCreated | date}}</small></span>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="column column-100">
+
+                    <small class="text-muted">email: {{user.email}}</small>                    
+
+                </div>
+
+            </div>
+
+        </app-card-body>
+
+        <app-card-body>
+
+            <app-edit-user-invitations></app-edit-user-invitations>
+
+        </app-card-body>
+
+    </app-card>
+
+</div>

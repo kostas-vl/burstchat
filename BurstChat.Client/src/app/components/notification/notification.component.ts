@@ -16,7 +16,7 @@ export class NotificationComponent implements OnInit {
     public notification?: Notification;
 
     @Output()
-    public onClose: EventEmitter<{}> = new EventEmitter();
+    public dismiss: EventEmitter<{}> = new EventEmitter();
 
     /**
      * Creates an instance of NotificationComponent.
@@ -31,11 +31,11 @@ export class NotificationComponent implements OnInit {
     public ngOnInit(): void { }
 
     /**
-     * Handles the close button click event.
+     * Handles the dismiss button click event.
      * @memberof NotificationComponent
      */
-    public close(): void {
-        this.onClose.emit();
+    public onDismiss(): void {
+        this.dismiss.emit();
     }
 
 }

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@aspnet/signalr';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { Payload } from 'src/app/models/signal/payload';
 import { Message } from 'src/app/models/chat/message';
+import { Invitation } from 'src/app/models/servers/invitation';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 
@@ -19,7 +20,13 @@ export class ChatService {
 
     private connection?: HubConnection;
 
-    private connectedSource = new Subject();
+    private onConnectedSource = new Subject();
+
+    private invitationsSource = new BehaviorSubject<Invitation[]>([]);
+
+    private newInvitationSource = new Subject<Invitation>();
+
+    private updatedInvitationSource = new Subject<Invitation>();
 
     private selfAddedToPrivateGroupSource = new Subject();
 
@@ -43,7 +50,13 @@ export class ChatService {
 
     private errorSource = new Subject<BurstChatError>();
 
-    public onConnected = this.connectedSource.asObservable();
+    public onConnected = this.onConnectedSource.asObservable();
+
+    public invitations = this.invitationsSource.asObservable();
+
+    public newInvitation = this.newInvitationSource.asObservable();
+
+    public updatedInvitation = this.updatedInvitationSource.asObservable();
 
     public onSelfAddedToPrivateGroup = this.selfAddedToPrivateGroupSource.asObservable();
 
@@ -82,7 +95,7 @@ export class ChatService {
      * @private
      * @template T The success type contained within the payload.
      * @param {(Payload<T | BurstChatError>)} payload The payload sent fron the signal server.
-     * @param {Subject<T>} source The subject to be executed.
+     * @param {Subject<Payload<T>>} source The subject to be executed.
      * @memberof ChatService
      */
     private ProcessSignal<T>(payload: Payload<T | BurstChatError>, source: Subject<Payload<T>>): void {
@@ -95,15 +108,28 @@ export class ChatService {
     }
 
     /**
+     * This method will process the data sent by a server signal and if the data is not of instance
+     * BurstChatError then the next method will be called from the provided subject.
+     * @private
+     * @template T The success type contained within the payload.
+     * @param {T | BurstChatError} data The data sent fron the signal server.
+     * @param {Subject<T>} source The subject to be executed.
+     * @memberof ChatService
+     */
+    private ProcessRawSignal<T>(data: T | BurstChatError, source: Subject<T>): void {
+        const error = tryParseError(data);
+        if (!error) {
+            source.next(data as T);
+        } else {
+            this.notifyService.notifyError(error);
+        }
+    }
+
+    /**
      * Establishes a new connection to the chat hub and registers all required callbacks.
      * @memberof ChatService
      */
     public InitializeConnection(): void {
-        if (this.connection && this.connection.state === HubConnectionState.Connected) {
-            this.connectedSource.next();
-            return;
-        }
-
         try {
             const builder = new HubConnectionBuilder();
             builder.withUrl('/chat', {
@@ -119,6 +145,15 @@ export class ChatService {
             this.connection = undefined;
             return;
         }
+
+        this.connection
+            .on('invitations', data => this.ProcessRawSignal(data, this.invitationsSource));
+
+        this.connection
+            .on('newInvitation', data => this.ProcessRawSignal(data, this.newInvitationSource));
+
+        this.connection
+            .on('updatedInvitation', data => this.ProcessRawSignal(data, this.updatedInvitationSource));
 
         this.connection
             .on('selfAddedToPrivateGroup', () => this.selfAddedToPrivateGroupSource.next());
@@ -152,7 +187,7 @@ export class ChatService {
 
         this.connection
             .start()
-            .then(() => this.connectedSource.next())
+            .then(() => this.onConnectedSource.next())
             .catch(error => console.log(error));
     }
 
@@ -163,6 +198,63 @@ export class ChatService {
     public DisposeConnection(): void {
         if (this.connection && this.connection.state === HubConnectionState.Connected) {
             this.connection.stop();
+        }
+    }
+
+    /**
+     * Adds the current user signal connection to a server group defined by the provided server id.
+     * @param {number} serverId The id of the target server.
+     * @memberof ChatService
+     */
+    public addToServer(serverId: number) {
+        if (this.connection) {
+            this.connection
+                .invoke('addToServer', serverId)
+                .catch(error => console.log(error));
+        }
+    }
+
+    /**
+     * Fetches all invitations sent to the current user by servers.
+     * @memberof ChatService
+     */
+    public getInvitations() {
+        if (this.connection) {
+            this.connection
+                .invoke('getInvitations')
+                .catch(error => console.log(error));
+        }
+    }
+
+    /**
+     * Sends a new invitation to a user based on the provided invitation instance.
+     * @param {Invitation} invitation The invitation details.
+     * @memberof ChatService
+     */
+    /**
+     * Sends a new invitation to a user based on the provided invitation instance.
+     * @param {number} serverId The id of the server the invitation will be sent from.
+     * @param {number} userId The id of the user the invitation will be sent to.
+     * @memberof ChatService
+     */
+    public sendInvitation(serverId: number, userId: number) {
+        if (this.connection) {
+            this.connection
+                .invoke('sendInvitation', serverId, userId)
+                .catch(error => console.log(error));
+        }
+    }
+
+    /**
+     * Updates the invitation sent to user.
+     * @param {Invitation} invitation The modified invitation details.
+     * @memberof ChatService
+     */
+    public updateInvitation(invitation: Invitation) {
+        if (this.connection) {
+            this.connection
+                .invoke('updateInvitation', invitation)
+                .catch(error => console.log(error));
         }
     }
 
