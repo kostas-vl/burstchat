@@ -139,7 +139,10 @@ namespace BurstChat.Signal.Hubs.Chat
                 var signalGroup = ServerSignalName(value.ServerId);
 
                 if (value.Accepted)
+                {
                     await Clients.Group(signalGroup).UpdatedInvitation(value);
+                    await Clients.Caller.UpdatedInvitation(value);
+                }
                 else
                     await Clients.Caller.UpdatedInvitation(value);
             }
