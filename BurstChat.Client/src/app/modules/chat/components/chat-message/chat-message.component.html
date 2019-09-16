@@ -1,39 +1,47 @@
-<div class="bubble">
+<app-card>
 
-    <div class="row">
+    <app-card-body>
 
-        <div class="column column-100">
-
-            <div>
-
-                <strong>{{messageCluster.user.name}}</strong>
-
-                <small class="message-date-posted text-muted">{{messageCluster.datePosted | date}}</small>
-
+        <div class="row">
+    
+            <div class="column column-100">
+    
+                <div>
+    
+                    <strong>{{messageCluster.user.name}}</strong> <small class="text-muted">{{messageCluster.datePosted | date}}</small>
+    
+                </div>
+    
+                <div class="message" *ngFor="let message of messageCluster.messages">
+    
+                    <div>
+    
+                        <small class="text-muted">
+        
+                            [{{message.datePosted | date:'shortTime'}}] <span *ngIf="message.edited"><i>(Edited)</i></span>
+        
+                        </small>
+    
+                    </div>
+    
+                    <div class="message-content">
+    
+                        <div>{{message.content}}</div>
+        
+                        <div *ngFor="let link of message.links">
+        
+                            <a [href]="link.url" target="_blank">{{link.url}}</a>
+        
+                        </div>
+    
+                    </div>
+    
+                </div>
+    
             </div>
-
-            <div *ngFor="let message of messageCluster.messages">
-
-                <small class="message-date-posted text-muted">[{{message.datePosted | date:'shortTime'}}]</small>
-
-                {{message.content}}
-
-                <span *ngFor="let link of message.links">
-
-                    <a [attr.href]="link.url" target="_blank">{{link.url}}</a>
-
-                </span>
-
-                <small *ngIf="message.edited">
-
-                    <i>(Edited)</i>
-
-                </small>
-
-            </div>
-
+    
         </div>
 
-    </div>
+    </app-card-body>
 
-</div>
+</app-card>

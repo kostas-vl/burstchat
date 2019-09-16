@@ -2,8 +2,6 @@
 
 input {
     background-color: $secondary-color;
-    font-size: 14px;
-    font-weight: 600;
 }
 
 .messaging-input {
@@ -19,8 +17,5 @@ input {
     padding-right: 20px;
     margin-left: $sidebar-width;
     min-height: $chat-input-height;
-    -webkit-box-shadow: 2px -6px 5px -5px rgba(0, 0, 0, 0.5);
-    -mox-box-shadow: 2px -6px 5px -5px rgba(0, 0, 0, 0.5);
-    box-shadow: 2px -6px 5px -5px rgba(0, 0, 0, 0.5);
 }
 

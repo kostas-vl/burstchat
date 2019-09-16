@@ -64,4 +64,12 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl('/core/user');
     }
 
+    /*
+     * Handles the logout button click event.
+     * @memberof ChatInfoComponent
+     */
+    public onLogout(): void {
+        this.router.navigateByUrl('/session/logout');
+    }
+
 }

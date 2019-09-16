@@ -1,0 +1,12 @@
+@import '../../../../../scss/theme';
+
+.chat-info {
+    background-color: $dark-color;
+    position: fixed !important;
+    left: $sidebar-width !important;
+    right: 0 !important;
+    height: $minor-height;
+    z-index: $z-level-2;
+    display: flex;
+    align-items: center;
+}

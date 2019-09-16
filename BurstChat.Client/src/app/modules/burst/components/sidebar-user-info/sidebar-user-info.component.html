@@ -10,11 +10,17 @@
 
     <div class="user-id" *ngIf="user">#{{user.id}}</div>
 
-    <div class="ml-auto">
+    <div class="user-actions ml-auto">
 
         <div class="button-icon text" (click)="onEditUser()">
 
             <fa-icon icon="chalkboard-teacher"></fa-icon>
+
+        </div>
+
+        <div class="button-icon text" (click)="onLogout()">
+
+            <fa-icon icon="sign-out-alt"></fa-icon>
 
         </div>
 

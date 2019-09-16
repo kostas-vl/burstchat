@@ -1,11 +1,7 @@
 @import '../../../../../scss/theme';
 
-.chat-messages-container {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 20px;
-    padding-bottom: $chat-input-height + 30;
-    padding-left: 20px;
-    padding-right: 20px;
+.messages-container {
+    @extend .burst-container;
+    padding-top: $minor-height + 10px;
+    padding-bottom: $minor-height + 15px;
 }

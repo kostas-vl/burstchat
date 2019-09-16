@@ -11,9 +11,9 @@
 
 .user-info {
     background-color: $accent-color;
-    height: 55px;
+    height: $minor-height;
     padding-left: 15px;
-    padding-right: 10px;
+    padding-right: 5px;
     display: flex;
     align-items: center;    
 }
@@ -30,4 +30,9 @@
 .user-id {
     font-size: 14px;
     padding-left: 5px;
+}
+
+.user-actions {
+    display: flex;
+    flex-direction: row;
 }

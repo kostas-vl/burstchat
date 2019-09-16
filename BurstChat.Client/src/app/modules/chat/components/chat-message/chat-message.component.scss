@@ -1,15 +1,16 @@
 @import '../../../../../scss/theme.scss';
 
-.bubble {
-    background-color: $dark-color;
-    padding: 15px 15px 15px 15px;
-    margin: 5px 5px 5px 5px;
+blockquote {
+    width: 430px;
 }
 
-.message-avatar {
-    font-size: 32px;
+.message {
+    display: flex;
+    flex-direction: row;
 }
 
-.message-date-posted {
+.message-content {
     padding-left: 5px;
+    display: flex;
+    flex-direction: column;
 }
