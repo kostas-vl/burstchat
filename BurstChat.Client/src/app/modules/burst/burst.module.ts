@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSmile, faDragon, faUserCircle, faCog, faPlus, faPenSquare, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSmile, faDragon, faChalkboardTeacher, faCog, faPlus, faDatabase, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
@@ -49,10 +49,10 @@ export class BurstModule {
     constructor() {
         library.add(faSmile,
                     faDragon,
-                    faUserCircle,
+                    faChalkboardTeacher,
                     faCog,
                     faPlus,
-                    faPenSquare,
+                    faDatabase,
                     faCommentAlt);
     }
 

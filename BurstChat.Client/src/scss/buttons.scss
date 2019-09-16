@@ -1,0 +1,34 @@
+@import 'theme';
+
+.button-icon {
+    background-color: transparent;
+    color: $accent-color;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-radius .15s;
+}
+
+.button-icon:hover {
+    cursor: pointer;
+}
+
+.button-icon-interactive {
+    @extend .button-icon;
+}
+
+.button-icon-interactive:hover {
+    border-radius: 30%;
+    background-color: $accent-color !important;
+    color: $text-color;
+}
+
+.button-icon-lg {
+    width: 50px;
+    height: 50px;
+}

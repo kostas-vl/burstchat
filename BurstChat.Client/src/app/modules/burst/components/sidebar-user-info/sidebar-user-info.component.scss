@@ -10,29 +10,24 @@
 }
 
 .user-info {
-    background-color: $accent-light-color;
-    height: 100%;
-    padding-left: 6px;
-    padding-right: 1px;
+    background-color: $accent-color;
+    height: 55px;
+    padding-left: 15px;
+    padding-right: 10px;
     display: flex;
-    align-items: center;
+    align-items: center;    
 }
 
 .user-logo {
-    font-size: 30px;
+    font-size: 26px;
     padding-right: 6px;
 }
 
-.creds {
-    max-width: 150px;
-    font-size: 10px;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+.user-name {
+    font-size: 18px;
 }
 
-.actions {
-    align-self: flex-end;
-    margin-left: auto !important;
+.user-id {
+    font-size: 14px;
+    padding-left: 5px;
 }

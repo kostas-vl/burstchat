@@ -1,16 +1,16 @@
 <div class="server-list-container">
 
-  <div>
+  <div class="server-entry">
 
-    <button class="button button-icon" (click)="onNew()">
+    <div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onNew()">
 
       <fa-icon icon="plus"></fa-icon>
 
-    </button>
+    </div>
 
   </div>
 
-  <div *ngFor="let server of servers">
+  <div class="server-entry" *ngFor="let server of servers">
 
     <app-server [server]="server"></app-server>
 

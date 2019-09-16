@@ -12,6 +12,8 @@ $layout-animation-speed: 0.4s;
 
 $chat-input-height: 88px;
 
+$minor-width: 65px;
+
 $z-level-1: 1000;
 $z-level-2: 2000;
 $z-level-3: 3000;
@@ -51,16 +53,48 @@ blockquote {
     padding-bottom: 95px;
 }
 
-.button-icon {
-    padding-left: 15px;
-    padding-right: 15px;
-    font-size: 18px;
-    width: 48px !important;
+.bg-primary {
+    background-color: $primary-color;
 }
 
-.button-icon-lg {
-    @extend .button-icon;
-    font-size: 26px;
+.bg-secondary {
+    background-color: $secondary-color;
+}
+
+.bg-dark {
+    background-color: $dark-color;
+}
+
+.bg-accent {
+    background-color: $accent-color;
+}
+
+.bg-accent-light {
+    background-color: $accent-light-color;
+}
+
+.text {
+    color: $text-color;
+}
+
+.text-primary {
+    color: $primary-color;
+}
+
+.text-secondary {
+    color: $secondary-color;
+}
+
+.text-dark {
+    color: $dark-color;
+}
+
+.text-accent {
+    color: $accent-color;
+}
+
+.text-accent-light {
+    color: $accent-light-color;
 }
 
 .text-muted {

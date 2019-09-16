@@ -2,27 +2,21 @@
 
     <div class="user-logo">
 
-      <fa-icon icon="user-circle"></fa-icon>
+        <fa-icon icon="dragon"></fa-icon>
 
     </div>
 
-    <div class="creds">
+    <div class="user-name" *ngIf="user">{{user.name}}</div>
 
-      <span *ngIf="user">{{user.name}}</span>
+    <div class="user-id" *ngIf="user">#{{user.id}}</div>
 
-      <br>
+    <div class="ml-auto">
 
-      <span *ngIf="user"># {{user.id}}</span>
+        <div class="button-icon text" (click)="onEditUser()">
 
-    </div>
+            <fa-icon icon="chalkboard-teacher"></fa-icon>
 
-    <div class="actions">
-
-      <button class="button button-icon button-clear" (click)="onEditUser()">
-
-        <fa-icon icon="cog"></fa-icon>
-
-      </button>
+        </div>
 
     </div>
 

@@ -1,7 +1,5 @@
 @import '../../../../../scss/theme';
 
-$minor-width: 90px;
-
 .sidebar {
     position: fixed !important;
     overflow: auto;
@@ -38,7 +36,7 @@ $minor-width: 90px;
 }
 
 .sidebar-user-info {
-    flex-grow: 9;
+    flex-grow: 12;
 }
 
 .sidebar-content {

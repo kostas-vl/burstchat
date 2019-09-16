@@ -4,7 +4,6 @@ import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
-import { StorageService } from 'src/app/services/storage/storage.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
@@ -36,7 +35,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
      * @memberof ChatInputComponent
      */
     constructor(
-        private storageService: StorageService,
         private userService: UserService,
         private chatService: ChatService
     ) { }
