@@ -8,6 +8,7 @@
     transform: translateX(0);
     z-index: $z-level-1;
     background-color: $secondary-color;
+    border-right: 1px solid $dark-color;
     -webkit-transition: transform $layout-animation-speed;
     transition: transform $layout-animation-speed;
 }

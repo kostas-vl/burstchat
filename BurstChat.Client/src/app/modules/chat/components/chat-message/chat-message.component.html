@@ -1,47 +1,37 @@
-<app-card>
+<div class="row">
 
-    <app-card-body>
+    <div class="column column-100">
 
-        <div class="row">
-    
-            <div class="column column-100">
-    
-                <div>
-    
-                    <strong>{{messageCluster.user.name}}</strong> <small class="text-muted">{{messageCluster.datePosted | date}}</small>
-    
-                </div>
-    
-                <div class="message" *ngFor="let message of messageCluster.messages">
-    
-                    <div>
-    
-                        <small class="text-muted">
-        
-                            [{{message.datePosted | date:'shortTime'}}] <span *ngIf="message.edited"><i>(Edited)</i></span>
-        
-                        </small>
-    
-                    </div>
-    
-                    <div class="message-content">
-    
-                        <div>{{message.content}}</div>
-        
-                        <div *ngFor="let link of message.links">
-        
-                            <a [href]="link.url" target="_blank">{{link.url}}</a>
-        
-                        </div>
-    
-                    </div>
-    
-                </div>
-    
-            </div>
-    
+        <div>
+
+            <strong class="pr-5">{{messageCluster.user.name}}</strong>
+            
+            <small class="text-muted">{{messageCluster.datePosted | date:'LLL d yyyy, h:mm a'}}</small>
+
         </div>
 
-    </app-card-body>
+        <div class="message" *ngFor="let message of messageCluster.messages">
 
-</app-card>
+            <div>
+
+                {{message.content}}
+
+                <small class="text-muted" *ngIf="message.edited">
+
+                    <i>(Edited)</i>
+
+                </small>
+
+            </div>
+
+            <div *ngFor="let link of message.links">
+
+                <a [href]="link.url" target="_blank">{{link.url}}</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

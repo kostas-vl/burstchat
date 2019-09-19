@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Notification } from 'src/app/models/notify/notification';
+import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -22,7 +23,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
 
     private routeParametersSubscription?: Subscription;
 
-    public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
+    public options?: ChatConnectionOptions;
 
     public noChatFound = false;
 
@@ -54,9 +55,8 @@ export class ChatRootComponent implements OnInit, OnDestroy {
 
                 if (isPrivateChat) {
                     this.options = new PrivateGroupConnectionOptions();
-                    this.options.privateGroupId = id;
-                    this.chatService.addSelfToPrivateGroup(id);
-                    return;
+                    this.options.signalGroup = `privateGroup:${id}`;
+                    this.options.id = id;
                 }
 
                 const isChannelChat = this
@@ -66,20 +66,22 @@ export class ChatRootComponent implements OnInit, OnDestroy {
 
                 if (isChannelChat) {
                     this.options = new ChannelConnectionOptions();
-                    this.options.channelId = id;
-                    this.chatService.addSelfToChannel(id);
-                    return;
+                    this.options.signalGroup = `channel:${id}`;
+                    this.options.id = id;
                 }
 
-                this.noChatFound = true;
+                if (this.options) {
+                    this.chatService.addSelfToChat(this.options);
+                } else {
+                    this.noChatFound = true;
 
-                const notification: Notification = {
-                    title: 'No active chat found',
-                    content: 'Consider joining a channel or start a new private chat!'
-                };
-                this.notifyService
-                    .notify(notification);
-           });
+                    const notification: Notification = {
+                        title: 'No active chat found',
+                        content: 'Consider joining a channel or start a new private chat!'
+                    };
+                    this.notifyService.notify(notification);
+                }
+            });
     }
 
     /**

@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { MessageCluster } from 'src/app/models/chat/message-cluster';
 import { Payload } from 'src/app/models/signal/payload';
+import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
@@ -20,13 +21,13 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
 
-    private onSelfAddedToGroupSubscription?: Subscription;
+    private selfAddedToChatSubscription?: Subscription;
 
-    private onAllMessagesReceivedSubscription?: Subscription;
+    private allMessagesReceivedSubscription?: Subscription;
 
-    private onMessageReceivedSubscription?: Subscription;
+    private messageReceivedSubscription?: Subscription;
 
-    private internalOptions?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
+    private internalOptions?: ChatConnectionOptions;
 
     public topIndex = 0;
 
@@ -35,43 +36,24 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     public messages: MessageCluster[] = [];
 
     @Input()
-    public set options(value: PrivateGroupConnectionOptions | ChannelConnectionOptions) {
+    public set options(value: ChatConnectionOptions) {
         this.internalOptions = value;
         this.unsubscribeAll();
 
-        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
-            this.onSelfAddedToGroupSubscription = this
-                .chatService
-                .onSelfAddedToPrivateGroup
-                .subscribe(() => this.onSelfAddedToGroup());
+        this.selfAddedToChatSubscription = this
+            .chatService
+            .selfAddedToChat
+            .subscribe(() => this.onSelfAddedToGroup());
 
-            this.onAllMessagesReceivedSubscription = this
-                .chatService
-                .onAllPrivateGroupMessagesReceived
-                .subscribe(payload => this.onMessagesReceived(payload));
+        this.allMessagesReceivedSubscription = this
+            .chatService
+            .allMessagesReceived
+            .subscribe(payload => this.onMessagesReceived(payload));
 
-            this.onMessageReceivedSubscription = this
-                .chatService
-                .onPrivateGroupMessageReceived
-                .subscribe(payload => this.onMessageReceived(payload));
-        }
-
-        if (this.internalOptions instanceof ChannelConnectionOptions) {
-            this.onSelfAddedToGroupSubscription = this
-                .chatService
-                .onSelfAddedToChannel
-                .subscribe(() => this.onSelfAddedToGroup());
-
-            this.onAllMessagesReceivedSubscription = this
-                .chatService
-                .onAllChannelMessagesReceived
-                .subscribe(payload => this.onMessagesReceived(payload));
-
-            this.onMessageReceivedSubscription = this
-                .chatService
-                .onChannelMessageReceived
-                .subscribe(payload => this.onMessageReceived(payload));
-        }
+        this.messageReceivedSubscription = this
+            .chatService
+            .messageReceived
+            .subscribe(payload => this.onMessageReceived(payload));
     }
 
     /**
@@ -100,23 +82,31 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private unsubscribeAll(): void {
-        if (this.onSelfAddedToGroupSubscription) {
-            this.onSelfAddedToGroupSubscription
+        if (this.selfAddedToChatSubscription) {
+            this.selfAddedToChatSubscription
                 .unsubscribe();
         }
 
-        if (this.onAllMessagesReceivedSubscription) {
-            this.onAllMessagesReceivedSubscription
+        if (this.allMessagesReceivedSubscription) {
+            this.allMessagesReceivedSubscription
                 .unsubscribe();
         }
 
-        if (this.onMessageReceivedSubscription) {
-            this.onMessageReceivedSubscription
+        if (this.messageReceivedSubscription) {
+            this.messageReceivedSubscription
                 .unsubscribe();
         }
     }
 
-    private isSameDay(clusterDate: Date | string, messageDate: Date | string) {
+    /**
+     * This method will evaluate if a message was posted in date and time close to the provided cluster date.
+     * @private
+     * @param {(Date | string)} clusterDate The date the cluster of messages was posted.
+     * @param {(Date | string)} messageDate The date the message was posted.
+     * @returns A boolean specifying if the date difference is greater that expected.
+     * @memberof ChatMessagesComponent
+     */
+    private isSameDateTime(clusterDate: Date | string, messageDate: Date | string) {
         const clusterProperDate: Date = clusterDate instanceof Date
             ? clusterDate
             : new Date(clusterDate);
@@ -143,7 +133,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private addMessageToCluster(clusterList: MessageCluster[], message: Message) {
         const lastEntry = clusterList[clusterList.length - 1];
 
-        if (lastEntry && lastEntry.user.id === message.userId && this.isSameDay(lastEntry.datePosted, message.datePosted)) {
+        const isPartOfTheCluster = lastEntry
+            && lastEntry.user.id === message.userId
+            && this.isSameDateTime(lastEntry.datePosted, message.datePosted);
+
+        if (isPartOfTheCluster) {
             lastEntry
                 .messages
                 .push(message);
@@ -164,17 +158,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onSelfAddedToGroup(): void {
-        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
-            const id = this.internalOptions.privateGroupId;
-            this.chatService.getAllPrivateGroupMessages(id);
-            return;
-        }
-
-        if (this.internalOptions instanceof ChannelConnectionOptions) {
-            const id = this.internalOptions.channelId;
-            this.chatService.getAllChannelMessages(id);
-            return;
-        }
+        this.chatService.getAllMessages(this.internalOptions);
     }
 
     /**
@@ -184,28 +168,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>): void {
-        let messages: Message[] = [];
-        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
-            const signalGroup = +payload
-                .signalGroup
-                .split('privateGroup:')[1];
-            if (this.internalOptions.privateGroupId === signalGroup) {
-                messages = payload.content;
-            }
-        }
-
-        if (this.internalOptions instanceof ChannelConnectionOptions) {
-            const signalGroup = +payload
-                .signalGroup
-                .split('channel:')[1];
-            if (this.internalOptions.channelId === signalGroup) {
-                messages = payload.content;
-            }
-        }
+        const messages = this.internalOptions.signalGroup === payload.signalGroup
+            ? payload.content
+            : [];
 
         if (messages.length > 0) {
-            this.messages = messages
-                .reduce((previous, current, _) => this.addMessageToCluster(previous, current), ([] as MessageCluster[]));
+            const initialValue: MessageCluster[] = [];
+            this.messages = messages.reduce((current, next, _) => this.addMessageToCluster(current, next), initialValue);
         } else {
             this.messages = [];
         }
@@ -218,25 +187,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessageReceived(payload: Payload<Message>): void {
-        let message: Message;
-
-        if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
-            const signalGroup = +payload
-                .signalGroup
-                .split('privateGroup:')[1];
-            if (this.internalOptions.privateGroupId === signalGroup) {
-                message = payload.content;
-            }
-        }
-
-        if (this.internalOptions instanceof ChannelConnectionOptions) {
-            const signalGroup = +payload
-                .signalGroup
-                .split('channel:')[1];
-            if (this.internalOptions.channelId === signalGroup) {
-                message = payload.content;
-            }
-        }
+        const message = this.internalOptions.signalGroup === payload.signalGroup
+            ? payload.content
+            : null;
 
         if (message) {
             this.messages = this.addMessageToCluster(this.messages, message);

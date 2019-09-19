@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
-import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
-import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
+import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
@@ -28,7 +27,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     public inputContent?: string;
 
     @Input()
-    public options?: PrivateGroupConnectionOptions | ChannelConnectionOptions;
+    public options?: ChatConnectionOptions;
 
     /**
      * Creates an instance of ChatInputComponent.
@@ -81,19 +80,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 edited: false
             };
 
-            if (this.options instanceof PrivateGroupConnectionOptions) {
-                const groupId = this.options.privateGroupId;
-                this.chatService.postPrivateGroupMessage(groupId, message);
-                this.inputContent = undefined;
-                return;
-            }
-
-            if (this.options instanceof ChannelConnectionOptions) {
-                const channelId  = this.options.channelId;
-                this.chatService.postChannelMessage(channelId, message);
-                this.inputContent = undefined;
-                return;
-            }
+            this.chatService.postMessage(this.options, message);
+            this.inputContent = undefined;
         }
     }
 

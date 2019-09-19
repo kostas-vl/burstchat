@@ -9,6 +9,9 @@ import { Message } from 'src/app/models/chat/message';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
+import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
+import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
+import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 
 /**
  * This class represents an angular service that connects to the remote signalr server and trasmits messages related to
@@ -31,25 +34,15 @@ export class ChatService {
 
     private updatedInvitationSource = new Subject<Invitation>();
 
-    private selfAddedToPrivateGroupSource = new Subject();
+    private selfAddedToChatSource = new Subject();
 
-    private allPrivateGroupMessagesReceivedSource = new Subject<Payload<Message[]>>();
+    private allMessagesReceivedSource = new Subject<Payload<Message[]>>();
 
-    private privateGroupMessageReceivedSource = new Subject<Payload<Message>>();
+    private messageReceivedSource = new Subject<Payload<Message>>();
 
-    private privateGroupMessageEditedSource = new Subject<Payload<Message>>();
+    private messageEditedSource = new Subject<Payload<Message>>();
 
-    private privateGroupMessageDeletedSource = new Subject<Payload<Message>>();
-
-    private selfAddedToChannelSource = new Subject();
-
-    private allChannelMessagesReceivedSource = new Subject<Payload<Message[]>>();
-
-    private channelMessageReceivedSource = new Subject<Payload<Message>>();
-
-    private channelMessageEditedSource = new Subject<Payload<Message>>();
-
-    private channelMessageDeletedSource = new Subject<Payload<Message>>();
+    private messageDeletedSource = new Subject<Payload<Message>>();
 
     private errorSource = new Subject<BurstChatError>();
 
@@ -63,25 +56,15 @@ export class ChatService {
 
     public updatedInvitation = this.updatedInvitationSource.asObservable();
 
-    public onSelfAddedToPrivateGroup = this.selfAddedToPrivateGroupSource.asObservable();
+    public selfAddedToChat = this.selfAddedToChatSource.asObservable();
 
-    public onAllPrivateGroupMessagesReceived = this.allPrivateGroupMessagesReceivedSource.asObservable();
+    public allMessagesReceived = this.allMessagesReceivedSource.asObservable();
 
-    public onPrivateGroupMessageReceived = this.privateGroupMessageReceivedSource.asObservable();
+    public messageReceived = this.messageReceivedSource.asObservable();
 
-    public onPrivateGroupMessageEdited = this.privateGroupMessageEditedSource.asObservable();
+    public messageEdited = this.messageEditedSource.asObservable();
 
-    public onPrivateGroupMessageDeleted = this.privateGroupMessageDeletedSource.asObservable();
-
-    public onSelfAddedToChannel = this.selfAddedToChannelSource.asObservable();
-
-    public onAllChannelMessagesReceived = this.allChannelMessagesReceivedSource.asObservable();
-
-    public onChannelMessageReceived = this.channelMessageReceivedSource.asObservable();
-
-    public onChannelMessageEdited = this.channelMessageEditedSource.asObservable();
-
-    public onChannelMessageDeleted = this.channelMessageDeletedSource.asObservable();
+    public messageDeleted = this.messageDeletedSource.asObservable();
 
     public onErrorObservable = this.errorSource.asObservable();
 
@@ -164,34 +147,34 @@ export class ChatService {
             .on('updatedInvitation', data => this.ProcessRawSignal(data, this.updatedInvitationSource));
 
         this.connection
-            .on('selfAddedToPrivateGroup', () => this.selfAddedToPrivateGroupSource.next());
+            .on('selfAddedToPrivateGroup', () => this.selfAddedToChatSource.next());
 
         this.connection
-            .on('allPrivateGroupMessagesReceived', data => this.ProcessSignal(data, this.allPrivateGroupMessagesReceivedSource));
+            .on('allPrivateGroupMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource));
 
         this.connection
-            .on('privateGroupMessageReceived', data => this.ProcessSignal(data, this.privateGroupMessageReceivedSource));
+            .on('privateGroupMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource));
 
         this.connection
-            .on('privateGroupMessageEdited', data => this.ProcessSignal(data, this.privateGroupMessageEditedSource));
+            .on('privateGroupMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource));
 
         this.connection
-            .on('privateGroupMessageDeleted', data => this.ProcessSignal(data, this.privateGroupMessageDeletedSource));
+            .on('privateGroupMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
 
         this.connection
-            .on('selfAddedToChannel', () => this.selfAddedToChannelSource.next());
+            .on('selfAddedToChannel', () => this.selfAddedToChatSource.next());
 
         this.connection
-            .on('allChannelMessagesReceived', data => this.ProcessSignal(data, this.allChannelMessagesReceivedSource));
+            .on('allChannelMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource));
 
         this.connection
-            .on('channelMessageReceived', data => this.ProcessSignal(data, this.channelMessageReceivedSource));
+            .on('channelMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource));
 
         this.connection
-            .on('channelMessageEdited', data => this.ProcessSignal(data, this.channelMessageEditedSource));
+            .on('channelMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource));
 
         this.connection
-            .on('channelMessageDeleted', data => this.ProcessSignal(data, this.channelMessageDeletedSource));
+            .on('channelMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
 
         this.connection
             .start()
@@ -280,130 +263,85 @@ export class ChatService {
     }
 
     /**
-     * Adds the current established connection to a group defined by the provided private group id.
+     * Adds the current established connection to a chat defined by the provided options.
      * @memberof ChatService
-     * @param {number} groupId The id of the private group.
+     * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
      */
-    public addSelfToPrivateGroup(groupId: number) {
-        if (this.connection) {
+    public addSelfToChat(options: ChatConnectionOptions) {
+        if (this.connection && options) {
+            const methodName = options instanceof PrivateGroupConnectionOptions
+                ? 'addToPrivateGroupConnection'
+                : 'addToChannelConnection';
+
             this.connection
-                .invoke('addToPrivateGroupConnection', groupId)
+                .invoke(methodName, options.id)
                 .catch(error => console.log(error));
         }
     }
 
     /**
-     * Signals for all messages of a private group to be received.
-     * @param {number} groupId The id of the group.
+     * Signals for all messages of a chat to be received.
+     * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
      */
-    public getAllPrivateGroupMessages(groupId: number) {
-        if (this.connection) {
+    public getAllMessages(options: ChatConnectionOptions) {
+        if (this.connection && options) {
+            const methodName = options instanceof PrivateGroupConnectionOptions
+                ? 'getAllPrivateGroupMessages'
+                : 'getAllChannelMessages';
+
             this.connection
-                .invoke('getAllPrivateGroupMessages', groupId)
+                .invoke(methodName, options.id)
                 .catch(error => console.log(error));
         }
     }
     /**
-     * Sends a new chat message to the server in order to be trasmitted to all users of a private group.
-     * @param {number} groupId The id of the target group.
+     * Sends a new message to the server in order to be trasmitted to all users of a chat.
+     * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
      * @param {Message} message The message to be sent.
      * @memberof ChatService
      */
-    public postPrivateGroupMessage(groupId: number, message: Message): void {
-        if (this.connection) {
+    public postMessage(options: ChatConnectionOptions, message: Message): void {
+        if (this.connection && options) {
+            const methodName = options instanceof PrivateGroupConnectionOptions
+                ? 'postPrivateGroupMessage'
+                : 'postChannelMessage';
+
             this.connection
-                .invoke('postPrivateGroupMessage', message)
+                .invoke(methodName, options.id, message)
                 .catch(error => console.log(error));
         }
     }
 
     /**
-     * Signals for a new edit to an existing message in a private group.
-     * @param {number} groupId The id of the private group.
+     * Signals for a new edit to an existing message in a chat.
+     * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
      * @param {Message} message The edited message.
      */
-    public editPrivateGroupMessage(groupId: number, message: Message): void {
-        if (this.connection) {
+    public editMessage(options: ChatConnectionOptions, message: Message): void {
+        if (this.connection && options) {
+            const methodName = options instanceof PrivateGroupConnectionOptions
+                ? 'putPrivateGroupMessage'
+                : 'putChannelMessage';
+
             this.connection
-                .invoke('putPrivateGroupMessage', groupId, message)
+                .invoke(methodName, options.id, message)
                 .catch(error => console.log(error));
         }
     }
 
     /**
-     * Signals for a delete on an existing message of a private group.
-     * @param {number} groupId The id of the private group.
+     * Signals for a delete on an existing message of a chat.
+     * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
      * @param {Message} message The message to be deleted.
      */
-    public deletePrivateGroupMessage(groupId: number, message: Message): void {
-        if (this.connection) {
-            this.connection
-                .invoke('deletePrivateGroupMessage', groupId, message)
-                .catch(error => console.log(error));
-        }
-    }
+    public deleteMessage(options: ChatConnectionOptions, message: Message): void {
+        if (this.connection && options) {
+            const methodName = options instanceof PrivateGroupConnectionOptions
+                ? 'deletePrivateGroupMessage'
+                : 'deleteChannelMessage';
 
-    /**
-     * Adds the current established connection to a group defined by the provided channel id.
-     * @memberof ChatService
-     * @param {number} channelId The id of the channel.
-     */
-    public addSelfToChannel(channelId: number) {
-        if (this.connection) {
             this.connection
-                .invoke('addToChannelConnection', channelId)
-                .catch(error => console.log(error));
-        }
-    }
-
-
-    /**
-     * Signals for all the messages of a channel to be received.
-     * @param {number} channelId The id of the channel.
-     */
-    public getAllChannelMessages(channelId: number): void {
-        if (this.connection) {
-            this.connection
-                .invoke('getAllChannelMessages', channelId)
-                .catch(error => console.log(error));
-        }
-    }
-
-    /**
-     * Signals for a new message to be posted to a channel.
-     * @param {number} channelId The id of the channel.
-     * @param {Message} message The message to be posted.
-     */
-    public postChannelMessage(channelId: number, message: Message): void {
-        if (this.connection) {
-            this.connection
-                .invoke('postChannelMessage', channelId, message)
-                .catch(error => console.log(error));
-        }
-    }
-
-    /**
-     * Signals for a new edit on an existing message of a channel.
-     * @param {number} channelId The id of the channel.
-     * @param {Message} message The edited message.
-     */
-    public putChannelMessage(channelId: number, message: Message): void {
-        if (this.connection) {
-            this.connection
-                .invoke('putChannelMessage', channelId, message)
-                .catch(error => console.log(error));
-        }
-    }
-
-    /**
-     * Signals for a delete of a message on a channel.
-     * @param {number} channelId The id of the channel.
-     * @param {Message} message The message to be deleted.
-     */
-    public deleteChannelMessage(channelId: number, message: Message): void {
-        if (this.connection) {
-            this.connection
-                .invoke('deleteChannelMessage', channelId, message)
+                .invoke(methodName, options.id, message)
                 .catch(error => console.log(error));
         }
     }

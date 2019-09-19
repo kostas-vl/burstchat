@@ -19,6 +19,10 @@ $z-level-1: 1000;
 $z-level-2: 2000;
 $z-level-3: 3000;
 
+hr {
+    margin: 2.0rem 0;
+}
+
 input {
     background-color: $primary-color;
     color: white;
@@ -58,6 +62,14 @@ iframe {
     height: 100%;
     padding-top: 10px;
     padding-bottom: 40px;
+}
+
+.burst-container-fluid {
+    @extend .burst-container;
+    max-width: unset;
+    padding: unset;
+    padding-top: unset;
+    padding-bottom: unset;
 }
 
 .bg-primary {
@@ -118,6 +130,46 @@ iframe {
 
 .w-100 {
     width: 100%;
+}
+
+.pr-1 {
+    padding-right: 1px;
+}
+
+.pr-2 {
+    padding-right: 2px;
+}
+
+.pr-3 {
+    padding-right: 3px;
+}
+
+.pr-4 {
+    padding-right: 4px;
+}
+
+.pr-5 {
+    padding-right: 5px;
+}
+
+.pl-1 {
+    padding-left: 1px;
+}
+
+.pl-2 {
+    padding-left: 2px;
+}
+
+.pl-3 {
+    padding-left: 3px;
+}
+
+.pl-4 {
+    padding-left: 4px;
+}
+
+.pl-5 {
+    padding-left: 5px;
 }
 
 .ml-auto {

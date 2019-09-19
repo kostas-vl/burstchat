@@ -6,11 +6,5 @@ blockquote {
 
 .message {
     display: flex;
-    flex-direction: row;
-}
-
-.message-content {
-    padding-left: 5px;
-    display: flex;
     flex-direction: column;
 }

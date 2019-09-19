@@ -1,7 +1,9 @@
 @import '../../../../../scss/theme';
 
 .messages-container {
-    @extend .burst-container;
+    @extend .burst-container-fluid;
     padding-top: $minor-height + 10px;
     padding-bottom: $minor-height + 15px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
