@@ -43,7 +43,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         this.selfAddedToChatSubscription = this
             .chatService
             .selfAddedToChat
-            .subscribe(() => this.onSelfAddedToGroup());
+            .subscribe(() => this.onSelfAddedToChat());
 
         this.allMessagesReceivedSubscription = this
             .chatService
@@ -153,11 +153,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Handles the successful connection to a signal group.
+     * Handles the successful connection to a chat.
      * @private
      * @memberof ChatMessagesComponent
      */
-    private onSelfAddedToGroup(): void {
+    private onSelfAddedToChat(): void {
         this.chatService.getAllMessages(this.internalOptions);
     }
 

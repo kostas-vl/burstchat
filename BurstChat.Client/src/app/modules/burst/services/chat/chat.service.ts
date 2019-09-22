@@ -11,7 +11,6 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
-import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 
 /**
  * This class represents an angular service that connects to the remote signalr server and trasmits messages related to

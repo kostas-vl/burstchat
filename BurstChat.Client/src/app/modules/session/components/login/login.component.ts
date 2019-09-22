@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Credentials } from 'src/app/models/user/credentials';
-import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
-import { TokenInfo } from 'src/app/models/identity/token-info';
+import { tryParseError } from 'src/app/models/errors/error';
 import { Notification } from 'src/app/models/notify/notification';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -53,12 +52,12 @@ export class LoginComponent implements OnInit {
                 data => {
                     if (data) {
                         this.storageService.tokenInfo = {
-                            idToken: data['id_token'] || null,
-                            accessToken: data['access_token'],
-                            expiresIn: data['expires_in'],
-                            refreshToken: data['refresh_token'],
-                            scope: data['scope'],
-                            tokenType: data['token_type']
+                            idToken: data.id_token || null,
+                            accessToken: data.access_token,
+                            expiresIn: data.expires_in,
+                            refreshToken: data.refresh_token,
+                            scope: data.scope,
+                            tokenType: data.token_type
                         };
                         this.router.navigateByUrl('/core/chat');
                     } else {
@@ -82,6 +81,17 @@ export class LoginComponent implements OnInit {
                     this.loading = false;
                 }
             );
+    }
+
+    /**
+     * Handles the key down event of various input elements.
+     * @param {KeyboardEvent} event The event arguments.
+     * @memberof LoginComponent
+     */
+    public onKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            this.onLogin();
+        }
     }
 
 }

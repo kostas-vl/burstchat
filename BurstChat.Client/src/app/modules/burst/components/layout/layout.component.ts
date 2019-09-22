@@ -28,6 +28,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
     private newInvitationSubscription?: Subscription;
 
+    public loading = true;
+
     /**
      * Creates an instance of LayoutComponent.
      * @memberof LayoutComponent
@@ -46,7 +48,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this.onConnectedSubscription = this
             .chatService
             .onConnected
-            .subscribe(() => this.chatService.getInvitations());
+            .subscribe(() => {
+                setTimeout(() => {
+                    this.chatService.getInvitations();
+                    this.loading = false;
+                }, 300);
+            });
 
         this.invitationsSubscription = this
             .chatService

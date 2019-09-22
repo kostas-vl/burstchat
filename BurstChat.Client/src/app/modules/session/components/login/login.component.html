@@ -1,101 +1,103 @@
 <div class="login-card-container h-100">
 
-  <app-card class="login-card">
+    <app-card class="login-card">
 
-    <app-card-header>
+        <app-card-header>
 
-      <div class="login-card-header">
+            <div class="login-card-header">
 
-        <fa-icon icon="dragon" *ngIf="!loading"></fa-icon>
+                <fa-icon icon="dragon" *ngIf="!loading"></fa-icon>
 
-        <div class="loader" *ngIf="loading"></div>
+                <div class="loader" *ngIf="loading"></div>
 
-      </div>
+            </div>
 
-    </app-card-header>
+        </app-card-header>
 
-    <app-card-body>
+        <app-card-body>
 
-      <div class="login-card-body">
+            <div class="login-card-body">
 
-        <div class="row">
+                <div class="row">
 
-          <div class="column column-75 text-muted">
+                    <div class="column column-75 text-muted">
 
-            <small>Provide your email and password to login in BurstChat.</small>
+                        <small>Provide your email and password to login in BurstChat.</small>
 
-          </div>
+                    </div>
 
-        </div>
+                </div>
 
-        <br>
+                <br>
 
-        <div class="row">
+                <div class="row">
 
-          <div class="column column-100">
+                    <div class="column column-100">
 
-            <input class="w-100" type="text" placeholder="EMAIL" [disabled]="loading" [(ngModel)]="credentials.email">
+                        <input class="w-100" type="text" placeholder="EMAIL" [disabled]="loading"
+                            [(ngModel)]="credentials.email" (keydown)="onKeyDown($event)">
 
-          </div>
+                    </div>
 
-        </div>
+                </div>
 
-        <div class="row">
+                <div class="row">
 
-          <div class="column column-100">
+                    <div class="column column-100">
 
-            <input class="w-100" type="password" placeholder="PASSWORD" [disabled]="loading" [(ngModel)]="credentials.password">
+                        <input class="w-100" type="password" placeholder="PASSWORD" [disabled]="loading"
+                            [(ngModel)]="credentials.password" (keydown)="onKeyDown($event)">
 
-          </div>
+                    </div>
 
-        </div>
+                </div>
 
-        <div class="row">
+                <div class="row">
 
-          <div class="column column-100">
+                    <div class="column column-100">
 
-            <small>
+                        <small>
 
-              <a routerLink="/session/reset">Forgot your password?</a>
+                            <a routerLink="/session/reset">Forgot your password?</a>
 
-            </small>
+                        </small>
 
-          </div>
+                    </div>
 
-        </div>
+                </div>
 
-    </div>
+            </div>
 
-    </app-card-body>
+        </app-card-body>
 
-    <app-card-footer>
+        <app-card-footer>
 
-      <div class="row">
+            <div class="row">
 
-        <div class="column column-100">
+                <div class="column column-100">
 
-          <button class="button w-100" [disabled]="loading" (click)="onLogin()">LOGIN</button>
+                    <button class="button w-100" [disabled]="loading" (click)="onLogin()">LOGIN</button>
 
-        </div>
+                </div>
 
-      </div>
+            </div>
 
-      <div class="row">
+            <div class="row">
 
-        <div class="column column-100 text-center">
+                <div class="column column-100 text-center">
 
-          <small>
+                    <small>
 
-            <a routerLink="/session/register">Dont have an account? Register now!</a>
+                        <a routerLink="/session/register">Dont have an account? Register now!</a>
 
-          </small>
+                    </small>
 
-        </div>
+                </div>
 
-      </div>
+            </div>
 
-    </app-card-footer>
+        </app-card-footer>
 
-  </app-card>
+    </app-card>
 
 </div>

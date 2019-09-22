@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Notification } from 'src/app/models/notify/notification';
@@ -19,7 +19,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
     templateUrl: './chat-root.component.html',
     styleUrls: ['./chat-root.component.scss']
 })
-export class ChatRootComponent implements OnInit, OnDestroy {
+export class ChatRootComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private routeParametersSubscription?: Subscription;
 
@@ -69,19 +69,25 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                     this.options.signalGroup = `channel:${id}`;
                     this.options.id = id;
                 }
-
-                if (this.options) {
-                    this.chatService.addSelfToChat(this.options);
-                } else {
-                    this.noChatFound = true;
-
-                    const notification: Notification = {
-                        title: 'No active chat found',
-                        content: 'Consider joining a channel or start a new private chat!'
-                    };
-                    this.notifyService.notify(notification);
-                }
             });
+    }
+
+    /**
+     * Executes any neccessary code after the view of the component has been initialized.
+     * @memberof ChatRootComponent
+     */
+    public ngAfterViewInit() {
+        if (this.options) {
+            this.chatService.addSelfToChat(this.options);
+        } else {
+            this.noChatFound = true;
+
+            const notification: Notification = {
+                title: 'No active chat found',
+                content: 'Consider joining a channel or start a new private chat!'
+            };
+            this.notifyService.notify(notification);
+        }
     }
 
     /**

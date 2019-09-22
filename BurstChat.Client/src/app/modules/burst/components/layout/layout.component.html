@@ -1,7 +1,17 @@
-<app-sidebar></app-sidebar>
+<div class="layout" *ngIf="!loading">
 
-<main>
+    <app-sidebar></app-sidebar>
+    
+    <main>
+    
+      <router-outlet></router-outlet>
+    
+    </main>
 
-  <router-outlet></router-outlet>
+</div>
 
-</main>
+<div class="layout-loader" *ngIf="loading">
+
+    <div class="loader"></div>
+
+</div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faComment } from '@fortawesome/free-solid-svg-icons';
+import { faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat-routing.module';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
@@ -35,7 +35,7 @@ export class ChatModule {
      * @memberof ChatModule
      */
     constructor() {
-        library.add(faComment);
+        library.add(faCommentAlt);
     }
 
 }

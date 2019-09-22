@@ -4,6 +4,12 @@ blockquote {
     width: 430px;
 }
 
+.cluster {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
 .message {
     display: flex;
     flex-direction: column;
