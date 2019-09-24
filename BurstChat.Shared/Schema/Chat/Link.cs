@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BurstChat.Shared.Schema.Chat
 {
@@ -10,6 +11,7 @@ namespace BurstChat.Shared.Schema.Chat
         /// <summary>
         ///     An identifier for the url.
         /// </summary>
+        [Key]
         public long Id
         {
             get; set;

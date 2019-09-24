@@ -19,20 +19,17 @@ namespace BurstChat.Shared.Extensions
         /// <param name="controller">The ControllerBase instance that is extended</param>
         /// <param name="monad">The monad to be unwraped</param>
         /// <returns>An IActionResult instance</returns>
-        public static IActionResult UnwrapMonad<TSuccess, TFailure>(this ControllerBase controller, Either<TSuccess, TFailure> monad)
-        {
-            switch (monad)
+        public static IActionResult UnwrapMonad<TSuccess, TFailure>(this ControllerBase controller, Either<TSuccess, TFailure> monad) =>
+            monad switch
             {
-                case Success<TSuccess, TFailure> success:
-                    return controller.Ok(success.Value);
+                Success<TSuccess, TFailure> s => controller.Ok(s.Value),
 
-                case Failure<TSuccess, TFailure> failure:
-                    return controller.BadRequest(failure.Value);
+                Failure<TSuccess, TFailure> f when f.Value is AuthenticationError => controller.Unauthorized(),
 
-                default:
-                    return controller.BadRequest(SystemErrors.Exception());
-            }
-        }
+                Failure<TSuccess, TFailure> f => controller.BadRequest(f.Value),
+
+                _ => controller.BadRequest(SystemErrors.Exception())
+            };
 
         /// <summary>
         ///   This method will unwrap a provided monad in order to return a proper IActionResult instance.
@@ -44,19 +41,16 @@ namespace BurstChat.Shared.Extensions
         /// <param name="controller">The ControllerBase instance that is extended</param>
         /// <param name="monad">The monad to be unwraped</param>
         /// <returns>An IActionResult instance</returns>
-        public static IActionResult UnwrapMonad<TFailure>(this ControllerBase controller, Either<Unit, TFailure> monad)
-        {
-            switch (monad)
+        public static IActionResult UnwrapMonad<TFailure>(this ControllerBase controller, Either<Unit, TFailure> monad) =>
+            monad switch
             {
-                case Success<Unit, TFailure> success:
-                    return controller.Ok();
+                Success<Unit, TFailure> _ => controller.Ok(),
 
-                case Failure<Unit, TFailure> failure:
-                    return controller.BadRequest(failure.Value);
+                Failure<Unit, TFailure> f when f.Value is AuthenticationError => controller.Unauthorized(),
 
-                default:
-                    return controller.BadRequest(SystemErrors.Exception());
-            }
-        }
+                Failure<Unit, TFailure> f => controller.BadRequest(f.Value),
+
+                _ => controller.BadRequest(SystemErrors.Exception())
+            };
     }
 }

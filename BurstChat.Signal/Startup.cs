@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BurstChat.Signal.Services.ApiInteropService;
 using BurstChat.Signal.Services.InvitationsService;
 using BurstChat.Signal.Services.ServerService;
+using Microsoft.Extensions.Hosting;
 
 namespace BurstChat.Signal
 {
@@ -32,8 +33,8 @@ namespace BurstChat.Signal
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddControllers()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services
                 .AddSignalR();
@@ -53,6 +54,9 @@ namespace BurstChat.Signal
 
             services
                 .AddHttpClient<BurstChatApiInteropService>();
+
+          services
+                .AddAuthorization();
 
             services
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -78,7 +82,7 @@ namespace BurstChat.Signal
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder application, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -93,12 +97,14 @@ namespace BurstChat.Signal
             application.UseAuthentication();
 
             application
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseRouting()
                 .UseCors("CorsPolicy")
-                .UseSignalR(options =>
+                .UseEndpoints(endpoints =>
                 {
-                    options.MapHub<ChatHub>("/chat");
-                })
-                .UseMvc();
+                    endpoints.MapHub<ChatHub>("/chat");
+                });
         }
     }
 }

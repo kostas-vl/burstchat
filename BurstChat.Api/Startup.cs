@@ -7,20 +7,18 @@ using BurstChat.Api.Services.ChannelsService;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Context;
-using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Services.BCryptService;
 using BurstChat.Shared.Services.ModelValidationService;
 using BurstChat.Shared.Services.UserService;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace BurstChat.Api
@@ -47,6 +45,8 @@ namespace BurstChat.Api
         /// <param name="services">The services collection to be used for the configuration</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            IdentityModelEventSource.ShowPII = true;
+            
             services
                 .Configure<DatabaseOptions>(Configuration.GetSection("Database"))
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
@@ -62,8 +62,11 @@ namespace BurstChat.Api
                 .AddScoped<IUserService, UserProvider>();
 
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddControllers()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services
+                .AddAuthorization();
 
             services
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -116,10 +119,10 @@ namespace BurstChat.Api
                     });
                 });
 
-            services.AddSwaggerGen(config =>
-            {
-                config.SwaggerDoc("v1", new Info { Title = "BurstChat API", Version = "v1" });
-            });
+            // services.AddSwaggerGen(config =>
+            // {
+            //     config.SwaggerDoc("v1", new Info { Title = "BurstChat API", Version = "v1" });
+            // });
         }
 
         /// <summary>
@@ -127,7 +130,7 @@ namespace BurstChat.Api
         /// </summary>
         /// <param name="application">The application builder to be used in the configuration</param>
         /// <param name="env">The hosting environment that the application is running</param>
-        public void Configure(IApplicationBuilder application, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -139,20 +142,21 @@ namespace BurstChat.Api
                 application.UseHsts();
             }
 
-            application.UseAuthentication();
-
             application
+                .UseStaticFiles()
+                // .UseSwagger()
+                // .UseSwaggerUI(config =>
+                // {
+                //     config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat V1");
+                // })
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseRouting()
                 .UseCors("CorsPolicy")
-                .UseMvc();
-            
-            application.UseSwagger();
-
-            application.UseSwaggerUI(config =>
-            {
-                config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat V1");
-            });
-
-            application.UseStaticFiles();
+                .UseEndpoints(endpoints => 
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

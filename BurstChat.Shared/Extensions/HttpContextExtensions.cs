@@ -33,11 +33,11 @@ namespace BurstChat.Shared.Extensions
                     return new Success<long, Error>(userId);
                 }
                 else
-                    return new Failure<long, Error>(UserErrors.UserNotFound());
+                    return new Failure<long, Error>(new AuthenticationError());
             }
             catch 
             {
-                return new Failure<long, Error>(UserErrors.UserNotFound());
+                return new Failure<long, Error>(new AuthenticationError());
             }
         }
 

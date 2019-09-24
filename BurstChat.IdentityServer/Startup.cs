@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using BurstChat.IdentityServer.Extensions;
 using BurstChat.IdentityServer.Options;
 using BurstChat.IdentityServer.Services;
 using BurstChat.Shared.Context;
-using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Services.BCryptService;
 using BurstChat.Shared.Services.UserService;
 using BurstChat.Shared.Services.ModelValidationService;
-using IdentityServer4;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 
 namespace BurstChat.IdentityServer
 {
@@ -128,8 +122,8 @@ namespace BurstChat.IdentityServer
                 });
 
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddControllers()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         /// <summary>
@@ -137,7 +131,7 @@ namespace BurstChat.IdentityServer
         /// </summary>
         /// <param name="application">The application builder to be used in the configuration</param>
         /// <param name="env">The hosting environment that the application is running</param>
-        public void Configure(IApplicationBuilder application, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -150,11 +144,14 @@ namespace BurstChat.IdentityServer
                 application.UseHsts();
             }
 
-            application.UseIdentityServer();
-
             application
+                .UseRouting()
                 .UseCors("CorsPolicy")
-                .UseMvc();
+                .UseIdentityServer()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }
