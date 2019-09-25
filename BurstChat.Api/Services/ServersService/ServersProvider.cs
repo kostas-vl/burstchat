@@ -48,7 +48,7 @@ namespace BurstChat.Api.Services.ServersService
                     .Include(s => s.Subscriptions)
                     .FirstOrDefault(s => s.Id == serverId);
 
-                if (server != null)
+                if (server is { })
                     return new Success<Server, Error>(server);
                 else
                     return new Failure<Server, Error>(ServerErrors.ServerNotFound());
@@ -70,17 +70,16 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                return Get(serverId)
-                    .Bind(server =>
-                    {
-                        _burstChatContext
-                           .Servers
-                           .Remove(server);
+                return Get(serverId).Bind(server =>
+                {
+                    _burstChatContext
+                        .Servers
+                        .Remove(server);
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -137,15 +136,14 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                return Get(server.Id)
-                    .Bind(serverEntry =>
-                    {
-                        serverEntry.Name = server.Name;
+                return Get(server.Id).Bind(serverEntry =>
+                {
+                    serverEntry.Name = server.Name;
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -187,34 +185,33 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                return Get(serverId)
-                    .Bind<Invitation>(server =>
+                return Get(serverId).Bind<Invitation>(server =>
+                {
+                    var userExists = server
+                        .Subscriptions
+                        .Any(s => s.UserId == userId);
+
+                    if (userExists)
+                        return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
+
+                    var invitation = new Invitation
                     {
-                        var userExists = server
-                            .Subscriptions
-                            .Any(s => s.UserId == userId);
+                        ServerId = serverId,
+                        UserId = userId,
+                        Accepted = false,
+                        Declined = false,
+                        DateUpdated = null,
+                        DateCreated = DateTime.Now
+                    };
 
-                        if (userExists)
-                            return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
+                    _burstChatContext
+                        .Invitations
+                        .Add(invitation);
 
-                        var invitation = new Invitation
-                        {
-                            ServerId = serverId,
-                            UserId = userId,
-                            Accepted = false,
-                            Declined = false,
-                            DateUpdated = null,
-                            DateCreated = DateTime.Now
-                        };
+                    _burstChatContext.SaveChanges();
 
-                        _burstChatContext
-                            .Invitations
-                            .Add(invitation);
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Invitation, Error>(invitation);
-                    });
+                    return new Success<Invitation, Error>(invitation);
+                });
             }
             catch (Exception e)
             {

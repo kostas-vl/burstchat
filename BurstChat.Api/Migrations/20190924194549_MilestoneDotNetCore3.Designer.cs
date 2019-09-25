@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BurstChat.Api.Migrations
 {
     [DbContext(typeof(BurstChatContext))]
-    [Migration("20190924145347_UpdatedFramework")]
-    partial class UpdatedFramework
+    [Migration("20190924194549_MilestoneDotNetCore3")]
+    partial class MilestoneDotNetCore3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,7 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -50,6 +51,7 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DatePosted")
@@ -91,6 +93,7 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("ServerId")
@@ -159,6 +162,7 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -200,6 +204,7 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("OTP")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long?>("UserId")
@@ -222,6 +227,7 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -242,12 +248,15 @@ namespace BurstChat.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long?>("PrivateGroupMessageId")

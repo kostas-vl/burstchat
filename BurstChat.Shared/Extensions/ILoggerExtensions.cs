@@ -21,7 +21,7 @@ namespace BurstChat.Shared.Extensions
         /// <param name="exception">The exception instance to be logged</param>
         public static void LogException<T>(this ILogger<T> logger, Exception exception)
         {
-            if (exception != null) 
+            if (exception is { }) 
             {
                 var builder = new StringBuilder();
                 builder.AppendLine(exception.Message);

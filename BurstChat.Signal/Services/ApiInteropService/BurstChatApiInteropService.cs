@@ -39,7 +39,7 @@ namespace BurstChat.Signal.Services.ApiInteropService
         /// <param name="path">The path of the request</param>
         /// <param name="content">Optional content for the request</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<T, Error>> SendAsync<T>(HttpContext context, HttpMethod method, string path, HttpContent content = null)
+        public async Task<Either<T, Error>> SendAsync<T>(HttpContext context, HttpMethod method, string path, HttpContent? content = null)
         {
             var accessToken = context.GetAccessToken();
             var request = new HttpRequestMessage(method, path);
@@ -59,7 +59,7 @@ namespace BurstChat.Signal.Services.ApiInteropService
         /// <param name="path">The path of the request</param>
         /// <param name="content">Optional content for the request</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<Unit, Error>> SendAsync(HttpContext context, HttpMethod method, string path, HttpContent content = null)
+        public async Task<Either<Unit, Error>> SendAsync(HttpContext context, HttpMethod method, string path, HttpContent? content = null)
         {
             var accessToken = context.GetAccessToken();
             var request = new HttpRequestMessage(method, path);

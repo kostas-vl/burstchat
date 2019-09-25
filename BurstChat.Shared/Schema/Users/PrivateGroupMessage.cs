@@ -15,43 +15,28 @@ namespace BurstChat.Shared.Schema.Users
         /// The id of the direct message.
         /// </summary>
         [Key]
-        public long Id
-        {
-            get; set;
-        }
+        public long Id { get; set; }
 
         /// <summary>
         /// The name of the private group.
         /// </summary>
-        public string Name
-        {
-            get; set;
-        }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The date the group was created.
         /// </summary>
-        public DateTime DateCreated
-        {
-            get; set;
-        }
+        public DateTime DateCreated { get; set; }
 
         /// <summary>
         /// The list of users that are part of the private message group. This property in the context
         /// of entity framework is a single navigation property.
         /// </summary>
-        public List<User> Users
-        {
-            get; set;
-        }
+        public List<User> Users { get; set; } = new List<User>();
         
         /// <summary>
         /// The list of message between the two participants. This property in the context
         /// of entity framework is a single navigation property.
         /// </summary>
-        public List<Message> Messages
-        {
-            get; set;
-        }
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

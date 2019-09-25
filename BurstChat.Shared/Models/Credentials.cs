@@ -10,17 +10,11 @@ namespace BurstChat.Shared.Models
         /// <summary>
         ///   The email of the user that is also his username.
         /// </summary>
-        public string Email 
-        {
-            get; set;
-        }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         ///   The password of the user.
         /// </summary>
-        public string Password
-        {
-            get; set;
-        }
+        public string Password { get; set; } = string.Empty;
     }
 }

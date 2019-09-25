@@ -10,17 +10,11 @@ namespace BurstChat.Api.Options
         /// <summary>
         ///   The database provider technology.
         /// </summary>
-        public string Provider
-        {
-            get; set;
-        }
+        public string Provider { get; set; } = string.Empty;
 
         /// <summary>
         ///   The appropriate connection string based on the value of the provided.
         /// </summary>
-        public string ConnectionString
-        {
-            get; set;
-        }
+        public string ConnectionString { get; set; } = string.Empty;
     }
 }

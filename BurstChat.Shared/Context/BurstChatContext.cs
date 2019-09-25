@@ -1,3 +1,5 @@
+#nullable disable
+
 using System;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
@@ -11,55 +13,25 @@ namespace BurstChat.Shared.Context
     /// </summary>
     public class BurstChatContext : DbContext
     {
-        public DbSet<Message> Messages
-        {
-            get; set;
-        }
+        public DbSet<Message> Messages { get; set; }
 
-        public DbSet<Link> Links
-        {
-            get; set;
-        }
+        public DbSet<Link> Links { get; set; }
 
-        public DbSet<Server> Servers
-        {
-            get; set;
-        }
+        public DbSet<Server> Servers { get; set; }
 
-        public DbSet<Subscription> Subscriptions
-        {
-            get; set;
-        }
+        public DbSet<Subscription> Subscriptions { get; set; }
 
-        public DbSet<Invitation> Invitations
-        {
-            get; set;
-        }
+        public DbSet<Invitation> Invitations { get; set; }
 
-        public DbSet<Channel> Channels
-        {
-            get; set;
-        }
+        public DbSet<Channel> Channels { get; set; }
 
-        public DbSet<ChannelDetails> ChannelDetails
-        {
-            get; set;
-        }
+        public DbSet<ChannelDetails> ChannelDetails { get; set; }
 
-        public DbSet<User> Users
-        {
-            get; set;
-        }
+        public DbSet<User> Users { get; set; }
 
-        public DbSet<PrivateGroupMessage> PrivateGroupMessage
-        {
-            get; set;
-        }
+        public DbSet<PrivateGroupMessage> PrivateGroupMessage { get; set; }
 
-        public DbSet<OneTimePassword> OneTimePassword
-        {
-            get; set;
-        }
+        public DbSet<OneTimePassword> OneTimePassword { get; set; }
 
         /// <summary>
         ///   Executes the necessary start up code for the burst chat database context.

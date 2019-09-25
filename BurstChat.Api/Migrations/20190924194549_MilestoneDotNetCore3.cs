@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BurstChat.Api.Migrations
 {
-    public partial class InitialMilestone2Migration : Migration
+    public partial class MilestoneDotNetCore3 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,7 +25,7 @@ namespace BurstChat.Api.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -39,7 +39,7 @@ namespace BurstChat.Api.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -53,9 +53,9 @@ namespace BurstChat.Api.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Email = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     ChannelDetailsId = table.Column<int>(nullable: true),
                     PrivateGroupMessageId = table.Column<long>(nullable: true)
@@ -83,7 +83,7 @@ namespace BurstChat.Api.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     IsPublic = table.Column<bool>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     DetailsId = table.Column<int>(nullable: true),
@@ -143,7 +143,7 @@ namespace BurstChat.Api.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<long>(nullable: false),
-                    Content = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: false),
                     Edited = table.Column<bool>(nullable: false),
                     DatePosted = table.Column<DateTime>(nullable: false),
                     ChannelDetailsId = table.Column<int>(nullable: true),
@@ -178,7 +178,7 @@ namespace BurstChat.Api.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    OTP = table.Column<string>(nullable: true),
+                    OTP = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     ExpirationDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<long>(nullable: true)
@@ -226,7 +226,7 @@ namespace BurstChat.Api.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Url = table.Column<string>(nullable: true),
+                    Url = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     MessageId = table.Column<long>(nullable: true)
                 },

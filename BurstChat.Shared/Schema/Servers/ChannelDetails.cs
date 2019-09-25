@@ -15,26 +15,18 @@ namespace BurstChat.Shared.Schema.Servers
         /// The id of the details entry.
         /// </summary>
         [Key]
-        public int Id 
-        {
-            get; set;
-        }
+        public int Id { get; set; }
 
         /// <summary>
         /// The list of users that are members of the channel. In the context of entity framework
         /// this property is a single navigation property.
         /// </summary>
-        public List<User> Users
-        {
-            get; set;
-        }
+        public List<User> Users { get; set; } = new List<User>();
 
         /// <summary>
         /// The list of messages posted on the channel. In the context of entity framework
         /// this property is a single navigation property.
-        public List<Message> Messages
-        {
-            get; set;
-        }
+        /// </summary>
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

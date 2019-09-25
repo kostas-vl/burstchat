@@ -27,7 +27,7 @@ namespace BurstChat.Shared.Extensions
                     .User
                     .FindFirst("sub");
 
-                if (subjectClaim != null)
+                if (subjectClaim is { })
                 {
                     var userId = Convert.ToInt64(subjectClaim.Value);
                     return new Success<long, Error>(userId);
@@ -51,14 +51,11 @@ namespace BurstChat.Shared.Extensions
             {
                 return context
                     .Request
-                    .Headers["Authorization"]
-                    .ToString()
-                    .Split("Bearer ")
-                    .Last();
+                    .Query["access_token"];                    
             }
             catch
             {
-                return null;
+                return string.Empty;
             }
         }
     }

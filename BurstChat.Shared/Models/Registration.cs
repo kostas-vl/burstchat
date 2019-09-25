@@ -10,34 +10,22 @@ namespace BurstChat.Shared.Models
         /// <summary>
         ///   The name that is displayed on clients.
         /// </summary>
-        public string Name
-        {
-            get; set;
-        }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         ///   The email of the new user. It will be also his username for any authentication
         ///   process.
         /// </summary>
-        public string Email
-        {
-            get; set;
-        }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         ///   The password of the new user.
         /// </summary>
-        public string Password
-        {
-            get; set;
-        }
+        public string Password { get; set; } = string.Empty;
 
         /// <summary>
         ///   The password confirmation to be used in the validation of the registration process.
         /// </summary>
-        public string ConfirmPassword
-        {
-            get; set;
-        }
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

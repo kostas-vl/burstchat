@@ -19,7 +19,7 @@ namespace BurstChat.Shared.Services.ModelValidationService
         /// <returns>An either monad</returns>
         public Either<Credentials, Error> CredentialsHasValue(Credentials credentials)
         {
-            if (credentials != null)
+            if (credentials is { })
                 return new Success<Credentials, Error>(credentials);
             else
                 return new Failure<Credentials, Error>(ModelErrors.CredentialsNotProvided());
@@ -32,7 +32,7 @@ namespace BurstChat.Shared.Services.ModelValidationService
         /// <returns>An either monad</returns>
         private Either<Registration, Error> RegistrationHasValue(Registration registration)
         {
-            if (registration != null)
+            if (registration is { })
                 return new Success<Registration, Error>(registration);
             else
                 return new Failure<Registration, Error>(ModelErrors.RegistrationNotProvided());
@@ -181,7 +181,7 @@ namespace BurstChat.Shared.Services.ModelValidationService
         /// <returns>An either monad</returns>
         private Either<ChangePassword, Error> ChangePasswordHasValue(ChangePassword changePassword)
         {
-            if (changePassword != null)
+            if (changePassword is { })
                 return new Success<ChangePassword, Error>(changePassword);
             else
                 return new Failure<ChangePassword, Error>(ModelErrors.ChangePasswordNotProvided());

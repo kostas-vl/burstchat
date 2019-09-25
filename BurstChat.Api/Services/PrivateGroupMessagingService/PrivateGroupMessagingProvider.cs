@@ -51,7 +51,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                     .Include(pgm => pgm.Users)
                     .FirstOrDefault(pgm => pgm.Id == groupId);
 
-                if (privateGroup != null)
+                if (privateGroup is { })
                     return new Success<PrivateGroupMessage, Error>(privateGroup);
                 else
                     return new Failure<PrivateGroupMessage, Error>(PrivateGroupMessageErrors.GroupNotFound());
@@ -76,7 +76,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                     .PrivateGroupMessage
                     .FirstOrDefault(pgm => pgm.Name == groupName);
                 
-                if (privateGroup == null)
+                if (privateGroup is null)
                 {
                     var newPrivateGroup = new PrivateGroupMessage
                     {
@@ -111,17 +111,16 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         {
             try
             {
-                return Get(groupId)
-                    .Bind(privateGroup =>
-                    {
-                        _burstChatContext
-                            .PrivateGroupMessage
-                            .Remove(privateGroup);
+                return Get(groupId).Bind(privateGroup =>
+                {
+                    _burstChatContext
+                        .PrivateGroupMessage
+                        .Remove(privateGroup);
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -142,8 +141,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
             {
                 return _userService
                     .Get(userId)
-                    .Bind(user => Get(groupId)
-                                      .Attach(privateGroup => (privateGroup, user)))
+                    .Bind(user => Get(groupId).Attach(privateGroup => (privateGroup, user)))
                     .Bind(privateGroupAndUser =>
                     {
                         var (privateGroup, user) = privateGroupAndUser;
@@ -176,8 +174,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
             {
                 return _userService
                     .Get(userId)
-                    .Bind(user => Get(groupId)
-                                      .Attach(privateGroup => (privateGroup, user)))
+                    .Bind(user => Get(groupId).Attach(privateGroup => (privateGroup, user)))
                     .Bind(privateGroupAndUser =>
                     {
                         var (privateGroup, user) = privateGroupAndUser;
@@ -212,7 +209,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                     .Include(pgm => pgm.Messages)
                     .FirstOrDefault(pgm => pgm.Id == groupId);
 
-                if (privateGroup != null)
+                if (privateGroup is { })
                     return new Success<IEnumerable<Message>, Error>(privateGroup.Messages);
                 else
                     return new Failure<IEnumerable<Message>, Error>(PrivateGroupMessageErrors.GroupNotFound());
@@ -234,24 +231,23 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         {
             try
             {
-                return GetMessages(groupId)
-                    .Bind(groupMessages =>
+                return GetMessages(groupId).Bind(groupMessages =>
+                {
+                    var groupMessagesList = groupMessages.ToList();
+                    var newMessage = new Message
                     {
-                        var groupMessagesList = groupMessages.ToList();
-                        var newMessage = new Message
-                        {
-                            UserId = message.UserId,
-                            Content = message.Content,
-                            Edited = false,
-                            DatePosted = DateTime.Now
-                        };
+                        UserId = message.UserId,
+                        Content = message.Content,
+                        Edited = false,
+                        DatePosted = DateTime.Now
+                    };
 
-                        groupMessagesList.Add(newMessage);
-                            
-                        _burstChatContext.SaveChanges();
+                    groupMessagesList.Add(newMessage);
+                        
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -270,24 +266,23 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         {
             try
             {
-                return GetMessages(groupId)
-                    .Bind<Unit>(groupMessages =>
+                return GetMessages(groupId).Bind<Unit>(groupMessages =>
+                {
+                    var storedMessage = groupMessages
+                        .FirstOrDefault(m => m.Id == message.Id);
+
+                    if (storedMessage is { })
                     {
-                        var storedMessage = groupMessages
-                            .FirstOrDefault(m => m.Id == message.Id);
+                        storedMessage.Content = message.Content;
+                        storedMessage.Edited = true;
 
-                        if (storedMessage != null)
-                        {
-                            storedMessage.Content = message.Content;
-                            storedMessage.Edited = true;
+                        _burstChatContext.SaveChanges();
 
-                            _burstChatContext.SaveChanges();
-
-                            return new Success<Unit, Error>(new Unit());
-                        }
-                        else
-                            return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
-                    });
+                        return new Success<Unit, Error>(new Unit());
+                    }
+                    else
+                        return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
+                });
             }
             catch (Exception e)
             {
@@ -306,25 +301,24 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         {
             try
             {
-                return GetMessages(groupId)
-                    .Bind<Unit>(groupMessages =>
+                return GetMessages(groupId).Bind<Unit>(groupMessages =>
+                {
+                    var storedMessage = groupMessages
+                        .FirstOrDefault(m => m.Id == messageId);
+
+                    if (storedMessage is { })
                     {
-                        var storedMessage = groupMessages
-                            .FirstOrDefault(m => m.Id == messageId);
+                        _burstChatContext
+                            .Messages
+                            .Remove(storedMessage);
 
-                        if (storedMessage != null)
-                        {
-                            _burstChatContext
-                                .Messages
-                                .Remove(storedMessage);
+                        _burstChatContext.SaveChanges();
 
-                            _burstChatContext.SaveChanges();
-
-                            return new Success<Unit, Error>(new Unit());
-                        }
-                        else
-                            return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
-                    });
+                        return new Success<Unit, Error>(new Unit());
+                    }
+                    else
+                        return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
+                });
             }
             catch (Exception e)
             {

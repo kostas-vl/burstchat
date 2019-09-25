@@ -13,41 +13,26 @@ namespace BurstChat.Shared.Schema.Servers
         /// The id of the channel.
         /// </summary>
         [Key]
-        public int Id
-        {
-            get; set;
-        }
+        public int Id { get; set; }
 
         /// <summary>
         /// The name of the channel.
         /// </summary>
-        public string Name
-        {
-            get; set;
-        }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// A flag specifying whether all users of the server can access this channel.
         /// </summary>
-        public bool IsPublic
-        {
-            get; set;
-        }
+        public bool IsPublic { get; set; }
 
         /// <summary>
         /// The date the channel was created.
         /// </summary>
-        public DateTime DateCreated
-        {
-            get; set;
-        }
+        public DateTime DateCreated { get; set; }
 
         /// <summary>
         /// Detail information about the channel.
         /// </summary>
-        public ChannelDetails Details
-        {
-            get; set;
-        }
+        public ChannelDetails? Details { get; set; }
     }
 }

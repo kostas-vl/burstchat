@@ -53,14 +53,24 @@ namespace BurstChat.IdentityServer.Services
             var claimsMonad = validationMonad
                 .Bind(_userService.GetClaims);
 
-            if (claimsMonad is Success<IEnumerable<Claim>, Error> claims)
+            switch (claimsMonad)
             {
-                var user = (validationMonad as Success<User, Error>).Value;
+                case Success<IEnumerable<Claim>, Error> claims:
+                    var user = (validationMonad as Success<User, Error>)!.Value;
+                    context.Result = new GrantValidationResult(user.Id.ToString(),
+                                                               OidcConstants.AuthenticationMethods.Password,
+                                                               _clock.UtcNow.UtcDateTime,
+                                                               claims: claims.Value);
+                    break;
 
-                context.Result = new GrantValidationResult(user.Id.ToString(),
-                                                           OidcConstants.AuthenticationMethods.Password,
-                                                           _clock.UtcNow.UtcDateTime,
-                                                           claims: claims.Value);
+                case Failure<IEnumerable<Claim>, Error> _:
+                    var error = UserErrors.UserPasswordDidNotMatch();
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, error.Message);
+                    break;
+
+                default:
+                    break;
+
             }
 
             return Task.CompletedTask;

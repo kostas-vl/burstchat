@@ -10,25 +10,16 @@ namespace BurstChat.Shared.Models
         /// <summary>
         ///   The one time password provided to the user for the operation.
         /// </summary>
-        public string OneTimePassword
-        {
-            get; set;
-        }
+        public string OneTimePassword { get; set; } = string.Empty;
 
         /// <summary>
         ///   The new password of the user.
         /// </summary>
-        public string NewPassword
-        {
-            get; set;
-        }
+        public string NewPassword { get; set; } = string.Empty;
 
         /// <summary>
         ///   The confirmation of the new password.
         /// </summary>
-        public string ConfirmNewPassword
-        {
-            get; set;
-        }
+        public string ConfirmNewPassword { get; set; } = string.Empty;
     }
 }

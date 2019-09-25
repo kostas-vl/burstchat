@@ -11,17 +11,11 @@ namespace BurstChat.IdentityServer.Options
         /// <summary>
         ///   The path to the certificate file.
         /// </summary>
-        public string Path
-        {
-            get; set;
-        }
+        public string Path { get; set; } = string.Empty;
 
         /// <summary>
         ///   The password for the certificate.
         /// </summary>
-        public string Password
-        {
-            get; set;
-        }
+        public string Password { get; set; } = string.Empty;
     }
 }

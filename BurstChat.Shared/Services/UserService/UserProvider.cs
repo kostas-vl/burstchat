@@ -53,7 +53,7 @@ namespace BurstChat.Shared.Services.UserService
                     .Users
                     .FirstOrDefault(u => u.Id == id);
 
-                if (user != null)
+                if (user is { })
                     return new Success<User, Error>(user);
                 else
                     return new Failure<User, Error>(UserErrors.UserNotFound());
@@ -78,7 +78,7 @@ namespace BurstChat.Shared.Services.UserService
                     .Users
                     .FirstOrDefault(u => u.Email == email);
 
-                if (user != null)
+                if (user is { })
                     return new Success<User, Error>(user);
                 else
                     return new Failure<User, Error>(UserErrors.UserNotFound());
@@ -135,10 +135,11 @@ namespace BurstChat.Shared.Services.UserService
         {
             try
             {
-                var userId = user?.Id ?? default(long);
+                if (user is { })
+                {
+                    var userId = user.Id;
 
-                return Get(userId)
-                    .Bind(storedUser =>
+                    return Get(userId).Bind(storedUser =>
                     {
                         storedUser.Email = user.Email;
                         storedUser.Name = user.Name;
@@ -146,6 +147,9 @@ namespace BurstChat.Shared.Services.UserService
                         _burstChatContext.SaveChanges();
                         return new Success<Unit, Error>(new Unit());
                     });
+                }
+                else
+                    return new Failure<Unit, Error>(UserErrors.UserNotFound());
             }
             catch (Exception e)
             {
@@ -163,12 +167,11 @@ namespace BurstChat.Shared.Services.UserService
         {
             try
             {
-                return Get(id)
-                    .Bind(user =>
-                    {
-                        _burstChatContext.Remove(user);
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                return Get(id).Bind(user =>
+                {
+                    _burstChatContext.Remove(user);
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -213,18 +216,17 @@ namespace BurstChat.Shared.Services.UserService
         {
             try
             {
-                return Get(userId)
-                    .Bind(user =>
-                    {
-                        var group = _burstChatContext
-                            .PrivateGroupMessage
-                            .Include(pmg => pmg.Users
-                                               .Where(u => u.Id == user.Id))
-                            .Include(pmg => pmg.Messages)
-                            .ToList();
+                return Get(userId).Bind(user =>
+                {
+                    var group = _burstChatContext
+                        .PrivateGroupMessage
+                        .Include(pmg => pmg.Users
+                                            .Where(u => u.Id == user.Id))
+                        .Include(pmg => pmg.Messages)
+                        .ToList();
 
-                        return new Success<IEnumerable<PrivateGroupMessage>, Error>(group);
-                    });
+                    return new Success<IEnumerable<PrivateGroupMessage>, Error>(group);
+                });
             }
             catch (Exception e)
             {
@@ -244,16 +246,15 @@ namespace BurstChat.Shared.Services.UserService
         {
             try
             {
-                return Get(email)
-                    .Bind<User>(user =>
-                    {
-                        var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
+                return Get(email).Bind<User>(user =>
+                {
+                    var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
 
-                        if (!passwordIsValid)
-                            return new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
+                    if (!passwordIsValid)
+                        return new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
 
-                        return new Success<User, Error>(user);
-                    });
+                    return new Success<User, Error>(user);
+                });
             }
             catch (Exception e)
             {
@@ -277,7 +278,7 @@ namespace BurstChat.Shared.Services.UserService
                     .Include(u => u.OneTimePasswords)
                     .FirstOrDefault(u => u.Email == email);
 
-                if (user == null)
+                if (user is null)
                     return new Failure<Unit, Error>(UserErrors.UserNotFound());
 
                 var dateCreated = DateTime.Now;
@@ -324,7 +325,7 @@ namespace BurstChat.Shared.Services.UserService
                                           .Where(o => o.ExpirationDate >= DateTime.Now)
                                           .Any(o => _bcryptService.VerifyHash(o.OTP, oneTimePass)));
 
-                if (user != null)
+                if (user is { })
                 {
                     var oneTimePassword = user
                         .OneTimePasswords
@@ -443,7 +444,7 @@ namespace BurstChat.Shared.Services.UserService
         public Either<IEnumerable<Claim>, Error> GetClaims(User user)
         {
             if (user == null)
-                return new Failure<IEnumerable<Claim>, Error>(null);
+                return new Failure<IEnumerable<Claim>, Error>(UserErrors.UserNotFound());
 
             var claims = new Claim[]
             {

@@ -8,9 +8,6 @@ namespace BurstChat.Api.Options
         /// <summary>
         ///   The various domains accepted by the cors policy.
         /// </summary>
-        public IEnumerable<string> Cors
-        {
-            get; set;
-        }
+        public IEnumerable<string> Cors { get; set; } = new string[0];
     }
 }

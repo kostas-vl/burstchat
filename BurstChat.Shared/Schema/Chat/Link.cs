@@ -12,25 +12,16 @@ namespace BurstChat.Shared.Schema.Chat
         ///     An identifier for the url.
         /// </summary>
         [Key]
-        public long Id
-        {
-            get; set;
-        }
+        public long Id { get; set; }
 
         /// <summary>
         ///     The url posted.
         /// </summary>
-        public string Url
-        {
-            get; set;
-        }
+        public string Url { get; set; } = string.Empty;
 
         /// <summary>
         ///     The date the entry was created.
         /// </summary>
-        public DateTime DateCreated
-        {
-            get; set;
-        }
+        public DateTime DateCreated { get; set; }
     }
 }

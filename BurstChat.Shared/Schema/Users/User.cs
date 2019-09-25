@@ -16,59 +16,38 @@ namespace BurstChat.Shared.Schema.Users
         /// The id of the user.
         /// </summary>
         [Key]
-        public long Id
-        {
-            get; set;
-        }
+        public long Id { get; set; }
 
         /// <summary>
         /// The email of the user.
         /// </summary>        
-        public string Email
-        {
-            get; set;
-        }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// The name of the user.
         /// </summary>
-        public string Name
-        {
-            get; set;
-        }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The password of the user.
         /// </summary>
         [JsonIgnore]
-        public string Password
-        {
-            get; set;
-        }
+        public string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// The date that the user was created.
         /// </summary>
-        public DateTime DateCreated
-        {
-            get; set;
-        }
+        public DateTime DateCreated { get; set; }
 
         /// <summary>
         /// The list of subscribed servers.
         /// </summary>
-        public List<Subscription> Subscriptions
-        {
-            get; set;
-        }
+        public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         /// <summary>
         ///   The list of one time passwords issued by the user.
         /// </summary>
         [JsonIgnore]
-        public List<OneTimePassword> OneTimePasswords
-        {
-            get; set;
-        }
+        public List<OneTimePassword> OneTimePasswords { get; set; } = new List<OneTimePassword>();
     }
 }

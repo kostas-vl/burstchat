@@ -11,17 +11,11 @@ namespace BurstChat.Signal.Options
         /// <summary>
         ///   The accepted cors domains.
         /// </summary>
-        public IEnumerable<string> Cors
-        {
-            get; set;
-        }
+        public IEnumerable<string> Cors { get; set; } = new string[0];
 
         /// <summary>
         ///   The burst chat api domain url.
         /// </summary>
-        public string BurstChatApiDomain
-        {
-            get; set;
-        }
+        public string BurstChatApiDomain { get; set; } = string.Empty;
     }
 }

@@ -12,17 +12,11 @@ namespace BurstChat.IdentityServer.Options
         /// <summary>
         ///   Contains a dictionary with the clients and their secret.
         /// </summary>
-        public IDictionary<string, string> ClientSecrets
-        {
-            get; set;
-        }
+        public IDictionary<string, string> ClientSecrets { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         ///   Contains a dictionary with the apis and their secret.
         /// </summary>
-        public IDictionary<string, string> ApiSecrets
-        {
-            get; set;
-        }
+        public IDictionary<string, string> ApiSecrets { get; set; } = new Dictionary<string, string>();
     }
 }

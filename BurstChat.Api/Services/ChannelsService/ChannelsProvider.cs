@@ -91,10 +91,10 @@ namespace BurstChat.Api.Services.ChannelsService
                 var channel = _burstChatContext
                     .Channels
                     .Include(c => c.Details)
-                        .ThenInclude(d => d.Messages)
+                        .ThenInclude(d => d!.Messages)
                             .ThenInclude(m => m.Links)
                     .Include(d => d.Details)
-                        .ThenInclude(m => m.Messages)
+                        .ThenInclude(m => m!.Messages)
                             .ThenInclude(m => m.User)
                     .FirstOrDefault(c => c.Id == channelId);
 
@@ -159,10 +159,11 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                var channelId = channel?.Id ?? default(int);
+                if (channel is { })
+                {
+                    var channelId = channel.Id;
 
-                return Get(channelId)
-                    .Bind(channelEntry =>
+                    return Get(channelId).Bind(channelEntry =>
                     {
                         channelEntry.Name = channel.Name;
                         channelEntry.IsPublic = channel.IsPublic;
@@ -171,6 +172,9 @@ namespace BurstChat.Api.Services.ChannelsService
 
                         return new Success<Unit, Error>(new Unit());
                     });
+                }
+                else
+                    return new Failure<Unit, Error>(ChannelErrors.ChannelNotFound());
             }
             catch (Exception e)
             {
@@ -188,17 +192,16 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                return Get(channelId)
-                    .Bind(channel =>
-                    {
-                        _burstChatContext
-                            .Channels
-                            .Remove(channel);
+                return Get(channelId).Bind(channel =>
+                {
+                    _burstChatContext
+                        .Channels
+                        .Remove(channel);
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -214,7 +217,13 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <returns>An either monad</returns>
         public Either<IEnumerable<Message>, Error> GetMessages(int channelId) =>
             Get(channelId)
-                .Bind(channel => new Success<IEnumerable<Message>, Error>(channel.Details.Messages));
+                .Bind(channel =>
+                {
+                    if (channel.Details is null)
+                        return new Success<IEnumerable<Message>, Error>(new Message[0]);
+                    else
+                        return new Success<IEnumerable<Message>, Error>(channel.Details.Messages);
+                });
 
         /// <summary>
         ///   This method will insert a new message sent to the channel provided.
@@ -226,22 +235,21 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                return Get(channelId)
-                    .Bind(channel =>
-                    {
-                        message.User = null;
-                        message.Links = GetLinksFromContent(message);
-                        message.Content = RemoveLinksFromContent(message);
+                return Get(channelId).Bind(channel =>
+                {
+                    message.User = null;
+                    message.Links = GetLinksFromContent(message);
+                    message.Content = RemoveLinksFromContent(message);
 
-                        channel
-                            .Details
-                            .Messages
-                            .Add(message);
+                    channel
+                        .Details?
+                        .Messages
+                        .Add(message);
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Message, Error>(message);
-                    });
+                    return new Success<Message, Error>(message);
+                });
             }
             catch (Exception e)
             {
@@ -260,27 +268,26 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                return Get(channelId)
-                    .Bind<Unit>(channel =>
+                return Get(channelId).Bind<Unit>(channel =>
+                {
+                    var messageEntry = channel
+                        .Details?
+                        .Messages
+                        .FirstOrDefault(m => m.Id == message.Id);
+
+                    if (messageEntry != null)
                     {
-                        var messageEntry = channel
-                            .Details
-                            .Messages
-                            .FirstOrDefault(m => m.Id == message.Id);
+                        messageEntry.Content = message.Content;
+                        message.Links = GetLinksFromContent(message);
+                        messageEntry.Edited = true;
 
-                        if (messageEntry != null)
-                        {
-                            messageEntry.Content = message.Content;
-                            message.Links = GetLinksFromContent(message);
-                            messageEntry.Edited = true;
+                        _burstChatContext.SaveChanges();
 
-                            _burstChatContext.SaveChanges();
-
-                            return new Success<Unit, Error>(new Unit());
-                        }
-                        else
-                            return new Failure<Unit, Error>(ChannelErrors.ChannelMessageNotFound());
-                    });
+                        return new Success<Unit, Error>(new Unit());
+                    }
+                    else
+                        return new Failure<Unit, Error>(ChannelErrors.ChannelMessageNotFound());
+                });
             }
             catch (Exception e)
             {
@@ -299,18 +306,17 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                return Get(channelId)
-                    .Bind(channel =>
-                    {
-                        channel
-                            .Details
-                            .Messages
-                            .Remove(message);
+                return Get(channelId).Bind(channel =>
+                {
+                    channel
+                        .Details?
+                        .Messages
+                        .Remove(message);
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    });
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
