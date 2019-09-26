@@ -1,5 +1,6 @@
-<div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onSelect()">
+<div class="button-icon-interactive button-icon-lg bg-secondary" [class.button-icon-interactive-static]="isActiveServer"
+    (click)="onSelect()">
 
-  {{serverInitials}}
+    {{serverInitials}}
 
 </div>

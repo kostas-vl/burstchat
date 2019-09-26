@@ -7,6 +7,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 export class ChannelConnectionOptions implements ChatConnectionOptions {
 
     public signalGroup = '';
+    public name = '';
     public id = 0;
 
 }

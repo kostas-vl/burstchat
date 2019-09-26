@@ -1,9 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Channel } from 'src/app/models/servers/channel';
 import { Server } from 'src/app/models/servers/server';
-import { ChannelsService } from 'src/app/modules/burst/services/channels/channels.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 
 /**
@@ -18,7 +16,11 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
 })
 export class ChannelListComponent implements OnInit, OnDestroy {
 
-    public activeServerSubscription?: Subscription;
+    private queryParamsSubscription?: Subscription;
+
+    private activeServerSubscription?: Subscription;
+
+    public activeChannelId?: number;
 
     public server?: Server;
 
@@ -28,8 +30,8 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      */
     constructor(
         private router: Router,
-        private serversService: ServersService,
-        private channelsService: ChannelsService
+        private activatedRoute: ActivatedRoute,
+        private serversService: ServersService
     ) { }
 
     /**
@@ -37,6 +39,22 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      * @memberof ChannelListComponent
      */
     public ngOnInit() {
+        this.queryParamsSubscription = this
+            .activatedRoute
+            .queryParamMap
+            .subscribe(params => {
+                const isChatUrl = this
+                    .router
+                    .url
+                    .includes('chat/channel');
+                const channelId: number | null = +params.get('id');
+                if (isChatUrl && channelId !== null) {
+                    this.activeChannelId = channelId;
+                } else {
+                    this.activeChannelId = undefined;
+                }
+            });
+
         this.activeServerSubscription = this
             .serversService
             .activeServer
@@ -52,6 +70,11 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      * @memberof ChannelListComponent
      */
     public ngOnDestroy() {
+        if (this.queryParamsSubscription) {
+            this.queryParamsSubscription
+                .unsubscribe();
+        }
+
         if (this.activeServerSubscription) {
             this.activeServerSubscription
                 .unsubscribe();

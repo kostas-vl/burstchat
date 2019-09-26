@@ -24,6 +24,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
     private onConnectedSubscription?: Subscription;
 
+    private onReconnectedSubscription?: Subscription;
+
     private invitationsSubscription?: Subscription;
 
     private newInvitationSubscription?: Subscription;
@@ -53,6 +55,13 @@ export class LayoutComponent implements OnInit, OnDestroy {
                     this.chatService.getInvitations();
                     this.loading = false;
                 }, 300);
+            });
+
+        this.onReconnectedSubscription = this
+            .chatService
+            .onReconnected
+            .subscribe(() => {
+                this.chatService.getInvitations();
             });
 
         this.invitationsSubscription = this
@@ -86,6 +95,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
         if (this.onConnectedSubscription) {
             this.onConnectedSubscription
+                .unsubscribe();
+        }
+
+        if (this.onReconnectedSubscription) {
+            this.onReconnectedSubscription
                 .unsubscribe();
         }
 

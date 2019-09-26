@@ -37,6 +37,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     @Input()
     public set options(value: ChatConnectionOptions) {
+        this.messages = [];
         this.internalOptions = value;
         this.unsubscribeAll();
 

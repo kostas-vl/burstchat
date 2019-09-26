@@ -22,7 +22,7 @@
 
   <div *ngFor="let channel of server.channels">
 
-    <app-channel [channel]="channel"></app-channel>
+    <app-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></app-channel>
 
   </div>
 

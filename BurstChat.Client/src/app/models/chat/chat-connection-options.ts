@@ -6,6 +6,7 @@
 export interface ChatConnectionOptions {
 
     signalGroup: string;
+    name: string;
     id: number;
 
 }

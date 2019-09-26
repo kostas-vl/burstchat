@@ -22,12 +22,21 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
     private userSubscription?: Subscription;
 
+    private allMessagesReceivedSubscription?: Subscription;
+
     private user?: User;
+
+    private internalOptions?: ChatConnectionOptions;
 
     public inputContent?: string;
 
+    public loading = true;
+
     @Input()
-    public options?: ChatConnectionOptions;
+    public set options(value: ChatConnectionOptions) {
+        this.loading = true;
+        this.internalOptions = value;
+    }
 
     /**
      * Creates an instance of ChatInputComponent.
@@ -51,6 +60,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     this.user = user;
                 }
             });
+
+        this.allMessagesReceivedSubscription = this
+            .chatService
+            .allMessagesReceived
+            .subscribe(_ => {
+                setTimeout(() => this.loading = false, 300);
+            });
     }
 
     /**
@@ -60,6 +76,11 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
         if (this.userSubscription) {
             this.userSubscription
+                .unsubscribe();
+        }
+
+        if (this.allMessagesReceivedSubscription) {
+            this.allMessagesReceivedSubscription
                 .unsubscribe();
         }
     }
@@ -80,7 +101,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 edited: false
             };
 
-            this.chatService.postMessage(this.options, message);
+            this.chatService.postMessage(this.internalOptions, message);
             this.inputContent = undefined;
         }
     }

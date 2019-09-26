@@ -1,12 +1,19 @@
-<div class="messaging-input">
+<div class="messaging-input-container">
 
-    <div class="row">
+    <div class="loading-dots pl-10" *ngIf="loading">
 
-        <div class="column">
+        <div class="loading-dots--dot"></div>
 
-            <input type="text" placeholder="Type to send message..." [(ngModel)]="inputContent" (keyup.enter)="onEnterKeyPressed()" />
+        <div class="loading-dots--dot"></div>
 
-        </div>
+        <div class="loading-dots--dot"></div>
+
+    </div>
+
+    <div class="messaging-input bg-dark">
+
+        <input type="text" placeholder="Type to send message..." [(ngModel)]="inputContent"
+            (keyup.enter)="onEnterKeyPressed()" />
 
     </div>
 

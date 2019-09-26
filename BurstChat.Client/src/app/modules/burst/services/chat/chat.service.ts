@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
@@ -25,6 +25,8 @@ export class ChatService {
 
     private onConnectedSource = new Subject();
 
+    private onReconnectedSource = new Subject();
+
     private addedServerSource = new Subject<Server>();
 
     private invitationsSource = new BehaviorSubject<Invitation[]>([]);
@@ -46,6 +48,8 @@ export class ChatService {
     private errorSource = new Subject<BurstChatError>();
 
     public onConnected = this.onConnectedSource.asObservable();
+
+    public onReconnected = this.onReconnectedSource.asObservable();
 
     public addedServer = this.addedServerSource.asObservable();
 
@@ -119,9 +123,11 @@ export class ChatService {
     public InitializeConnection(): void {
         try {
             const builder = new HubConnectionBuilder();
-            builder.withUrl('/chat', {
-                accessTokenFactory: () => this.storageService.tokenInfo.accessToken
-            });
+            builder
+                .withUrl('/chat', {
+                    accessTokenFactory: () => this.storageService.tokenInfo.accessToken
+                })
+                .withAutomaticReconnect();
 
             if (!environment.production) {
                 builder.configureLogging(LogLevel.Information);
@@ -132,6 +138,9 @@ export class ChatService {
             this.connection = undefined;
             return;
         }
+
+        this.connection
+            .onreconnected(connectionId => this.onReconnectedSource.next());
 
         this.connection
             .on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource));
@@ -146,7 +155,9 @@ export class ChatService {
             .on('updatedInvitation', data => this.ProcessRawSignal(data, this.updatedInvitationSource));
 
         this.connection
-            .on('selfAddedToPrivateGroup', () => this.selfAddedToChatSource.next());
+            .on('selfAddedToPrivateGroup', () => {
+                setTimeout(() => this.selfAddedToChatSource.next(), 500);
+            });
 
         this.connection
             .on('allPrivateGroupMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource));
@@ -161,7 +172,9 @@ export class ChatService {
             .on('privateGroupMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
 
         this.connection
-            .on('selfAddedToChannel', () => this.selfAddedToChatSource.next());
+            .on('selfAddedToChannel', () => {
+                setTimeout(() => this.selfAddedToChatSource.next(), 500);
+            });
 
         this.connection
             .on('allChannelMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource));

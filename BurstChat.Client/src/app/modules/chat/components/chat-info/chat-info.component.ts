@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -15,11 +16,14 @@ import { Router } from '@angular/router';
 })
 export class ChatInfoComponent implements OnInit {
 
+    @Input()
+    public options?: ChatConnectionOptions;
+
     /**
      * Creates a new instance of ChatInfoComponent.
      * @memberof ChatInfoComponent
      */
-    constructor(private router: Router) { }
+    constructor() { }
 
     /**
      * Executes any neccessary start up code for the component.

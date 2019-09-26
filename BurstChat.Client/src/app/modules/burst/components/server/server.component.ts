@@ -17,7 +17,11 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class ServerComponent implements OnInit, OnDestroy {
 
+    private onReconnectedSubscription?: Subscription;
+
     private activeServerSubscription?: Subscription;
+
+    public isActiveServer = false;
 
     @Input()
     public server?: Server;
@@ -48,11 +52,19 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public ngOnInit() {
+        this.onReconnectedSubscription = this
+            .chatService
+            .onReconnected
+            .subscribe(() => {
+                this.chatService.addToServer(this.server.id);
+            });
+
         this.activeServerSubscription = this
             .serversService
             .activeServer
             .subscribe(server => {
-                if (server && server.id === this.server.id) {
+                this.isActiveServer = server && server.id === this.server.id;
+                if (this.isActiveServer) {
                     this.server = server;
                 }
             });
@@ -63,6 +75,11 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public ngOnDestroy() {
+        if (this.onReconnectedSubscription) {
+            this.onReconnectedSubscription
+                .unsubscribe();
+        }
+
         if (this.activeServerSubscription) {
             this.activeServerSubscription
                 .unsubscribe();

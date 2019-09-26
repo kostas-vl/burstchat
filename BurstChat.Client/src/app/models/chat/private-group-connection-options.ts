@@ -7,6 +7,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 export class PrivateGroupConnectionOptions implements ChatConnectionOptions {
 
     public signalGroup = '';
+    name = '';
     public id = 0;
 
 }

@@ -17,6 +17,9 @@ export class ChannelComponent implements OnInit {
     @Input()
     public channel?: Channel;
 
+    @Input()
+    public isActive = false;
+
     /**
      * Creates a new instance of ChannelComponent.
      * @memberof ChannelComponent
@@ -27,15 +30,20 @@ export class ChannelComponent implements OnInit {
      * Executes any neccessary start up code for the component.
      * @memberof ChannelComponent
      */
-    public ngOnInit(): void { }
+    public ngOnInit() { }
 
     /**
      * Handles the channel container click event.
      * @memberofChannelComponent
      */
-    public onSelect(): void {
+    public onSelect() {
         if (this.channel) {
-            this.router.navigateByUrl(`/core/chat/channel/${this.channel.id}`);
+            this.router.navigate(['/core/chat/channel'], {
+                queryParams: {
+                    id: this.channel.id,
+                    name: this.channel.name
+                }
+            });
         }
     }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Notification } from 'src/app/models/notify/notification';
@@ -19,9 +19,11 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
     templateUrl: './chat-root.component.html',
     styleUrls: ['./chat-root.component.scss']
 })
-export class ChatRootComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ChatRootComponent implements OnInit, OnDestroy {
 
     private routeParametersSubscription?: Subscription;
+
+    private onReconnectedSubscription?: Subscription;
 
     public options?: ChatConnectionOptions;
 
@@ -45,49 +47,23 @@ export class ChatRootComponent implements OnInit, AfterViewInit, OnDestroy {
     public ngOnInit() {
         this.routeParametersSubscription = this
             .activatedRoute
-            .paramMap
+            .queryParamMap
             .subscribe(params => {
+                const name = params.get('name');
                 const id = +params.get('id');
-                const isPrivateChat = this
-                    .router
-                    .url
-                    .includes('private');
+                const currentUrl = this.router.url;
+                this.assignOptions(currentUrl, name, id);
+                this.assignSelfToChat(this.options);
+            });
 
-                if (isPrivateChat) {
-                    this.options = new PrivateGroupConnectionOptions();
-                    this.options.signalGroup = `privateGroup:${id}`;
-                    this.options.id = id;
-                }
-
-                const isChannelChat = this
-                    .router
-                    .url
-                    .includes('channel');
-
-                if (isChannelChat) {
-                    this.options = new ChannelConnectionOptions();
-                    this.options.signalGroup = `channel:${id}`;
-                    this.options.id = id;
+        this.onReconnectedSubscription = this
+            .chatService
+            .onReconnected
+            .subscribe(() => {
+                if (this.options) {
+                    this.chatService.addSelfToChat(this.options);
                 }
             });
-    }
-
-    /**
-     * Executes any neccessary code after the view of the component has been initialized.
-     * @memberof ChatRootComponent
-     */
-    public ngAfterViewInit() {
-        if (this.options) {
-            this.chatService.addSelfToChat(this.options);
-        } else {
-            this.noChatFound = true;
-
-            const notification: Notification = {
-                title: 'No active chat found',
-                content: 'Consider joining a channel or start a new private chat!'
-            };
-            this.notifyService.notify(notification);
-        }
     }
 
     /**
@@ -98,6 +74,64 @@ export class ChatRootComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.routeParametersSubscription) {
             this.routeParametersSubscription
                 .unsubscribe();
+        }
+
+        if (this.onReconnectedSubscription) {
+            this.onReconnectedSubscription
+                .unsubscribe();
+        }
+    }
+
+    /**
+     * Checks the provided url and tries to assign a proper connection options value
+     * to the options property.
+     * @private
+     * @param {string} currentUrl The current url of the application.
+     * @param {string | null} name The name found in the parameters.
+     * @param {number | null} id The id found in the parameters.
+     * @memberof ChatRootComponent
+     */
+    private assignOptions(currentUrl: string, name: string | null, id: number | null) {
+        const detailsProvided = name !== null && id !== null;
+        const isPrivateChat = currentUrl.includes('private');
+
+        if (isPrivateChat && detailsProvided) {
+            this.options = new PrivateGroupConnectionOptions();
+            this.options.signalGroup = `privateGroup:${id}`;
+            this.options.name = name;
+            this.options.id = id;
+            return;
+        }
+
+        const isChannelChat = currentUrl.includes('channel');
+
+        if (isChannelChat && detailsProvided) {
+            this.options = new ChannelConnectionOptions();
+            this.options.signalGroup = `channel:${id}`;
+            this.options.name = name;
+            this.options.id = id;
+            return;
+        }
+    }
+
+    /**
+     * Attaches the application to the appropriate chat group in the signal server based on the
+     * provided options.
+     * @private
+     * @param {ChatConnectionOptions} options The chat connection options.
+     * @memberof ChatRootComponent
+     */
+    private assignSelfToChat(options: ChatConnectionOptions) {
+        if (this.options) {
+            this.chatService.addSelfToChat(this.options);
+        } else {
+            this.noChatFound = true;
+
+            const notification: Notification = {
+                title: 'No active chat found',
+                content: 'Consider joining a channel or start a new private chat!'
+            };
+            this.notifyService.notify(notification);
         }
     }
 

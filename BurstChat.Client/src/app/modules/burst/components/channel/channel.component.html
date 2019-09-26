@@ -2,10 +2,10 @@
 
   <div>
 
-    <fa-icon icon="comment-alt"></fa-icon>
+    <fa-icon [class.text-accent]="isActive" icon="comment-alt"></fa-icon>
 
   </div>
 
-  <div class="channel">{{channel.name}}</div>
+  <div class="fs-16 pl-10" [class.text-accent]="isActive">{{channel.name}}</div>
 
 </div>
