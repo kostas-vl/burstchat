@@ -1,0 +1,15 @@
+<div class="user-container pl-10" (click)="onSelect()">
+
+    <div>
+
+        <fa-icon class="text-accent-light" icon="circle"></fa-icon>
+
+    </div>
+
+    <div class="fs-16 pl-10" [class.text-accent-light]="isActive">
+        
+        {{user.name}} <small [class.text-muted]="!isActive">#{{user.id}}</small>
+    
+    </div>
+
+</div>

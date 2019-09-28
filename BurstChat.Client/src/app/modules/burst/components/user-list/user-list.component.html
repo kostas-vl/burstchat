@@ -1,0 +1,31 @@
+<div class="w-100" *ngIf="server">
+
+    <div class="user-list-header">
+        
+        Users 
+        
+        <div class="w-100 text-muted pl-5 pr-5">
+
+            <hr>
+
+        </div>
+
+    </div>
+    
+    <div class="loading-dots text-center" *ngIf="loading">
+
+        <div class="loading-dots--dot"></div>
+
+        <div class="loading-dots--dot"></div>
+
+        <div class="loading-dots--dot"></div>
+
+    </div>
+
+    <div *ngFor="let user of users">
+
+        <app-user [user]="user"></app-user>
+
+    </div>
+
+</div>

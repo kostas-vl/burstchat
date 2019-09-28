@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Servers;
+using BurstChat.Shared.Schema.Users;
 
 namespace BurstChat.Api.Services.ServersService
 {
@@ -42,6 +43,13 @@ namespace BurstChat.Api.Services.ServersService
         /// <param name="server">The server instance from which the information update will be based upon</param>
         /// <returns>An either monad</returns>
         Either<Unit, Error> Update(Server server);
+
+        /// <summary>
+        ///     Fetches all users subscribed to the server based on the server id provided.
+        /// </summary>
+        /// <param name="serverId">The id of the target server</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<User>, Error> GetSubscribedUsers(int serverId);
 
         /// <summary>
         ///     Fetches all invitations sent for a server based on the provided id.

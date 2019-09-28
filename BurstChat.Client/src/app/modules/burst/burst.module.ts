@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faDragon, faChalkboardTeacher, faPlus, faDatabase, faCommentAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
@@ -13,6 +11,20 @@ import { ServerComponent } from 'src/app/modules/burst/components/server/server.
 import { ChannelListComponent } from 'src/app/modules/burst/components/channel-list/channel-list.component';
 import { ChannelComponent } from 'src/app/modules/burst/components/channel/channel.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
+import { UserListComponent } from 'src/app/modules/burst/components/user-list/user-list.component';
+import { UserComponent } from 'src/app/modules/burst/components/user/user.component';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+    faDragon,
+    faChalkboardTeacher,
+    faPlus,
+    faDatabase,
+    faCommentAlt,
+    faSignOutAlt,
+    faCircle,
+    faDotCircle
+} from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
     imports: [
@@ -28,7 +40,9 @@ import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.
         ServerListComponent,
         ServerComponent,
         ChannelListComponent,
-        ChannelComponent
+        ChannelComponent,
+        UserListComponent,
+        UserComponent
     ],
     providers: [
         {
@@ -46,11 +60,13 @@ export class BurstModule {
      */
     constructor() {
         library.add(faDragon,
-                    faChalkboardTeacher,
-                    faPlus,
-                    faDatabase,
-                    faCommentAlt,
-                    faSignOutAlt);
+            faChalkboardTeacher,
+            faPlus,
+            faDatabase,
+            faCommentAlt,
+            faSignOutAlt,
+            faCircle,
+            faDotCircle);
     }
 
 }

@@ -1,5 +1,9 @@
 @import '../../../../../scss/theme';
 
+hr {
+    border-color: $text-muted-color;
+}
+
 .messages-container {
     @extend .burst-container-fluid;
     padding-top: $minor-height + 10px;

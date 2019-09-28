@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
+import { User } from 'src/app/models/user/user';
 
 /**
  * This class represents an angular service that exposes methods for fetching, subscribing and transforming BurstChat servers.
@@ -79,6 +80,19 @@ export class ServersService {
         return this
             .httpClient
             .delete(`/api/servers/${serverId}`);
+    }
+
+    /**
+     * Requests the subscribed users of a server based on the provided id and returns an observable that will be invoked after
+     * the request completes.
+     * @param {number} serverId The id of the target server.
+     * @returns {Observable<User[]>} An observable containing an array of Users.
+     * @memberof ServersService
+     */
+    public getSubscribedUsers(serverId: number): Observable<User[]> {
+        return this
+            .httpClient
+            .get<User[]>(`/api/servers/${serverId}/subscribedUsers`);
     }
 
 }

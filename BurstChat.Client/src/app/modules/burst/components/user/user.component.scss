@@ -1,0 +1,17 @@
+@import '../../../../../scss/theme';
+
+.user-container {
+    padding: 10px 10px 10px 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.user-container:hover {
+    background-color: $dark-color;
+    cursor: pointer;
+}
+
+.user {
+    padding-left: 15px;
+}

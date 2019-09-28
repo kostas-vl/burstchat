@@ -5,6 +5,7 @@ using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Schema.Servers;
+using BurstChat.Shared.Schema.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -91,6 +92,20 @@ namespace BurstChat.Api.Controllers
         public IActionResult Delete(int serverId)
         {
             var monad = _serversService.Delete(serverId);
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///     Fetches all users subscribed to the server of the id provided.
+        /// </summary>
+        /// <param name="serverId">The id of the target server</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("{serverId:int}/subscribedUsers")]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult GetSubscribedUsers(int serverId)
+        {
+            var monad = _serversService.GetSubscribedUsers(serverId);
             return this.UnwrapMonad(monad);
         }
 

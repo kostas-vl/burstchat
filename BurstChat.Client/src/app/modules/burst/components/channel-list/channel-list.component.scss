@@ -1,5 +1,9 @@
 @import '../../../../../scss/theme';
 
+hr {
+    border-color: $text-muted-color;
+}
+
 .channel-list-container {
     width: 100%;
 }
@@ -15,3 +19,12 @@
     align-items: center;
 }
 
+.channel-list-header {
+    @extend .pt-5;
+    @extend .pb-5;
+    @extend .pl-10;
+    @extend .text-muted;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

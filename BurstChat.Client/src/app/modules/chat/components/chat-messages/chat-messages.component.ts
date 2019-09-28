@@ -35,9 +35,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     public messages: MessageCluster[] = [];
 
+    public chatIsEmpty = false;
+
     @Input()
     public set options(value: ChatConnectionOptions) {
         this.messages = [];
+        this.chatIsEmpty = false;
         this.internalOptions = value;
         this.unsubscribeAll();
 
@@ -178,6 +181,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.messages = messages.reduce((current, next, _) => this.addMessageToCluster(current, next), initialValue);
         } else {
             this.messages = [];
+            this.chatIsEmpty = true;
         }
     }
 
@@ -194,6 +198,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
         if (message) {
             this.messages = this.addMessageToCluster(this.messages, message);
+            this.chatIsEmpty = false;
         }
     }
 

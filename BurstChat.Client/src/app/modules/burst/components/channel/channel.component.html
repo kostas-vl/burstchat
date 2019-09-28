@@ -1,11 +1,15 @@
-<div class="channel-container" (click)="onSelect()">
+<div class="channel-container pl-10" (click)="onSelect()">
 
-  <div>
+    <div>
 
-    <fa-icon [class.text-accent]="isActive" icon="comment-alt"></fa-icon>
+        <fa-icon [class.text-accent]="isActive" icon="comment-alt"></fa-icon>
 
-  </div>
+    </div>
 
-  <div class="fs-16 pl-10" [class.text-accent]="isActive">{{channel.name}}</div>
+    <div class="fs-16 pl-10" [class.text-accent-light]="isActive">
+
+        {{channel.name}} <small [class.text-muted]="!isActive">#{{channel.id}}</small>
+
+    </div>
 
 </div>

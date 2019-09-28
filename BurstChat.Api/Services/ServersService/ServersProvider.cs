@@ -9,6 +9,7 @@ using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Servers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using BurstChat.Shared.Schema.Users;
 
 namespace BurstChat.Api.Services.ServersService
 {
@@ -149,6 +150,34 @@ namespace BurstChat.Api.Services.ServersService
             {
                 _logger.LogException(e);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///     Fetches all users subscribed to the server based on the server id provided.
+        /// </summary>
+        /// <param name="serverId">The id of the target server</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<User>, Error> GetSubscribedUsers(int serverId)
+        {
+            try
+            {
+                return Get(serverId).Bind(server => 
+                {
+                    var users = _burstChatContext
+                        .Users
+                        .AsEnumerable()
+                        .Where(u => server.Subscriptions
+                                          .Any(s => s.UserId == u.Id))
+                        .ToList();
+
+                    return new Success<IEnumerable<User>, Error>(users);
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<User>, Error>(SystemErrors.Exception());
             }
         }
 

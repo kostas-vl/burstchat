@@ -1,29 +1,42 @@
 <div class="channel-list-container" *ngIf="server">
 
-  <div class="channel-list-server">
 
-      <div>
+    <div class="channel-list-server">
 
-        {{server.name}}
+        <div>
 
-      </div>
-
-      <div class="ml-auto">
-
-        <div class="button-icon text" (click)="onEditServer()">
-
-          <fa-icon icon="database"></fa-icon>
+            {{server.name}}
 
         </div>
 
-      </div>
+        <div class="ml-auto">
 
-  </div>
+            <div class="button-icon text" (click)="onEditServer()">
 
-  <div *ngFor="let channel of server.channels">
+                <fa-icon icon="database"></fa-icon>
 
-    <app-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></app-channel>
+            </div>
 
-  </div>
+        </div>
+
+    </div>
+
+    <div class="channel-list-header">
+
+        Channels
+
+        <div class="w-100 text-muted pl-5 pr-5">
+
+            <hr>
+
+        </div>
+
+    </div>
+
+    <div *ngFor="let channel of server.channels">
+
+        <app-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></app-channel>
+
+    </div>
 
 </div>
