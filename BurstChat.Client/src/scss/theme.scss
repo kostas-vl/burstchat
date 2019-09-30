@@ -4,8 +4,13 @@ $dark-color: #171921;
 $accent-color: #9b4dca;
 $accent-light-color: #bc5df7;
 
+$success-color: #7fefa0;
+$danger-color: #ef7070;
+$warning-color: #efd670;
+
 $text-color: white;
 $text-muted-color: #777777;
+
 
 $sidebar-width: 330px;
 $layout-animation-speed: 0.4s;
@@ -92,6 +97,18 @@ iframe {
     background-color: $accent-light-color;
 }
 
+.bg-success {
+    background-color: $success-color;
+}
+
+.bg-danger {
+    background-color: $danger-color;
+}
+
+.bg-warning {
+    background-color: $warning-color;
+}
+
 .text {
     color: $text-color;
 }
@@ -114,6 +131,18 @@ iframe {
 
 .text-accent-light {
     color: $accent-light-color;
+}
+
+.text-success {
+    color: $success-color;
+}
+
+.text-danger {
+    color: $danger-color;
+}
+
+.text-warning {
+    color: $warning-color;
 }
 
 .text-muted {

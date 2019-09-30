@@ -2,13 +2,13 @@
 
     <div>
 
-        <fa-icon class="text-accent-light" icon="circle"></fa-icon>
+        <fa-icon class="text-accent-light" [ngClass]="textColor" icon="circle"></fa-icon>
 
     </div>
 
-    <div class="fs-16 pl-10" [class.text-accent-light]="isActive">
+    <div class="fs-16 pl-10" [ngClass]="textColor">
         
-        {{user.name}} <small [class.text-muted]="!isActive">#{{user.id}}</small>
+        {{user.name}} <small class="text-muted" [ngClass]="textColor">#{{user.id}}</small>
     
     </div>
 

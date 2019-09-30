@@ -12,7 +12,7 @@ const routes: Routes = [
                 loadChildren: () => import('src/app/modules/servers/servers.module').then(m => m.ServersModule)
             },
             {
-                path: 'chat/private/:id',
+                path: 'chat/private',
                 loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
             },
             {

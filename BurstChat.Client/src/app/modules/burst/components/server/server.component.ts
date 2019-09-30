@@ -91,7 +91,7 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public onSelect() {
-        if (this.server) {
+        if (this.server && !this.isActiveServer) {
             this.serversService
                 .setActiveServer(this.server);
 
