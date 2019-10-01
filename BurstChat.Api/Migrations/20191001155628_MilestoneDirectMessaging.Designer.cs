@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BurstChat.Api.Migrations
 {
     [DbContext(typeof(BurstChatContext))]
-    [Migration("20190924194549_MilestoneDotNetCore3")]
-    partial class MilestoneDotNetCore3
+    [Migration("20191001155628_MilestoneDirectMessaging")]
+    partial class MilestoneDirectMessaging
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,10 +57,13 @@ namespace BurstChat.Api.Migrations
                     b.Property<DateTime>("DatePosted")
                         .HasColumnType("TEXT");
 
+                    b.Property<long?>("DirectMessagingId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("Edited")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long?>("PrivateGroupMessageId")
+                    b.Property<long?>("PrivateGroupId")
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("UserId")
@@ -70,7 +73,9 @@ namespace BurstChat.Api.Migrations
 
                     b.HasIndex("ChannelDetailsId");
 
-                    b.HasIndex("PrivateGroupMessageId");
+                    b.HasIndex("DirectMessagingId");
+
+                    b.HasIndex("PrivateGroupId");
 
                     b.HasIndex("UserId");
 
@@ -191,6 +196,23 @@ namespace BurstChat.Api.Migrations
                     b.ToTable("Subscriptions");
                 });
 
+            modelBuilder.Entity("BurstChat.Shared.Schema.Users.DirectMessaging", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("FirstParticipantUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("SecondParticipantUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DirectMessaging");
+                });
+
             modelBuilder.Entity("BurstChat.Shared.Schema.Users.OneTimePassword", b =>
                 {
                     b.Property<long>("Id")
@@ -217,7 +239,7 @@ namespace BurstChat.Api.Migrations
                     b.ToTable("OneTimePassword");
                 });
 
-            modelBuilder.Entity("BurstChat.Shared.Schema.Users.PrivateGroupMessage", b =>
+            modelBuilder.Entity("BurstChat.Shared.Schema.Users.PrivateGroup", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,7 +254,7 @@ namespace BurstChat.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PrivateGroupMessage");
+                    b.ToTable("PrivateGroups");
                 });
 
             modelBuilder.Entity("BurstChat.Shared.Schema.Users.User", b =>
@@ -259,14 +281,14 @@ namespace BurstChat.Api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("PrivateGroupMessageId")
+                    b.Property<long?>("PrivateGroupId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChannelDetailsId");
 
-                    b.HasIndex("PrivateGroupMessageId");
+                    b.HasIndex("PrivateGroupId");
 
                     b.ToTable("Users");
                 });
@@ -284,9 +306,13 @@ namespace BurstChat.Api.Migrations
                         .WithMany("Messages")
                         .HasForeignKey("ChannelDetailsId");
 
-                    b.HasOne("BurstChat.Shared.Schema.Users.PrivateGroupMessage", null)
+                    b.HasOne("BurstChat.Shared.Schema.Users.DirectMessaging", null)
                         .WithMany("Messages")
-                        .HasForeignKey("PrivateGroupMessageId");
+                        .HasForeignKey("DirectMessagingId");
+
+                    b.HasOne("BurstChat.Shared.Schema.Users.PrivateGroup", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("PrivateGroupId");
 
                     b.HasOne("BurstChat.Shared.Schema.Users.User", "User")
                         .WithMany()
@@ -349,9 +375,9 @@ namespace BurstChat.Api.Migrations
                         .WithMany("Users")
                         .HasForeignKey("ChannelDetailsId");
 
-                    b.HasOne("BurstChat.Shared.Schema.Users.PrivateGroupMessage", null)
+                    b.HasOne("BurstChat.Shared.Schema.Users.PrivateGroup", null)
                         .WithMany("Users")
-                        .HasForeignKey("PrivateGroupMessageId");
+                        .HasForeignKey("PrivateGroupId");
                 });
 #pragma warning restore 612, 618
         }

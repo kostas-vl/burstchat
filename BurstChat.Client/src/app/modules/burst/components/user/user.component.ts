@@ -73,15 +73,19 @@ export class UserComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Handles the user select click event.
+     * @memberof UserComponent
+     */
     public onSelect() {
-        if (this.currentUser && this.currentUser.id !== this.user.id) {
-            this.router.navigate(['/core/chat/private'], {
-                queryParams: {
-                    id: this.user.id,
-                    name: `${this.currentUser.name}, ${this.user.name}`
-                }
-            });
-        }
+        // if (this.currentUser && this.currentUser.id !== this.user.id) {
+        //     this.router.navigate(['/core/chat/private'], {
+        //         queryParams: {
+        //             user: [this.currentUser.id, this.user.id],
+        //             name: `${this.currentUser.name}, ${this.user.name}`
+        //         }
+        //     });
+        // }
     }
 
 }

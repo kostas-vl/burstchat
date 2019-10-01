@@ -65,7 +65,14 @@ namespace BurstChat.Shared.Services.UserService
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
-        Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId);
+        Either<IEnumerable<PrivateGroup>, Error> GetPrivateGroups(long userId);
+
+        /// <summary>
+        ///     This method will return all direct messaging that the user is part of.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<DirectMessaging>, Error> GetDirectMessaging(long userId);
 
         /// <summary>
         ///   This method will validate the provided email and password in order to

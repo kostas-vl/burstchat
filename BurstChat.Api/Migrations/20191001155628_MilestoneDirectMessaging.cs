@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BurstChat.Api.Migrations
 {
-    public partial class MilestoneDotNetCore3 : Migration
+    public partial class MilestoneDirectMessaging : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,7 +20,21 @@ namespace BurstChat.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PrivateGroupMessage",
+                name: "DirectMessaging",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FirstParticipantUserId = table.Column<long>(nullable: false),
+                    SecondParticipantUserId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectMessaging", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PrivateGroups",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -30,7 +44,7 @@ namespace BurstChat.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PrivateGroupMessage", x => x.Id);
+                    table.PrimaryKey("PK_PrivateGroups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,7 +72,7 @@ namespace BurstChat.Api.Migrations
                     Password = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     ChannelDetailsId = table.Column<int>(nullable: true),
-                    PrivateGroupMessageId = table.Column<long>(nullable: true)
+                    PrivateGroupId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,9 +84,9 @@ namespace BurstChat.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Users_PrivateGroupMessage_PrivateGroupMessageId",
-                        column: x => x.PrivateGroupMessageId,
-                        principalTable: "PrivateGroupMessage",
+                        name: "FK_Users_PrivateGroups_PrivateGroupId",
+                        column: x => x.PrivateGroupId,
+                        principalTable: "PrivateGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -147,7 +161,8 @@ namespace BurstChat.Api.Migrations
                     Edited = table.Column<bool>(nullable: false),
                     DatePosted = table.Column<DateTime>(nullable: false),
                     ChannelDetailsId = table.Column<int>(nullable: true),
-                    PrivateGroupMessageId = table.Column<long>(nullable: true)
+                    DirectMessagingId = table.Column<long>(nullable: true),
+                    PrivateGroupId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -159,9 +174,15 @@ namespace BurstChat.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Messages_PrivateGroupMessage_PrivateGroupMessageId",
-                        column: x => x.PrivateGroupMessageId,
-                        principalTable: "PrivateGroupMessage",
+                        name: "FK_Messages_DirectMessaging_DirectMessagingId",
+                        column: x => x.DirectMessagingId,
+                        principalTable: "DirectMessaging",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_PrivateGroups_PrivateGroupId",
+                        column: x => x.PrivateGroupId,
+                        principalTable: "PrivateGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -272,9 +293,14 @@ namespace BurstChat.Api.Migrations
                 column: "ChannelDetailsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_PrivateGroupMessageId",
+                name: "IX_Messages_DirectMessagingId",
                 table: "Messages",
-                column: "PrivateGroupMessageId");
+                column: "DirectMessagingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_PrivateGroupId",
+                table: "Messages",
+                column: "PrivateGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_UserId",
@@ -302,9 +328,9 @@ namespace BurstChat.Api.Migrations
                 column: "ChannelDetailsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_PrivateGroupMessageId",
+                name: "IX_Users_PrivateGroupId",
                 table: "Users",
-                column: "PrivateGroupMessageId");
+                column: "PrivateGroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -331,13 +357,16 @@ namespace BurstChat.Api.Migrations
                 name: "Servers");
 
             migrationBuilder.DropTable(
+                name: "DirectMessaging");
+
+            migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
                 name: "ChannelDetails");
 
             migrationBuilder.DropTable(
-                name: "PrivateGroupMessage");
+                name: "PrivateGroups");
         }
     }
 }

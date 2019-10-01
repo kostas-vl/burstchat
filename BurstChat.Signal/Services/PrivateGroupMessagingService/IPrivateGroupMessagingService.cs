@@ -20,7 +20,7 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(HttpContext context, long groupId);
+        Task<Either<PrivateGroup, Error>> GetPrivateGroupAsync(HttpContext context, long groupId);
 
         /// <summary>
         ///   This method will fetch all messages of a private group based on the provided id.

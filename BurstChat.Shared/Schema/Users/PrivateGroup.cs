@@ -7,12 +7,12 @@ using BurstChat.Shared.Schema.Users;
 namespace BurstChat.Shared.Schema.Users
 {
     /// <summary>
-    /// This class represents a direct message sent from 2 users.
+    /// This class represents a private group message sent from multiple users.
     /// </summary>
-    public class PrivateGroupMessage
+    public class PrivateGroup
     {
         /// <summary>
-        /// The id of the direct message.
+        /// The id of the private group message.
         /// </summary>
         [Key]
         public long Id { get; set; }

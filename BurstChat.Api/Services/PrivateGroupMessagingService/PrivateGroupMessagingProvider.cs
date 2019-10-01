@@ -42,24 +42,24 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// </summary>
         /// <param name="groupId">The id of the target group</param>
         /// <returns>An either monad</returns>
-        public Either<PrivateGroupMessage, Error> Get(long groupId)
+        public Either<PrivateGroup, Error> Get(long groupId)
         {
             try
             {
                 var privateGroup = _burstChatContext
-                    .PrivateGroupMessage
+                    .PrivateGroups
                     .Include(pgm => pgm.Users)
                     .FirstOrDefault(pgm => pgm.Id == groupId);
 
                 if (privateGroup is { })
-                    return new Success<PrivateGroupMessage, Error>(privateGroup);
+                    return new Success<PrivateGroup, Error>(privateGroup);
                 else
-                    return new Failure<PrivateGroupMessage, Error>(PrivateGroupMessageErrors.GroupNotFound());
+                    return new Failure<PrivateGroup, Error>(PrivateGroupErrors.GroupNotFound());
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<PrivateGroupMessage, Error>(SystemErrors.Exception());
+                return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
 
@@ -68,37 +68,37 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// </summary>
         /// <param name="groupName">The name of the group</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(string groupName)
+        public Either<PrivateGroup, Error> Insert(string groupName)
         {
             try
             {
                 var privateGroup = _burstChatContext
-                    .PrivateGroupMessage
+                    .PrivateGroups
                     .FirstOrDefault(pgm => pgm.Name == groupName);
-                
+
                 if (privateGroup is null)
                 {
-                    var newPrivateGroup = new PrivateGroupMessage
+                    var newPrivateGroup = new PrivateGroup
                     {
                         Name = groupName,
                         DateCreated = DateTime.Now
                     };
 
                     _burstChatContext
-                        .PrivateGroupMessage
+                        .PrivateGroups
                         .Add(newPrivateGroup);
 
                     _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<PrivateGroup, Error>(newPrivateGroup);
                 }
                 else
-                    return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupNotFound());
+                    return new Failure<PrivateGroup, Error>(PrivateGroupErrors.GroupNotFound());
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
 
@@ -114,7 +114,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                 return Get(groupId).Bind(privateGroup =>
                 {
                     _burstChatContext
-                        .PrivateGroupMessage
+                        .PrivateGroups
                         .Remove(privateGroup);
 
                     _burstChatContext.SaveChanges();
@@ -135,7 +135,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// <param name="groupId">The id of the target group</param>
         /// <param name="userId">The id of the user to be added</param>
         /// <returns>The either monad</returns>
-        public Either<Unit, Error> InsertUser(long groupId, long userId)
+        public Either<PrivateGroup, Error> InsertUser(long groupId, long userId)
         {
             try
             {
@@ -152,13 +152,51 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<PrivateGroup, Error>(privateGroup);
                     });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///   This method will add a new user to a private group.
+        /// </summary>
+        /// <param name="groupId">The id of the target group</param>
+        /// <param name="userIds">The ids of the users to be added</param>
+        /// <returns>The either monad</returns>
+        public Either<PrivateGroup, Error> InsertUsers(long groupId, IEnumerable<long> userIds)
+        {
+            try
+            {
+                return Get(groupId).Bind(group =>
+                {
+                    var idsToBeAdded = group
+                        .Users
+                        .Where(u => !userIds.Contains(u.Id));
+
+                    var users = _burstChatContext
+                        .Users
+                        .AsEnumerable()
+                        .Where(u => userIds.Contains(u.Id))
+                        .ToList();
+
+                    group
+                        .Users
+                        .AddRange(users);
+
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<PrivateGroup, Error>(group);
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
 
@@ -168,7 +206,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// <param name="groupId">The id of the group</param>
         /// <param name="userId">The id of the user that will be deleted</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> DeleteUser(long groupId, long userId)
+        public Either<PrivateGroup, Error> DeleteUser(long groupId, long userId)
         {
             try
             {
@@ -185,13 +223,13 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<PrivateGroup, Error>(privateGroup);
                     });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
 
@@ -205,14 +243,14 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
             try
             {
                 var privateGroup = _burstChatContext
-                    .PrivateGroupMessage
+                    .PrivateGroups
                     .Include(pgm => pgm.Messages)
                     .FirstOrDefault(pgm => pgm.Id == groupId);
 
                 if (privateGroup is { })
                     return new Success<IEnumerable<Message>, Error>(privateGroup.Messages);
                 else
-                    return new Failure<IEnumerable<Message>, Error>(PrivateGroupMessageErrors.GroupNotFound());
+                    return new Failure<IEnumerable<Message>, Error>(PrivateGroupErrors.GroupNotFound());
             }
             catch (Exception e)
             {
@@ -227,7 +265,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// <param name="groupId">The id of the target private group</param>
         /// <param name="message">The message instance that will be used for the insertion</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> InsertMessage(long groupId, Message message)
+        public Either<Message, Error> InsertMessage(long groupId, Message message)
         {
             try
             {
@@ -243,16 +281,16 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                     };
 
                     groupMessagesList.Add(newMessage);
-                        
+
                     _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<Message, Error>(newMessage);
                 });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
 
@@ -281,7 +319,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                         return new Success<Unit, Error>(new Unit());
                     }
                     else
-                        return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
+                        return new Failure<Unit, Error>(PrivateGroupErrors.GroupMessageNotFound());
                 });
             }
             catch (Exception e)
@@ -317,7 +355,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
                         return new Success<Unit, Error>(new Unit());
                     }
                     else
-                        return new Failure<Unit, Error>(PrivateGroupMessageErrors.GroupMessageNotFound());
+                        return new Failure<Unit, Error>(PrivateGroupErrors.GroupMessageNotFound());
                 });
             }
             catch (Exception e)

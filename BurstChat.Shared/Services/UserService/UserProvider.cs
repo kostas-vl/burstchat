@@ -212,26 +212,53 @@ namespace BurstChat.Shared.Services.UserService
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<PrivateGroupMessage>, Error> GetPrivateGroups(long userId)
+        public Either<IEnumerable<PrivateGroup>, Error> GetPrivateGroups(long userId)
         {
             try
             {
                 return Get(userId).Bind(user =>
                 {
                     var group = _burstChatContext
-                        .PrivateGroupMessage
+                        .PrivateGroups
                         .Include(pmg => pmg.Users
                                             .Where(u => u.Id == user.Id))
                         .Include(pmg => pmg.Messages)
                         .ToList();
 
-                    return new Success<IEnumerable<PrivateGroupMessage>, Error>(group);
+                    return new Success<IEnumerable<PrivateGroup>, Error>(group);
                 });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<IEnumerable<PrivateGroupMessage>, Error>(SystemErrors.Exception());
+                return new Failure<IEnumerable<PrivateGroup>, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        ///     This method will return all direct messaging that the user is part of.
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<DirectMessaging>, Error> GetDirectMessaging(long userId)
+        {
+            try
+            {
+                return Get(userId).Bind(user => 
+                {
+                    var directMessaging = _burstChatContext
+                        .DirectMessaging
+                        .Where(d => d.FirstParticipantUserId == user.Id 
+                                    || d.SecondParticipantUserId == user.Id)
+                        .ToList();
+
+                    return new Success<IEnumerable<DirectMessaging>, Error>(directMessaging);
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<DirectMessaging>, Error>(SystemErrors.Exception());
             }
         }
 

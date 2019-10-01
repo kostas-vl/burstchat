@@ -7,7 +7,7 @@ namespace BurstChat.Api.Errors
     ///   This class exposes static methods that return errors associated with execution errors of the
     ///   application about private group message data.
     /// </summary>
-    public static class PrivateGroupMessageErrors
+    public static class PrivateGroupErrors
     {
         public static Error GroupNotFound() => new Error(ErrorLevel.Critical,
                                                          ErrorType.DataProcess,

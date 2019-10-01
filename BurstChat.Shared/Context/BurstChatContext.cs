@@ -29,7 +29,9 @@ namespace BurstChat.Shared.Context
 
         public DbSet<User> Users { get; set; }
 
-        public DbSet<PrivateGroupMessage> PrivateGroupMessage { get; set; }
+        public DbSet<PrivateGroup> PrivateGroups { get; set; }
+
+        public DbSet<DirectMessaging> DirectMessaging { get; set; }
 
         public DbSet<OneTimePassword> OneTimePassword { get; set; }
 

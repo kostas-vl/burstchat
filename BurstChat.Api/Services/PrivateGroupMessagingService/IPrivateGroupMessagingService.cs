@@ -14,14 +14,14 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// </summary>
         /// <param name="groupId">The id of the target group</param>
         /// <returns>An either monad</returns>
-        Either<PrivateGroupMessage, Error> Get(long groupId);
+        Either<PrivateGroup, Error> Get(long groupId);
 
         /// <summary>
         ///   This method will create a new private group for messages.
         /// </summary>
         /// <param name="groupName">The name of the group</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Insert(string groupName);
+        Either<PrivateGroup, Error> Insert(string groupName);
 
         /// <summary>
         ///   This method will delete a private group.
@@ -36,7 +36,15 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// <param name="groupId">The id of the target group</param>
         /// <param name="userId">The id of the user to be added</param>
         /// <returns>The either monad</returns>
-        Either<Unit, Error> InsertUser(long groupId, long userId);
+        Either<PrivateGroup, Error> InsertUser(long groupId, long userId);
+
+        /// <summary>
+        ///   This method will add a new user to a private group.
+        /// </summary>
+        /// <param name="groupId">The id of the target group</param>
+        /// <param name="userIds">The ids of the users to be added</param>
+        /// <returns>The either monad</returns>
+        Either<PrivateGroup, Error> InsertUsers(long groupId, IEnumerable<long> userIds);
 
         /// <summary>
         ///   This method will remove a user from a private group.
@@ -44,7 +52,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// <param name="groupId">The id of the group</param>
         /// <param name="userId">The id of the user that will be deleted</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> DeleteUser(long groupId, long userId);
+        Either<PrivateGroup, Error> DeleteUser(long groupId, long userId);
 
         /// <summary>
         ///   This method will fetch all available messages of a group.
@@ -59,7 +67,7 @@ namespace BurstChat.Api.Services.PrivateGroupMessaging
         /// <param name="groupId">The id of the target private group</param>
         /// <param name="message">The message instance that will be used for the insertion</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> InsertMessage(long groupId, Message message);
+        Either<Message, Error> InsertMessage(long groupId, Message message);
 
         /// <summary>
         ///   This method will be edit a message of a group.

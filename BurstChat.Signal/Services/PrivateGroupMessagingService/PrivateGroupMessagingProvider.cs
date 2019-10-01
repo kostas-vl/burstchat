@@ -41,19 +41,19 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<PrivateGroupMessage, Error>> GetPrivateGroupAsync(HttpContext context, long groupId)
+        public async Task<Either<PrivateGroup, Error>> GetPrivateGroupAsync(HttpContext context, long groupId)
         {
             try
             {
                 var url = $"/api/groups/{groupId}";
                 var method = HttpMethod.Get;
 
-                return await _apiInteropService.SendAsync<PrivateGroupMessage>(context, method, url);
+                return await _apiInteropService.SendAsync<PrivateGroup>(context, method, url);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<PrivateGroupMessage, Error>(SystemErrors.Exception());
+                return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
 

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BurstChat.Api.Services.PrivateGroupMessaging;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
+using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +38,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="groupId">The id of the target group</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("{groupId:long}")]
-        [ProducesResponseType(typeof(PrivateGroupMessage), 200)]
+        [ProducesResponseType(typeof(PrivateGroup), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get(long groupId)
         {
@@ -50,11 +52,25 @@ namespace BurstChat.Api.Controllers
         /// <param name="groupName">The name of the new group</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(PrivateGroup), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post([FromBody] string groupName)
         {
             var monad = _privateGroupMessagingService.Insert(groupName);
+            return this.UnwrapMonad(monad);
+        }
+
+        [HttpPost("{groupName:string}")]
+        public IActionResult Post(string groupName, [FromBody] IEnumerable<long> userIds)
+        {
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => userIds.Contains(userId) ? new Success<IEnumerable<long>, Error>(userIds) 
+                                                         : new Failure<IEnumerable<long>, Error>(SystemErrors.Exception())
+                                                         as Either<IEnumerable<long>, Error>)
+                .Bind(ids => _privateGroupMessagingService.Insert(groupName))
+                .Bind(group => _privateGroupMessagingService.InsertUsers(group.Id, userIds));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -79,7 +95,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="userId">The id of the user to be added</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost("{groupId:long}/user")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(PrivateGroup), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PostUser(long groupId, [FromBody] long userId)
         {
@@ -94,7 +110,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="userId">The id of the user to be deleted</param>
         /// <returns>An IActionResult instance</returns>
         [HttpDelete("{groupId:long}/user")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(PrivateGroup), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult DeleteUser(long groupId, [FromBody] long userId)
         {
@@ -123,7 +139,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="message">The message to be added</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost("{groupId:long}/messages")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PostMessage(long groupId, [FromBody] Message message)
         {

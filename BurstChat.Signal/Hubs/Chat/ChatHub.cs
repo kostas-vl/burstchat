@@ -181,7 +181,7 @@ namespace BurstChat.Signal.Hubs.Chat
             var httpContext = Context.GetHttpContext();
             var monad = await _privateGroupMessagingService.GetPrivateGroupAsync(httpContext, groupId);
 
-            if (monad is Success<PrivateGroupMessage, Error>)
+            if (monad is Success<PrivateGroup, Error>)
             {
                 var signalGroup = PrivateGroupSignalName(groupId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);

@@ -105,7 +105,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="userId">The id of the user</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("groups")]
-        [ProducesResponseType(typeof(IEnumerable<PrivateGroupMessage>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PrivateGroup>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetPrivateGroups()
         {
