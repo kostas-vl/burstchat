@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BurstChat.Api.Services.PrivateGroupMessaging;
+using BurstChat.Api.Services.PrivateGroupsService;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
 using BurstChat.Shared.Monads;
@@ -22,14 +22,14 @@ namespace BurstChat.Api.Controllers
     [Route("/api/groups")]
     public class PrivateGroupsController : ControllerBase
     {
-        private readonly IPrivateGroupMessagingService _privateGroupMessagingService;
+        private readonly IPrivateGroupsService _privateGroupMessagingService;
 
         /// <summary>
         ///   Executes any neccessary start up code for the controller.
         /// </summary>
-        public PrivateGroupsController(IPrivateGroupMessagingService privateGroupMessagingService)
+        public PrivateGroupsController(IPrivateGroupsService privateGroupsService)
         {
-            _privateGroupMessagingService = privateGroupMessagingService;
+            _privateGroupMessagingService = privateGroupsService;
         }
 
         /// <summary>
@@ -42,7 +42,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get(long groupId)
         {
-            var monad = _privateGroupMessagingService.Get(groupId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.Get(userId, groupId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -56,7 +59,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post([FromBody] string groupName)
         {
-            var monad = _privateGroupMessagingService.Insert(groupName);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.Insert(userId, groupName));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -65,11 +71,9 @@ namespace BurstChat.Api.Controllers
         {
             var monad = HttpContext
                 .GetUserId()
-                .Bind(userId => userIds.Contains(userId) ? new Success<IEnumerable<long>, Error>(userIds) 
-                                                         : new Failure<IEnumerable<long>, Error>(SystemErrors.Exception())
-                                                         as Either<IEnumerable<long>, Error>)
-                .Bind(ids => _privateGroupMessagingService.Insert(groupName))
-                .Bind(group => _privateGroupMessagingService.InsertUsers(group.Id, userIds));
+                .Bind(userId => _privateGroupMessagingService.Insert(userId, groupName))
+                .Bind(privateGroup => HttpContext.GetUserId()
+                                                 .Bind(userId => _privateGroupMessagingService.InsertUsers(userId, privateGroup.Id, userIds)));
 
             return this.UnwrapMonad(monad);
         }
@@ -84,7 +88,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Delete(long groupId)
         {
-            var monad = _privateGroupMessagingService.Delete(groupId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.Delete(userId, groupId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -97,9 +104,12 @@ namespace BurstChat.Api.Controllers
         [HttpPost("{groupId:long}/user")]
         [ProducesResponseType(typeof(PrivateGroup), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult PostUser(long groupId, [FromBody] long userId)
+        public IActionResult PostUser(long groupId, [FromBody] long newUserId)
         {
-            var monad = _privateGroupMessagingService.InsertUser(groupId, userId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.InsertUser(userId, groupId, newUserId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -112,9 +122,12 @@ namespace BurstChat.Api.Controllers
         [HttpDelete("{groupId:long}/user")]
         [ProducesResponseType(typeof(PrivateGroup), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult DeleteUser(long groupId, [FromBody] long userId)
+        public IActionResult DeleteUser(long groupId, [FromBody] long targetUserId)
         {
-            var monad = _privateGroupMessagingService.DeleteUser(groupId, userId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.DeleteUser(userId, groupId, targetUserId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -128,7 +141,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetMessages(long groupId)
         {
-            var monad = _privateGroupMessagingService.GetMessages(groupId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.GetMessages(userId, groupId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -143,7 +159,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PostMessage(long groupId, [FromBody] Message message)
         {
-            var monad = _privateGroupMessagingService.InsertMessage(groupId, message);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.InsertMessage(userId, groupId, message));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -158,7 +177,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PutMessage(long groupId, [FromBody] Message message)
         {
-            var monad = _privateGroupMessagingService.UpdateMessage(groupId, message);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.UpdateMessage(userId, groupId, message));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -173,7 +195,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult DeleteMessage(long groupId, [FromBody] long messageId)
         {
-            var monad = _privateGroupMessagingService.DeleteMessage(groupId, messageId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _privateGroupMessagingService.DeleteMessage(userId, groupId, messageId));
+
             return this.UnwrapMonad(monad);
         }
     }

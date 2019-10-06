@@ -5,84 +5,94 @@ using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Users;
 
-namespace BurstChat.Api.Services.PrivateGroupMessaging
+namespace BurstChat.Api.Services.PrivateGroupsService
 {
-    public interface IPrivateGroupMessagingService
+    public interface IPrivateGroupsService
     {
         /// <summary>
         ///   This method will fetch all information about a private group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target group</param>
         /// <returns>An either monad</returns>
-        Either<PrivateGroup, Error> Get(long groupId);
+        Either<PrivateGroup, Error> Get(long userId, long groupId);
 
         /// <summary>
         ///   This method will create a new private group for messages.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupName">The name of the group</param>
         /// <returns>An either monad</returns>
-        Either<PrivateGroup, Error> Insert(string groupName);
+        Either<PrivateGroup, Error> Insert(long userId, string groupName);
 
         /// <summary>
         ///   This method will delete a private group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Delete(long groupId);
+        Either<Unit, Error> Delete(long userId, long groupId);
 
         /// <summary>
         ///   This method will add a new user to a private group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target group</param>
-        /// <param name="userId">The id of the user to be added</param>
+        /// <param name="newUserId">The id of the user to be added</param>
         /// <returns>The either monad</returns>
-        Either<PrivateGroup, Error> InsertUser(long groupId, long userId);
+        Either<PrivateGroup, Error> InsertUser(long userId, long groupId, long newUserId);
 
         /// <summary>
         ///   This method will add a new user to a private group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target group</param>
         /// <param name="userIds">The ids of the users to be added</param>
         /// <returns>The either monad</returns>
-        Either<PrivateGroup, Error> InsertUsers(long groupId, IEnumerable<long> userIds);
+        Either<PrivateGroup, Error> InsertUsers(long userI, long groupId, IEnumerable<long> userIds);
 
         /// <summary>
         ///   This method will remove a user from a private group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
-        /// <param name="userId">The id of the user that will be deleted</param>
+        /// <param name="targetUserId">The id of the user that will be deleted</param>
         /// <returns>An either monad</returns>
-        Either<PrivateGroup, Error> DeleteUser(long groupId, long userId);
+        Either<PrivateGroup, Error> DeleteUser(long userId, long groupId, long targetUserId);
 
         /// <summary>
         ///   This method will fetch all available messages of a group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
         /// <returns>An either monad</returns>
-        Either<IEnumerable<Message>, Error> GetMessages(long groupId);
+        Either<IEnumerable<Message>, Error> GetMessages(long userId, long groupId);
 
         /// <summary>
         ///   This method will add a new message to a private group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target private group</param>
         /// <param name="message">The message instance that will be used for the insertion</param>
         /// <returns>An either monad</returns>
-        Either<Message, Error> InsertMessage(long groupId, Message message);
+        Either<Message, Error> InsertMessage(long userId, long groupId, Message message);
 
         /// <summary>
         ///   This method will be edit a message of a group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="message">The message instance that will be used for the edit</param>
         /// <returns>An either monad<returns>
-        Either<Unit, Error> UpdateMessage(long groupId, Message message);
+        Either<Message, Error> UpdateMessage(long userId, long groupId, Message message);
 
         /// <summary>
         ///   This method will delete a message from the group.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
         /// <param name="messageId">The id of the message to be deleted</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> DeleteMessage(long groupId, long messageId);
+        Either<Unit, Error> DeleteMessage(long userId, long groupId, long messageId);
     }
 }

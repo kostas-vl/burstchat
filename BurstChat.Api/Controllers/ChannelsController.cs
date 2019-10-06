@@ -48,7 +48,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get(int channelId)
         {
-            var monad = _channelsService.Get(channelId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.Get(userId, channelId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -65,7 +68,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Post(int serverId, [FromBody] Channel channel)
         {
-            var monad = _channelsService.Insert(serverId, channel);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.Insert(userId, serverId, channel));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -79,7 +85,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Put([FromBody] Channel channel)
         {
-            var monad = _channelsService.Update(channel);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.Update(userId, channel));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -93,7 +102,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Delete(int channelId)
         {
-            var monad = _channelsService.Delete(channelId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.Delete(userId, channelId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -107,7 +119,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetMessages(int channelId)
         {
-            var monad = _channelsService.GetMessages(channelId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.GetMessages(userId, channelId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -122,7 +137,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PostMessage(int channelId, [FromBody] Message message)
         {
-            var monad = _channelsService.InsertMessage(channelId, message);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.InsertMessage(userId, channelId, message));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -138,7 +156,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PutMessage(int channelId, [FromBody] Message message)
         {
-            var monad = _channelsService.UpdateMessage(channelId, message);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.UpdateMessage(userId, channelId, message));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -152,7 +173,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult DeleteMessage(int channelId, [FromBody] Message message)
         {
-            var monad = _channelsService.DeleteMessage(channelId, message);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _channelsService.DeleteMessage(userId, channelId, message));
+
             return this.UnwrapMonad(monad);
         }
     }

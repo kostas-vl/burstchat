@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using BurstChat.Api.Errors;
+using BurstChat.Api.Extensions;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Errors;
@@ -38,53 +39,12 @@ namespace BurstChat.Api.Services.ChannelsService
         }
 
         /// <summary>
-        ///     Queries the content of the provided message and returns its content with all links removed..
-        /// </summary>
-        /// <param name="message">The message instance of which the content will be queried</param>
-        /// <returns>The string content</returns>
-        private string RemoveLinksFromContent(Message message)
-        {
-            var words = message
-                .Content
-                .Split(" ");
-
-            var normilizedContent = words
-                .Where(word => !Uri.TryCreate(word, UriKind.Absolute, out _))
-                .ToList()
-                .Aggregate(String.Empty, (current, next) => $"{current} {next}");
-
-            return normilizedContent;
-        }
-
-        /// <summary>
-        ///     Queries the content of the provided message and returns a list of found links in it.
-        /// </summary>
-        /// <param name="message">The message instance of which the content will be queried</param>
-        /// <returns>A list of links</returns>
-        private List<Link> GetLinksFromContent(Message message)
-        {
-            var words = message
-                .Content
-                .Split(" ");
-
-            var links = words
-                .Where(word => Uri.TryCreate(word, UriKind.Absolute, out _))
-                .Select(uri => new Link
-                {
-                    Url = uri,
-                    DateCreated = DateTime.Now
-                })
-                .ToList();
-
-            return links;
-        }
-
-        /// <summary>
         ///   This method will return the data of a channel based on the provided channel id.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
         /// <returns>An either monad</returns>
-        public Either<Channel, Error> Get(int channelId)
+        public Either<Channel, Error> Get(long userId, int channelId)
         {
             try
             {
@@ -98,8 +58,18 @@ namespace BurstChat.Api.Services.ChannelsService
                             .ThenInclude(m => m.User)
                     .FirstOrDefault(c => c.Id == channelId);
 
-                if (channel != null)
-                    return new Success<Channel, Error>(channel);
+                if (channel is { })
+                {
+                    var userInList = channel
+                        .Details?
+                        .Users
+                        .Any(u => u.Id == userId) ?? false;
+
+                    if (userInList)
+                        return new Success<Channel, Error>(channel);
+                    else
+                        return new Failure<Channel, Error>(BurstChat.Api.Errors.UserErrors.UserNotFound());
+                }
                 else
                     return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
             }
@@ -114,10 +84,11 @@ namespace BurstChat.Api.Services.ChannelsService
         ///   This method will insert a new channel and associate it with a server based
         ///   on the provided parameters.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server that the channel will be associated with</param>
         /// <param name="channel">The channel that will be created<param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(int serverId, Channel channel)
+        public Either<Unit, Error> Insert(long userId, int serverId, Channel channel)
         {
             try
             {
@@ -152,10 +123,11 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <summary>
         ///   This method will update the information of a channel based on the provided parameters.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channel">The channel instance to be updated</param>
         /// <param name="channelDetails">The channel details to be updated</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Update(Channel channel)
+        public Either<Unit, Error> Update(long userId, Channel channel)
         {
             try
             {
@@ -163,7 +135,7 @@ namespace BurstChat.Api.Services.ChannelsService
                 {
                     var channelId = channel.Id;
 
-                    return Get(channelId).Bind(channelEntry =>
+                    return Get(userId, channelId).Bind(channelEntry =>
                     {
                         channelEntry.Name = channel.Name;
                         channelEntry.IsPublic = channel.IsPublic;
@@ -186,13 +158,14 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <summary>
         ///   This method will remove a channel from the database based on the provided parameters.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id channel to be deleted</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Delete(int channelId)
+        public Either<Unit, Error> Delete(long userId, int channelId)
         {
             try
             {
-                return Get(channelId).Bind(channel =>
+                return Get(userId, channelId).Bind(channel =>
                 {
                     _burstChatContext
                         .Channels
@@ -213,42 +186,48 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <summary>
         ///   This method will return all messages posted in a channel based on the provided channel id.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(int channelId) =>
-            Get(channelId)
-                .Bind(channel =>
-                {
-                    if (channel.Details is null)
-                        return new Success<IEnumerable<Message>, Error>(new Message[0]);
-                    else
-                        return new Success<IEnumerable<Message>, Error>(channel.Details.Messages);
-                });
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId) =>
+            Get(userId, channelId).Bind(channel =>
+            {
+                if (channel is { } && channel.Details is { })
+                    return new Success<IEnumerable<Message>, Error>(channel.Details.Messages);
+                else
+                    return new Success<IEnumerable<Message>, Error>(new Message[0]);
+            });
 
         /// <summary>
         ///   This method will insert a new message sent to the channel provided.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the channel to which the message will be inserted</param>
         /// <param name="message">The message to be inserted</param>
         /// <returns>An either monad</returns>
-        public Either<Message, Error> InsertMessage(int channelId, Message message)
+        public Either<Message, Error> InsertMessage(long userId, int channelId, Message message)
         {
             try
             {
-                return Get(channelId).Bind(channel =>
+                return Get(userId, channelId).Bind<Message>(channel =>
                 {
-                    message.User = null;
-                    message.Links = GetLinksFromContent(message);
-                    message.Content = RemoveLinksFromContent(message);
+                    if (message is { })
+                    {
+                        message.User = null;
+                        message.Links = message.GetLinksFromContent();
+                        message.Content = message.RemoveLinksFromContent();
 
-                    channel
-                        .Details?
-                        .Messages
-                        .Add(message);
+                        channel
+                            .Details?
+                            .Messages
+                            .Add(message);
 
-                    _burstChatContext.SaveChanges();
+                        _burstChatContext.SaveChanges();
 
-                    return new Success<Message, Error>(message);
+                        return new Success<Message, Error>(message);
+                    }
+                    else
+                        return new Failure<Message, Error>(ChannelErrors.ChannelNotFound());
                 });
             }
             catch (Exception e)
@@ -261,24 +240,25 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <summary>
         ///   This method will update the contents of the provided message on the provided channel.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the channel of which the message will be updated</param>
         /// <param name="message">The message that will be updated</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> UpdateMessage(int channelId, Message message)
+        public Either<Unit, Error> UpdateMessage(long userId, int channelId, Message message)
         {
             try
             {
-                return Get(channelId).Bind<Unit>(channel =>
+                return Get(userId, channelId).Bind<Unit>(channel =>
                 {
                     var messageEntry = channel
                         .Details?
                         .Messages
                         .FirstOrDefault(m => m.Id == message.Id);
 
-                    if (messageEntry != null)
+                    if (messageEntry is { } && message is { })
                     {
-                        messageEntry.Content = message.Content;
-                        message.Links = GetLinksFromContent(message);
+                        messageEntry.Links = message.GetLinksFromContent();
+                        messageEntry.Content = message.RemoveLinksFromContent();
                         messageEntry.Edited = true;
 
                         _burstChatContext.SaveChanges();
@@ -299,14 +279,15 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <summary>
         ///   This method will remove an existing message from a channel based on the provided id.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
         /// <param name="message">The message to be deleted</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> DeleteMessage(int channelId, Message message)
+        public Either<Unit, Error> DeleteMessage(long userId, int channelId, Message message)
         {
             try
             {
-                return Get(channelId).Bind(channel =>
+                return Get(userId, channelId).Bind(channel =>
                 {
                     channel
                         .Details?

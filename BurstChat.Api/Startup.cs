@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurstChat.Api.Options;
 using BurstChat.Api.Services.ChannelsService;
-using BurstChat.Api.Services.PrivateGroupMessaging;
+using BurstChat.Api.Services.PrivateGroupsService;
+using BurstChat.Api.Services.DirectMessagingService;
 using BurstChat.Api.Services.ServersService;
 using BurstChat.Shared.Context;
 using BurstChat.Shared.Services.BCryptService;
@@ -56,7 +57,8 @@ namespace BurstChat.Api
 
             services
                 .AddScoped<IChannelsService, ChannelsProvider>()
-                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
+                .AddScoped<IPrivateGroupsService, PrivateGroupsProvider>()
+                .AddScoped<IDirectMessagingService, DirectMessagingProvider>()
                 .AddScoped<IServersService, ServersProvider>()
                 .AddScoped<IModelValidationService, ModelValidationProvider>()
                 .AddScoped<IUserService, UserProvider>();
