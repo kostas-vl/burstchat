@@ -51,6 +51,24 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
+        ///   Fetches all available information about the direct messages between two users.
+        /// </summary>
+        /// <param name="firstParticipantId">The user id of the first participant</param>
+        /// <param name="secondParticipantId">The user id of the second participant</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(DirectMessaging), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult Get(long firstParticipantId, long secondParticipantId)
+        {
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _directMessagingService.Get(userId, firstParticipantId, secondParticipantId));
+
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
         ///   Creates a new direct messaging association between 2 users.
         /// </summary>
         /// <param name="directMessaging">The direct messaging instance to be created</param>

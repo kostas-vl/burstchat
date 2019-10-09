@@ -21,6 +21,15 @@ namespace BurstChat.Api.Services.DirectMessagingService
         Either<DirectMessaging, Error> Get(long userId, long directMessagingId);
 
         /// <summary>
+        ///   This method will fetch all information about direct messaging entry.
+        /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
+        /// <param name="firstParticipantId">The user id of the first participant</param>
+        /// <param name="secondParticipantId">The user id of the second participant</param>
+        /// <returns>An either monad</returns>
+        Either<DirectMessaging, Error> Get(long userId, long firstParticipantId, long secondParticipantId);
+
+        /// <summary>
         ///   This method will create a new direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>

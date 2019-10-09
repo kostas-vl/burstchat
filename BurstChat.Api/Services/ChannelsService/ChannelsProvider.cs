@@ -211,9 +211,13 @@ namespace BurstChat.Api.Services.ChannelsService
             {
                 return Get(userId, channelId).Bind<Message>(channel =>
                 {
-                    if (message is { })
+                    var user = _burstChatContext
+                        .Users
+                        .FirstOrDefault(u => u.Id == userId);
+
+                    if (user is { } && message is { })
                     {
-                        message.User = null;
+                        message.User = user;
                         message.Links = message.GetLinksFromContent();
                         message.Content = message.RemoveLinksFromContent();
 

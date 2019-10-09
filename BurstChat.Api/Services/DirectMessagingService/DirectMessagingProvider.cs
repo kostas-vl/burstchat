@@ -94,6 +94,37 @@ namespace BurstChat.Api.Services.DirectMessagingService
         }
 
         /// <summary>
+        ///   This method will fetch all information about direct messaging entry.
+        /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
+        /// <param name="firstParticipantId">The user id of the first participant</param>
+        /// <param name="secondParticipantId">The user id of the second participant</param>
+        /// <returns>An either monad</returns>
+        public Either<DirectMessaging, Error> Get(long userId, long firstParticipantId, long secondParticipantId)
+        {
+            try
+            {
+                if (userId != firstParticipantId && userId != secondParticipantId)
+                    return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingNotFound());
+
+                var directMessaging = _burstChatContext
+                    .DirectMessaging
+                    .FirstOrDefault(dm => (dm.FirstParticipantUserId == firstParticipantId && dm.SecondParticipantUserId == secondParticipantId)
+                                          || (dm.FirstParticipantUserId == secondParticipantId && dm.SecondParticipantUserId == firstParticipantId));
+
+                if (directMessaging is { })
+                    return new Success<DirectMessaging, Error>(directMessaging);
+                else
+                    return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingNotFound());
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
         ///   This method will create a new direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
