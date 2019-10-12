@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
+using BurstChat.Shared.Schema.Users;
 using BurstChat.Signal.Models;
 
 namespace BurstChat.Signal.Hubs.Chat
@@ -195,5 +196,86 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <param name="error">The error that occured</param>
         /// <returns>A task instance</returns>
         Task ChannelMessageDeleted(Payload<Error> error);
+
+        /// <summary>
+        ///   Informs the caller that his connection id was added to a signal group.
+        /// </summary>
+        Task SelfAddedToDirectMessaging();
+
+        /// <summary>
+        ///   Informs the caller that a new direct messaging has been created and that his 
+        ///   connection id was added to a signal group.
+        /// </summary>
+        /// <param name="directMessaging">The direct messaging details</param>
+        /// <returns>A task instance</returns>
+        Task NewDirectMessaging(Payload<DirectMessaging> directMessaging);
+
+        /// <summary>
+        ///   The caller is informed that an error occured while the new direct messaging entry was
+        ///   being created.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A task instance</returns>
+        Task NewDirectMessaging(Error error);
+
+        /// <summary>
+        ///   Informs the caller of all messages posted on a direct messaging chat.
+        /// </summary>
+        /// <param name="messages">The messages that will delivered to the caller</param>
+        /// <returns>A Task instance</returns>
+        Task AllDirectMessagesReceived(Payload<IEnumerable<Message>> messages);
+
+        /// <summary>
+        ///   Informs the caller that an error occured while trying to fetch all messages
+        ///   of a direct messaging chat.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A Task instance</returns>
+        Task AllDirectMessagesReceived(Payload<Error> error);
+
+        /// <summary>
+        ///   Informs a direct messaging signal group about a new message that was posted.
+        /// </summary>
+        /// <param name="message">The message to be delivered</param>
+        /// <returns>A Task instance</returns>
+        Task DirectMessageReceived(Payload<Message> message);
+
+        /// <summary>
+        ///   Informs the caller that an error occured while a new message was being posted
+        ///   in a direct messaging group.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A Task instance</returns>
+        Task DirectMessageReceived(Payload<Error> error);
+
+        /// <summary>
+        ///   Informs a direct messaging signal group about a message that was edited.
+        /// </summary>
+        /// <param name="message">The message to be delivered</param>
+        /// <returns>A Task instance</returns>
+        Task DirectMessageEdited(Payload<Message> message);
+
+        /// <summary>
+        ///   Informs the caller that an error occured while a message was being edited
+        ///   in a direct messaging group.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A Task instance</returns>
+        Task DirectMessageEdited(Payload<Error> error);
+
+        /// <summary>
+        ///   Informs a direct messaging signal group about a message that was deleted.
+        /// </summary>
+        /// <param name="message">The message to be delivered</param>
+        /// <returns>A Task instance</returns>
+        Task DirectMessageDeleted(Payload<Message> message);
+
+        /// <summary>
+        ///   Informs the caller that an error occured while a message was being deleted
+        ///   in a direct messaging group.
+        /// </summary>
+        /// <param name="error">The error that occured</param>
+        /// <returns>A Task instance</returns>
+        Task DirectMessageDeleted(Payload<Error> error);
     }
 }

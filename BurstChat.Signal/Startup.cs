@@ -3,6 +3,7 @@ using System.Linq;
 using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
 using BurstChat.Signal.Services.ChannelsService;
+using BurstChat.Signal.Services.DirectMessagingService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
@@ -47,7 +48,8 @@ namespace BurstChat.Signal
                 .AddScoped<IInvitationsService, InvitationsProvider>()
                 .AddScoped<IServerService, ServerProvider>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
-                .AddScoped<IChannelsService, ChannelsProvider>();
+                .AddScoped<IChannelsService, ChannelsProvider>()
+                .AddScoped<IDirectMessagingService, DirectMessagingProvider>();
 
             services
                 .AddHttpContextAccessor();
