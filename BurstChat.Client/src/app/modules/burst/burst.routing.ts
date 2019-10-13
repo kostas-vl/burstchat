@@ -12,14 +12,6 @@ const routes: Routes = [
                 loadChildren: () => import('src/app/modules/servers/servers.module').then(m => m.ServersModule)
             },
             {
-                path: 'chat/private',
-                loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
-            },
-            {
-                path: 'chat/channel',
-                loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
-            },
-            {
                 path: 'chat',
                 loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule)
             },

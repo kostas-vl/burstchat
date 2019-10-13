@@ -56,10 +56,10 @@ namespace BurstChat.Api.Controllers
         /// <param name="firstParticipantId">The user id of the first participant</param>
         /// <param name="secondParticipantId">The user id of the second participant</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpGet]
+        [HttpGet()]
         [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Get(long firstParticipantId, long secondParticipantId)
+        public IActionResult Get([FromQuery] long firstParticipantId, [FromQuery] long secondParticipantId)
         {
             var monad = HttpContext
                 .GetUserId()

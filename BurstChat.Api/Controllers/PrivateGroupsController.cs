@@ -66,7 +66,7 @@ namespace BurstChat.Api.Controllers
             return this.UnwrapMonad(monad);
         }
 
-        [HttpPost("{groupName:string}")]
+        [HttpPost("{groupName}")]
         public IActionResult Post(string groupName, [FromBody] IEnumerable<long> userIds)
         {
             var monad = HttpContext

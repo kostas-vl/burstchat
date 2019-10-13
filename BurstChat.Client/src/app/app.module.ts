@@ -20,7 +20,7 @@ import { NotificationListComponent } from 'src/app/components/notification-list/
     declarations: [
         RootComponent,
         NotificationComponent,
-        NotificationListComponent
+        NotificationListComponent,
     ],
     providers: [
         NotifyService,

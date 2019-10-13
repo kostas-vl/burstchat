@@ -12,6 +12,9 @@ using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using BurstChat.Shared.Schema.Users;
+using BurstChat.Shared.Services.UserService;
+using UserErrors = BurstChat.Shared.Errors.UserErrors;
 
 namespace BurstChat.Api.Services.ChannelsService
 {
@@ -23,6 +26,7 @@ namespace BurstChat.Api.Services.ChannelsService
         private readonly ILogger<ChannelsProvider> _logger;
         private readonly BurstChatContext _burstChatContext;
         private readonly IServersService _serversService;
+        private readonly IUserService _userService;
 
         /// <summary>
         ///   Executes any neccessary start up code for the controller.
@@ -30,12 +34,14 @@ namespace BurstChat.Api.Services.ChannelsService
         public ChannelsProvider(
             ILogger<ChannelsProvider> logger,
             BurstChatContext burstChatContext,
-            IServersService serversService
+            IServersService serversService,
+            IUserService userService
         )
         {
             _logger = logger;
             _burstChatContext = burstChatContext;
             _serversService = serversService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -53,9 +59,11 @@ namespace BurstChat.Api.Services.ChannelsService
                     .Include(c => c.Details)
                         .ThenInclude(d => d!.Messages)
                             .ThenInclude(m => m.Links)
-                    .Include(d => d.Details)
-                        .ThenInclude(m => m!.Messages)
+                    .Include(c => c.Details)
+                        .ThenInclude(d => d!.Messages)
                             .ThenInclude(m => m.User)
+                    .Include(c => c.Details)
+                        .ThenInclude(d => d!.Users)
                     .FirstOrDefault(c => c.Id == channelId);
 
                 if (channel is { })
@@ -94,14 +102,22 @@ namespace BurstChat.Api.Services.ChannelsService
             {
                 return _serversService
                     .Get(serverId)
-                    .Bind(server =>
+                    .Bind<Unit>(server =>
                     {
+                        var userMonad = _userService.Get(userId);
+                        if (userMonad is Failure<User, Error>)
+                            return new Failure<Unit, Error>(UserErrors.UserNotFound());
+
+                        var user = (userMonad as Success<User, Error>)!.Value;
                         var channelEntry = new Channel
                         {
                             Name = channel.Name,
                             IsPublic = channel.IsPublic,
                             DateCreated = DateTime.Now,
-                            Details = new ChannelDetails()
+                            Details = new ChannelDetails
+                            {
+                                Users = new List<User> { user }
+                            }
                         };
 
                         server
