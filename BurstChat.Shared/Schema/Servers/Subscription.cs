@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using BurstChat.Shared.Schema.Users;
 
 namespace BurstChat.Shared.Schema.Servers
@@ -11,6 +12,7 @@ namespace BurstChat.Shared.Schema.Servers
         /// <summary>
         /// The id of the user to server subscription.
         /// </summary>
+        [Key]
         public long Id { get; set; }
 
         /// <summary>

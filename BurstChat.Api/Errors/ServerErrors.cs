@@ -13,6 +13,10 @@ namespace BurstChat.Api.Errors
                                                           ErrorType.DataProcess,
                                                           "The server was not found");
 
+        public static Error ServerAlreadyExists() => new Error(ErrorLevel.Critical,
+                                                               ErrorType.Validation,
+                                                               "A server with the same name already exists");
+
         public static Error UserAlreadyMember() => new Error(ErrorLevel.Critical,
                                                              ErrorType.DataProcess,
                                                              "The user is already a member of the server");

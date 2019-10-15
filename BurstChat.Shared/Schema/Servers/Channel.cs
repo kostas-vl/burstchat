@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using BurstChat.Shared.Schema.Chat;
 
 namespace BurstChat.Shared.Schema.Servers
 {
@@ -31,8 +32,9 @@ namespace BurstChat.Shared.Schema.Servers
         public DateTime DateCreated { get; set; }
 
         /// <summary>
-        /// Detail information about the channel.
+        /// The list of messages posted on the channel. In the context of entity framework
+        /// this property is a single navigation property.
         /// </summary>
-        public ChannelDetails? Details { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

@@ -54,32 +54,29 @@ namespace BurstChat.Api.Services.ChannelsService
         {
             try
             {
-                var channel = _burstChatContext
-                    .Channels
-                    .Include(c => c.Details)
-                        .ThenInclude(d => d!.Messages)
-                            .ThenInclude(m => m.Links)
-                    .Include(c => c.Details)
-                        .ThenInclude(d => d!.Messages)
-                            .ThenInclude(m => m.User)
-                    .Include(c => c.Details)
-                        .ThenInclude(d => d!.Users)
-                    .FirstOrDefault(c => c.Id == channelId);
+                var server = _burstChatContext
+                    .Servers
+                    .Include(s => s.Channels)
+                    .Include(s => s.Subscriptions)
+                    .AsQueryable()
+                    .FirstOrDefault(s => s.Subscriptions.Any(s => s.UserId == userId)
+                                         && s.Channels.Any(c => c.Id == channelId));
 
-                if (channel is { })
+                if (server is { })
                 {
-                    var userInList = channel
-                        .Details?
-                        .Users
-                        .Any(u => u.Id == userId) ?? false;
+                    var channel = _burstChatContext
+                        .Channels
+                        .Include(d => d!.Messages)
+                            .ThenInclude(m => m.Links)
+                        .Include(d => d.Messages)
+                            .ThenInclude(m => m.User)
+                        .FirstOrDefault(c => c.Id == channelId);
 
-                    if (userInList)
+                    if (channel is { } && channel.IsPublic)
                         return new Success<Channel, Error>(channel);
-                    else
-                        return new Failure<Channel, Error>(BurstChat.Api.Errors.UserErrors.UserNotFound());
                 }
-                else
-                    return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
+
+                return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
             }
             catch (Exception e)
             {
@@ -101,7 +98,7 @@ namespace BurstChat.Api.Services.ChannelsService
             try
             {
                 return _serversService
-                    .Get(serverId)
+                    .Get(userId, serverId)
                     .Bind<Unit>(server =>
                     {
                         var userMonad = _userService.Get(userId);
@@ -109,15 +106,12 @@ namespace BurstChat.Api.Services.ChannelsService
                             return new Failure<Unit, Error>(UserErrors.UserNotFound());
 
                         var user = (userMonad as Success<User, Error>)!.Value;
+
                         var channelEntry = new Channel
                         {
                             Name = channel.Name,
                             IsPublic = channel.IsPublic,
-                            DateCreated = DateTime.Now,
-                            Details = new ChannelDetails
-                            {
-                                Users = new List<User> { user }
-                            }
+                            DateCreated = DateTime.Now
                         };
 
                         server
@@ -208,8 +202,8 @@ namespace BurstChat.Api.Services.ChannelsService
         public Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId) =>
             Get(userId, channelId).Bind(channel =>
             {
-                if (channel is { } && channel.Details is { })
-                    return new Success<IEnumerable<Message>, Error>(channel.Details.Messages);
+                if (channel is { })
+                    return new Success<IEnumerable<Message>, Error>(channel.Messages);
                 else
                     return new Success<IEnumerable<Message>, Error>(new Message[0]);
             });
@@ -237,10 +231,8 @@ namespace BurstChat.Api.Services.ChannelsService
                         message.Links = message.GetLinksFromContent();
                         message.Content = message.RemoveLinksFromContent();
 
-                        channel
-                            .Details?
-                            .Messages
-                            .Add(message);
+                        channel.Messages
+                               .Add(message);
 
                         _burstChatContext.SaveChanges();
 
@@ -270,10 +262,8 @@ namespace BurstChat.Api.Services.ChannelsService
             {
                 return Get(userId, channelId).Bind<Unit>(channel =>
                 {
-                    var messageEntry = channel
-                        .Details?
-                        .Messages
-                        .FirstOrDefault(m => m.Id == message.Id);
+                    var messageEntry = channel.Messages
+                                              .FirstOrDefault(m => m.Id == message.Id);
 
                     if (messageEntry is { } && message is { })
                     {
@@ -309,10 +299,8 @@ namespace BurstChat.Api.Services.ChannelsService
             {
                 return Get(userId, channelId).Bind(channel =>
                 {
-                    channel
-                        .Details?
-                        .Messages
-                        .Remove(message);
+                    channel.Messages
+                           .Remove(message);
 
                     _burstChatContext.SaveChanges();
 

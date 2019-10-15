@@ -25,8 +25,6 @@ namespace BurstChat.Shared.Context
 
         public DbSet<Channel> Channels { get; set; }
 
-        public DbSet<ChannelDetails> ChannelDetails { get; set; }
-
         public DbSet<User> Users { get; set; }
 
         public DbSet<PrivateGroup> PrivateGroups { get; set; }

@@ -37,9 +37,10 @@ namespace BurstChat.Api.Services.ServersService
         ///   This method will fetch information available for a server based on the provided
         ///   server id.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the target server</param>
         /// <returns>An either monad</returns>
-        public Either<Server, Error> Get(int serverId)
+        public Either<Server, Error> Get(long userId, int serverId)
         {
             try
             {
@@ -49,7 +50,10 @@ namespace BurstChat.Api.Services.ServersService
                     .Include(s => s.Subscriptions)
                     .FirstOrDefault(s => s.Id == serverId);
 
-                if (server is { })
+                var serverExists = server is { }
+                                   && server.Subscriptions.Any(s => s.UserId == userId);
+
+                if (serverExists)
                     return new Success<Server, Error>(server);
                 else
                     return new Failure<Server, Error>(ServerErrors.ServerNotFound());
@@ -65,13 +69,14 @@ namespace BurstChat.Api.Services.ServersService
         ///   This method will delete any information available for a server based on the provided
         ///   server id.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server to be removed</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Delete(int serverId)
+        public Either<Unit, Error> Delete(long userId, int serverId)
         {
             try
             {
-                return Get(serverId).Bind(server =>
+                return Get(userId, serverId).Bind(server =>
                 {
                     _burstChatContext
                         .Servers
@@ -99,26 +104,35 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                var serverEntry = new Server
-                {
-                    Name = server.Name,
-                    DateCreated = server.DateCreated,
-                    Subscriptions = new List<Subscription>
-                    {
-                        new Subscription
-                        {
-                            UserId = userId
-                        }
-                    }
-                };
-
-                _burstChatContext
+                var existingServer = _burstChatContext
                     .Servers
-                    .Add(serverEntry);
+                    .FirstOrDefault(s => s.Name == server.Name);
 
-                _burstChatContext.SaveChanges();
+                if (existingServer is null)
+                {
+                    var serverEntry = new Server
+                    {
+                        Name = server.Name,
+                        DateCreated = server.DateCreated,
+                        Subscriptions = new List<Subscription>
+                        {
+                            new Subscription
+                            {
+                                UserId = userId
+                            }
+                        }
+                    };
 
-                return new Success<Server, Error>(serverEntry);
+                    _burstChatContext
+                        .Servers
+                        .Add(serverEntry);
+
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Server, Error>(serverEntry);
+                }
+                else
+                    return new Failure<Server, Error>(ServerErrors.ServerAlreadyExists());
             }
             catch (Exception e)
             {
@@ -131,13 +145,14 @@ namespace BurstChat.Api.Services.ServersService
         ///   This method will update information about an existing server based on the provided server
         ///   instance.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="server">The server instance from which the information update will be based upon</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Update(Server server)
+        public Either<Unit, Error> Update(long userId, Server server)
         {
             try
             {
-                return Get(server.Id).Bind(serverEntry =>
+                return Get(userId, server.Id).Bind(serverEntry =>
                 {
                     serverEntry.Name = server.Name;
 
@@ -156,13 +171,14 @@ namespace BurstChat.Api.Services.ServersService
         /// <summary>
         ///     Fetches all users subscribed to the server based on the server id provided.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the target server</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<User>, Error> GetSubscribedUsers(int serverId)
+        public Either<IEnumerable<User>, Error> GetSubscribedUsers(long userId, int serverId)
         {
             try
             {
-                return Get(serverId).Bind(server => 
+                return Get(userId, serverId).Bind(server => 
                 {
                     var users = _burstChatContext
                         .Users
@@ -184,18 +200,22 @@ namespace BurstChat.Api.Services.ServersService
         /// <summary>
         ///     Fetches all invitations sent for a server based on the provided id.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Invitation>, Error> GetInvitations(int serverId)
+        public Either<IEnumerable<Invitation>, Error> GetInvitations(long userId, int serverId)
         {
             try
             {
-                var invitations = _burstChatContext
-                    .Invitations
-                    .Where(i => i.ServerId == serverId)
-                    .ToList();
+                return Get(userId, serverId).Bind(server => 
+                {
+                    var invitations = _burstChatContext
+                        .Invitations
+                        .Where(i => i.ServerId == serverId)
+                        .ToList();
 
-                return new Success<IEnumerable<Invitation>, Error>(invitations);
+                    return new Success<IEnumerable<Invitation>, Error>(invitations);
+                });
             }
             catch (Exception e)
             {
@@ -207,14 +227,15 @@ namespace BurstChat.Api.Services.ServersService
         /// <summary>
         ///     This method will create a new server invitation entry based on the provided parameters.
         /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server</param>
-        /// <param name="userId">The id of the target user</param>
+        /// <param name="targetUserId">The id of the target user</param>
         /// <returns>An either monad</returns>
-        public Either<Invitation, Error> InsertInvitation(int serverId, long userId)
+        public Either<Invitation, Error> InsertInvitation(long userId, int serverId, long targetUserId)
         {
             try
             {
-                return Get(serverId).Bind<Invitation>(server =>
+                return Get(userId, serverId).Bind<Invitation>(server =>
                 {
                     var userExists = server
                         .Subscriptions
@@ -226,7 +247,7 @@ namespace BurstChat.Api.Services.ServersService
                     var invitation = new Invitation
                     {
                         ServerId = serverId,
-                        UserId = userId,
+                        UserId = targetUserId,
                         Accepted = false,
                         Declined = false,
                         DateUpdated = null,

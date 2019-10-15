@@ -46,7 +46,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get(int serverId) 
         {
-            var monad = _serversService.Get(serverId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.Get(userId, serverId));
+            
             return this.UnwrapMonad(monad);
         }
 
@@ -77,7 +80,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Put([FromBody] Server server)
         {
-            var monad = _serversService.Update(server);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.Update(userId, server));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -91,7 +97,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Delete(int serverId)
         {
-            var monad = _serversService.Delete(serverId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId =>_serversService.Delete(userId, serverId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -105,7 +114,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetSubscribedUsers(int serverId)
         {
-            var monad = _serversService.GetSubscribedUsers(serverId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.GetSubscribedUsers(userId, serverId));
+
             return this.UnwrapMonad(monad);
         }
 
@@ -119,7 +131,10 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult GetInvitations(int serverId)
         {
-            var monad = _serversService.GetInvitations(serverId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.GetInvitations(userId, serverId));
+                
             return this.UnwrapMonad(monad);
         }
 
@@ -132,9 +147,12 @@ namespace BurstChat.Api.Controllers
         [HttpPost("{serverId:int}/invitation")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult InsertInvitation(int serverId, [FromBody] long userId)
+        public IActionResult InsertInvitation(int serverId, [FromBody] long targetUserId)
         {
-            var monad = _serversService.InsertInvitation(serverId, userId);
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.InsertInvitation(userId, serverId, targetUserId));
+
             return this.UnwrapMonad(monad);
         }
     }

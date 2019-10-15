@@ -8,18 +8,6 @@ namespace BurstChat.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ChannelDetails",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChannelDetails", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DirectMessaging",
                 columns: table => new
                 {
@@ -71,18 +59,11 @@ namespace BurstChat.Api.Migrations
                     Name = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
-                    ChannelDetailsId = table.Column<int>(nullable: true),
                     PrivateGroupId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_ChannelDetails_ChannelDetailsId",
-                        column: x => x.ChannelDetailsId,
-                        principalTable: "ChannelDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Users_PrivateGroups_PrivateGroupId",
                         column: x => x.PrivateGroupId,
@@ -100,18 +81,11 @@ namespace BurstChat.Api.Migrations
                     Name = table.Column<string>(nullable: false),
                     IsPublic = table.Column<bool>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
-                    DetailsId = table.Column<int>(nullable: true),
                     ServerId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Channels", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Channels_ChannelDetails_DetailsId",
-                        column: x => x.DetailsId,
-                        principalTable: "ChannelDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Channels_Servers_ServerId",
                         column: x => x.ServerId,
@@ -144,49 +118,6 @@ namespace BurstChat.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Invitations_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<long>(nullable: false),
-                    Content = table.Column<string>(nullable: false),
-                    Edited = table.Column<bool>(nullable: false),
-                    DatePosted = table.Column<DateTime>(nullable: false),
-                    ChannelDetailsId = table.Column<int>(nullable: true),
-                    DirectMessagingId = table.Column<long>(nullable: true),
-                    PrivateGroupId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Messages_ChannelDetails_ChannelDetailsId",
-                        column: x => x.ChannelDetailsId,
-                        principalTable: "ChannelDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_DirectMessaging_DirectMessagingId",
-                        column: x => x.DirectMessagingId,
-                        principalTable: "DirectMessaging",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_PrivateGroups_PrivateGroupId",
-                        column: x => x.PrivateGroupId,
-                        principalTable: "PrivateGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -242,6 +173,49 @@ namespace BurstChat.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<long>(nullable: false),
+                    Content = table.Column<string>(nullable: false),
+                    Edited = table.Column<bool>(nullable: false),
+                    DatePosted = table.Column<DateTime>(nullable: false),
+                    ChannelId = table.Column<int>(nullable: true),
+                    DirectMessagingId = table.Column<long>(nullable: true),
+                    PrivateGroupId = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Channels_ChannelId",
+                        column: x => x.ChannelId,
+                        principalTable: "Channels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_DirectMessaging_DirectMessagingId",
+                        column: x => x.DirectMessagingId,
+                        principalTable: "DirectMessaging",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_PrivateGroups_PrivateGroupId",
+                        column: x => x.PrivateGroupId,
+                        principalTable: "PrivateGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Links",
                 columns: table => new
                 {
@@ -261,11 +235,6 @@ namespace BurstChat.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Channels_DetailsId",
-                table: "Channels",
-                column: "DetailsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Channels_ServerId",
@@ -288,9 +257,9 @@ namespace BurstChat.Api.Migrations
                 column: "MessageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_ChannelDetailsId",
+                name: "IX_Messages_ChannelId",
                 table: "Messages",
-                column: "ChannelDetailsId");
+                column: "ChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_DirectMessagingId",
@@ -323,11 +292,6 @@ namespace BurstChat.Api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_ChannelDetailsId",
-                table: "Users",
-                column: "ChannelDetailsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_PrivateGroupId",
                 table: "Users",
                 column: "PrivateGroupId");
@@ -335,9 +299,6 @@ namespace BurstChat.Api.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Channels");
-
             migrationBuilder.DropTable(
                 name: "Invitations");
 
@@ -354,7 +315,7 @@ namespace BurstChat.Api.Migrations
                 name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Servers");
+                name: "Channels");
 
             migrationBuilder.DropTable(
                 name: "DirectMessaging");
@@ -363,7 +324,7 @@ namespace BurstChat.Api.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "ChannelDetails");
+                name: "Servers");
 
             migrationBuilder.DropTable(
                 name: "PrivateGroups");
