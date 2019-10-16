@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
 
 /**
  * This class represents an angular component that displays information about a subscribed user
@@ -44,7 +45,8 @@ export class UserComponent implements OnInit, OnDestroy {
      */
     constructor(
         private router: Router,
-        private userService: UserService
+        private userService: UserService,
+        private directMessagingService: DirectMessagingService
     ) { }
 
     /**
@@ -78,14 +80,18 @@ export class UserComponent implements OnInit, OnDestroy {
      * @memberof UserComponent
      */
     public onSelect() {
-        // if (this.currentUser && this.currentUser.id !== this.user.id) {
-        //     this.router.navigate(['/core/chat/private'], {
-        //         queryParams: {
-        //             user: [this.currentUser.id, this.user.id],
-        //             name: `${this.currentUser.name}, ${this.user.name}`
-        //         }
-        //     });
-        // }
+        if (this.currentUser && this.currentUser.id !== this.user.id) {
+            this.directMessagingService
+                .get(this.currentUser.id, this.user.id)
+                .subscribe(directMessaging => {
+                    this.router.navigate(['/core/chat/direct'], {
+                        queryParams: {
+                            id: directMessaging.id,
+                            name: `${this.currentUser.name}, ${this.user.name}`
+                        }
+                    });
+                });
+        }
     }
 
 }

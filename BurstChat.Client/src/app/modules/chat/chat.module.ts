@@ -8,6 +8,8 @@ import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
+import { ChatGroupComponent } from 'src/app/modules/chat/components/chat-group/chat-group.component';
+import { ChatDirectComponent } from 'src/app/modules/chat/components/chat-direct/chat-direct.component';
 import { ChatInfoComponent } from 'src/app/modules/chat/components/chat-info/chat-info.component';
 import { ChatMessagesComponent } from 'src/app/modules/chat/components/chat-messages/chat-messages.component';
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
@@ -24,6 +26,8 @@ import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-messa
     declarations: [
         ChatRootComponent,
         ChatChannelComponent,
+        ChatGroupComponent,
+        ChatDirectComponent,
         ChatInfoComponent,
         ChatMessagesComponent,
         ChatMessageComponent,

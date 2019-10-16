@@ -227,16 +227,21 @@ namespace BurstChat.Api.Services.ChannelsService
 
                     if (user is { } && message is { })
                     {
-                        message.User = user;
-                        message.Links = message.GetLinksFromContent();
-                        message.Content = message.RemoveLinksFromContent();
+                        var newMessage = new Message
+                        {
+                            User = user,
+                            Links = message.GetLinksFromContent(),
+                            Content = message.RemoveLinksFromContent(),
+                            Edited = false,
+                            DatePosted = message.DatePosted
+                        };
 
                         channel.Messages
-                               .Add(message);
+                               .Add(newMessage);
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Message, Error>(message);
+                        return new Success<Message, Error>(newMessage);
                     }
                     else
                         return new Failure<Message, Error>(ChannelErrors.ChannelNotFound());

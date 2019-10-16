@@ -166,7 +166,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         {
             try
             {
-                var method = HttpMethod.Get;
+                var method = HttpMethod.Post;
                 var url = $"/api/direct/{directMessagingId}/messages";
                 var jsonMessage = JsonConvert.SerializeObject(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");

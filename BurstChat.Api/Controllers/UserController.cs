@@ -102,7 +102,6 @@ namespace BurstChat.Api.Controllers
         /// <summary>
         ///   This method will fetch all private groups that the user with the provided id is part of.
         /// </summary>
-        /// <param name="userId">The id of the user</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("groups")]
         [ProducesResponseType(typeof(IEnumerable<PrivateGroup>), 200)]
@@ -112,6 +111,23 @@ namespace BurstChat.Api.Controllers
             var monad = HttpContext
                 .GetUserId()
                 .Bind(_userService.GetPrivateGroups);
+
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        ///     This method will fetch all direct messaging entries that the user with the provided id
+        ///     is part of.
+        /// </summary>
+        /// <returns>An IActionResult instance</returns>
+        [HttpGet("direct")]
+        [ProducesResponseType(typeof(IEnumerable<DirectMessaging>), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult GetDirectMessaging()
+        {
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(_userService.GetDirectMessaging);
 
             return this.UnwrapMonad(monad);
         }

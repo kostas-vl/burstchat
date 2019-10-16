@@ -6,13 +6,13 @@
 
     <br>
 
-    <small class="text-muted" *ngIf="notification && notification.content">{{notification.content}}</small>
+    <small *ngIf="notification && notification.content">{{notification.content}}</small>
 
   </div>
 
   <div class="notification-close">
 
-    <div class="button-icon" (click)="onDismiss()">
+    <div class="button-icon text-danger" (click)="onDismiss()">
 
       <fa-icon icon="times"></fa-icon>
 

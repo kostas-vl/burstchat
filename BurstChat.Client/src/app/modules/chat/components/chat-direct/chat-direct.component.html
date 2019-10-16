@@ -1,1 +1,11 @@
-<p>chat-direct works!</p>
+<div *ngIf="!noChatFound">
+
+    <app-chat-info [options]="options"></app-chat-info>
+
+    <app-chat-messages [options]="options"></app-chat-messages>
+
+    <app-chat-input [options]="options"></app-chat-input>
+
+</div>
+
+<div *ngIf="noChatFound"></div>

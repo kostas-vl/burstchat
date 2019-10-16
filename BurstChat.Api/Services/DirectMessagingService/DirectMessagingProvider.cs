@@ -47,6 +47,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
                 var directMessaging = _burstChatContext
                     .DirectMessaging
                     .Include(dm => dm.Messages)
+                        .ThenInclude(m => m.User)
                     .FirstOrDefault(dm => dm.Id == directMessagingId
                                           && (dm.FirstParticipantUserId == userId
                                               || dm.SecondParticipantUserId == userId));
@@ -218,19 +219,33 @@ namespace BurstChat.Api.Services.DirectMessagingService
         {
             try
             {
-                return GetWithMessages(userId, directMessagingId).Bind(directMessaging =>
+                return Get(userId, directMessagingId).Bind<Message>(directMessaging =>
                 {
-                    message.UserId = userId;
-                    message.Links = message.GetLinksFromContent();
-                    message.Content = message.RemoveLinksFromContent();
+                    var user = _burstChatContext
+                        .Users
+                        .FirstOrDefault(u => u.Id == userId);
 
-                    directMessaging
-                        .Messages
-                        .Add(message);
+                    if (user is { } && message is { })
+                    {
+                        var newMessage = new Message
+                        {
+                            User = user,
+                            Links = message.GetLinksFromContent(),
+                            Content = message.RemoveLinksFromContent(),
+                            Edited = false,                        
+                            DatePosted = message.DatePosted
+                        };
 
-                    _burstChatContext.SaveChanges();
+                        directMessaging.Messages
+                                    .Add(newMessage);
 
-                    return new Success<Message, Error>(message);
+                        _burstChatContext.SaveChanges();
+
+                        return new Success<Message, Error>(newMessage);
+                    }
+                    else
+                        return new Failure<Message, Error>(DirectMessagingErrors.DirectMessagesNotFound());
+
                 });
                    
             }

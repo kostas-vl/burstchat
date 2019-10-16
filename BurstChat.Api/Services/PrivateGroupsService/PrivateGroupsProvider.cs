@@ -304,22 +304,31 @@ namespace BurstChat.Api.Services.PrivateGroupsService
         {
             try
             {
-                return GetMessages(userId, groupId).Bind(groupMessages =>
+                return Get(userId, groupId).Bind<Message>(group =>
                 {
-                    var groupMessagesList = groupMessages.ToList();
-                    var newMessage = new Message
+                    var user = _burstChatContext
+                        .Users
+                        .FirstOrDefault(u => u.Id == userId);
+
+                    if (user is { } && message is { })
                     {
-                        UserId = message.UserId,
-                        Content = message.Content,
-                        Edited = false,
-                        DatePosted = DateTime.Now
-                    };
+                        var newMessage = new Message
+                        {
+                            User = user,
+                            Content = message.Content,
+                            Edited = false,
+                            DatePosted = DateTime.Now
+                        };
 
-                    groupMessagesList.Add(newMessage);
+                        group.Messages
+                             .Add(newMessage);
 
-                    _burstChatContext.SaveChanges();
+                        _burstChatContext.SaveChanges();
 
-                    return new Success<Message, Error>(newMessage);
+                        return new Success<Message, Error>(newMessage);
+                    }
+                    else
+                        return new Failure<Message, Error>(PrivateGroupErrors.GroupNotFound());
                 });
             }
             catch (Exception e)

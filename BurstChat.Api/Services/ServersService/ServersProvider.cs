@@ -241,7 +241,7 @@ namespace BurstChat.Api.Services.ServersService
                         .Subscriptions
                         .Any(s => s.UserId == userId);
 
-                    if (userExists)
+                    if (!userExists)
                         return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
 
                     var invitation = new Invitation

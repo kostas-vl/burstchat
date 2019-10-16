@@ -6,6 +6,7 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { ChannelsService } from 'src/app/modules/burst/services/channels/channels.service';
+import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
@@ -18,7 +19,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
     selector: 'app-layout',
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss'],
-    providers: [UserService, ServersService, ChannelsService, ChatService]
+    providers: [UserService, ServersService, ChannelsService, DirectMessagingService, ChatService]
 })
 export class LayoutComponent implements OnInit, OnDestroy {
 
@@ -39,7 +40,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     constructor(
         private notifyService: NotifyService,
         private userService: UserService,
-        private chatService: ChatService
+        private chatService: ChatService,
     ) { }
 
     /**

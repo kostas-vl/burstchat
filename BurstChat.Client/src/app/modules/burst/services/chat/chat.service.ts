@@ -11,6 +11,8 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
+import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
+import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 
 /**
  * This class represents an angular service that connects to the remote signalr server and trasmits messages related to
@@ -44,6 +46,8 @@ export class ChatService {
     private messageEditedSource = new Subject<Payload<Message>>();
 
     private messageDeletedSource = new Subject<Payload<Message>>();
+
+    private newDirectMessagingSource = new Subject<Payload<any>>();
 
     private errorSource = new Subject<BurstChatError>();
 
@@ -189,6 +193,29 @@ export class ChatService {
             .on('channelMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
 
         this.connection
+            .on('selfAddedToDirectMessaging', () => {
+                setTimeout(() => this.selfAddedToChatSource.next(), 500);
+            });
+
+        this.connection
+            .on('newDirectMessaging', data => {
+                this.ProcessSignal(data, this.newDirectMessagingSource);
+                setTimeout(() => this.selfAddedToChatSource.next(), 500);
+            });
+
+        this.connection
+            .on('allDirectMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource));
+
+        this.connection
+            .on('directMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource));
+
+        this.connection
+            .on('channelMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource));
+
+        this.connection
+            .on('channelMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
+
+        this.connection
             .start()
             .then(() => this.onConnectedSource.next())
             .catch(error => console.log(error));
@@ -281,9 +308,15 @@ export class ChatService {
      */
     public addSelfToChat(options: ChatConnectionOptions) {
         if (this.connection && options) {
-            const methodName = options instanceof PrivateGroupConnectionOptions
-                ? 'addToPrivateGroupConnection'
-                : 'addToChannelConnection';
+            let methodName = '';
+
+            if (options instanceof PrivateGroupConnectionOptions) {
+                methodName = 'addToPrivateGroupConnection';
+            } else if (options instanceof ChannelConnectionOptions) {
+                methodName = 'addToChannelConnection';
+            } else {
+                methodName = 'addToDirectMessaging';
+            }
 
             this.connection
                 .invoke(methodName, options.id)
@@ -297,9 +330,15 @@ export class ChatService {
      */
     public getAllMessages(options: ChatConnectionOptions) {
         if (this.connection && options) {
-            const methodName = options instanceof PrivateGroupConnectionOptions
-                ? 'getAllPrivateGroupMessages'
-                : 'getAllChannelMessages';
+            let methodName = '';
+
+            if (options instanceof PrivateGroupConnectionOptions) {
+                methodName = 'getAllPrivateGroupMessages';
+            } else if (options instanceof ChannelConnectionOptions) {
+                methodName = 'getAllChannelMessages';
+            } else {
+                methodName = 'getAllDirectMessages';
+            }
 
             this.connection
                 .invoke(methodName, options.id)
@@ -314,9 +353,15 @@ export class ChatService {
      */
     public postMessage(options: ChatConnectionOptions, message: Message): void {
         if (this.connection && options) {
-            const methodName = options instanceof PrivateGroupConnectionOptions
-                ? 'postPrivateGroupMessage'
-                : 'postChannelMessage';
+            let methodName = '';
+
+            if (options instanceof PrivateGroupConnectionOptions) {
+                methodName = 'postPrivateGroupMessage';
+            } else if (options instanceof ChannelConnectionOptions) {
+                methodName = 'postChannelMessage';
+            } else {
+                methodName = 'postDirectMessage';
+            }
 
             this.connection
                 .invoke(methodName, options.id, message)
@@ -331,9 +376,15 @@ export class ChatService {
      */
     public editMessage(options: ChatConnectionOptions, message: Message): void {
         if (this.connection && options) {
-            const methodName = options instanceof PrivateGroupConnectionOptions
-                ? 'putPrivateGroupMessage'
-                : 'putChannelMessage';
+            let methodName = '';
+
+            if (options instanceof PrivateGroupConnectionOptions) {
+                methodName = 'putPrivateGroupMessage';
+            } else if (options instanceof ChannelConnectionOptions) {
+                methodName = 'putChannelMessage';
+            } else {
+                methodName = 'putDirectMessage';
+            }
 
             this.connection
                 .invoke(methodName, options.id, message)
@@ -348,9 +399,15 @@ export class ChatService {
      */
     public deleteMessage(options: ChatConnectionOptions, message: Message): void {
         if (this.connection && options) {
-            const methodName = options instanceof PrivateGroupConnectionOptions
-                ? 'deletePrivateGroupMessage'
-                : 'deleteChannelMessage';
+            let methodName = '';
+
+            if (options instanceof PrivateGroupConnectionOptions) {
+                methodName = 'deletePrivateGroupMessage';
+            } else if (options instanceof ChannelConnectionOptions) {
+                methodName = 'deleteChannelMessage';
+            } else {
+                methodName = 'deleteDirectMessage';
+            }
 
             this.connection
                 .invoke(methodName, options.id, message)

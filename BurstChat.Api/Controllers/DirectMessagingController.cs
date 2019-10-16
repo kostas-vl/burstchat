@@ -56,7 +56,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="firstParticipantId">The user id of the first participant</param>
         /// <param name="secondParticipantId">The user id of the second participant</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpGet()]
+        [HttpGet]
         [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Get([FromQuery] long firstParticipantId, [FromQuery] long secondParticipantId)
@@ -65,7 +65,17 @@ namespace BurstChat.Api.Controllers
                 .GetUserId()
                 .Bind(userId => _directMessagingService.Get(userId, firstParticipantId, secondParticipantId));
 
-            return this.UnwrapMonad(monad);
+            if (monad is Failure<DirectMessaging, Error>)
+            {
+                var directMessaging = new DirectMessaging
+                {
+                    FirstParticipantUserId = firstParticipantId,
+                    SecondParticipantUserId = secondParticipantId
+                };
+                return Post(directMessaging);
+            }
+            else
+                return this.UnwrapMonad(monad);
         }
 
         /// <summary>
