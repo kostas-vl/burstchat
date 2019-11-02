@@ -107,6 +107,22 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * This method will scroll the virtual scroll viewport to the bottom based
+     * on the number of messages available.
+     * @private
+     * @memberof ChatMessagesComponent
+     */
+    private scrollToBottom() {
+        if (this.viewPort) {
+            const length = this.messages.reduce((total, elem) => {
+                total += elem.messages.length;
+                return total;
+            }, 0);
+            this.viewPort.scrollToIndex(length);
+        }
+    }
+
+    /**
      * This method will evaluate if a message was posted in date and time close to the provided cluster date.
      * @private
      * @param {(Date | string)} clusterDate The date the cluster of messages was posted.
@@ -188,9 +204,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = true;
         }
 
-        if (this.viewPort) {
-            this.viewPort.scrollToIndex(this.messages.length - 1);
-        }
+        setTimeout(() => this.scrollToBottom(), 100);
     }
 
     /**
@@ -208,6 +222,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.messages = this.addMessageToCluster(this.messages, message);
             this.chatIsEmpty = false;
         }
+
+        this.scrollToBottom();
     }
 
 }
