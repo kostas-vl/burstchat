@@ -1,13 +1,21 @@
-<div #messagesContainer class="messages-container" [scrollTop]="messagesContainer.scrollHeight">
+<div class="viewport">
 
-    <div *ngFor="let cluster of messages">
+        <cdk-virtual-scroll-viewport class="h-100" itemSize="100">
 
-        <app-chat-message [messageCluster]="cluster"></app-chat-message>
+                <div class="messages-container">
 
-        <hr>
+                    <div *cdkVirtualFor="let cluster of messages">
 
-    </div>
+                        <app-chat-message [messageCluster]="cluster"></app-chat-message>
 
-    <span class="text-muted" *ngIf="chatIsEmpty">No messages posted yet!</span>
+                        <hr>
+
+                    </div>
+
+                    <span class="text-muted" *ngIf="chatIsEmpty">No messages posted yet!</span>
+
+                </div>
+
+        </cdk-virtual-scroll-viewport>
 
 </div>

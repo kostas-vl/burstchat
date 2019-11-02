@@ -4,10 +4,14 @@ hr {
     border-color: $text-muted-color;
 }
 
+.viewport {
+    @extend .h-100;
+    padding-top: $minor-height;
+    padding-bottom: $minor-height + 25px;
+}
 .messages-container {
-    @extend .burst-container-fluid;
-    padding-top: $minor-height + 10px;
-    padding-bottom: $minor-height + 15px;
+    @extend .h-100;
+    padding-top: 20px;
     padding-left: 20px;
     padding-right: 20px;
 }

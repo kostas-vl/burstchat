@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { MessageCluster } from 'src/app/models/chat/message-cluster';
@@ -59,6 +60,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             .messageReceived
             .subscribe(payload => this.onMessageReceived(payload));
     }
+
+    @ViewChild(CdkVirtualScrollViewport, { static: false})
+    public viewPort?: CdkVirtualScrollViewport;
 
     /**
      * Creates an instance of ChatMessagesComponent.
@@ -182,6 +186,10 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         } else {
             this.messages = [];
             this.chatIsEmpty = true;
+        }
+
+        if (this.viewPort) {
+            this.viewPort.scrollToIndex(this.messages.length - 1);
         }
     }
 

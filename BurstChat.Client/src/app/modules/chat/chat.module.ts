@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCommentAlt } from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +20,7 @@ import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-messa
     imports: [
         CommonModule,
         FormsModule,
+        ScrollingModule,
         FontAwesomeModule,
         SharedModule,
         ChatRoutingModule,

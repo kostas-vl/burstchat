@@ -11,33 +11,33 @@
         <div>
 
             <div>
-    
+
                 <strong class="pr-5">{{messageCluster.user.name}}</strong>
-                
+
                 <small class="text-muted">{{messageCluster.datePosted | date:'LLL d yyyy, h:mm a'}}</small>
-    
+
             </div>
-    
+
             <div class="message" *ngFor="let message of messageCluster.messages">
-    
+
                 <div>
-    
+
                     {{message.content}}
-    
+
                     <small class="text-muted" *ngIf="message.edited">
-    
+
                         <i>(Edited)</i>
-    
+
                     </small>
-    
+
                 </div>
-    
+
                 <div *ngFor="let link of message.links">
-    
+
                     <a [href]="link.url" target="_blank">{{link.url}}</a>
-    
+
                 </div>
-    
+
             </div>
 
         </div>
@@ -45,3 +45,4 @@
     </div>
 
 </div>
+
