@@ -61,7 +61,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             .subscribe(payload => this.onMessageReceived(payload));
     }
 
-    @ViewChild(CdkVirtualScrollViewport, { static: false})
+    @ViewChild(CdkVirtualScrollViewport, { static: false })
     public viewPort?: CdkVirtualScrollViewport;
 
     /**
@@ -74,13 +74,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * Executes any necessary start up code for the component.
      * @memberof ChatMessagesComponent
      */
-    public ngOnInit(): void { }
+    public ngOnInit() { }
 
     /**
      * Executes any necessary code for the destruction of the component.
      * @memberof ChatMessagesComponent
      */
-    public ngOnDestroy(): void {
+    public ngOnDestroy() {
         this.unsubscribeAll();
     }
 
@@ -89,7 +89,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @private
      * @memberof ChatMessagesComponent
      */
-    private unsubscribeAll(): void {
+    private unsubscribeAll() {
         if (this.selfAddedToChatSubscription) {
             this.selfAddedToChatSubscription
                 .unsubscribe();
@@ -114,11 +114,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      */
     private scrollToBottom() {
         if (this.viewPort) {
-            const length = this.messages.reduce((total, elem) => {
-                total += elem.messages.length;
-                return total;
-            }, 0);
-            this.viewPort.scrollToIndex(length);
+            //const length = this.messages.reduce((total, elem) => total + elem.messages.length, 0);
+            this.viewPort.scrollTo({ bottom: 0 });
         }
     }
 
@@ -181,7 +178,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @private
      * @memberof ChatMessagesComponent
      */
-    private onSelfAddedToChat(): void {
+    private onSelfAddedToChat() {
         this.chatService.getAllMessages(this.internalOptions);
     }
 
@@ -191,7 +188,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @param {Payload<Message[]>} payload A payload with the messages received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessagesReceived(payload: Payload<Message[]>): void {
+    private onMessagesReceived(payload: Payload<Message[]>) {
         const messages = this.internalOptions.signalGroup === payload.signalGroup
             ? payload.content
             : [];
@@ -213,7 +210,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @param {Payload<Message>} payload The payload with the new message received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessageReceived(payload: Payload<Message>): void {
+    private onMessageReceived(payload: Payload<Message>) {
         const message = this.internalOptions.signalGroup === payload.signalGroup
             ? payload.content
             : null;
@@ -223,7 +220,16 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = false;
         }
 
-        this.scrollToBottom();
+        setTimeout(() => this.scrollToBottom(), 50);
+    }
+
+    /**
+     * Handles the new index that was set on the virtual scroll viewport.
+     * @private
+     * @memberof ChatMessagesComponent
+     */
+    public onScrolledIndexChanged(event: any) {
+
     }
 
 }

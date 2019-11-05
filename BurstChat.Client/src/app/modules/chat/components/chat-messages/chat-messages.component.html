@@ -1,6 +1,6 @@
 <div class="viewport">
 
-        <cdk-virtual-scroll-viewport class="h-100" itemSize="100">
+        <cdk-virtual-scroll-viewport class="h-100" itemSize="100" (scrolledIndexChange)="onScrolledIndexChanged($event)">
 
                 <div class="messages-container">
 
