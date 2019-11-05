@@ -30,6 +30,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     private internalOptions?: ChatConnectionOptions;
 
+    private updateScrollPosition = true;
+
     public topIndex = 0;
 
     public bottomIndex = 0;
@@ -62,7 +64,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     @ViewChild(CdkVirtualScrollViewport, { static: false })
-    public viewPort?: CdkVirtualScrollViewport;
+    public viewport?: CdkVirtualScrollViewport;
 
     /**
      * Creates an instance of ChatMessagesComponent.
@@ -113,9 +115,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private scrollToBottom() {
-        if (this.viewPort) {
-            //const length = this.messages.reduce((total, elem) => total + elem.messages.length, 0);
-            this.viewPort.scrollTo({ bottom: 0 });
+        if (this.viewport && this.updateScrollPosition) {
+            this.viewport.scrollTo({ bottom: 0 });
         }
     }
 
@@ -201,7 +202,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = true;
         }
 
-        setTimeout(() => this.scrollToBottom(), 100);
+        setTimeout(() => this.scrollToBottom(), 50);
     }
 
     /**
@@ -229,7 +230,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     public onScrolledIndexChanged(event: any) {
-
+        const bottomOffset = this.viewport.measureScrollOffset('bottom');
+        this.updateScrollPosition = bottomOffset <= 100;
     }
 
 }
