@@ -13,5 +13,10 @@
 }
 
 .user {
-    padding-left: 15px;
+    @extend .fs-16;
+    @extend .pl-10;
+    max-width: 190px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
