@@ -36,24 +36,42 @@ namespace BurstChat.Api.Services.DirectMessagingService
 
         /// <summary>
         ///   This method will fetch all information about direct messaging entry.
+        ///   If a target date is provided then 300 messages sent prior will be returned.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messages</param>
+        /// <param name="targetDate">The last date and time the messages where sent</param>
         /// <returns>An either monad</returns>
-        private Either<DirectMessaging, Error> GetWithMessages(long userId, long directMessagingId)
+        private Either<DirectMessaging, Error> GetWithMessages(long userId, long directMessagingId, DateTime? targetDate = null)
         {
             try
             {
                 var directMessaging = _burstChatContext
                     .DirectMessaging
-                    .Include(dm => dm.Messages)
-                        .ThenInclude(m => m.User)
                     .FirstOrDefault(dm => dm.Id == directMessagingId
                                           && (dm.FirstParticipantUserId == userId
                                               || dm.SecondParticipantUserId == userId));
 
                 if (directMessaging is { })
+                {
+                    directMessaging.Messages = _burstChatContext
+                        .DirectMessaging
+                        .Include(dm => dm.Messages)
+                        .ThenInclude(m => m.User)
+                        .Where(dm => dm.Id == directMessagingId)
+                        .Select(dm => dm.Messages
+                                        .Where(m => m.DatePosted <= (targetDate ?? DateTime.Now))
+                                        .OrderByDescending(m => m.DatePosted)
+                                        .Take(300))                        
+                        .ToList()
+                        .Aggregate(new List<Message>(), (current, next) =>
+                        {
+                            current.AddRange(next);
+                            return current;
+                        });
+                  
                     return new Success<DirectMessaging, Error>(directMessaging);
+                }
                 else
                     return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingNotFound());
             }
@@ -62,7 +80,6 @@ namespace BurstChat.Api.Services.DirectMessagingService
                 _logger.LogException(e);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
-
         }
 
         /// <summary>
@@ -181,7 +198,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
         {
             try
             {
-                return Get(userId, directMessagingId).Bind(directMessaging => 
+                return Get(userId, directMessagingId).Bind(directMessaging =>
                 {
                     _burstChatContext
                         .DirectMessaging
@@ -189,7 +206,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
 
                     return new Success<Unit, Error>(new Unit());
                 });
-                
+
             }
             catch (Exception e)
             {
@@ -200,12 +217,14 @@ namespace BurstChat.Api.Services.DirectMessagingService
 
         /// <summary>
         ///   This method will fetch all available messages of a direct messaging entry.
+        ///   If a target date is provided then 300 messages sent prior will be returned.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
+        /// <param name="targetDate">The date from which all prior messages will be fetched</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(long userId, long directMessagingId) =>
-            GetWithMessages(userId, directMessagingId)
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId, long directMessagingId, DateTime? targetDate) =>
+            GetWithMessages(userId, directMessagingId, targetDate)
                 .Bind(directMessaging => new Success<IEnumerable<Message>, Error>(directMessaging.Messages));
 
         /// <summary>
@@ -215,7 +234,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
         /// <param name="message">The message instance that will be used for the insertion</param>
         /// <returns>An either monad</returns>
-        public Either<Message, Error> InsertMessage(long userId, long directMessagingId, Message message) 
+        public Either<Message, Error> InsertMessage(long userId, long directMessagingId, Message message)
         {
             try
             {
@@ -232,7 +251,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
                             User = user,
                             Links = message.GetLinksFromContent(),
                             Content = message.RemoveLinksFromContent(),
-                            Edited = false,                        
+                            Edited = false,
                             DatePosted = message.DatePosted
                         };
 
@@ -247,7 +266,6 @@ namespace BurstChat.Api.Services.DirectMessagingService
                         return new Failure<Message, Error>(DirectMessagingErrors.DirectMessagesNotFound());
 
                 });
-                   
             }
             catch (Exception e)
             {

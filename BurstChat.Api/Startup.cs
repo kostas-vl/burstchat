@@ -21,11 +21,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.Extensions.Logging;
 
 namespace BurstChat.Api
 {
     public class Startup
     {
+        private readonly static ILoggerFactory BurstChatContextLogger = LoggerFactory.Create(builder => builder.AddConsole());
+
         public IConfiguration Configuration
         { 
             get;
@@ -85,17 +88,21 @@ namespace BurstChat.Api
 
                     switch (databaseOptions.Provider)
                     {
-                        case "sqlite":
-                            options.UseSqlite(databaseOptions.ConnectionString, dbContextOptions =>
-                            {
-                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                            });
+                        case "npgsql":
+                            options
+                                .UseLoggerFactory(BurstChatContextLogger)
+                                .UseNpgsql(databaseOptions.ConnectionString, dbContextOptions =>
+                                {
+                                    dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                                });
                             break;
                         case "sqlserver":
-                            options.UseSqlServer(databaseOptions.ConnectionString, dbContextOptions =>
-                            {
-                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                            });
+                            options
+                                .UseLoggerFactory(BurstChatContextLogger)
+                                .UseSqlServer(databaseOptions.ConnectionString, dbContextOptions =>
+                                {
+                                    dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                                });
                             break;
                         default:
                             break;

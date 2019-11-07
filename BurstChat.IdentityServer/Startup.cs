@@ -52,13 +52,12 @@ namespace BurstChat.IdentityServer
             {
                 switch (databaseOptions.Provider)
                 {
-                    case "sqlite":
-                        options.UseSqlite(databaseOptions.ConnectionString, dbContextOptions =>
+                    case "npgsql":
+                        options.UseNpgsql(databaseOptions.ConnectionString, dbContextOptions =>
                         {
                             dbContextOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly);
                         });
                         break;
-
                     case "sqlserver":
                         options.UseSqlServer(databaseOptions.ConnectionString, dbContextOptions =>
                         {
