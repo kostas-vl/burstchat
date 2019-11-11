@@ -139,14 +139,22 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <returns>An either monad</returns>
-        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, long directMessagingId)
+        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, long directMessagingId, DateTime? targetDate = null)
         {
             try
             {
                 var method = HttpMethod.Get;
                 var url = $"/api/direct/{directMessagingId}/messages";
+                var content = targetDate switch
+                {
+                    null => null,
+                    _ => new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("targetDate", targetDate.Value.ToString()),
+                    })
+                };
 
-                return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
+                return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url, content);
             }
             catch (Exception e)
             {

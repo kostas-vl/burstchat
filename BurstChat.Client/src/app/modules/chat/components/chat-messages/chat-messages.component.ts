@@ -30,7 +30,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     private internalOptions?: ChatConnectionOptions;
 
-    private updateScrollPosition = true;
+    private scrollBottomOffset: number | null = null;
+
+    private scrollTopOffset: number | null = null;
 
     public topIndex = 0;
 
@@ -115,7 +117,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private scrollToBottom() {
-        if (this.viewport && this.updateScrollPosition) {
+        const canScrollToBottom = this.viewport
+            && this.scrollBottomOffset
+            && this.scrollBottomOffset <= 100;
+
+        if (canScrollToBottom) {
             this.viewport.scrollTo({ bottom: 0 });
         }
     }
@@ -132,9 +138,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         const clusterProperDate: Date = clusterDate instanceof Date
             ? clusterDate
             : new Date(clusterDate);
+
         const messageProperDate: Date = messageDate instanceof Date
             ? messageDate
             : new Date(messageDate);
+
         const isSameDay =
             clusterProperDate.getFullYear() === messageProperDate.getFullYear()
             && clusterProperDate.getMonth() === messageProperDate.getMonth()
@@ -230,8 +238,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     public onScrolledIndexChanged(event: any) {
-        const bottomOffset = this.viewport.measureScrollOffset('bottom');
-        this.updateScrollPosition = bottomOffset <= 100;
+        this.scrollTopOffset = this.viewport.measureScrollOffset('top');
+        this.scrollBottomOffset = this.viewport.measureScrollOffset('bottom');
     }
 
 }

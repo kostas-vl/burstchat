@@ -32,7 +32,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="secondParticipantId">The user id of the seconad participant</param>
         /// <returns>An either monad</returns>
         Task<Either<DirectMessaging, Error>> GetAsync(HttpContext context, long firstParticipantId, long secondParticipantId);
-        
+
         /// <summary>
         ///   Creates a new direct messaging entry between two users based on the provided user ids.
         /// </summary>
@@ -55,7 +55,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <returns>An either monad</returns>
-        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, long directMessagingId);
+        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, long directMessagingId, DateTime? targetDate = null);
 
         /// <summary>
         ///   Inserts a new message on a direct messaging entry.  

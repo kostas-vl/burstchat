@@ -85,10 +85,10 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging chat</param>
         /// <returns>A Task instance</returns>
-        public async Task GetAllDirectMessages(long directMessagingId)
+        public async Task GetAllDirectMessages(long directMessagingId, DateTime? targetDate)
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.GetMessagesAsync(httpContext, directMessagingId);
+            var monad = await _directMessagingService.GetMessagesAsync(httpContext, directMessagingId, targetDate);
             var signalGroup = DirectMessagingName(directMessagingId);
 
             if (monad is Success<IEnumerable<Message>, Error> success)

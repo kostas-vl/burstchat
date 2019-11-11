@@ -61,7 +61,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
                         .Where(dm => dm.Id == directMessagingId)
                         .Select(dm => dm.Messages
                                         .Where(m => m.DatePosted <= (targetDate ?? DateTime.Now))
-                                        .OrderByDescending(m => m.DatePosted)
+                                        .OrderBy(m => m.DatePosted)
                                         .Take(300))                        
                         .ToList()
                         .Aggregate(new List<Message>(), (current, next) =>
