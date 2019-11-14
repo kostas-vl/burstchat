@@ -12,6 +12,7 @@ using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Web;
 
 namespace BurstChat.Signal.Services.DirectMessagingService
 {
@@ -138,23 +139,24 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
+        /// <param name="lastMessageId">The message id from which all the previous messages sent will be fetched</param>
         /// <returns>An either monad</returns>
-        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, long directMessagingId, DateTime? targetDate = null)
+        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, 
+                                                                                long directMessagingId, 
+                                                                                long? lastMessageId = null)
         {
             try
             {
                 var method = HttpMethod.Get;
                 var url = $"/api/direct/{directMessagingId}/messages";
-                var content = targetDate switch
+                if (lastMessageId is { })
                 {
-                    null => null,
-                    _ => new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("targetDate", targetDate.Value.ToString()),
-                    })
-                };
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+                    query[nameof(lastMessageId)] = lastMessageId.Value.ToString();
+                    url += $"/?{query.ToString()}";
+                }
 
-                return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url, content);
+                return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
             }
             catch (Exception e)
             {

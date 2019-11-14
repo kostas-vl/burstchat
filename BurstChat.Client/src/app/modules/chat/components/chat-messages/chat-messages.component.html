@@ -1,21 +1,21 @@
 <div class="viewport">
 
-        <cdk-virtual-scroll-viewport class="h-100" itemSize="100" (scrolledIndexChange)="onScrolledIndexChanged($event)">
+    <cdk-virtual-scroll-viewport class="h-100" itemSize="100" (scrolledIndexChange)="onScrolledIndexChanged($event)">
 
-                <div class="messages-container">
+        <div class="messages-container">
 
-                    <div *cdkVirtualFor="let cluster of messages">
+            <div *cdkVirtualFor="let cluster of messagesClusters">
 
-                        <app-chat-message [messageCluster]="cluster"></app-chat-message>
+                <app-chat-message [messageCluster]="cluster"></app-chat-message>
 
-                        <br>
+                <br>
 
-                    </div>
+            </div>
 
-                    <span class="text-muted" *ngIf="chatIsEmpty">No messages posted yet!</span>
+            <span class="text-muted" *ngIf="chatIsEmpty">No messages posted yet!</span>
 
-                </div>
+        </div>
 
-        </cdk-virtual-scroll-viewport>
+    </cdk-virtual-scroll-viewport>
 
 </div>

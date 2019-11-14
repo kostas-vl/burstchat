@@ -114,19 +114,19 @@ namespace BurstChat.Api.Controllers
 
         /// <summary>
         ///   Fetches all messages of a direct messaging entry based on the provided id.
-        ///   When a target date is also provided then it will return 300 messages prior to that message.
+        ///   When a message id is also provided then it will return 300 messages prior to that message.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
-        /// <param name="targetDate">The date from which prior messages will be fetched</param>
+        /// <param name="lastMessageId">The message id from which prior messages will be fetched</param>
         /// <returns>An IActionResult entry</param>
         [HttpGet("{directMessagingId:long}/messages")]
         [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult GetMessages(long directMessagingId, [FromQuery] DateTime? targetDate)
+        public IActionResult GetMessages(long directMessagingId, [FromQuery] long? lastMessageId)
         {
             var monad = HttpContext
                 .GetUserId()
-                .Bind(userId => _directMessagingService.GetMessages(userId, directMessagingId, targetDate));
+                .Bind(userId => _directMessagingService.GetMessages(userId, directMessagingId, lastMessageId));
 
             return this.UnwrapMonad(monad);
         }

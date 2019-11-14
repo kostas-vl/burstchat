@@ -84,11 +84,12 @@ namespace BurstChat.Signal.Hubs.Chat
         ///   Informs the caller of all messages posted to a direct messaging chat.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging chat</param>
+        /// <param name="lastMessageId">The message id from which all previous messages will be fetched</param>
         /// <returns>A Task instance</returns>
-        public async Task GetAllDirectMessages(long directMessagingId, DateTime? targetDate)
+        public async Task GetAllDirectMessages(long directMessagingId, long? lastMessageId)
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.GetMessagesAsync(httpContext, directMessagingId, targetDate);
+            var monad = await _directMessagingService.GetMessagesAsync(httpContext, directMessagingId, lastMessageId);
             var signalGroup = DirectMessagingName(directMessagingId);
 
             if (monad is Success<IEnumerable<Message>, Error> success)

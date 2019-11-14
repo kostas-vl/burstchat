@@ -328,20 +328,24 @@ export class ChatService {
      * Signals for all messages of a chat to be received.
      * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
      */
-    public getAllMessages(options: ChatConnectionOptions) {
+    public getAllMessages(options: ChatConnectionOptions, lastMessageId?: number) {
         if (this.connection && options) {
             let methodName = '';
+            let args = [];
 
             if (options instanceof PrivateGroupConnectionOptions) {
                 methodName = 'getAllPrivateGroupMessages';
+                args = [options.id];
             } else if (options instanceof ChannelConnectionOptions) {
                 methodName = 'getAllChannelMessages';
+                args = [options.id];
             } else {
                 methodName = 'getAllDirectMessages';
+                args = [options.id, lastMessageId];
             }
 
             this.connection
-                .invoke(methodName, options.id)
+                .invoke(methodName, ...args)
                 .catch(error => console.log(error));
         }
     }

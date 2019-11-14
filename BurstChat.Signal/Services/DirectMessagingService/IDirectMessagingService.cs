@@ -54,8 +54,11 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
+        /// <param name="lastMessageId">The message id from which all the previous messages sent will be fetched</param>
         /// <returns>An either monad</returns>
-        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, long directMessagingId, DateTime? targetDate = null);
+        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, 
+                                                                   long directMessagingId, 
+                                                                   long? lastMessageId = null);
 
         /// <summary>
         ///   Inserts a new message on a direct messaging entry.  
