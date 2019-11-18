@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
 /**
@@ -14,7 +14,10 @@ export class AuthenticationGuardService implements CanActivate {
      * Creates a new instance of AuthenticationGuardService
      * @memberof AuthenticationGuardService
      */
-    constructor(private storageService: StorageService) { }
+    constructor(
+        private router: Router,
+        private storageService: StorageService
+    ) { }
 
     /**
      * This method returns a boolean that reflects whether a route can be accessed based on if there is
@@ -28,7 +31,13 @@ export class AuthenticationGuardService implements CanActivate {
         const tokenInfo = this
             .storageService
             .tokenInfo;
-        return tokenInfo !== null && tokenInfo.accessToken !== null;
+        const isAllowed = tokenInfo !== null && tokenInfo.accessToken !== null;
+
+        if (!isAllowed) {
+            this.router.navigateByUrl('/session/login');
+        }
+
+        return isAllowed;
     }
 
 }
