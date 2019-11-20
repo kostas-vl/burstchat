@@ -18,6 +18,8 @@ export class EditServerComponent implements OnInit, OnDestroy {
 
     private serversSub?: Subscription;
 
+    private serverInfoSub?: Subscription;
+
     public server?: Server;
 
     public newUserId = '';
@@ -44,6 +46,15 @@ export class EditServerComponent implements OnInit, OnDestroy {
                     this.findServer(servers);
                 }
             });
+
+        this.serverInfoSub = this
+            .serversService
+            .serverInfo
+            .subscribe(server => {
+                if (server && server.id === this.server.id) {
+                    this.server = server;
+                }
+            });
     }
 
     /**
@@ -57,6 +68,12 @@ export class EditServerComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Fitlers the provided server list and finds the target server based on the url parameter found.
+     * @private
+     * @param {Server[]} servers The server list to be filtered.
+     * @memberof EditServerComponent
+     */
     private findServer(servers: Server[]) {
         this.activatedRoute
             .params

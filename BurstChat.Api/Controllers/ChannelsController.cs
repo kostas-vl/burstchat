@@ -66,7 +66,7 @@ namespace BurstChat.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Post(int serverId, [FromBody] Channel channel)
+        public IActionResult Post([FromBody] Channel channel, [FromQuery] int serverId)
         {
             var monad = HttpContext
                 .GetUserId()

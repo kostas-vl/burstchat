@@ -73,7 +73,7 @@ namespace BurstChat.Signal.Services.ChannelsService
                 var url = "api/channels";
                 var query = HttpUtility.ParseQueryString(string.Empty);
                 query["serverId"] = serverId.ToString();
-                url += $"?/{query}";
+                url += $"/?{query}";
                 var jsonMessage = JsonConvert.SerializeObject(channel);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 

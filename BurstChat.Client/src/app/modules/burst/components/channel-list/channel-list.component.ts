@@ -3,7 +3,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays the list of channel that exist in a BurstChat
@@ -23,12 +22,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
 
     private serverInfoSub?: Subscription;
 
-    private channelCreatedSub?: Subscription;
-
-    private channelUpdatedSub?: Subscription;
-
-    private channelDeletedSub?: Subscription;
-
     public activeChannelId?: number;
 
     public server?: Server;
@@ -41,7 +34,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private serversService: ServersService,
-        private chatService: ChatService
     ) { }
 
     /**
@@ -58,11 +50,9 @@ export class ChannelListComponent implements OnInit, OnDestroy {
                     .url
                     .includes('chat/channel');
                 const channelId: number | null = +params.get('id');
-                if (isChatUrl && channelId !== null) {
-                    this.activeChannelId = channelId;
-                } else {
-                    this.activeChannelId = undefined;
-                }
+                this.activeChannelId = isChatUrl && channelId !== null
+                    ? channelId
+                    : undefined;
             });
 
         this.activeServerSub = this
@@ -85,41 +75,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
                     this.server = server;
                 }
             });
-
-        this.channelCreatedSub = this
-            .chatService
-            .channelCreated
-            .subscribe(data => {
-                const serverId = data[0];
-                const channel = data[1];
-                if (this.server.id === serverId) {
-                    this.server.channels.push(channel);
-                }
-            });
-
-        this.channelUpdatedSub = this
-            .chatService
-            .channelUpdated
-            .subscribe(channel => {
-                if (channel) {
-                    const index = this.server.channels.findIndex(c => c.id === channel.id);
-                    if (index > -1) {
-                        this.server.channels[index] = channel;
-                    }
-                }
-            });
-
-        this.channelDeletedSub = this
-            .chatService
-            .channelDeleted
-            .subscribe(channelId => {
-                if (channelId) {
-                    const index = this.server.channels.findIndex(c => c.id === channelId);
-                    if (index > -1) {
-                        this.server.channels.splice(index, 1);
-                    }
-                }
-            });
     }
 
     /**
@@ -137,18 +92,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
 
         if (this.serverInfoSub) {
             this.serverInfoSub.unsubscribe();
-        }
-
-        if (this.channelCreatedSub) {
-            this.channelCreatedSub.unsubscribe();
-        }
-
-        if (this.channelUpdatedSub) {
-            this.channelUpdatedSub.unsubscribe();
-        }
-
-        if (this.channelDeletedSub) {
-            this.channelDeletedSub.unsubscribe();
         }
     }
 

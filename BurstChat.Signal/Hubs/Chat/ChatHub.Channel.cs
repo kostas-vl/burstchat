@@ -34,7 +34,7 @@ namespace BurstChat.Signal.Hubs.Chat
             {
                 case Success<Channel, Error> success:
                     var signalGroup = ServerSignalName(serverId);
-                    await Clients.Group(signalGroup).ChannelCreated((serverId, success.Value));
+                    await Clients.Group(signalGroup).ChannelCreated(new dynamic[] { serverId, success.Value });
                     break;
 
                 case Failure<Channel, Error> failure:

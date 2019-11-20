@@ -62,7 +62,6 @@ export class ChatService {
 
     public onReconnected = this.onReconnectedSource.asObservable();
 
-
     public addedServer = this.addedServerSource.asObservable();
 
     public channelCreated = this.channelCreatedSource.asObservable();

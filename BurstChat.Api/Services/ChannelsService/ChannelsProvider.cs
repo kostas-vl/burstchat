@@ -93,17 +93,17 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <param name="serverId">The id of the server that the channel will be associated with</param>
         /// <param name="channel">The channel that will be created<param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(long userId, int serverId, Channel channel)
+        public Either<Channel, Error> Insert(long userId, int serverId, Channel channel)
         {
             try
             {
                 return _serversService
                     .Get(userId, serverId)
-                    .Bind<Unit>(server =>
+                    .Bind<Channel>(server =>
                     {
                         var userMonad = _userService.Get(userId);
                         if (userMonad is Failure<User, Error>)
-                            return new Failure<Unit, Error>(UserErrors.UserNotFound());
+                            return new Failure<Channel, Error>(UserErrors.UserNotFound());
 
                         var user = (userMonad as Success<User, Error>)!.Value;
 
@@ -120,13 +120,13 @@ namespace BurstChat.Api.Services.ChannelsService
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<Channel, Error>(channelEntry);
                     });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
 
@@ -137,7 +137,7 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <param name="channel">The channel instance to be updated</param>
         /// <param name="channelDetails">The channel details to be updated</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Update(long userId, Channel channel)
+        public Either<Channel, Error> Update(long userId, Channel channel)
         {
             try
             {
@@ -152,16 +152,16 @@ namespace BurstChat.Api.Services.ChannelsService
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<Channel, Error>(channelEntry);
                     });
                 }
                 else
-                    return new Failure<Unit, Error>(ChannelErrors.ChannelNotFound());
+                    return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
 

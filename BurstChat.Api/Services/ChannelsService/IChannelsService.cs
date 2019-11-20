@@ -27,7 +27,7 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <param name="serverId">The id of the server that the channel will be associated with</param>
         /// <param name="channel">The channel that will be created<param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Insert(long userId, int serverId, Channel channel);
+        Either<Channel, Error> Insert(long userId, int serverId, Channel channel);
 
         /// <summary>
         ///   This method will update the information of a channel based on the provided parameters.
@@ -35,7 +35,7 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channel">The channel instance to be updated</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Update(long userId, Channel channel);
+        Either<Channel, Error> Update(long userId, Channel channel);
 
         /// <summary>
         ///   This method will remove a channel from the database based on the provided parameters.

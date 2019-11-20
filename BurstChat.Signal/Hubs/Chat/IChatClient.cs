@@ -140,7 +140,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="data">A tuple of the server id and the new channel</param>
         /// <returns>A task instance</returns>
-        Task ChannelCreated((int, Channel) data);
+        Task ChannelCreated(dynamic[] data);
 
         /// <summary>
         /// The caller is informed that the creation of a new channel was not successful.
