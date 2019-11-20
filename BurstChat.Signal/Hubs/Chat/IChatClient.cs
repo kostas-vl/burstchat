@@ -16,124 +16,166 @@ namespace BurstChat.Signal.Hubs.Chat
     public interface IChatClient
     {
         /// <summary>
-        ///     Informs the caller that the new server that was requested has been created successfully.
+        /// Informs the caller that the new server that was requested has been created successfully.
         /// </summary>
         /// <param name="server">The server instance that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task AddedServer(Server server);
 
         /// <summary>
-        ///     informs the caller that the new server that was requested could not be created.
+        /// informs the caller that the new server that was requested could not be created.
         /// </summary>
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task AddedServer(Error error);
 
         /// <summary>
-        ///     Informs the caller of all the invitations sent to him.
+        /// Informs the caller of all the invitations sent to him.
         /// </summary>
         /// <param name="invitations">The server invitations that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task Invitations(IEnumerable<Invitation> invitations);
 
         /// <summary>
-        ///     The called is informed about an error occured while trying to fetch all invitations
-        ///     sent to him.
+        /// The called is informed about an error occured while trying to fetch all invitations
+        /// sent to him.
         /// </summary>
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task Invitations(Error error);
 
         /// <summary>
-        ///     Informs a user about a new invitation that was sent to him.
+        /// Informs a user about a new invitation that was sent to him.
         /// </summary>
         /// <param name="invitation">The server invitation that will be delivered to the user</param>
         /// <returns>A task instance</returns>
         Task NewInvitation(Invitation invitation);
 
         /// <summary>
-        ///     Informs the caller about an error that occured while trying to send a new invitation.
+        /// Informs the caller about an error that occured while trying to send a new invitation.
         /// </summary>
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task NewInvitation(Error error);
 
         /// <summary>
-        ///     Informs all users of a server that a new invitation was accepted by a user.
+        /// Informs all users of a server that a new invitation was accepted by a user.
         /// </summary>
         /// <param name="invitation">The invitation that will be delivered to the users</param>
         /// <returns>A task instance</returns>
         Task UpdatedInvitation(Invitation invitation);
 
         /// <summary>
-        ///     Informs the caller about an error that occured while trying to modify an invitation.
+        /// Informs the caller about an error that occured while trying to modify an invitation.
         /// </summary>
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task UpdatedInvitation(Error error);
 
         /// <summary>
-        ///   Informs the caller that his connection id was added to a signal group.
+        /// Informs the caller that his connection id was added to a signal group.
         /// </summary>
         Task SelfAddedToPrivateGroup();
 
         /// <summary>
-        ///   The caller is informed about all messages posted on a private group.
+        /// The caller is informed about all messages posted on a private group.
         /// </summary>
         /// <param name="messages">The messages of the group that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task AllPrivateGroupMessages(Payload<IEnumerable<Message>> messages);
 
         /// <summary>
-        ///   The calles is informed about an error occured while trying to fetch all messages
-        ///   posted on a group.
+        /// The calles is informed about an error occured while trying to fetch all messages
+        /// posted on a group.
         /// </summary>
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task AllPrivateGroupMessages(Payload<Error> error);
 
         /// <summary>
-        ///   All users are informed for a new message based on the provided parameter.
+        /// All users are informed for a new message based on the provided parameter.
         /// </summary>
         /// <param name="message">The message to be sent to connected users</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageReceived(Payload<Message> message);
 
         /// <summary>
-        ///   The caller is informed that the message he sent wasn't posted and received by the other members
-        ///   of the group.
+        /// The caller is informed that the message he sent wasn't posted and received by the other members
+        /// of the group.
         /// </summary>
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageReceived(Payload<Error> error);
 
         /// <summary>
-        ///   All users are informed for an edit to an existing message of a group.
+        /// All users are informed for an edit to an existing message of a group.
         /// </summary>
         /// <param name="message">The message that was edited and will be sent to connected users</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageEdited(Payload<Message> message);
 
         /// <summary>
-        ///   The caller is informed that an edit to an existing message could not be sent to a group.
+        /// The caller is informed that an edit to an existing message could not be sent to a group.
         /// </summary>
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageEdited(Payload<Error> error);
 
         /// <summary>
-        ///   All users are informed that an existing message of a group was deleted.
+        /// All users are informed that an existing message of a group was deleted.
         /// </summary>
         /// <param name="message">The message that was deleted and will be sent to connected users</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageDeleted(Payload<Message> message);
 
         /// <summary>
-        ///   The caller is informed that a delete to an existing message could not be sent to a group.
+        /// The caller is informed that a delete to an existing message could not be sent to a group.
         /// </summary>
         /// <param name="error">The error to be sent to the caller</param>
         /// <returns>A task instance</returns>
         Task PrivateGroupMessageDeleted(Payload<Error> error);
+
+        /// <summary>
+        /// The users of a server are informed of a new channel that was created.
+        /// </summary>
+        /// <param name="data">A tuple of the server id and the new channel</param>
+        /// <returns>A task instance</returns>
+        Task ChannelCreated((int, Channel) data);
+
+        /// <summary>
+        /// The caller is informed that the creation of a new channel was not successful.
+        /// </summary>
+        /// <param name="error">The error to be sent to the caller</param>
+        /// <returns>A task instance</returns>
+        Task ChannelCreated(Error error);
+
+        /// <summary>
+        /// The users of a server are informed of a channel whose info changed.
+        /// </summary>
+        /// <param name="channel">The channel instance that will be delivered to clients.</param>
+        /// <returns>A task instance</returns>
+        Task ChannelUpdated(Channel channel);
+
+        /// <summary>
+        /// The caller is informed that the update of a channel was not completed successfully.
+        /// </summary>
+        /// <param name="error">The error to be sent to the caller</param>
+        /// <returns>A task instance</returns>
+        Task ChannelUpdated(Error error);
+
+        /// <summary>
+        /// The users of a server are informed of a channel that was removed.
+        /// </summary>
+        /// <param name="channelId">The id of the channel that was removed</param>
+        /// <returns>A task instance</returns>
+        Task ChannelDeleted(int channelId);
+
+        /// <summary>
+        /// The caller is informed that a channel could not be deleted.
+        /// </summary>
+        /// <param name="error">The error to be sent to the caller</param>
+        /// <returns>A task instance</returns>
+        Task ChannelDeleted(Error error);
 
         /// <summary>
         ///   Informs the caller that his connection id was added to a signal group.

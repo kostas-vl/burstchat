@@ -151,21 +151,15 @@ namespace BurstChat.Api
                 application.UseHsts();
             }
 
-            application
-                .UseStaticFiles()
-                // .UseSwagger()
-                // .UseSwaggerUI(config =>
-                // {
-                //     config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat V1");
-                // })
-                .UseAuthentication()
-                .UseAuthorization()
-                .UseRouting()
-                .UseCors("CorsPolicy")
-                .UseEndpoints(endpoints => 
-                {
-                    endpoints.MapControllers();
-                });
+            application.UseStaticFiles();
+            application.UseRouting();
+            application.UseCors("CorsPolicy");
+            application.UseAuthentication();
+            application.UseAuthorization();
+            application.UseEndpoints(endpoints => 
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

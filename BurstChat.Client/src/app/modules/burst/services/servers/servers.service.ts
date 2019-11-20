@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 
@@ -13,7 +13,15 @@ export class ServersService {
 
     private activeServerSource = new BehaviorSubject<Server | null>(null);
 
+    private serverInfoSource = new Subject<Server>();
+
+    private serverCacheSource = new BehaviorSubject<Server[]>([]);
+
     public activeServer = this.activeServerSource.asObservable();
+
+    public serverInfo = this.serverInfoSource.asObservable();
+
+    public serverCache = this.serverCacheSource.asObservable();
 
     /**
      * Creates a new instance of ServersService.
@@ -33,15 +41,13 @@ export class ServersService {
     }
 
     /**
-     * Requests to the BurstChat API all information about a server based on the provided id and returns
-     * an observable that will be invoked when the requests completes.
+     * Requests to the BurstChat API all information about a server based on the provided id.
      * @memberof ServersService
-     * @returns {Observable<Server>} The observable to be invoked.
      */
-    public get(serverId: number): Observable<Server> {
-        return this
-            .httpClient
-            .get<Server>(`/api/servers/${serverId}`);
+    public get(serverId: number) {
+        this.httpClient
+            .get<Server>(`/api/servers/${serverId}`)
+            .subscribe(server => this.serverInfoSource.next(server));
     }
 
     /**
@@ -93,6 +99,15 @@ export class ServersService {
         return this
             .httpClient
             .get<User[]>(`/api/servers/${serverId}/subscribedUsers`);
+    }
+
+    /**
+     * Updates the list of servers available to the user.
+     * @param {Server[]} servers The list of server to replace the current cache.
+     * @memberof ServersService
+     */
+    public updateCache(servers: Server[]) {
+        this.serverCacheSource.next(servers);
     }
 
 }

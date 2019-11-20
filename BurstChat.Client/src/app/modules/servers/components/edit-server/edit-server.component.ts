@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
@@ -15,7 +16,7 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
 })
 export class EditServerComponent implements OnInit, OnDestroy {
 
-    private activeServerSubscription?: Subscription;
+    private serversSub?: Subscription;
 
     public server?: Server;
 
@@ -25,19 +26,22 @@ export class EditServerComponent implements OnInit, OnDestroy {
      * Creates a new instance of EditServerComponent.
      * @memberof EditServerComponent
      */
-    constructor(private serversService: ServersService) { }
+    constructor(
+        private activatedRoute: ActivatedRoute,
+        private serversService: ServersService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof EditServerComponent
      */
     public ngOnInit() {
-        this.activeServerSubscription = this
+        this.serversSub = this
             .serversService
-            .activeServer
-            .subscribe(server => {
-                if (server) {
-                    this.server = server;
+            .serverCache
+            .subscribe(servers => {
+                if (servers) {
+                    this.findServer(servers);
                 }
             });
     }
@@ -47,10 +51,22 @@ export class EditServerComponent implements OnInit, OnDestroy {
      * @memberof EditServerComponent
      */
     public ngOnDestroy() {
-        if (this.activeServerSubscription) {
-            this.activeServerSubscription
+        if (this.serversSub) {
+            this.serversSub
                 .unsubscribe();
         }
+    }
+
+    private findServer(servers: Server[]) {
+        this.activatedRoute
+            .params
+            .subscribe(params => {
+                const id = +params.id;
+                const server = servers.find(s => s.id === id);
+                if (server) {
+                    this.server = server;
+                }
+            });
     }
 
 }

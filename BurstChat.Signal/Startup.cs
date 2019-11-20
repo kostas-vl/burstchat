@@ -57,7 +57,7 @@ namespace BurstChat.Signal
             services
                 .AddHttpClient<BurstChatApiInteropService>();
 
-          services
+            services
                 .AddAuthorization();
 
             services
@@ -98,15 +98,14 @@ namespace BurstChat.Signal
 
             application.UseAuthentication();
 
-            application
-                .UseAuthentication()
-                .UseAuthorization()
-                .UseRouting()
-                .UseCors("CorsPolicy")
-                .UseEndpoints(endpoints =>
-                {
-                    endpoints.MapHub<ChatHub>("/chat");
-                });
+            application.UseRouting();
+            application.UseCors("CorsPolicy");
+            application.UseAuthentication();
+            application.UseAuthorization();
+            application.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatHub>("/chat");
+            });
         }
     }
 }

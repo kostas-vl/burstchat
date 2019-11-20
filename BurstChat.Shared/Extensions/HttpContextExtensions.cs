@@ -49,9 +49,18 @@ namespace BurstChat.Shared.Extensions
         {
             try
             {
-                return context
+                var authorizationFound = context
                     .Request
-                    .Query["access_token"];                    
+                    .Headers
+                    .TryGetValue("Authorization", out var bearerValue);
+
+                if (authorizationFound)
+                {
+                    var plainValue = bearerValue.ToString();
+                    return plainValue.Split("Bearer ").Last();
+                }
+                    
+                return string.Empty;
             }
             catch
             {

@@ -153,7 +153,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
                 {
                     var query = HttpUtility.ParseQueryString(string.Empty);
                     query[nameof(lastMessageId)] = lastMessageId.Value.ToString();
-                    url += $"/?{query.ToString()}";
+                    url += $"/?{query}";
                 }
 
                 return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);

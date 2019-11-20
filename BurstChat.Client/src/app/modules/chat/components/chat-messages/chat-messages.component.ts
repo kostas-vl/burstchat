@@ -297,7 +297,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
         if (messages.length > 0) {
             this.messagesClusters = this.addMessagesToClusters([...this.messagesClusters], messages);
-        } else if (!messages && !this.messagesClusters) {
+        } else if (messages.length === 0 && this.messagesClusters.length === 0) {
             this.chatIsEmpty = true;
         }
 

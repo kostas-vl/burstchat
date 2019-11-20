@@ -10,7 +10,7 @@ const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'edit',
+        path: 'edit/:id',
         component: EditServerComponent,
         pathMatch: 'full'
     }
