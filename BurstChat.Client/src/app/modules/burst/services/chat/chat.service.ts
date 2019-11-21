@@ -312,13 +312,13 @@ export class ChatService {
     /**
      * Sends a new invitation to a user based on the provided invitation instance.
      * @param {number} serverId The id of the server the invitation will be sent from.
-     * @param {number} userId The id of the user the invitation will be sent to.
+     * @param {string} username The name of the user the invitation will be sent to.
      * @memberof ChatService
      */
-    public sendInvitation(serverId: number, userId: number) {
+    public sendInvitation(serverId: number, username: string) {
         if (this.connection) {
             this.connection
-                .invoke('sendInvitation', serverId, userId)
+                .invoke('sendInvitation', serverId, username)
                 .catch(error => console.log(error));
         }
     }

@@ -229,9 +229,9 @@ namespace BurstChat.Api.Services.ServersService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server</param>
-        /// <param name="targetUserId">The id of the target user</param>
+        /// <param name="username">The name of the target user</param>
         /// <returns>An either monad</returns>
-        public Either<Invitation, Error> InsertInvitation(long userId, int serverId, long targetUserId)
+        public Either<Invitation, Error> InsertInvitation(long userId, int serverId, string username)
         {
             try
             {
@@ -241,13 +241,25 @@ namespace BurstChat.Api.Services.ServersService
                         .Subscriptions
                         .Any(s => s.UserId == userId);
 
+                    var targetUser = _burstChatContext
+                        .Users
+                        .FirstOrDefault(u => u.Name == username);
+
+                    var targetAlreadyMember = server
+                        .Subscriptions
+                        .Any(u => targetUser is { }
+                                  && u.UserId == targetUser.Id);
+
                     if (!userExists)
+                        return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
+
+                    if (targetAlreadyMember)
                         return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
 
                     var invitation = new Invitation
                     {
                         ServerId = serverId,
-                        UserId = targetUserId,
+                        UserId = targetUser.Id,
                         Accepted = false,
                         Declined = false,
                         DateUpdated = null,

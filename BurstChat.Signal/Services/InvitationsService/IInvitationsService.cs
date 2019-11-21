@@ -25,9 +25,9 @@ namespace BurstChat.Signal.Services.InvitationsService
         /// </summary>
         /// <param name="context">The current http context</param>
         /// <param name="server">The id of the server the invitation is from</param>
-        /// <param name="userId">The id of the user the invitation will be sent</param>
+        /// <param name="username">The name of the user the invitation will be sent</param>
         /// <returns>A task of an either monad</returns>
-        Task<Either<Invitation, Error>> InsertAsync(HttpContext context, int serverId, long userId);
+        Task<Either<Invitation, Error>> InsertAsync(HttpContext context, int serverId, string username);
 
         /// <summary>
         ///     Updates a sent invitations based on the provided parameters.

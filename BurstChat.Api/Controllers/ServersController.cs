@@ -147,11 +147,11 @@ namespace BurstChat.Api.Controllers
         [HttpPost("{serverId:int}/invitation")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult InsertInvitation(int serverId, [FromBody] long targetUserId)
+        public IActionResult InsertInvitation(int serverId, [FromBody] string username)
         {
             var monad = HttpContext
                 .GetUserId()
-                .Bind(userId => _serversService.InsertInvitation(userId, serverId, targetUserId));
+                .Bind(userId => _serversService.InsertInvitation(userId, serverId, username));
 
             return this.UnwrapMonad(monad);
         }

@@ -79,7 +79,7 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // this.chatService.sendInvitation(this.server.id, 0);
+        this.chatService.sendInvitation(this.server.id, this.newUserName);
         this.newUserName = '';
     }
 

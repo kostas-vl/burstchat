@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using BurstChat.Shared.Errors;
 using BurstChat.Shared.Extensions;
@@ -10,7 +12,6 @@ using BurstChat.Shared.Schema.Servers;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace BurstChat.Signal.Services.InvitationsService
 {
@@ -60,15 +61,15 @@ namespace BurstChat.Signal.Services.InvitationsService
         /// </summary>
         /// <param name="context">The current http context</param>
         /// <param name="server">The id of the server the invitation is from</param>
-        /// <param name="userId">The id of the user the invitation will be sent</param>
+        /// <param name="username">The name of the user the invitation will be sent</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<Invitation, Error>> InsertAsync(HttpContext context, int serverId, long userId)
+        public async Task<Either<Invitation, Error>> InsertAsync(HttpContext context, int serverId, string username)
         {
             try
             {
                 var method = HttpMethod.Post;
                 var url = $"api/servers/{serverId}/invitation";
-                var content = new StringContent(userId.ToString(), Encoding.UTF8, "application/json");
+                var content = new StringContent($"\"{username}\"", Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Invitation>(context, method, url, content);
             }
@@ -91,7 +92,7 @@ namespace BurstChat.Signal.Services.InvitationsService
             {
                 var method = HttpMethod.Put;
                 var url = $"/api/user/invitation";
-                var jsonMessage = JsonConvert.SerializeObject(invitation);
+                var jsonMessage = JsonSerializer.Serialize(invitation);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Invitation>(context, method, url, content);

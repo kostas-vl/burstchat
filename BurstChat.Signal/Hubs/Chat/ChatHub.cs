@@ -73,13 +73,13 @@ namespace BurstChat.Signal.Hubs.Chat
         ///     Sends to a user a new server invitation.
         /// </summary>
         /// <param name="server">The id of the server the invitation is from</param>
-        /// <param name="userId">The id of the user the invitation will be sent</param>
+        /// <param name="username">The name of the user the invitation will be sent</param>
         /// <returns>A Task instance</returns>
-        public async Task SendInvitation(int serverId, long userId)
+        public async Task SendInvitation(int serverId, string username)
         {
             var httpContext = Context.GetHttpContext();
             var requestingUserId = httpContext.GetUserId().ToString();
-            var monad = await _invitationsService.InsertAsync(httpContext, serverId, userId);
+            var monad = await _invitationsService.InsertAsync(httpContext, serverId, username);
 
             if (monad is Success<Invitation, Error> success)
                 await Clients.User(requestingUserId).NewInvitation(success.Value);
