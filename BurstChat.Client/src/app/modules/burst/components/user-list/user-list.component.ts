@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { User } from 'src/app/models/user/user';
+import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { UserService } from 'src/app/modules/burst/services/user/user.service';
 
 /**
  * This class represents an angular component that displays the list of users that are subscribed to a server.
@@ -29,7 +30,10 @@ export class UserListComponent implements OnInit, OnDestroy {
      * Creates an instance of UserListComponent.
      * @memberof UserListComponent
      */
-    constructor(private serversService: ServersService) { }
+    constructor(
+        private serversService: ServersService,
+        private usersService: UserService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -70,10 +74,9 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.serversService
             .getSubscribedUsers(serverId)
             .subscribe(users => {
-                setTimeout(() => {
-                    this.users = users;
-                    this.loading = false;
-                }, 1000);
+                this.users = users;
+                this.usersService.pushToCache(this.server.id, this.users);
+                this.loading = false;
             }, error => {
                 this.loading = false;
             });

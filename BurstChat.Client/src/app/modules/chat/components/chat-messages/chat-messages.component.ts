@@ -301,10 +301,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = true;
         }
 
-        setTimeout(() => {
-            this.scrollToBottom();
-            this.loadingMessages = false;
-        }, 50);
+        this.scrollToBottom();
+        this.loadingMessages = false;
     }
 
     /**
@@ -323,7 +321,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = false;
         }
 
-        setTimeout(() => this.scrollToBottom(), 50);
+        this.scrollToBottom();
     }
 
     /**

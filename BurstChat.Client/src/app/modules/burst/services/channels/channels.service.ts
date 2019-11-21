@@ -39,8 +39,8 @@ export class ChannelsService {
      * @returns {Observable<{}>} The observable that will be invoked.
      */
     public post(serverId: number, channel: Channel): Observable<{}> {
-        const queryParams = new HttpParams()
-            .set('serverId', serverId.toString());
+        const queryParams = new HttpParams();
+        queryParams.set('serverId', serverId.toString());
 
         return this
             .httpClient

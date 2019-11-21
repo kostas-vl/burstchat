@@ -15,9 +15,13 @@ export class UserService {
 
     private subscriptionsSource = new BehaviorSubject<Server[]>([]);
 
+    private usersCacheSource = new BehaviorSubject<{ [id: string]: User[] }>({});
+
     public user = this.userSource.asObservable();
 
     public subscriptions = this.subscriptionsSource.asObservable();
+
+    public usersCache = this.usersCacheSource.asObservable();
 
     /**
      * Creates a new instance of UserService.
@@ -43,6 +47,19 @@ export class UserService {
         this.httpClient
             .get<Server[]>('/api/user/subscriptions')
             .subscribe(data => this.subscriptionsSource.next(data));
+    }
+
+    /**
+     * Inserts a new pair of server id and users to the cache or updates an existing pair.
+     * After the insert all observers of the cache are informed.
+     * @param {number} serverId The id of the server.
+     * @param {User[]} users The list of users.
+     * @memberof UserService
+     */
+    public pushToCache(serverId: number, users: User[]) {
+        const cache = this.usersCacheSource.getValue();
+        cache[serverId.toString()] = users;
+        this.usersCacheSource.next(cache);
     }
 
 }

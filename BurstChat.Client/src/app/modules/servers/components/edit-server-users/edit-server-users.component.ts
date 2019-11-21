@@ -1,10 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Notification } from 'src/app/models/notify/notification';
 import { Server } from 'src/app/models/servers/server';
+import { User } from 'src/app/models/user/user';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { UserService } from 'src/app/modules/burst/services/user/user.service';
 
 /**
  * This class represents an angular component that enables invitings and editing server users.
@@ -19,11 +21,14 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class EditServerUsersComponent implements OnInit, OnDestroy {
 
-    private activeServerSubscription?: Subscription;
+    private userCacheSub?: Subscription;
 
+    public newUserName = '';
+
+    public users: User[] = [];
+
+    @Input()
     public server?: Server;
-
-    public newUserId = '';
 
     /**
      * Creates an instance of EditServerUsersComponent.
@@ -32,7 +37,8 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
     constructor(
         private notifyService: NotifyService,
         private serversService: ServersService,
-        private chatService: ChatService
+        private chatService: ChatService,
+        private userService: UserService
     ) { }
 
     /**
@@ -40,13 +46,12 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
      * @memberof EditServerUsersComponent
      */
     public ngOnInit() {
-        this.activeServerSubscription = this
-            .serversService
-            .activeServer
-            .subscribe(server => {
-                if (server) {
-                    this.server = server;
-                }
+        this.userCacheSub = this
+            .userService
+            .usersCache
+            .subscribe(cache => {
+                const id = this.server.id.toString();
+                this.users = cache[id] || [];
             });
     }
 
@@ -55,29 +60,38 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
      * @memberof EditServerUsersComponent
      */
     public ngOnDestroy() {
-        if (this.activeServerSubscription) {
-            this.activeServerSubscription
-                .unsubscribe();
+        if (this.userCacheSub) {
+            this.userCacheSub.unsubscribe();
         }
     }
-
 
     /**
      * Handles the send invite button click event.
      * @memberof EditServerComponent
      */
-    public onSendInvite() {
-        if (!this.newUserId) {
+    public onInvite() {
+        if (!this.newUserName) {
             const notification: Notification = {
                 title: 'Could not send invitation',
-                content: 'Please provide a user id for the invitation!'
+                content: 'Please provide a user name for the invitation!'
             };
             this.notifyService.notify(notification);
             return;
         }
 
-        this.chatService.sendInvitation(this.server.id, +this.newUserId);
-        this.newUserId = '';
+        // this.chatService.sendInvitation(this.server.id, 0);
+        this.newUserName = '';
+    }
+
+    /**
+     * Handles the delete user button click event.
+     * @param {User} user The user instance to be deleted.
+     * @memberof EditServerUsersComponent
+     */
+    public onDeleteUser(user: User) {
+        if (user) {
+
+        }
     }
 
 }

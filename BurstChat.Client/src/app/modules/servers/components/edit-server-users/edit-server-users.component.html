@@ -18,7 +18,7 @@
 
     <div class="column column-20">
 
-        <button class="button w-100" (click)="onSendInvite()">INVITE</button>
+        <button class="button w-100" (click)="onInvite()">INVITE</button>
 
     </div>
 
@@ -30,7 +30,27 @@
 
         <div class="entity-list">
 
-            <span class="text-muted">Could not load users of server.</span>
+            <div class="text-muted" *ngIf="users.length === 0">
+
+                <span class="text-muted">Could not load users of server.</span>
+
+            </div>
+
+            <div class="entity" *ngFor="let user of users">
+
+                <div>
+
+                    {{user.name}} <span class="text-muted">#{{user.id}}</span>
+
+                </div>
+
+                <div class="ml-auto">
+
+                    <button class="button button-clear" (click)="onDeleteUser(user)">DELETE</button>
+
+                </div>
+
+            </div>
 
         </div>
 
