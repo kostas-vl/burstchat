@@ -15,7 +15,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: '/core/chat',
+        redirectTo: '/core/home',
         pathMatch: 'full'
     },
     {
