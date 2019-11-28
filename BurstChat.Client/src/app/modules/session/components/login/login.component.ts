@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
                             scope: data.scope,
                             tokenType: data.token_type
                         };
-                        this.router.navigateByUrl('/core/chat');
+                        this.router.navigateByUrl('/core/home');
                     } else {
                         const notification: Notification = {
                             title: 'An error occured',

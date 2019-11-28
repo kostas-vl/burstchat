@@ -18,7 +18,9 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
 })
 export class UserListComponent implements OnInit, OnDestroy {
 
-    private activeServerSubscription?: Subscription;
+    private activeServerSub?: Subscription;
+
+    private usersCacheSub?: Subscription;
 
     public server?: Server;
 
@@ -40,7 +42,7 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     public ngOnInit() {
-        this.activeServerSubscription = this
+        this.activeServerSub = this
             .serversService
             .activeServer
             .subscribe(server => {
@@ -49,6 +51,14 @@ export class UserListComponent implements OnInit, OnDestroy {
                     this.getSubscribedUsers(this.server.id);
                 }
             });
+
+        this.usersCacheSub = this
+            .usersService
+            .usersCache
+            .subscribe(cache => {
+                const id = this.server.id.toString();
+                this.users = cache[id] || [];
+            });
     }
 
     /**
@@ -56,9 +66,12 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     public ngOnDestroy() {
-        if (this.activeServerSubscription) {
-            this.activeServerSubscription
-                .unsubscribe();
+        if (this.activeServerSub) {
+            this.activeServerSub.unsubscribe();
+        }
+
+        if (this.usersCacheSub) {
+            this.usersCacheSub.unsubscribe();
         }
     }
 
