@@ -56,8 +56,10 @@ export class UserListComponent implements OnInit, OnDestroy {
             .usersService
             .usersCache
             .subscribe(cache => {
-                const id = this.server.id.toString();
-                this.users = cache[id] || [];
+                if (this.server) {
+                    const id = this.server.id.toString();
+                    this.users = cache[id] || [];
+                }
             });
     }
 

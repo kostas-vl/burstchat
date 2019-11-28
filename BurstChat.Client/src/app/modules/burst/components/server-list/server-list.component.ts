@@ -180,8 +180,10 @@ export class ServerListComponent implements OnInit, OnDestroy {
             const index = this.servers.findIndex(s => s.id === server.id);
             if (index !== -1) {
                 this.servers[index] = server;
-                this.serversService.updateCache(this.servers);
+            } else {
+                this.servers.push(server);
             }
+            this.serversService.updateCache(this.servers);
         }
     }
 

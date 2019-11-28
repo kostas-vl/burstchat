@@ -71,7 +71,10 @@ export class ChannelListComponent implements OnInit, OnDestroy {
             .serversService
             .serverInfo
             .subscribe(server => {
-                if (server && this.server.id === server.id) {
+                const canAssign = server
+                    && this.server
+                    && this.server.id === server.id;
+                if (canAssign) {
                     this.server = server;
                 }
             });
