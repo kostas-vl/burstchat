@@ -2,7 +2,7 @@
 
 .sidebar {
     position: fixed !important;
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
     width: $sidebar-width;
     transform: translateX(0);
@@ -42,14 +42,17 @@
     padding-top: $minor-height;
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 }
 
 .sidebar-servers {
     background-color: $dark-color;
     height: 100%;
     width: $minor-width;
+    overflow: hidden;
 }
 
 .sidebar-lists {
     flex-grow: 9;
+    overflow-y: auto;
 }
