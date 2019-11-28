@@ -63,8 +63,11 @@ export class EditServerComponent implements OnInit, OnDestroy {
      */
     public ngOnDestroy() {
         if (this.serversSub) {
-            this.serversSub
-                .unsubscribe();
+            this.serversSub.unsubscribe();
+        }
+
+        if (this.serverInfoSub) {
+            this.serverInfoSub.unsubscribe();
         }
     }
 

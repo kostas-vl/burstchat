@@ -58,5 +58,34 @@ namespace BurstChat.Signal.Hubs.Chat
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
             }
         }
+
+        /// <summary>
+        /// Removes a user from an existing BurstChat server.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="subscription">The subscription to be removed</param>
+        /// <returns>A task instance</returns>
+        public async Task DeleteSubscription(int serverId, Subscription subscription)
+        {
+            var httpContext = Context.GetHttpContext();
+            var monad = await _serverService.DeleteSubscription(httpContext, serverId, subscription);
+
+            switch (monad)
+            {
+                case Success<Subscription, Error> success:
+                    var signalGroup = ServerSignalName(serverId);
+                    var data = new dynamic[] { serverId, subscription };
+                    await Clients.Group(signalGroup).SubscriptionDeleted(data);
+                    break;
+
+                case Failure<Subscription, Error> failure:
+                    await Clients.Caller.SubscriptionDeleted(failure.Value);
+                    break;
+
+                default:
+                    await Clients.Caller.SubscriptionDeleted(SystemErrors.Exception());
+                    break;
+            }
+        }
     }
 }

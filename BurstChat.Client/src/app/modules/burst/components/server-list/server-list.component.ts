@@ -30,6 +30,8 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
     private addedServerSub?: Subscription;
 
+    private subcriptionDeletedSub?: Subscription;
+
     private channelCreatedSub?: Subscription;
 
     private channelUpdatedSub?: Subscription;
@@ -106,6 +108,24 @@ export class ServerListComponent implements OnInit, OnDestroy {
                 this.serversService.updateCache(this.servers);
             });
 
+        this.subcriptionDeletedSub = this
+            .chatService
+            .subscriptionDeleted
+            .subscribe(data => {
+                const serverId = data[0];
+                const subscription = data[1];
+                const server = this.servers.find(s => s.id === serverId);
+                if (server && subscription) {
+                    const index = server
+                        .subscriptions
+                        .findIndex(s => s.userId === subscription.userId);
+                    if (index !== -1) {
+                        server.subscriptions.splice(index, 1);
+                        this.serversService.updateCache(this.servers);
+                    }
+                }
+            });
+
         this.channelCreatedSub = this
             .chatService
             .channelCreated
@@ -128,7 +148,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
                     .find(s => s.channels.some(c => c.id === channel.id));
                 if (server) {
                     const index = server.channels.findIndex(c => c.id === channel.id);
-                    if (index > -1) {
+                    if (index !== -1) {
                         server.channels[index] = channel;
                         this.serversService.updateCache(this.servers);
                     }
@@ -144,7 +164,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
                     .find(s => s.channels.some(c => c.id === channelId));
                 if (server) {
                     const index = server.channels.findIndex(c => c.id === channelId);
-                    if (index > -1) {
+                    if (index !== -1) {
                         server.channels.splice(index, 1);
                         this.serversService.updateCache(this.servers);
                     }
@@ -186,6 +206,10 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
         if (this.addedServerSub) {
             this.addedServerSub.unsubscribe();
+        }
+
+        if (this.subcriptionDeletedSub) {
+            this.subcriptionDeletedSub.unsubscribe();
         }
 
         if (this.channelCreatedSub) {

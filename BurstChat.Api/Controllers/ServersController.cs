@@ -25,7 +25,7 @@ namespace BurstChat.Api.Controllers
         private readonly IServersService _serversService;
 
         /// <summary>
-        ///   Executes any necessary start up code for the controller.
+        /// Executes any necessary start up code for the controller.
         /// </summary>
         public ServersController(
             ILogger<ServersController> logger,
@@ -37,24 +37,24 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   This method will fetch any available information about a server based on the provided id.
+        /// This method will fetch any available information about a server based on the provided id.
         /// </summary>
         /// <param name="serverId">The id of the target server</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("{serverId:int}")]
         [ProducesResponseType(typeof(Server), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Get(int serverId) 
+        public IActionResult Get(int serverId)
         {
             var monad = HttpContext
                 .GetUserId()
                 .Bind(userId => _serversService.Get(userId, serverId));
-            
+
             return this.UnwrapMonad(monad);
         }
 
         /// <summary>
-        ///   This method will create a new server based on the instance provided.
+        /// This method will create a new server based on the instance provided.
         /// </summary>
         /// <param name="server">The server instance to be created</param>
         /// <returns>An IActionResult instance</returns>
@@ -71,7 +71,7 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   This method will update the properties of an existing server based on the provided instance.
+        /// This method will update the properties of an existing server based on the provided instance.
         /// </summary>
         /// <param name="server">The server instance of which the properties will be used for the update</param>
         /// <returns>An IActionResult instance</returns>
@@ -88,7 +88,7 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   This method will remove an exising server based on the provided id.
+        /// This method will remove an exising server based on the provided id.
         /// </summary>
         /// <param name="server">The id of the server to be removed</param>
         /// <returns>An IActionResult instance</returns>
@@ -99,13 +99,13 @@ namespace BurstChat.Api.Controllers
         {
             var monad = HttpContext
                 .GetUserId()
-                .Bind(userId =>_serversService.Delete(userId, serverId));
+                .Bind(userId => _serversService.Delete(userId, serverId));
 
             return this.UnwrapMonad(monad);
         }
 
         /// <summary>
-        ///     Fetches all users subscribed to the server of the id provided.
+        /// Fetches all users subscribed to the server of the id provided.
         /// </summary>
         /// <param name="serverId">The id of the target server</param>
         /// <returns>An IActionResult instance</returns>
@@ -122,7 +122,25 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///     Fetches all invitations sent out to users to join the server specified in the provided parameter.`
+        /// Removes a subscription from an existing server.
+        /// </summary>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="subscription">The instance of the subscription to be removed</param>
+        /// <returns>An IActionResult instance</returns>
+        [HttpDelete("{serverId:int}/subscriptions")]
+        [ProducesResponseType(typeof(Subscription), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public IActionResult DeleteSubscription(int serverId, [FromBody] Subscription subscription)
+        {
+            var monad = HttpContext
+                .GetUserId()
+                .Bind(userId => _serversService.DeleteSubscription(userId, serverId, subscription));
+
+            return this.UnwrapMonad(monad);
+        }
+
+        /// <summary>
+        /// Fetches all invitations sent out to users to join the server specified in the provided parameter.`
         /// </summary>
         /// <param name="serverId">The id of the target server</param>
         /// <returns>An IActionResult instance</returns>
@@ -134,12 +152,12 @@ namespace BurstChat.Api.Controllers
             var monad = HttpContext
                 .GetUserId()
                 .Bind(userId => _serversService.GetInvitations(userId, serverId));
-                
+
             return this.UnwrapMonad(monad);
         }
 
         /// <summary>
-        ///     Creates a new invitation to a user for the specified server.
+        /// Creates a new invitation to a user for the specified server.
         /// </summary>
         /// <param name="serverId">The id of the server</param>
         /// <param name="userId">The id of the target user</param>

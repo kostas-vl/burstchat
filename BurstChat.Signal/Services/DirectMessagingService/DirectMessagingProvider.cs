@@ -11,8 +11,8 @@ using BurstChat.Shared.Schema.Users;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Web;
+using System.Text.Json;
 
 namespace BurstChat.Signal.Services.DirectMessagingService
 {
@@ -100,7 +100,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Post;
                 var url = $"/api/direct";
-                var jsonMessage = JsonConvert.SerializeObject(directMessaging);
+                var jsonMessage = JsonSerializer.Serialize(directMessaging);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<DirectMessaging>(context, method, url, content);
@@ -178,7 +178,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Post;
                 var url = $"/api/direct/{directMessagingId}/messages";
-                var jsonMessage = JsonConvert.SerializeObject(message);
+                var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Message>(context, method, url, content);
@@ -203,7 +203,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Put;
                 var url = $"/api/direct/{directMessagingId}/messages";
-                var jsonMessage = JsonConvert.SerializeObject(message);
+                var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Message>(context, method, url, content);
@@ -228,7 +228,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Delete;
                 var url = $"/api/direct/{directMessagingId}/messages";
-                var jsonMessage = JsonConvert.SerializeObject(message);
+                var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Message>(context, method, url, content);

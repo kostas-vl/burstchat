@@ -178,7 +178,7 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                return Get(userId, serverId).Bind(server => 
+                return Get(userId, serverId).Bind(server =>
                 {
                     var users = _burstChatContext
                         .Users
@@ -198,6 +198,42 @@ namespace BurstChat.Api.Services.ServersService
         }
 
         /// <summary>
+        /// Removes a user from an existing server.
+        /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="subscription">The subscription instance to be removed</param>
+        /// <returns>An either monad</returns>
+        public Either<Subscription, Error> DeleteSubscription(long userId, int serverId, Subscription subscription)
+        {
+            try
+            {
+                return Get(userId, serverId).Bind<Subscription>(server =>
+                {
+                    var targetSubscription = server
+                        .Subscriptions
+                        .FirstOrDefault(s => s.Id == subscription.Id);
+
+                    if (targetSubscription is null)
+                        return new Failure<Subscription, Error>(UserErrors.UserNotFound());
+
+                    server
+                        .Subscriptions
+                        .Remove(targetSubscription);
+
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Subscription, Error>(targetSubscription);
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Subscription, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
         ///     Fetches all invitations sent for a server based on the provided id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
@@ -207,7 +243,7 @@ namespace BurstChat.Api.Services.ServersService
         {
             try
             {
-                return Get(userId, serverId).Bind(server => 
+                return Get(userId, serverId).Bind(server =>
                 {
                     var invitations = _burstChatContext
                         .Invitations

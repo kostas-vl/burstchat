@@ -10,8 +10,8 @@ using BurstChat.Signal.Models;
 namespace BurstChat.Signal.Hubs.Chat
 {
     /// <summary>
-    ///   This interface provides a contract for a class that represents all available methods that a client can consume
-    ///   in order to handle responses from the chat hub.
+    /// This interface provides a contract for a class that represents all available methods that a client can consume
+    /// in order to handle responses from the chat hub.
     /// </summary>
     public interface IChatClient
     {
@@ -28,6 +28,20 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
         Task AddedServer(Error error);
+
+        /// <summary>
+        /// Informs the members of a server that a user was removed.
+        /// </summary>
+        /// <param name="data">The server id and subscription instance</param>
+        /// <returns>A task instance</returns>
+        Task SubscriptionDeleted(dynamic[] data);
+
+        /// <summary>
+        /// Informs the caller that the removal of a user from a server was not successful.
+        /// </summary>
+        /// <param name="error">The error that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task SubscriptionDeleted(Error error);
 
         /// <summary>
         /// Informs the caller of all the invitations sent to him.

@@ -8,11 +8,11 @@ using BurstChat.Shared.Monads;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Web;
+using System.Text.Json;
 
 namespace BurstChat.Signal.Services.ChannelsService
 {
@@ -74,7 +74,7 @@ namespace BurstChat.Signal.Services.ChannelsService
                 var query = HttpUtility.ParseQueryString(string.Empty);
                 query["serverId"] = serverId.ToString();
                 url += $"/?{query}";
-                var jsonMessage = JsonConvert.SerializeObject(channel);
+                var jsonMessage = JsonSerializer.Serialize(channel);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Channel>(context, method, url, content);
@@ -99,7 +99,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             {
                 var method = HttpMethod.Put;
                 var url = "api/channels";
-                var jsonMessage = JsonConvert.SerializeObject(channel);
+                var jsonMessage = JsonSerializer.Serialize(channel);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Channel>(context, method, url, content);
@@ -170,7 +170,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             {
                 var method = HttpMethod.Post;
                 var url = $"api/channels/{channelId}/messages";
-                var jsonMessage = JsonConvert.SerializeObject(message);
+                var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Message>(context, method, url, content);
@@ -196,7 +196,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             {
                 var method = HttpMethod.Put;
                 var url = $"api/channels/{channelId}/messages";
-                var jsonMessage = JsonConvert.SerializeObject(message);
+                var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync(context, method, url, content);
@@ -222,7 +222,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             {
                 var method = HttpMethod.Delete;
                 var url = $"api/channels/{channelId}/messages";
-                var jsonMessage = JsonConvert.SerializeObject(message);
+                var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync(context, method, url, content);

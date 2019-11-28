@@ -90,7 +90,13 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
      */
     public onDeleteUser(user: User) {
         if (user) {
-
+            const subscription = this
+                .server
+                .subscriptions
+                .find(s => s.userId === user.id);
+            if (subscription) {
+                this.chatService.deleteSubscription(this.server.id, subscription);
+            }
         }
     }
 

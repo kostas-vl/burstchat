@@ -172,7 +172,7 @@ namespace BurstChat.Api.Services.PrivateGroupsService
                         return new Success<PrivateGroup, Error>(privateGroup);
                     }
                     else
-                        return new Failure<PrivateGroup, Error>(BurstChat.Api.Errors.UserErrors.UserNotFound());
+                        return new Failure<PrivateGroup, Error>(UserErrors.UserNotFound());
                });
             }
             catch (Exception e)
@@ -249,7 +249,7 @@ namespace BurstChat.Api.Services.PrivateGroupsService
                         return new Success<PrivateGroup, Error>(privateGroup);
                     }
                     else 
-                        return new Failure<PrivateGroup, Error>(BurstChat.Api.Errors.UserErrors.UserNotFound());
+                        return new Failure<PrivateGroup, Error>(UserErrors.UserNotFound());
                 });
             }
             catch (Exception e)

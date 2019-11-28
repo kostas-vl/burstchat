@@ -12,8 +12,8 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
-import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { Channel } from 'src/app/models/servers/channel';
+import { Subscription } from 'src/app/models/servers/subscription';
 
 /**
  * This class represents an angular service that connects to the remote signalr server and trasmits messages related to
@@ -31,6 +31,8 @@ export class ChatService {
     private onReconnectedSource = new Subject();
 
     private addedServerSource = new Subject<Server>();
+
+    private subscriptionDeletedSource = new Subject<[number, Subscription]>();
 
     private channelCreatedSource = new Subject<[number, Channel]>();
 
@@ -63,6 +65,8 @@ export class ChatService {
     public onReconnected = this.onReconnectedSource.asObservable();
 
     public addedServer = this.addedServerSource.asObservable();
+
+    public subscriptionDeleted = this.subscriptionDeletedSource.asObservable();
 
     public channelCreated = this.channelCreatedSource.asObservable();
 
@@ -160,6 +164,8 @@ export class ChatService {
 
         this.connection.on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource));
 
+        this.connection.on('subscriptionDeleted', data => this.ProcessRawSignal(data, this.subscriptionDeletedSource));
+
         this.connection.on('channelCreated', data => this.ProcessRawSignal(data, this.channelCreatedSource));
 
         this.connection.on('channelUpdated', data => this.ProcessRawSignal(data, this.channelUpdatedSource));
@@ -251,6 +257,20 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('addToServer', serverId)
+                .catch(error => console.log(error));
+        }
+    }
+
+    /**
+     * Removes a subscription from a BurstChat Server.
+     * @param {number} serverId The id of the server.
+     * @param {Subscription} subscription The subscription to be removed.
+     * @memberof ChatService
+     */
+    public deleteSubscription(serverId: number, subscription: Subscription) {
+        if (this.connection) {
+            this.connection
+                .invoke('deleteSubscription', serverId, subscription)
                 .catch(error => console.log(error));
         }
     }

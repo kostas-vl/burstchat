@@ -13,8 +13,8 @@ namespace BurstChat.Api.Services.ServersService
     public interface IServersService
     {
         /// <summary>
-        ///   This method will fetch information available for a server based on the provided
-        ///   server id.
+        /// This method will fetch information available for a server based on the provided
+        /// server id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param> 
         /// <param name="serverId">The id of the target server</param>
@@ -22,8 +22,8 @@ namespace BurstChat.Api.Services.ServersService
         Either<Server, Error> Get(long userId, int serverId);
 
         /// <summary>
-        ///   This method will delete any information available for a server based on the provided
-        ///   server id.
+        /// This method will delete any information available for a server based on the provided
+        /// server id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param> 
         /// <param name="serverId">The id of the server to be removed</param>
@@ -31,7 +31,7 @@ namespace BurstChat.Api.Services.ServersService
         Either<Unit, Error> Delete(long userId, int serverId);
 
         /// <summary>
-        ///   This method store information about a new server based on the provided Server instance.
+        /// This method store information about a new server based on the provided Server instance.
         /// </summary>
         /// <param name="userId">The id of the user that creates the server</param>
         /// <param name="server">The server instance of which the information will be stored in the database</param>
@@ -39,8 +39,8 @@ namespace BurstChat.Api.Services.ServersService
         Either<Server, Error> Insert(long userId, Server server);
 
         /// <summary>
-        ///   This method will update information about an existing server based on the provided server
-        ///   instance.
+        /// This method will update information about an existing server based on the provided server
+        /// instance.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param> 
         /// <param name="server">The server instance from which the information update will be based upon</param>
@@ -48,7 +48,7 @@ namespace BurstChat.Api.Services.ServersService
         Either<Unit, Error> Update(long userId, Server server);
 
         /// <summary>
-        ///     Fetches all users subscribed to the server based on the server id provided.
+        /// Fetches all users subscribed to the server based on the server id provided.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param> 
         /// <param name="serverId">The id of the target server</param>
@@ -56,7 +56,16 @@ namespace BurstChat.Api.Services.ServersService
         Either<IEnumerable<User>, Error> GetSubscribedUsers(long userId, int serverId);
 
         /// <summary>
-        ///     Fetches all invitations sent for a server based on the provided id.
+        /// Removes a subscription from an existing server.
+        /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
+        /// <param name="serverId">The id of the server</param>
+        /// <param name="subscription">The subscription instance to be removed</param>
+        /// <returns>An either monad</returns>
+        Either<Subscription, Error> DeleteSubscription(long userId, int serverId, Subscription subscription);
+
+        /// <summary>
+        /// Fetches all invitations sent for a server based on the provided id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param> 
         /// <param name="serverId">The id of the server</param>
@@ -64,7 +73,7 @@ namespace BurstChat.Api.Services.ServersService
         Either<IEnumerable<Invitation>, Error> GetInvitations(long userId, int serverId);
 
         /// <summary>
-        ///     This method will create a new server invitation entry based on the provided parameters.
+        /// This method will create a new server invitation entry based on the provided parameters.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param> 
         /// <param name="serverId">The id of the server</param>
