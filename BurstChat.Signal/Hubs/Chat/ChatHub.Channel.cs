@@ -136,7 +136,7 @@ namespace BurstChat.Signal.Hubs.Chat
             {
                 case Success<IEnumerable<Message>, Error> success:
                     var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
-                    await Clients.Groups(signalGroup).AllChannelMessagesReceived(payload);
+                    await Clients.Caller.AllChannelMessagesReceived(payload);
                     break;
 
                 case Failure<IEnumerable<Message>, Error> failure:

@@ -301,8 +301,10 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = true;
         }
 
-        this.scrollToBottom();
-        this.loadingMessages = false;
+        setTimeout(() => {
+            this.scrollToBottom();
+            this.loadingMessages = false;
+        }, 50);
     }
 
     /**
@@ -317,11 +319,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             : null;
 
         if (message) {
-            this.messagesClusters = this.addMessageToClusters(this.messagesClusters, message);
+            this.messagesClusters = this.addMessageToClusters([...this.messagesClusters], message);
             this.chatIsEmpty = false;
         }
 
-        this.scrollToBottom();
+        setTimeout(() => this.scrollToBottom(), 50);
     }
 
     /**
