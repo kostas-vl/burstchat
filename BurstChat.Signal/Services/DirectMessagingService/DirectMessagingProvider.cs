@@ -118,19 +118,19 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the target entry</param>
         /// <returns>An either monad</returns>
-        public async Task<Either<Unit, Error>> DeleteAsync(HttpContext context, long directMessagingId)
+        public async Task<Either<DirectMessaging, Error>> DeleteAsync(HttpContext context, long directMessagingId)
         {
             try
             {
                 var method = HttpMethod.Delete;
                 var url = $"/api/direct/{directMessagingId}";
 
-                return await _apiInteropService.SendAsync(context, method, url);
+                return await _apiInteropService.SendAsync<DirectMessaging>(context, method, url);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
 

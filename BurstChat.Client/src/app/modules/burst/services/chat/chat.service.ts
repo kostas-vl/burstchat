@@ -393,7 +393,7 @@ export class ChatService {
                 args = [options.id];
             } else if (options instanceof ChannelConnectionOptions) {
                 methodName = 'getAllChannelMessages';
-                args = [options.id];
+                args = [options.id, lastMessageId];
             } else {
                 methodName = 'getAllDirectMessages';
                 args = [options.id, lastMessageId];

@@ -88,12 +88,12 @@ namespace BurstChat.Signal.Hubs.Chat
 
             switch (monad)
             {
-                case Success<Unit, Error> _:
+                case Success<Channel, Error> _:
                     var signalGroup = ServerSignalName(serverId);
                     await Clients.Group(signalGroup).ChannelDeleted(channelId);
                     break;
 
-                case Failure<Unit, Error> failure:
+                case Failure<Channel, Error> failure:
                     await Clients.Caller.ChannelDeleted(failure.Value);
                     break;
 
@@ -125,11 +125,12 @@ namespace BurstChat.Signal.Hubs.Chat
         /// Informs the caller of all messages posted to a channel.
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
+        /// <param name="lastMessageId">The id of the message to be the interval for the rest</param>
         /// <returns>A task instance</returns>
-        public async Task GetAllChannelMessages(int channelId)
+        public async Task GetAllChannelMessages(int channelId, long? lastMessageId = null)
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _channelsService.GetMessagesAsync(httpContext, channelId);
+            var monad = await _channelsService.GetMessagesAsync(httpContext, channelId, lastMessageId);
             var signalGroup = ChannelSignalName(channelId);
 
             switch (monad)
@@ -165,8 +166,8 @@ namespace BurstChat.Signal.Hubs.Chat
 
             switch (monad)
             {
-                case Success<Message, Error> _:
-                    var payload = new Payload<Message>(signalGroup, message);
+                case Success<Message, Error> success:
+                    var payload = new Payload<Message>(signalGroup, success.Value);
                     await Clients.Groups(signalGroup).ChannelMessageReceived(payload);
                     break;
 
@@ -196,12 +197,12 @@ namespace BurstChat.Signal.Hubs.Chat
 
             switch (monad)
             {
-                case Success<Unit, Error> _:
-                    var payload = new Payload<Message>(signalGroup, message);
+                case Success<Message, Error> success:
+                    var payload = new Payload<Message>(signalGroup, success.Value);
                     await Clients.Groups(signalGroup).ChannelMessageEdited(payload);
                     break;
 
-                case Failure<Unit, Error> failure:
+                case Failure<Message, Error> failure:
                     var errorPayload = new Payload<Error>(signalGroup, failure.Value);
                     await Clients.Caller.ChannelMessageEdited(errorPayload);
                     break;
@@ -227,12 +228,12 @@ namespace BurstChat.Signal.Hubs.Chat
 
             switch (monad)
             {
-                case Success<Unit, Error> _:
-                    var payload = new Payload<Message>(signalGroup, message);
+                case Success<Message, Error> success:
+                    var payload = new Payload<Message>(signalGroup, success.Value);
                     await Clients.Groups(signalGroup).ChannelMessageDeleted(payload);
                     break;
 
-                case Failure<Unit, Error> failure:
+                case Failure<Message, Error> failure:
                     var errorPayload = new Payload<Error>(signalGroup, failure.Value);
                     await Clients.Caller.ChannelMessageDeleted(errorPayload);
                     break;

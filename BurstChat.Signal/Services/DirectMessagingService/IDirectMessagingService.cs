@@ -47,7 +47,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the target entry</param>
         /// <returns>An either monad</returns>
-        Task<Either<Unit, Error>> DeleteAsync(HttpContext context, long directMessagingId);
+        Task<Either<DirectMessaging, Error>> DeleteAsync(HttpContext context, long directMessagingId);
 
         /// <summary>
         ///   Fetches all messages posted on a direct messaging entry.

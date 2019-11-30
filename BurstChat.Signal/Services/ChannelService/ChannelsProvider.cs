@@ -117,19 +117,19 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> DeleteAsync(HttpContext context, int channelId)
+        public async Task<Either<Channel, Error>> DeleteAsync(HttpContext context, int channelId)
         {
             try
             {
                 var method = HttpMethod.Delete;
                 var url = $"api/channels/{channelId}";
-                
-                return await _apiInteropService.SendAsync(context, method, url);
+
+                return await _apiInteropService.SendAsync<Channel>(context, method, url);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
 
@@ -139,13 +139,22 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
+        /// <param name="lastMessageId">The id of the interval message for the rest</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, int channelId)
+        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context,
+                                                                                int channelId,
+                                                                                long? lastMessageId = null)
         {
             try
             {
                 var method = HttpMethod.Get;
                 var url = $"api/channels/{channelId}/messages";
+                if (lastMessageId is { })
+                {
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+                    query["lastMessageId"] = lastMessageId.ToString();
+                    url += $"/?{query}";
+                }
 
                 return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
             }
@@ -190,7 +199,7 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be edited</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> PutMessageAsync(HttpContext context, int channelId, Message message)
+        public async Task<Either<Message, Error>> PutMessageAsync(HttpContext context, int channelId, Message message)
         {
             try
             {
@@ -199,12 +208,12 @@ namespace BurstChat.Signal.Services.ChannelsService
                 var jsonMessage = JsonSerializer.Serialize(message);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                return await _apiInteropService.SendAsync(context, method, url, content);
+                return await _apiInteropService.SendAsync<Message>(context, method, url, content);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
 
@@ -216,21 +225,21 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be deleted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        public async Task<Either<Unit, Error>> DeleteMessageAsync(HttpContext context, int channelId, Message message)
+        public async Task<Either<Message, Error>> DeleteMessageAsync(HttpContext context, int channelId, Message message)
         {
             try
             {
                 var method = HttpMethod.Delete;
                 var url = $"api/channels/{channelId}/messages";
-                var jsonMessage = JsonSerializer.Serialize(message);
+                var jsonMessage = JsonSerializer.Serialize(message.Id);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                return await _apiInteropService.SendAsync(context, method, url, content);
+                return await _apiInteropService.SendAsync<Message>(context, method, url, content);
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
     }

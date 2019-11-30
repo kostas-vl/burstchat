@@ -40,7 +40,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messages</param>
-        /// <param name="lastMessageId">The message id and time the messages where sent</param>
+        /// <param name="lastMessageId">The message id to be the interval of the message list</param>
         /// <returns>An either monad</returns>
         private Either<DirectMessaging, Error> GetWithMessages(long userId, long directMessagingId, long? lastMessageId = null)
         {
@@ -58,11 +58,13 @@ namespace BurstChat.Api.Services.DirectMessagingService
                         .DirectMessaging
                         .Include(dm => dm.Messages)
                         .ThenInclude(m => m.User)
+                        .Include(dm => dm.Messages)
+                        .ThenInclude(m => m.Links)
                         .Where(dm => dm.Id == directMessagingId)
                         .Select(dm => dm.Messages
                                         .Where(m => m.Id < (lastMessageId ?? long.MaxValue))
                                         .OrderByDescending(m => m.Id)
-                                        .Take(300))                        
+                                        .Take(300))
                         .ToList()
                         .Aggregate(new List<Message>(), (current, next) =>
                         {
@@ -71,7 +73,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
                         })
                         .OrderBy(m => m.Id)
                         .ToList();
-                  
+
                     return new Success<DirectMessaging, Error>(directMessaging);
                 }
                 else
@@ -196,7 +198,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the group</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Delete(long userId, long directMessagingId)
+        public Either<DirectMessaging, Error> Delete(long userId, long directMessagingId)
         {
             try
             {
@@ -206,14 +208,14 @@ namespace BurstChat.Api.Services.DirectMessagingService
                         .DirectMessaging
                         .Remove(directMessaging);
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<DirectMessaging, Error>(directMessaging);
                 });
 
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
 
@@ -225,12 +227,12 @@ namespace BurstChat.Api.Services.DirectMessagingService
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="lastMessageId">The message id from which all prior messages will be fetched</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(long userId, 
-                                                               long directMessagingId, 
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId,
+                                                               long directMessagingId,
                                                                long? lastMessageId = null)
         {
-             return GetWithMessages(userId, directMessagingId, lastMessageId)
-                .Bind(directMessaging => new Success<IEnumerable<Message>, Error>(directMessaging.Messages));
+            return GetWithMessages(userId, directMessagingId, lastMessageId)
+               .Attach(directMessaging => directMessaging.Messages as IEnumerable<Message>);
         }
 
         /// <summary>
@@ -291,7 +293,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
         {
             try
             {
-                return GetWithMessages(userId, directMessagingId).Bind<Message>(directMessaging =>
+                return GetWithMessages(userId, directMessagingId, message.Id).Bind<Message>(directMessaging =>
                 {
                     var messageEntry = directMessaging
                         .Messages
@@ -325,34 +327,25 @@ namespace BurstChat.Api.Services.DirectMessagingService
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="messageId">The id of the message to be deleted</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> DeleteMessage(long userId, long directMessagingId, long messageId)
+        public Either<Message, Error> DeleteMessage(long userId, long directMessagingId, long messageId)
         {
             try
             {
-                return GetWithMessages(userId, directMessagingId).Bind<Unit>(directMessaging =>
+                return GetWithMessages(userId, directMessagingId, messageId).Bind(directMessaging =>
                 {
-                    var messageEntry = directMessaging
-                        .Messages
-                        .FirstOrDefault(m => m.Id == messageId);
+                    var message = directMessaging.Messages.First(m => m.Id == messageId);
 
-                    if (messageEntry is { } && messageEntry.UserId == userId)
-                    {
-                        directMessaging
-                            .Messages
-                            .Remove(messageEntry);
+                    directMessaging.Messages.Remove(message);
 
-                        _burstChatContext.SaveChanges();
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
-                    }
-                    else
-                        return new Failure<Unit, Error>(DirectMessagingErrors.DirectMessagesNotFound());
+                    return new Success<Message, Error>(message);
                 });
             }
             catch (Exception e)
             {
                 _logger.LogException(e);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
     }

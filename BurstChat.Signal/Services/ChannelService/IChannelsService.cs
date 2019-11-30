@@ -46,15 +46,16 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> DeleteAsync(HttpContext context, int channelId);
+        Task<Either<Channel, Error>> DeleteAsync(HttpContext context, int channelId);
 
         /// <summary>
         /// This method will fetch all messages of a channels based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
+        /// <param name="lastMessageId">The id of the interval message for the rest</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, int channelId);
+        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, int channelId, long? lastMessageId = null);
 
         /// <summary>
         /// This method will post a new message to a channel based on the provided channel id
@@ -74,7 +75,7 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be edited</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> PutMessageAsync(HttpContext context, int channelId, Message message);
+        Task<Either<Message, Error>> PutMessageAsync(HttpContext context, int channelId, Message message);
 
         /// <summary>
         /// This method will delete an existing message from a channel based on the provided channel id
@@ -84,6 +85,6 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// <param name="channelId">The id of the channel</param>
         /// <param name="message">The message to be deleted</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<Unit, Error>> DeleteMessageAsync(HttpContext context, int channelId, Message message);
+        Task<Either<Message, Error>> DeleteMessageAsync(HttpContext context, int channelId, Message message);
     }
 }

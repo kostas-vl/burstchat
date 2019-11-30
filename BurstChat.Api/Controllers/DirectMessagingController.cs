@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BurstChat.Api.Controllers
 {
     /// <summary>
-    ///   This class represents an ASPNET Core controller that exposes endpoints for interacting with
-    ///   data of direct messages.
+    /// This class represents an ASPNET Core controller that exposes endpoints for interacting with
+    /// data of direct messages.
     /// </summary>
     [Authorize]
     [ApiController]
@@ -26,7 +26,7 @@ namespace BurstChat.Api.Controllers
         private readonly IDirectMessagingService _directMessagingService;
 
         /// <summary>
-        ///   Creates a new instance of DirectMessagingController.
+        /// Creates a new instance of DirectMessagingController.
         /// </summary>
         public DirectMessagingController(IDirectMessagingService directMessagingService)
         {
@@ -34,7 +34,7 @@ namespace BurstChat.Api.Controllers
         }
         
         /// <summary>
-        ///   Fetches all available information about the direct messages of a user.
+        /// Fetches all available information about the direct messages of a user.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messages</param>
         /// <returns>An IActionResult instance</returns>
@@ -51,7 +51,7 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Fetches all available information about the direct messages between two users.
+        /// Fetches all available information about the direct messages between two users.
         /// </summary>
         /// <param name="firstParticipantId">The user id of the first participant</param>
         /// <param name="secondParticipantId">The user id of the second participant</param>
@@ -79,7 +79,7 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Creates a new direct messaging association between 2 users.
+        /// Creates a new direct messaging association between 2 users.
         /// </summary>
         /// <param name="directMessaging">The direct messaging instance to be created</param>
         /// <returns>An IActionResult instance</returns>
@@ -96,12 +96,12 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Deletes an existing direct messaging entry based on the provided id.
+        /// Deletes an existing direct messaging entry based on the provided id.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
         /// <returns>An IActionResult instance</returns>
         [HttpDelete("{directMessagingId:long}")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult Delete(long directMessagingId)
         {
@@ -113,8 +113,8 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Fetches all messages of a direct messaging entry based on the provided id.
-        ///   When a message id is also provided then it will return 300 messages prior to that message.
+        /// Fetches all messages of a direct messaging entry based on the provided id.
+        /// When a message id is also provided then it will return 300 messages prior to that message.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
         /// <param name="lastMessageId">The message id from which prior messages will be fetched</param>
@@ -132,7 +132,7 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Inserts a new message to a direct messaging entry.
+        /// Inserts a new message to a direct messaging entry.
         /// </summary>
         /// <param name="message">The message to be inserted.</param>
         /// <returns>An IActionResult instance</returns>
@@ -149,7 +149,7 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Updates an existing message of a direct messaging entry.
+        /// Updates an existing message of a direct messaging entry.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="message">The message to be updated</param>
@@ -167,13 +167,13 @@ namespace BurstChat.Api.Controllers
         }
 
         /// <summary>
-        ///   Deletes a message from a direct messaging entry.
+        /// Deletes a message from a direct messaging entry.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="messageId">The id of the message to be deleted</param>
         /// <returns>An IActionResult instance</returns>
         [HttpDelete("{directMessagingId:long}/messages")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult DeleteMessage(long directMessagingId, [FromBody] long messageId)
         {
