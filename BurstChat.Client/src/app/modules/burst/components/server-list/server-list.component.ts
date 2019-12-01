@@ -279,10 +279,27 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * @memberof ServerListComponent
      */
     private updatedInvitationCallback(invite: Invitation) {
-        const notInList = !this.servers.some(s => s.id === invite.serverId);
-        if (invite.userId === this.user.id && invite.accepted && notInList) {
+        const inList = this.servers.some(s => s.id === invite.serverId);
+
+        // Handle code for the user the initiated the invitation update.
+        if (invite.userId === this.user.id && invite.accepted && !inList) {
             const server = invite.server;
             this.serversService.get(server.id);
+            return;
+        }
+
+        // Handle code for all users of the server if the invitation was accepted.
+        if (inList && invite.accepted) {
+            const serverId = invite.serverId.toString();
+            const server = this.servers.find(s => s.id === invite.serverId);
+            const users = this.usersCache[serverId];
+
+            users.push(invite.user);
+            server.subscriptions.push({ userId: invite.userId, serverId: invite.serverId });
+
+            this.serversService.updateCache(this.servers);
+            this.userService.pushToCache(server.id, users);
+            return;
         }
     }
 
