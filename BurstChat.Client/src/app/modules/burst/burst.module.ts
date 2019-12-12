@@ -8,6 +8,7 @@ import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sideb
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
 import { ServerListComponent } from 'src/app/modules/burst/components/server-list/server-list.component';
 import { ServerComponent } from 'src/app/modules/burst/components/server/server.component';
+import { ServerInfoComponent } from 'src/app/modules/burst/components/server-info/server-info.component';
 import { ChannelListComponent } from 'src/app/modules/burst/components/channel-list/channel-list.component';
 import { ChannelComponent } from 'src/app/modules/burst/components/channel/channel.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
@@ -39,6 +40,7 @@ import {
         SidebarUserInfoComponent,
         ServerListComponent,
         ServerComponent,
+        ServerInfoComponent,
         ChannelListComponent,
         ChannelComponent,
         UserListComponent,

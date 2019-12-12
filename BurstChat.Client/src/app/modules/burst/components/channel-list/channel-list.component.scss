@@ -8,17 +8,6 @@ hr {
     width: 100%;
 }
 
-.channel-list-server {
-    background-color: $dark-color;
-    height: 70px;
-    padding-top: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
 .channel-list-header {
     @extend .pt-5;
     @extend .pb-5;

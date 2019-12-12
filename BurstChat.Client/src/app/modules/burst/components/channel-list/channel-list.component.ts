@@ -98,12 +98,4 @@ export class ChannelListComponent implements OnInit, OnDestroy {
         }
     }
 
-    /**
-     * Handles the edit server button click event.
-     * @memberof ChannelListComponent
-     */
-    public onEditServer(): void {
-        this.router.navigateByUrl(`/core/servers/edit/${this.server.id}`);
-    }
-
 }
