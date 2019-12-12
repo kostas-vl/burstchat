@@ -29,7 +29,7 @@ namespace BurstChat.IdentityServer
                     config.AddJsonFile("appsettings.IdentitySecrets.json", optional: true, reloadOnChange: false);
                     config.AddJsonFile("appsettings.SigningCredentials.json", optional: false, reloadOnChange: false);
                 })
-                .UseKestrel()
+                .UseKestrel(options => options.ListenLocalhost(5002))
                 .UseStartup<Startup>();
     }
 }

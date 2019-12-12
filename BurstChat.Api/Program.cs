@@ -28,7 +28,7 @@ namespace BurstChat.Api
                     config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
                     config.AddJsonFile("appsettings.AccessTokenValidation.json", optional: false, reloadOnChange: false);
                 })
-                .UseKestrel()
+                .UseKestrel(options => options.ListenLocalhost(5000))
                 .UseStartup<Startup>();
     }
 }

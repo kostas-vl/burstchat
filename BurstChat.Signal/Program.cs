@@ -30,7 +30,7 @@ namespace BurstChat.Signal
                     logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
                     logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
                 })
-                .UseKestrel()
+                .UseKestrel(options => options.ListenLocalhost(5001))
                 .UseStartup<Startup>();
     }
 }
