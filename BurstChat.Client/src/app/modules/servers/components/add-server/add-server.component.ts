@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Notification } from 'src/app/models/notify/notification';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
@@ -41,11 +40,9 @@ export class AddServerComponent implements OnInit, OnDestroy {
             .addedServer
             .subscribe(server => {
                 if (server.name === this.server.name) {
-                    const notification: Notification = {
-                        title: 'Success',
-                        content: `The server ${this.server.name} was created successfully`
-                    };
-                    this.notifyService.notify(notification);
+                    const title = 'Success';
+                    const content = `The server ${this.server.name} was created successfully`;
+                    this.notifyService.notify(title, content);
                     this.server = new BurstChatServer();
                     this.loading = false;
                 }
@@ -69,12 +66,9 @@ export class AddServerComponent implements OnInit, OnDestroy {
      */
     public onPost() {
         if (!this.server.name) {
-            const notification: Notification = {
-                title: 'An error occured',
-                content: 'Please provide a name for the new server'
-            };
-            this.notifyService
-                .notify(notification);
+            const title = 'An error occured';
+            const content = 'Please provide a name for the new server';
+            this.notifyService.notify(title, content);
             return;
         }
 

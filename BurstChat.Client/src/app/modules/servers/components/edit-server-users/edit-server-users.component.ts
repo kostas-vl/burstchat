@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Notification } from 'src/app/models/notify/notification';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -71,11 +70,9 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
      */
     public onInvite() {
         if (!this.newUserName) {
-            const notification: Notification = {
-                title: 'Could not send invitation',
-                content: 'Please provide a user name for the invitation!'
-            };
-            this.notifyService.notify(notification);
+            const title = 'Could not send invitation';
+            const content = 'Please provide a user name for the invitation!';
+            this.notifyService.notify(title, content);
             return;
         }
 

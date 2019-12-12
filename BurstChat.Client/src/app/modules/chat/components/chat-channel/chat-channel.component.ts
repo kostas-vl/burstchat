@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Subscribable } from 'rxjs';
-import { Notification } from 'src/app/models/notify/notification';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
@@ -41,7 +40,7 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
      * Executes any neccessary start up code for the component.
      * @memberof ChatChannelComponent
      */
-    public ngOnInit() { 
+    public ngOnInit() {
         this.routeParametersSubscription = this
             .activatedRoute
             .queryParamMap
@@ -56,11 +55,9 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                     this.chatService.addSelfToChat(this.options);
                 } else {
                     this.noChatFound = true;
-                    const notification: Notification = {
-                        title: 'No active chat found',
-                        content: 'Consider joining a channel or start a new private chat!'
-                    };
-                    this.notifyService.notify(notification);
+                    const title = 'No active chat found';
+                    const content = 'Consider joining a channel or start a new private chat!';
+                    this.notifyService.notify(title, content);
                 }
             });
 

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
-import { Notification } from 'src/app/models/notify/notification';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
 
@@ -49,14 +48,13 @@ export class ResetPasswordComponent implements OnInit {
                 () => this.router.navigateByUrl('/session/change'),
                 error => {
                     console.log(error);
-                    const apiError = tryParseError(error.error);
-                    const notification: Notification = {
-                        title: 'An error occured',
-                        content: apiError !== null
-                            ? apiError.message
-                            : 'Please try to reset your password in a few seconds.'
+                    let apiError = tryParseError(error.error);
+                    apiError = apiError || {
+                        level: 'warning',
+                        type: 'validation',
+                        message: 'Please try to reset your password in a few seconds.'
                     };
-                    this.notifyService.notify(notification);
+                    this.notifyService.notifyError(apiError);
                     this.loading = false;
                 }
             );

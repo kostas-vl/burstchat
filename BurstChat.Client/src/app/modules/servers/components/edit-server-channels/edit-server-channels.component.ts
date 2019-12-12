@@ -1,7 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Notification } from 'src/app/models/notify/notification';
-import { tryParseError } from 'src/app/models/errors/error';
 import { Channel } from 'src/app/models/servers/channel';
 import { Server } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -69,11 +67,9 @@ export class EditServerChannelsComponent implements OnInit, OnDestroy {
      */
     public onAddChannel() {
         if (!this.newChannelName) {
-            const notification: Notification = {
-                title: 'Could not create channel',
-                content: 'Please provide a name for the new channel!'
-            };
-            this.notifyService.notify(notification);
+            const title = 'Could not create channel';
+            const content = 'Please provide a name for the new channel!';
+            this.notifyService.notify(title, content);
             return;
         }
 

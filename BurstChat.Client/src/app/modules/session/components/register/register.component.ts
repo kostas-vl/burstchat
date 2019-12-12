@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { Registration } from 'src/app/models/user/registration';
-import { Notification } from 'src/app/models/notify/notification';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
 

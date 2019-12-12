@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Notification } from 'src/app/models/notify/notification';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
@@ -126,12 +125,9 @@ export class ChatRootComponent implements OnInit, OnDestroy {
             this.chatService.addSelfToChat(this.options);
         } else {
             this.noChatFound = true;
-
-            const notification: Notification = {
-                title: 'No active chat found',
-                content: 'Consider joining a channel or start a new private chat!'
-            };
-            this.notifyService.notify(notification);
+            const title = 'No active chat found';
+            const content = 'Consider joining a channel or start a new private chat!';
+            this.notifyService.notify(title, content);
         }
     }
 

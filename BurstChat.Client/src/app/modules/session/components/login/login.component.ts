@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Credentials } from 'src/app/models/user/credentials';
-import { tryParseError } from 'src/app/models/errors/error';
-import { Notification } from 'src/app/models/notify/notification';
+import { tryParseError, BurstChatError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
@@ -61,23 +60,22 @@ export class LoginComponent implements OnInit {
                         };
                         this.router.navigateByUrl('/core/home');
                     } else {
-                        const notification: Notification = {
-                            title: 'An error occured',
-                            content: 'Could not properly login, please retry in a few minutes'
+                        const error: BurstChatError = {
+                            level: 'warning',
+                            type: 'Validation',
+                            message: 'Could not properly login, please retry in a few minutes'
                         };
-                        this.notifyService.notify(notification);
+                        this.notifyService.notifyError(error);
                     }
                 },
                 error => {
-                    console.log(error);
-                    const apiError = tryParseError(error.error);
-                    const notification: Notification = {
-                        title: 'An error occured',
-                        content: apiError !== null
-                            ? apiError.message
-                            : 'Please try to login again in a few seconds.'
+                    let apiError = tryParseError(error.error);
+                    apiError = apiError || {
+                        level: 'warning',
+                        type: 'Validation',
+                        message: 'Please try to login again in a few seconds.'
                     };
-                    this.notifyService.notify(notification);
+                    this.notifyService.notifyError(apiError);
                     this.loading = false;
                 }
             );

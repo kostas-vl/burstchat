@@ -5,9 +5,8 @@ import { Message } from 'src/app/models/chat/message';
 import { MessageCluster } from 'src/app/models/chat/message-cluster';
 import { Payload } from 'src/app/models/signal/payload';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
-import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
-import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { NotifyService } from 'src/app/services/notify/notify.service';
 
 /**
  * This class represents an angular component that displays on screen the messages of the chat.
@@ -73,7 +72,10 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * Creates an instance of ChatMessagesComponent.
      * @memberof ChatMessagesComponent
      */
-    constructor(private chatService: ChatService) { }
+    constructor(
+        private chatService: ChatService,
+        private notifyService: NotifyService
+    ) { }
 
     /**
      * Executes any necessary start up code for the component.
@@ -321,6 +323,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         if (message) {
             this.messagesClusters = this.addMessageToClusters([...this.messagesClusters], message);
             this.chatIsEmpty = false;
+            this.notifyService.notify('New message', message.content);
         }
 
         setTimeout(() => this.scrollToBottom(), 50);

@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
 import { BurstChatError } from 'src/app/models/errors/error';
-import { Notification } from 'src/app/models/notify/notification';
 
 /**
  * This class represents an angular service that transmits signals to the notidy component
@@ -11,9 +9,11 @@ import { Notification } from 'src/app/models/notify/notification';
 @Injectable()
 export class NotifyService {
 
-  private notifySource = new Subject<Notification>();
-
-    public onNotify = this.notifySource.asObservable();
+    private get canDisplay() {
+        return 'Notification' in window
+            && Notification.permission !== 'denied'
+            && !document.hasFocus();
+    }
 
     /**
      * Creates an instance of NotifyService.
@@ -22,15 +22,26 @@ export class NotifyService {
     constructor() { }
 
     /**
+     * Requests permission from the user for displaying notifications if the user
+     * has not already denied it.
+     * @memberof NotifyService
+     */
+    public permission() {
+        if (this.canDisplay) {
+            Notification.requestPermission();
+        }
+    }
+
+    /**
      * This method will invoke a new notification on screen based on the provided
      * data.
      * @memberof NotifyService
      * @param {Notification} data The notification data to be displayed.
      */
-    public notify(data: Notification): void {
-        if (data) {
-            this.notifySource
-                .next(data);
+    public notify(title: string, content = ''): void {
+        if (this.canDisplay) {
+            const options: NotificationOptions = { body: content };
+            const _ = new Notification(title, options);
         }
     }
 
@@ -42,11 +53,8 @@ export class NotifyService {
      */
     public notifyError(error: BurstChatError | null): void {
         if (error) {
-            const notification: Notification = {
-                title: 'An error occured',
-                content: error.message
-            };
-            this.notify(notification);
+            const title = 'An error occured';
+            this.notify(title, error.message);
         }
     }
 

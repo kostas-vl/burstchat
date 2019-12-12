@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChangePassword } from 'src/app/models/user/change-password';
-import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
-import { Notification } from 'src/app/models/notify/notification';
+import { tryParseError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
 
@@ -12,9 +11,9 @@ import { SessionService } from 'src/app/modules/session/services/session-service
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-change-password',
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.scss']
+    selector: 'app-change-password',
+    templateUrl: './change-password.component.html',
+    styleUrls: ['./change-password.component.scss']
 })
 export class ChangePasswordComponent implements OnInit {
 
@@ -48,20 +47,18 @@ export class ChangePasswordComponent implements OnInit {
             .changePassword(this.changePassword)
             .subscribe(
                 () => {
-                    this.notifyService.notify({
-                        title: 'Your password changed successfully'
-                    });
+                    const title = 'Your password changed successfully';
+                    this.notifyService.notify(title);
                     this.router.navigateByUrl('/session/login');
                 },
                 error => {
-                    const apiError = tryParseError(error.error);
-                    const notification: Notification = {
-                        title: 'An error occured',
-                        content: apiError !== null
-                          ? apiError.message
-                          : 'Please try to change your password in a few seconds.'
+                    let apiError = tryParseError(error.error);
+                    apiError = apiError || {
+                        level: 'warning',
+                        type: 'Validation',
+                        message: 'Please try to change your password in a few seconds.'
                     };
-                    this.notifyService.notify(notification);
+                    this.notifyService.notifyError(apiError);
                     this.loading = false;
                 }
             );

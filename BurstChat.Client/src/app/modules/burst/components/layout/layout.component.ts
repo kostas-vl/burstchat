@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Notification } from 'src/app/models/notify/notification';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
@@ -125,11 +124,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
      * @memberof LayoutComponent
      */
     private onInvite(invitation: Invitation) {
-        const notification: Notification = {
-            title: 'New invite',
-            content: `A user has invited you to join the server: ${invitation.server.name}`
-        };
-        this.notifyService.notify(notification);
+        const title = 'New invite';
+        const content = `A user has invited you to join the server: ${invitation.server.name}`;
+        this.notifyService.notify(title, content);
     }
 
 }
