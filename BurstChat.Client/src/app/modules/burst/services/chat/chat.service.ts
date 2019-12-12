@@ -145,7 +145,7 @@ export class ChatService {
         try {
             const builder = new HubConnectionBuilder();
             builder
-                .withUrl('/chat', {
+                .withUrl(`${environment.signalUrl}/chat`, {
                     accessTokenFactory: () => this.storageService.tokenInfo.accessToken
                 })
                 .withAutomaticReconnect();

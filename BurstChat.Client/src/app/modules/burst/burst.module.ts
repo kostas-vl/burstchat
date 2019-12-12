@@ -4,6 +4,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
+import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
 import { ServerListComponent } from 'src/app/modules/burst/components/server-list/server-list.component';
@@ -50,6 +51,11 @@ import {
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthHttpInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: UrlInterceptorService,
             multi: true
         }
     ]
