@@ -64,8 +64,7 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "burst-chat-client:build",
-                        "proxyConfig": "proxy.conf.json"
+                        "browserTarget": "burst-chat-client:build"
                     },
                     "configurations": {
                         "production": {
