@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
-using Newtonsoft.Json;
 
 namespace BurstChat.Shared.Schema.Users
 {

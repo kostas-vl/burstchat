@@ -1,7 +1,7 @@
 using System;
 using System.Text;
+using System.Text.Json;
 using BurstChat.Shared.Errors;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 
 namespace BurstChat.Shared.Extensions
@@ -43,8 +43,7 @@ namespace BurstChat.Shared.Extensions
         /// <param name="error">The BurstChat error instance to be logged</param>
         public static void LogBurstChatError<T>(this ILogger<T> logger, Error error)
         {
-            var jsonError = JsonConvert.SerializeObject(error, Formatting.Indented);
-
+            var jsonError = JsonSerializer.Serialize(error);
             var builder = new StringBuilder();
             builder.AppendLine("BurstChat Error:");
             builder.AppendLine(jsonError);

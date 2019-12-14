@@ -58,13 +58,6 @@ namespace BurstChat.IdentityServer
                             dbContextOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly);
                         });
                         break;
-                    case "sqlserver":
-                        options.UseSqlServer(databaseOptions.ConnectionString, dbContextOptions =>
-                        {
-                            dbContextOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly);
-                        });
-                        break;
-
                     default:
                         break;
                 }

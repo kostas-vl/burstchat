@@ -96,14 +96,6 @@ namespace BurstChat.Api
                                     dbContextOptions.MigrationsAssembly("BurstChat.Api");
                                 });
                             break;
-                        case "sqlserver":
-                            options
-                                .UseLoggerFactory(BurstChatContextLogger)
-                                .UseSqlServer(databaseOptions.ConnectionString, dbContextOptions =>
-                                {
-                                    dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                                });
-                            break;
                         default:
                             break;
                     }
