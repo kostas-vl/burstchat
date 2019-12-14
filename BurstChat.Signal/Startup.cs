@@ -76,8 +76,8 @@ namespace BurstChat.Signal
                         builder
                             .AllowAnyMethod()
                             .AllowAnyHeader()
-                            .WithOrigins(acceptedDomains)
-                            .AllowCredentials();
+                            .AllowCredentials()
+                            .WithOrigins(acceptedDomains);
                     }
                 });
             });

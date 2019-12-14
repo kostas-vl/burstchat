@@ -107,15 +107,15 @@ namespace BurstChat.Api
                     options.AddPolicy("CorsPolicy", builder =>
                     {
                         var acceptedDomains = Configuration
-                            .GetSection("AcceptedDomains:Cors")
+                            .GetSection("AcceptedDomains")
                             .Get<string[]>();
                         if (acceptedDomains != null && acceptedDomains.Count() > 0)
                         {
                             builder
-                                .AllowAnyMethod()
                                 .AllowAnyHeader()
-                                .WithOrigins(acceptedDomains)
-                                .AllowCredentials();
+                                .AllowAnyMethod()
+                                .AllowCredentials()
+                                .WithOrigins(acceptedDomains);
                         }
                     });
                 });
@@ -140,9 +140,9 @@ namespace BurstChat.Api
 
             application.UseStaticFiles();
             application.UseRouting();
-            application.UseCors("CorsPolicy");
             application.UseAuthentication();
             application.UseAuthorization();
+            application.UseCors("CorsPolicy");
             application.UseEndpoints(endpoints => 
             {
                 endpoints.MapControllers();

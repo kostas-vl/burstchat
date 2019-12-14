@@ -28,12 +28,12 @@ import { EditServerUsersComponent } from 'src/app/modules/servers/components/edi
     providers: [
         {
             provide: HTTP_INTERCEPTORS,
-            useClass: AuthHttpInterceptor,
+            useClass: UrlInterceptorService,
             multi: true
         },
         {
             provide: HTTP_INTERCEPTORS,
-            useClass: UrlInterceptorService,
+            useClass: AuthHttpInterceptor,
             multi: true
         }
     ]

@@ -100,15 +100,15 @@ namespace BurstChat.IdentityServer
                     options.AddPolicy("CorsPolicy", builder =>
                     {
                         var acceptedDomains = Configuration
-                            .GetSection("AcceptedDomains:Cors")
+                            .GetSection("AcceptedDomains")
                             .Get<string[]>();
                         if (acceptedDomains != null && acceptedDomains.Count() > 0)
                         {
                             builder
                                 .AllowAnyMethod()
                                 .AllowAnyHeader()
-                                .WithOrigins(acceptedDomains)
-                                .AllowCredentials();
+                                .AllowCredentials()
+                                .WithOrigins(acceptedDomains);
                         }
                     });
                 });

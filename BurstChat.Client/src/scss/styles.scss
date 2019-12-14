@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 // @import 'https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css';
 @import 'https://cdn.lineicons.com/1.0.1/LineIcons.min.css';
+@import 'https://fonts.googleapis.com/css?family=Montserrat&display=swap';
 @import 'theme';
 @import 'buttons';
 
@@ -9,6 +10,7 @@ body {
     height: 100%;
     background-color: $primary-color;
     font-weight: 300;
+    font-family: 'Montserrat', sans-serif;
     color: $text-color;
     margin: 0 0 0 0;
 }
