@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 /**
  * This class represents an angular http interceptor service that will identify the url of a request
@@ -35,7 +37,11 @@ export class UrlInterceptorService implements HttpInterceptor {
             });
         }
 
-        return next.handle(clone);
+        return next.handle(clone).pipe(
+            catchError(value => {
+                 return throwError(value);
+            })
+        );
     }
 
 }

@@ -98,7 +98,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 user: this.user,
                 content: this.inputContent,
                 datePosted: new Date(),
-                edited: false
+                edited: false,
+                links: []
             };
 
             this.chatService.postMessage(this.internalOptions, message);

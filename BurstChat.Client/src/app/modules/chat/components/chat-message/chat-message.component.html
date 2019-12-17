@@ -12,13 +12,13 @@
 
             <div>
 
-                <strong class="pr-5">{{messageCluster.user.name}}</strong>
+                <strong class="pr-5">{{message.user.name}}</strong>
 
-                <small class="text-muted">{{messageCluster.datePosted | date:'LLL d yyyy, h:mm a'}}</small>
+                <small class="text-muted">{{message.datePosted | date:'LLL d yyyy, h:mm a'}}</small>
 
             </div>
 
-            <div class="message" *ngFor="let message of messageCluster.messages">
+            <div class="message">
 
                 <div>
 

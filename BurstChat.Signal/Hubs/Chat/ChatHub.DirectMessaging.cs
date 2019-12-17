@@ -67,17 +67,23 @@ namespace BurstChat.Signal.Hubs.Chat
             };
             var monad = await _directMessagingService.PostAsync(httpContext, directMessaging);
 
-            if (monad is Success<DirectMessaging, Error> postSuccess)
+            switch (monad) 
             {
-                var signalGroup = DirectMessagingName(postSuccess.Value.Id);
-                var payload = new Payload<DirectMessaging>(signalGroup, postSuccess.Value);
-                await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
-                await Clients.Caller.NewDirectMessaging(payload);
+                case Success<DirectMessaging, Error> postSuccess:
+                    var signalGroup = DirectMessagingName(postSuccess.Value.Id);
+                    var payload = new Payload<DirectMessaging>(signalGroup, postSuccess.Value);
+                    await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
+                    await Clients.Caller.NewDirectMessaging(payload);
+                    break;
+
+                case Failure<DirectMessaging, Error> failure:
+                    await Clients.Caller.NewDirectMessaging(failure.Value);
+                    break;
+
+                default:
+                    await Clients.Caller.NewDirectMessaging(SystemErrors.Exception());
+                    break;
             }
-            else if (monad is Failure<DirectMessaging, Error> failure)
-                await Clients.Caller.NewDirectMessaging(failure.Value);
-            else
-                await Clients.Caller.NewDirectMessaging(SystemErrors.Exception());
         }
 
         /// <summary>
@@ -92,20 +98,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _directMessagingService.GetMessagesAsync(httpContext, directMessagingId, lastMessageId);
             var signalGroup = DirectMessagingName(directMessagingId);
 
-            if (monad is Success<IEnumerable<Message>, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
-                await Clients.Caller.AllDirectMessagesReceived(payload);
-            }
-            else if (monad is Failure<IEnumerable<Message>, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.AllDirectMessagesReceived(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.AllDirectMessagesReceived(payload);
+                case Success<IEnumerable<Message>, Error> success:
+                    var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
+                    await Clients.Caller.AllDirectMessagesReceived(payload);
+                    break;
+
+                case Failure<IEnumerable<Message>, Error> failure:
+                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.AllDirectMessagesReceived(errorPayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.AllDirectMessagesReceived(exceptionPayload);
+                    break;
             }
         }
 
@@ -121,20 +129,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _directMessagingService.PostMessageAsync(httpContext, directMessagingId, message);
             var signalGroup = DirectMessagingName(directMessagingId);
 
-            if (monad is Success<Message, Error> success)
+            switch (monad)
             {
+                case Success<Message, Error> success:
                 var payload = new Payload<Message>(signalGroup, success.Value);
                 await Clients.Groups(signalGroup).DirectMessageReceived(payload);
-            }
-            else if (monad is Failure<Message, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Groups(signalGroup).DirectMessageReceived(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Groups(signalGroup).DirectMessageReceived(payload);
+                    break;
+
+                case Failure<Message, Error> failure:
+                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Groups(signalGroup).DirectMessageReceived(errorPayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Groups(signalGroup).DirectMessageReceived(exceptionPayload);
+                    break;
             }
         }
 
@@ -150,20 +160,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _directMessagingService.PutMessageAsync(httpContext, directMessageId, message);
             var signalGroup = DirectMessagingName(directMessageId);
 
-            if (monad is Success<Message, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<Message>(signalGroup, success.Value);
-                await Clients.Groups(signalGroup).DirectMessageEdited(payload);
-            }
-            else if (monad is Failure<Message, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.DirectMessageEdited(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.DirectMessageEdited(payload);
+                case Success<Message, Error> success:
+                    var payload = new Payload<Message>(signalGroup, success.Value);
+                    await Clients.Groups(signalGroup).DirectMessageEdited(payload);
+                    break;
+
+                case Failure<Message, Error> failure:
+                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.DirectMessageEdited(errorPayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.DirectMessageEdited(exceptionPayload);
+                    break;
             }
         }
 
@@ -179,20 +191,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _directMessagingService.DeleteMessageAsync(httpContext, directMessageId, message);
             var signalGroup = DirectMessagingName(directMessageId);
 
-            if (monad is Success<Message, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<Message>(signalGroup, success.Value);
-                await Clients.Groups(signalGroup).DirectMessageDeleted(payload);
-            }
-            else if (monad is Failure<Message, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.DirectMessageDeleted(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.DirectMessageDeleted(payload);
+                case Success<Message, Error> success:
+                    var payload = new Payload<Message>(signalGroup, success.Value);
+                    await Clients.Groups(signalGroup).DirectMessageDeleted(payload);
+                    break;
+
+                case Failure<Message, Error> failure:
+                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.DirectMessageDeleted(errorPayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.DirectMessageDeleted(exceptionPayload);
+                    break;
             }
         }
     }

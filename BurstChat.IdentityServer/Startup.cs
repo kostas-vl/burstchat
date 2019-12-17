@@ -95,25 +95,6 @@ namespace BurstChat.IdentityServer
                 .AddOperationalStore(options => options.ConfigureDbContext = ConfigureDatabaseContext("IdentityServer.PersistedGrantDbContext"));
 
             services
-                .AddCors(options => 
-                {
-                    options.AddPolicy("CorsPolicy", builder =>
-                    {
-                        var acceptedDomains = Configuration
-                            .GetSection("AcceptedDomains")
-                            .Get<string[]>();
-                        if (acceptedDomains != null && acceptedDomains.Count() > 0)
-                        {
-                            builder
-                                .AllowAnyMethod()
-                                .AllowAnyHeader()
-                                .AllowCredentials()
-                                .WithOrigins(acceptedDomains);
-                        }
-                    });
-                });
-
-            services
                 .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
@@ -138,7 +119,6 @@ namespace BurstChat.IdentityServer
 
             application
                 .UseRouting()
-                .UseCors("CorsPolicy")
                 .UseIdentityServer()
                 .UseEndpoints(endpoints =>
                 {

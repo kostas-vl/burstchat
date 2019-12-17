@@ -8,6 +8,7 @@ using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Cors;
 
 namespace BurstChat.Api.Controllers
 {

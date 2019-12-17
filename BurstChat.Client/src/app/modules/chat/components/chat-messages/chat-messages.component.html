@@ -1,12 +1,12 @@
 <div class="viewport">
 
-    <cdk-virtual-scroll-viewport class="h-100" itemSize="100" (scrolledIndexChange)="onScrolledIndexChanged($event)">
+    <cdk-virtual-scroll-viewport class="h-100" itemSize="78" (scrolledIndexChange)="onScrolledIndexChanged($event)">
 
         <div class="messages-container">
 
-            <div *cdkVirtualFor="let cluster of messagesClusters">
+            <div *cdkVirtualFor="let entry of messages">
 
-                <app-chat-message [messageCluster]="cluster"></app-chat-message>
+                <app-chat-message [message]="entry"></app-chat-message>
 
                 <br>
 

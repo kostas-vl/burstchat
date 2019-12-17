@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
-import { MessageCluster } from 'src/app/models/chat/message-cluster';
 import { Payload } from 'src/app/models/signal/payload';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
@@ -37,13 +36,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     public bottomIndex = 0;
 
-    public messagesClusters: MessageCluster[] = [];
+    public messages: Message[] = [];
 
     public chatIsEmpty = false;
 
     @Input()
     public set options(value: ChatConnectionOptions) {
-        this.messagesClusters = [];
+        this.messages = [];
         this.chatIsEmpty = false;
         this.loadingMessages = true;
         this.internalOptions = value;
@@ -154,7 +153,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     /**
      * This method will add a new message to the appropriate cluster or create a new one based on the provided parameters.
-     * The clust is always fetches from the top of the list.
      * This method mutates the provided cluster list and returns it.
      * @private
      * @param {MessageCluster[]} clusterList The cluster list with all the current messsages.
@@ -162,81 +160,16 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @returns The modified cluster list.
      * @memberof ChatMessagesComponent
      */
-    private addMessageToClustersTop(clusterList: MessageCluster[], message: Message) {
-        const firstEntry = clusterList[0];
-        const isPartOfTheCluster =
-            firstEntry
-            && firstEntry.user.id === message.userId
-            && this.isSameDateTime(firstEntry.datePosted, message.datePosted);
+    private addMessageToClusters(messages: Message[], message: Message) {
+        const first = messages[0];
 
-        if (isPartOfTheCluster) {
-            firstEntry.messages = [message, ...firstEntry.messages];
+        if (first && first.id > message.id) {
+            messages = [message, ...messages];
         } else {
-            clusterList = [
-                {
-                    user: message.user,
-                    datePosted: message.datePosted,
-                    messages: [message]
-                },
-                ...clusterList
-            ];
+            messages.push(message);
         }
 
-        return clusterList;
-    }
-
-    /**
-     * This method will add a new message to the appropriate cluster or create a new one based on the provided parameters.
-     * The clust is always fetches from the bottom of the list.
-     * This method mutates the provided cluster list and returns it.
-     * @private
-     * @param {MessageCluster[]} clusterList The cluster list with all the current messsages.
-     * @param {Message} message The message posted.
-     * @returns The modified cluster list.
-     * @memberof ChatMessagesComponent
-     */
-    private addMessageToClustersBottom(clusterList: MessageCluster[], message: Message) {
-        const lastEntry = clusterList[clusterList.length - 1];
-        const isPartOfTheCluster =
-            lastEntry
-            && lastEntry.user.id === message.userId
-            && this.isSameDateTime(lastEntry.datePosted, message.datePosted);
-
-        if (isPartOfTheCluster) {
-            lastEntry.messages.push(message);
-        } else {
-            clusterList.push({
-                user: message.user,
-                datePosted: message.datePosted,
-                messages: [message]
-            });
-        }
-
-        return clusterList;
-    }
-
-    /**
-     * This method will add a new message to the appropriate cluster or create a new one based on the provided parameters.
-     * This method mutates the provided cluster list and returns it.
-     * @private
-     * @param {MessageCluster[]} clusterList The cluster list with all the current messsages.
-     * @param {Message} message The message posted.
-     * @returns The modified cluster list.
-     * @memberof ChatMessagesComponent
-     */
-    private addMessageToClusters(clusterList: MessageCluster[], message: Message) {
-        const firstEntry = clusterList[0];
-        const firstMessage = firstEntry && firstEntry.messages
-            ? firstEntry.messages[0]
-            : null;
-
-        if (firstMessage && firstMessage.id > message.id) {
-            this.addMessageToClustersTop(clusterList, message);
-        } else {
-            this.addMessageToClustersBottom(clusterList, message);
-        }
-
-        return clusterList;
+        return messages;
     }
 
     /**
@@ -248,33 +181,26 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @returns The modified cluster list.
      * @memberof ChatMessagesComponent
      */
-    private addMessagesToClusters(clusterList: MessageCluster[], messages: Message[]) {
-        const firstCluster = clusterList[0];
-        const firstClusterMessage = firstCluster && firstCluster.messages
-            ? firstCluster.messages[0]
-            : null;
-
-        const firstMessage = messages[0];
+    private addMessagesToClusters(messages: Message[], newBatch: Message[]) {
+        const first = messages[0];
+        const firstFromBatch = newBatch[0];
 
         // This check is done to ensure that the messages will be pushed to the clusters
         // from oldest to the newest message when inserted to the top of the list
         // or from the newest to the older when inserted to the bottom.
-        const reverseIteration =
-            firstClusterMessage
-            && firstMessage
-            && firstClusterMessage.id > firstMessage.id;
+        const reverseIteration = first && firstFromBatch && first.id > firstFromBatch.id;
 
         const start = reverseIteration ? messages.length - 1 : 0;
         const endCallback = reverseIteration
             ? (x) => x > 0
-            : (x) => x < messages.length;
+            : (x) => x < newBatch.length;
         const interval = reverseIteration ? -1 : 1;
 
         for (let i = start; endCallback(i); i += interval) {
-            clusterList = this.addMessageToClusters(clusterList, messages[i]);
+            messages = this.addMessageToClusters(messages, newBatch[i]);
         }
 
-        return clusterList;
+        return messages;
     }
 
     /**
@@ -293,13 +219,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>) {
-        const messages = this.internalOptions.signalGroup === payload.signalGroup
+        const newBatch = this.internalOptions.signalGroup === payload.signalGroup
             ? payload.content
             : [];
 
-        if (messages.length > 0) {
-            this.messagesClusters = this.addMessagesToClusters([...this.messagesClusters], messages);
-        } else if (messages.length === 0 && this.messagesClusters.length === 0) {
+        if (newBatch.length > 0) {
+            this.messages = this.addMessagesToClusters([...this.messages], newBatch);
+        } else if (newBatch.length === 0 && this.messages.length === 0) {
             this.chatIsEmpty = true;
         }
 
@@ -321,7 +247,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             : null;
 
         if (message) {
-            this.messagesClusters = this.addMessageToClusters([...this.messagesClusters], message);
+            this.messages = this.addMessageToClusters([...this.messages], message);
             this.chatIsEmpty = false;
             this.notifyService.notify('New message', message.content);
         }
@@ -338,12 +264,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         this.scrollBottomOffset = this.viewport.measureScrollOffset('bottom');
 
         const scrollTopOffset = this.viewport.measureScrollOffset('top');
-        const canRequestMessages = this.messagesClusters
+        const canRequestMessages = this.messages
             && !this.loadingMessages
             && scrollTopOffset <= 100;
 
         if (canRequestMessages) {
-            const oldestMessage = this.messagesClusters[0].messages[0] || null;
+            const oldestMessage = this.messages[0] || null;
             const messageId = oldestMessage.id || null;
 
             this.chatService.getAllMessages(this.internalOptions, messageId);
