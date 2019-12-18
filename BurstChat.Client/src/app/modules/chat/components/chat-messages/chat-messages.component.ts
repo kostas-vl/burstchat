@@ -129,39 +129,42 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     /**
      * This method will evaluate if a message was posted in date and time close to the provided cluster date.
      * @private
-     * @param {(Date | string)} clusterDate The date the cluster of messages was posted.
-     * @param {(Date | string)} messageDate The date the message was posted.
+     * @param {(Date | string)} messageDate The date a message that was posted.
+     * @param {(Date | string)} newMessageDate The date of the new message that was posted.
      * @returns A boolean specifying if the date difference is greater that expected.
      * @memberof ChatMessagesComponent
      */
-    private isSameDateTime(clusterDate: Date | string, messageDate: Date | string) {
-        const clusterProperDate: Date = clusterDate instanceof Date
-            ? clusterDate
-            : new Date(clusterDate);
-
+    private isSameDateTime(messageDate: Date | string, newMessageDate: Date | string) {
         const messageProperDate: Date = messageDate instanceof Date
             ? messageDate
             : new Date(messageDate);
 
+        const newMessageProperDate: Date = newMessageDate instanceof Date
+            ? newMessageDate
+            : new Date(newMessageDate);
+
         const isSameDay =
-            clusterProperDate.getFullYear() === messageProperDate.getFullYear()
-            && clusterProperDate.getMonth() === messageProperDate.getMonth()
-            && clusterProperDate.getDate() === messageProperDate.getDate();
+            messageProperDate.getFullYear() === newMessageProperDate.getFullYear()
+            && messageProperDate.getMonth() === newMessageProperDate.getMonth()
+            && messageProperDate.getDate() === newMessageProperDate.getDate();
 
         return isSameDay;
     }
 
     /**
-     * This method will add a new message to the appropriate cluster or create a new one based on the provided parameters.
-     * This method mutates the provided cluster list and returns it.
+     * This method will add a new message to the messages list either at the start or end.
+     * This method mutates the provided messages list and returns it.
      * @private
-     * @param {MessageCluster[]} clusterList The cluster list with all the current messsages.
+     * @param {Message[]} messages The current messages.
      * @param {Message} message The message posted.
-     * @returns The modified cluster list.
+     * @returns The modified messages list.
      * @memberof ChatMessagesComponent
      */
     private addMessageToClusters(messages: Message[], message: Message) {
         const first = messages[0];
+        const isSameDay = first
+            ? this.isSameDateTime(first.datePosted, message.datePosted)
+            : false;
 
         if (first && first.id > message.id) {
             messages = [message, ...messages];
@@ -173,12 +176,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * This method will add a list of new messages to the appropriate cluster.
-     * This method mutates the provided cluster list and returns it.
+     * This method will add a list of new batch of messages to the position in the provided messages list.
+     * This method mutates the messages list and returns it.
      * @private
-     * @param {MessageCluster[]} clusterList The cluster list with all the current messages.
-     * @param {Message[]} messages The messages posted.
-     * @returns The modified cluster list.
+     * @param {Message[]} messages The current messages list.
+     * @param {Message[]} newBatch The new messages posted.
+     * @returns The modified messages list.
      * @memberof ChatMessagesComponent
      */
     private addMessagesToClusters(messages: Message[], newBatch: Message[]) {
