@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { faCubes, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
 import { Subscription as BurstSubscription } from 'src/app/models/servers/subscription';
@@ -46,6 +47,10 @@ export class ServerListComponent implements OnInit, OnDestroy {
     private user?: User;
 
     private usersCache: { [id: string]: User[] } = {};
+
+    public cubes = faCubes;
+
+    public users = faUsers;
 
     public servers: Server[] = [];
 

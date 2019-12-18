@@ -19,13 +19,14 @@ import { UserComponent } from 'src/app/modules/burst/components/user/user.compon
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faDragon,
-    faChalkboardTeacher,
-    faPlus,
+    faCog,
     faDatabase,
     faCommentAlt,
     faSignOutAlt,
     faCircle,
-    faDotCircle
+    faDotCircle,
+    faCubes,
+    faUsers
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -68,13 +69,14 @@ export class BurstModule {
      */
     constructor() {
         library.add(faDragon,
-            faChalkboardTeacher,
-            faPlus,
+            faCog,
+            faCubes,
             faDatabase,
             faCommentAlt,
             faSignOutAlt,
             faCircle,
-            faDotCircle);
+            faDotCircle,
+            faUsers);
     }
 
 }

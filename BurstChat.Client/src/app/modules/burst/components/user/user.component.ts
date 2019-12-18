@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
@@ -22,6 +23,8 @@ export class UserComponent implements OnInit, OnDestroy {
     private userSubscription?: Subscription;
 
     private currentUser?: User;
+
+    public circle = faCircle;
 
     @Input()
     public user?: User;

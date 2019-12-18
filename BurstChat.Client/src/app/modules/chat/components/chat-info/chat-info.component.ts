@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
+import { faCommentAlt, faLock, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -24,13 +24,13 @@ export class ChatInfoComponent implements OnInit {
 
     public get icon() {
         if (this.options instanceof ChannelConnectionOptions) {
-            return 'lni-bubble';
+            return faCommentAlt;
         } else if (this.options instanceof PrivateGroupConnectionOptions) {
-            return 'lni-network';
+            return faLock;
         } else if (this.options instanceof DirectMessagingConnectionOptions) {
-            return 'lni-users';
+            return faUserFriends;
         } else {
-            return '';
+            return undefined;
         }
     }
 
@@ -45,7 +45,5 @@ export class ChatInfoComponent implements OnInit {
      * @memberof ChatInfoComponent
      */
     public ngOnInit(): void { }
-
-
 
 }

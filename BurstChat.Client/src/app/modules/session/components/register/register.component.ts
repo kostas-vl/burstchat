@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
+import { faDragon } from '@fortawesome/free-solid-svg-icons';
+import { tryParseError } from 'src/app/models/errors/error';
 import { Registration } from 'src/app/models/user/registration';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
@@ -18,6 +19,8 @@ import { SessionService } from 'src/app/modules/session/services/session-service
 export class RegisterComponent implements OnInit {
 
     public registration = new Registration();
+
+    public dragon = faDragon;
 
     public loading = false;
 

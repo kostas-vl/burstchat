@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Message } from 'src/app/models/chat/message';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen a message from a user.
@@ -13,6 +14,8 @@ import { Message } from 'src/app/models/chat/message';
     styleUrls: ['./chat-message.component.scss']
 })
 export class ChatMessageComponent implements OnInit {
+
+    public plane = faPaperPlane;
 
     @Input()
     public message?: Message;

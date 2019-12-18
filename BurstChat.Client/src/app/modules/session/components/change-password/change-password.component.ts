@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { ChangePassword } from 'src/app/models/user/change-password';
 import { tryParseError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -18,6 +19,8 @@ import { SessionService } from 'src/app/modules/session/services/session-service
 export class ChangePasswordComponent implements OnInit {
 
     public changePassword = new ChangePassword();
+
+    public dragon = faDragon;
 
     public loading = false;
 

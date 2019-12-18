@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { Channel } from 'src/app/models/servers/channel';
 
 /**
@@ -13,6 +14,8 @@ import { Channel } from 'src/app/models/servers/channel';
   styleUrls: ['./channel.component.scss']
 })
 export class ChannelComponent implements OnInit {
+
+    public comment = faCommentAlt;
 
     @Input()
     public channel?: Channel;

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { faDragon, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 
@@ -18,6 +19,12 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
 export class SidebarUserInfoComponent implements OnInit, OnDestroy {
 
     private userSubscription?: Subscription;
+
+    public dragon = faDragon;
+
+    public cog = faCog;
+
+    public signOut = faSignOutAlt;
 
     public user?: User;
 

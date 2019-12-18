@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 
@@ -19,6 +20,8 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
 export class ServerInfoComponent implements OnInit, OnDestroy {
 
     private activeServerSub?: Subscription;
+
+    public database = faDatabase;
 
     public server?: Server;
 

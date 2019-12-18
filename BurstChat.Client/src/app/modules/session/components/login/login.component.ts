@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { Credentials } from 'src/app/models/user/credentials';
 import { tryParseError, BurstChatError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -19,6 +20,8 @@ import { SessionService } from 'src/app/modules/session/services/session-service
 export class LoginComponent implements OnInit {
 
     public credentials = new Credentials();
+
+    public dragon = faDragon;
 
     public loading = false;
 
