@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
+import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
 /**
  * This class represents an angular component that displays the list of users that are subscribed to a server.
@@ -18,7 +20,7 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
 })
 export class UserListComponent implements OnInit, OnDestroy {
 
-    private activeServerSub?: Subscription;
+    private displaySub?: Subscription;
 
     private usersCacheSub?: Subscription;
 
@@ -33,6 +35,7 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     constructor(
+        private sidebarService: SidebarService,
         private serversService: ServersService,
         private usersService: UserService
     ) { }
@@ -42,13 +45,16 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     public ngOnInit() {
-        this.activeServerSub = this
-            .serversService
-            .activeServer
-            .subscribe(server => {
-                if (server) {
-                    this.server = server;
-                    this.getSubscribedUsers(this.server.id);
+        this.displaySub = this
+            .sidebarService
+            .display
+            .subscribe(options => {
+                if (options instanceof DisplayServer) {
+                    const server = (options as DisplayServer).server;
+                    if (server) {
+                        this.server = server;
+                        this.getSubscribedUsers(this.server.id);
+                    }
                 }
             });
 
@@ -68,8 +74,8 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     public ngOnDestroy() {
-        if (this.activeServerSub) {
-            this.activeServerSub.unsubscribe();
+        if (this.displaySub) {
+            this.displaySub.unsubscribe();
         }
 
         if (this.usersCacheSub) {

@@ -1,1 +1,21 @@
-<p>direct-messaging-list works!</p>
+<div class="w-100">
+
+    <div class="direct-messages-header">
+        
+        <div class="direct-messages-text">Direct Messages</div>
+        
+        <div class="w-100 text-muted pl-5 pr-5">
+
+            <hr>
+
+        </div>
+
+    </div>
+
+    <div *ngFor="let user of users">
+
+        <app-user [user]="user"></app-user>
+
+    </div>
+
+</div>

@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace BurstChat.Api
 {
@@ -30,7 +31,7 @@ namespace BurstChat.Api
         private readonly static ILoggerFactory BurstChatContextLogger = LoggerFactory.Create(builder => builder.AddConsole());
 
         public IConfiguration Configuration
-        { 
+        {
             get;
         }
 
@@ -50,13 +51,12 @@ namespace BurstChat.Api
         public void ConfigureServices(IServiceCollection services)
         {
             IdentityModelEventSource.ShowPII = true;
-            
+
             services
                 .Configure<DatabaseOptions>(Configuration.GetSection("Database"))
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
 
-            services
-                .AddSingleton<IBCryptService, BCryptProvider>();
+            services.AddSingleton<IBCryptService, BCryptProvider>();
 
             services
                 .AddScoped<IChannelsService, ChannelsProvider>()
@@ -66,64 +66,63 @@ namespace BurstChat.Api
                 .AddScoped<IModelValidationService, ModelValidationProvider>()
                 .AddScoped<IUserService, UserProvider>();
 
+            services.AddMvc();
+
             services
                 .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            services
-                .AddAuthorization();
+            services.AddAuthorization();
 
             services
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options => Configuration.GetSection("AccessTokenValidation").Bind(options));
 
-            services
-                .AddDbContext<BurstChatContext>(options =>
+            services.AddDbContext<BurstChatContext>(options =>
+            {
+                var databaseOptions = new DatabaseOptions();
+
+                Configuration
+                    .GetSection("Database")
+                    .Bind(databaseOptions);
+
+                switch (databaseOptions.Provider)
                 {
-                    var databaseOptions = new DatabaseOptions();
+                    case "npgsql":
+                        options
+                            .UseLoggerFactory(BurstChatContextLogger)
+                            .UseNpgsql(databaseOptions.ConnectionString, dbContextOptions =>
+                            {
+                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
+                            });
+                        break;
+                    default:
+                        break;
+                }
+            });
 
-                    Configuration
-                        .GetSection("Database")
-                        .Bind(databaseOptions);
-
-                    switch (databaseOptions.Provider)
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    var acceptedDomains = Configuration
+                        .GetSection("AcceptedDomains")
+                        .Get<string[]>();
+                    if (acceptedDomains != null && acceptedDomains.Count() > 0)
                     {
-                        case "npgsql":
-                            options
-                                .UseLoggerFactory(BurstChatContextLogger)
-                                .UseNpgsql(databaseOptions.ConnectionString, dbContextOptions =>
-                                {
-                                    dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                                });
-                            break;
-                        default:
-                            break;
+                        builder
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials()
+                            .WithOrigins(acceptedDomains);
                     }
                 });
+            });
 
-            services
-                .AddCors(options =>
-                {
-                    options.AddPolicy("CorsPolicy", builder =>
-                    {
-                        var acceptedDomains = Configuration
-                            .GetSection("AcceptedDomains")
-                            .Get<string[]>();
-                        if (acceptedDomains != null && acceptedDomains.Count() > 0)
-                        {
-                            builder
-                                .AllowAnyHeader()
-                                .AllowAnyMethod()
-                                .AllowCredentials()
-                                .WithOrigins(acceptedDomains);
-                        }
-                    });
-                });
-
-            // services.AddSwaggerGen(config =>
-            // {
-            //     config.SwaggerDoc("v1", new Info { Title = "BurstChat API", Version = "v1" });
-            // });
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v1", new OpenApiInfo { Title = "BurstChat API", Version = "v1" });
+            });
         }
 
         /// <summary>
@@ -138,15 +137,21 @@ namespace BurstChat.Api
                 application.UseDeveloperExceptionPage();
             }
 
-            application.UseStaticFiles();
-            application.UseRouting();
-            application.UseAuthentication();
-            application.UseAuthorization();
-            application.UseCors("CorsPolicy");
-            application.UseEndpoints(endpoints => 
-            {
-                endpoints.MapControllers();
-            });
+            application
+                .UseStaticFiles()
+                .UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseCors("CorsPolicy")
+                .UseSwagger()
+                .UseSwaggerUI(config => 
+                {
+                    config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat API V1");
+                })
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

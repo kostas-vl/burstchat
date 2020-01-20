@@ -12,6 +12,7 @@ namespace BurstChat.Api.Services.DirectMessagingService
     /// </summary>
     public interface IDirectMessagingService
     {
+
         /// <summary>
         /// This method will fetch all information about direct messaging entry.
         /// </summary>
@@ -28,6 +29,13 @@ namespace BurstChat.Api.Services.DirectMessagingService
         /// <param name="secondParticipantId">The user id of the second participant</param>
         /// <returns>An either monad</returns>
         Either<DirectMessaging, Error> Get(long userId, long firstParticipantId, long secondParticipantId);
+
+        /// <summary>
+        /// This method will fetch all users that the requesting user has direct messaged.
+        /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
+        /// <returns>An either monad</returns>
+        Either<IEnumerable<User>, Error> GetUsers(long userId);
 
         /// <summary>
         /// This method will create a new direct messaging entry.

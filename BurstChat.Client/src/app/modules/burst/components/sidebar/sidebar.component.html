@@ -12,14 +12,19 @@
     
     <div class="sidebar-content">
         
-        <div class="sidebar-servers">
+        <div class="sidebar-selection">
             
-            <app-server-list></app-server-list>
-            
+            <app-sidebar-selection></app-sidebar-selection>
             
         </div>
+
+        <div class="sidebar-lists" *ngIf="display === 'direct'">
+
+            <app-direct-messaging-list></app-direct-messaging-list>
+
+        </div>
         
-        <div class="sidebar-lists">
+        <div class="sidebar-lists" *ngIf="display === 'server'">
             
             <app-server-info></app-server-info>
 

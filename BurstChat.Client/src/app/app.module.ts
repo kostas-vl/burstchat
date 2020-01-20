@@ -16,7 +16,7 @@ import { RootComponent } from 'src/app/components/root/root.component';
         AppRoutingModule
     ],
     declarations: [
-        RootComponent
+        RootComponent,
     ],
     providers: [
         NotifyService,

@@ -7,7 +7,9 @@ import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
-import { ServerListComponent } from 'src/app/modules/burst/components/server-list/server-list.component';
+import { SidebarSelectionComponent } from 'src/app/modules/burst/components/sidebar-selection/sidebar-selection.component';
+import { DirectMessagingComponent } from 'src/app/modules/burst/components/direct-messaging/direct-messaging.component';
+import { DirectMessagingListComponent } from './components/direct-messaging-list/direct-messaging-list.component';
 import { ServerComponent } from 'src/app/modules/burst/components/server/server.component';
 import { ServerInfoComponent } from 'src/app/modules/burst/components/server-info/server-info.component';
 import { ChannelListComponent } from 'src/app/modules/burst/components/channel-list/channel-list.component';
@@ -40,7 +42,9 @@ import {
         LayoutComponent,
         SidebarComponent,
         SidebarUserInfoComponent,
-        ServerListComponent,
+        SidebarSelectionComponent,
+        DirectMessagingComponent,
+        DirectMessagingListComponent,
         ServerComponent,
         ServerInfoComponent,
         ChannelListComponent,

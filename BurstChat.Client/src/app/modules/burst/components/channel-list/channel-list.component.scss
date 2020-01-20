@@ -4,10 +4,6 @@ hr {
     border-color: $text-muted-color;
 }
 
-.channel-list-container {
-    width: 100%;
-}
-
 .channel-list-header {
     @extend .pt-5;
     @extend .pb-5;

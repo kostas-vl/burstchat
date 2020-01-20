@@ -1,0 +1,20 @@
+@import '../../../../../scss/theme';
+@import '../../../../../scss/loader';
+
+hr {
+    border-color: $text-muted-color;
+}
+
+.direct-messages-header {
+    @extend .pt-5;
+    @extend .pb-5;
+    @extend .pl-10;
+    @extend .text-muted;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.direct-messages-text {
+    width: 220px;
+}

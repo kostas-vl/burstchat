@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faDragon } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays a home screen to the user.
@@ -12,6 +13,8 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+
+    public dragon = faDragon;
 
     /**
      * Creates an instance of HomeComponent.

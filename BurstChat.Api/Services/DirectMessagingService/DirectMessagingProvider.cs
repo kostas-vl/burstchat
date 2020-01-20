@@ -147,6 +147,39 @@ namespace BurstChat.Api.Services.DirectMessagingService
         }
 
         /// <summary>
+        /// This method will fetch all users that the requesting user has direct messaged.
+        /// </summary>
+        /// <param name="userId">The id of the requesting user</param>
+        /// <returns>An either monad</returns>
+        public Either<IEnumerable<User>, Error> GetUsers(long userId)
+        {
+            try
+            {
+                var userIds = _burstChatContext
+                    .DirectMessaging
+                    .Where(dm => dm.FirstParticipantUserId == userId
+                                 || dm.SecondParticipantUserId == userId)
+                    .ToList()
+                    .Select(dm => dm.FirstParticipantUserId != userId
+                                  ? dm.FirstParticipantUserId
+                                  : dm.SecondParticipantUserId);
+
+                var users = _burstChatContext
+                    .Users
+                    .Where(u => userIds.Contains(u.Id))
+                    .ToList();
+
+                return new Success<IEnumerable<User>, Error>(users);
+
+            }
+            catch(Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<IEnumerable<User>, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
         ///   This method will create a new direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>

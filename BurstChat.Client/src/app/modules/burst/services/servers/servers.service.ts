@@ -17,8 +17,6 @@ export class ServersService {
 
     private serverCacheSource = new BehaviorSubject<Server[]>([]);
 
-    public activeServer = this.activeServerSource.asObservable();
-
     public serverInfo = this.serverInfoSource.asObservable();
 
     public serverCache = this.serverCacheSource.asObservable();
@@ -28,17 +26,6 @@ export class ServersService {
      * @memberof ServersService
      */
     constructor(private httpClient: HttpClient) { }
-
-    /**
-     * Informs all observers of the active server about its new value.
-     * @memberof ServersService
-     */
-    public setActiveServer(server: Server | null) {
-        if (server) {
-            this.activeServerSource
-                .next(server);
-        }
-    }
 
     /**
      * Requests to the BurstChat API all information about a server based on the provided id.

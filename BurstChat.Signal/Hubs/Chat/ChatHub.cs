@@ -53,6 +53,41 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
+        /// This method is an override of the virtual OnConnectedAsync, and creates a single user group of the
+        /// authenticated user with his user id.
+        /// </summary>
+        /// <returns>A Task instance</returns>
+        public override async Task OnConnectedAsync()
+        {
+            await Context
+                .GetHttpContext()
+                .GetUserId()
+                .ExecuteAndContinueAsync(async userId => 
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, userId.ToString());
+                });
+        }
+
+        /// <summary>
+        /// This method is an override of the virtual OnDisconnectedAsync, and removes the single user group of the
+        /// authenticated user.
+        /// </summary>
+        /// <param name="e">The incoming exception</param>
+        /// <returns>A Task instance</returns>
+        public override async Task OnDisconnectedAsync(Exception e)
+        {
+            _logger.LogException(e);
+
+            await Context
+                .GetHttpContext()
+                .GetUserId()
+                .ExecuteAndContinueAsync(async userId =>
+                {
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId.ToString());                    
+                });
+        }
+
+        /// <summary>
         ///     Returns all invitations sent to a user.
         /// </summary>
         /// <returns>A Task instance</returns>
@@ -61,12 +96,20 @@ namespace BurstChat.Signal.Hubs.Chat
             var httpContext = Context.GetHttpContext();
             var monad = await _invitationsService.GetAllAsync(httpContext);
 
-            if (monad is Success<IEnumerable<Invitation>, Error> success)
-                await Clients.Caller.Invitations(success.Value);
-            else if (monad is Failure<IEnumerable<Invitation>, Error> failure)
-                await Clients.Caller.Invitations(failure.Value);
-            else
-                await Clients.Caller.Invitations(SystemErrors.Exception());
+            switch (monad)
+            {
+                case Success<IEnumerable<Invitation>, Error> success:
+                    await Clients.Caller.Invitations(success.Value);
+                    break;
+
+                case Failure<IEnumerable<Invitation>, Error> failure:
+                    await Clients.Caller.Invitations(failure.Value);
+                    break;
+
+                default:
+                    await Clients.Caller.Invitations(SystemErrors.Exception());
+                    break;
+            }
         }
 
         /// <summary>
@@ -81,12 +124,21 @@ namespace BurstChat.Signal.Hubs.Chat
             var requestingUserId = httpContext.GetUserId().ToString();
             var monad = await _invitationsService.InsertAsync(httpContext, serverId, username);
 
-            if (monad is Success<Invitation, Error> success)
-                await Clients.User(requestingUserId).NewInvitation(success.Value);
-            else if (monad is Failure<Invitation, Error> failure)
-                await Clients.Caller.NewInvitation(failure.Value);
-            else
-                await Clients.Caller.NewInvitation(SystemErrors.Exception());
+            switch (monad)
+            {
+                case Success<Invitation, Error> success:
+                    var userId = success.Value.UserId.ToString();
+                    await Clients.Groups(userId).NewInvitation(success.Value);
+                    break;
+
+                case Failure<Invitation, Error> failure:
+                    await Clients.Caller.NewInvitation(failure.Value);  
+                    break;
+                
+                default:
+                    await Clients.Caller.NewInvitation(SystemErrors.Exception());
+                    break;
+            }
         }
 
         /// <summary>
@@ -98,24 +150,32 @@ namespace BurstChat.Signal.Hubs.Chat
         {
             var httpContext = Context.GetHttpContext();
             var monad = await _invitationsService.UpdateAsync(httpContext, invitation);
+            var signalGroup = string.Empty;
+            var invite = new Invitation();
 
-            if (monad is Success<Invitation, Error> success)
+            switch (monad)
             {
-                var value = success.Value;
-                var signalGroup = ServerSignalName(value.ServerId);
+                case Success<Invitation, Error> success when success.Value.Accepted:
+                    invite = success.Value;
+                    signalGroup = ServerSignalName(invite.ServerId);
+                    await Clients.Group(signalGroup).UpdatedInvitation(invite);
+                    await Clients.Caller.UpdatedInvitation(invite);
+                    break;
 
-                if (value.Accepted)
-                {
-                    await Clients.Group(signalGroup).UpdatedInvitation(value);
-                    await Clients.Caller.UpdatedInvitation(value);
-                }
-                else
-                    await Clients.Caller.UpdatedInvitation(value);
+                case Success<Invitation, Error> success when !success.Value.Accepted:
+                    invite = success.Value;
+                    signalGroup = ServerSignalName(invite.ServerId);
+                    await Clients.Caller.UpdatedInvitation(invite);
+                    break;
+
+                case Failure<Invitation, Error> failure:
+                    await Clients.Caller.UpdatedInvitation(failure.Value);
+                    break;
+                
+                default:
+                    await Clients.Caller.UpdatedInvitation(SystemErrors.Exception());
+                    break;
             }
-            else if (monad is Failure<Invitation, Error> failure)
-                await Clients.Caller.UpdatedInvitation(failure.Value);
-            else
-                await Clients.Caller.UpdatedInvitation(SystemErrors.Exception());
         }
     }
 }

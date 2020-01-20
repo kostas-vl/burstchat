@@ -1,0 +1,25 @@
+<div class="selection-list-container">
+
+    <div class="selection-entry">
+
+        <div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onNew()">
+
+            <fa-icon [icon]="cubes"></fa-icon>
+
+        </div>
+
+    </div>
+
+    <div class="selection-entry">
+
+        <app-direct-messaging></app-direct-messaging>
+
+    </div>
+
+    <div class="selection-entry" *ngFor="let server of servers">
+
+        <app-server [server]="server"></app-server>
+
+    </div>
+
+</div>

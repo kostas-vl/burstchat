@@ -14,15 +14,15 @@ import { Invitation } from 'src/app/models/servers/invitation';
 /**
  * This class represents an angular component that displays on screen a list of subscribed servers.
  * @export
- * @class ServerListComponent
+ * @class SidebarSelectionComponent
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-server-list',
-    templateUrl: './server-list.component.html',
-    styleUrls: ['./server-list.component.scss']
+    selector: 'app-sidebar-selection',
+    templateUrl: './sidebar-selection.component.html',
+    styleUrls: ['./sidebar-selection.component.scss']
 })
-export class ServerListComponent implements OnInit, OnDestroy {
+export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
     private userSub?: Subscription;
 
@@ -55,8 +55,8 @@ export class ServerListComponent implements OnInit, OnDestroy {
     public servers: Server[] = [];
 
     /**
-     * Creates an instance of ServerListComponent.
-     * @memberof ServerListComponent
+     * Creates an instance of SidebarSelectionComponent.
+     * @memberof SidebarSelectionComponent
      */
     constructor(
         private router: Router,
@@ -67,7 +67,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
     /**
      * Executes any necessary start up code for the component.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     public ngOnInit() {
         this.userSub = this
@@ -129,7 +129,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
     /**
      * Executes any neccessary code for the destruction of the component.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     public ngOnDestroy() {
         if (this.userSub) {
@@ -178,7 +178,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * observable.
      * @private
      * @param {Server} server The server instance.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     private serverInfoCallback(server: Server) {
         if (server) {
@@ -197,7 +197,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * observale.
      * @private
      * @param {[number, BurstSubscription]} data The server id and the subscription instance.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     private subcriptionDeletedCallback(data: [number, BurstSubscription]) {
         const serverId = data[0];
@@ -224,7 +224,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * This method is invoked when a new channel is pushed by the channel created observable.
      * @private
      * @param {[number, Channel]} data The server id and the channel instance
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     private channelCreatedCallback(data: [number, Channel]) {
         const serverId = data[0];
@@ -241,7 +241,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * by the channel updated observable.
      * @private
      * @param {Channel} channel The updated channel instance.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     private channelUpdatedCallback(channel: Channel) {
         const server = this
@@ -261,7 +261,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * observable.
      * @private
      * @param {number} channelId The removed channel id.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     private channelDeletedCallback(channelId: number) {
         const server = this
@@ -281,7 +281,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
      * observable.
      * @private
      * @param {Invitation} invite The invitation instance.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     private updatedInvitationCallback(invite: Invitation) {
         const inList = this.servers.some(s => s.id === invite.serverId);
@@ -310,7 +310,7 @@ export class ServerListComponent implements OnInit, OnDestroy {
 
     /**
      * Handles the new server button click event.
-     * @memberof ServerListComponent
+     * @memberof SidebarSelectionComponent
      */
     public onNew() {
         this.router.navigateByUrl('/core/servers/add');

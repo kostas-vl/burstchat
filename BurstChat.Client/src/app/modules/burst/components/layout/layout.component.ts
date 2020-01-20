@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { NotifyService } from 'src/app/services/notify/notify.service';
+import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { ChannelsService } from 'src/app/modules/burst/services/channels/channels.service';
@@ -18,7 +19,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
     selector: 'app-layout',
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss'],
-    providers: [UserService, ServersService, ChannelsService, DirectMessagingService, ChatService]
+    providers: [SidebarService, UserService, ServersService, ChannelsService, DirectMessagingService, ChatService]
 })
 export class LayoutComponent implements OnInit, OnDestroy {
 
@@ -39,6 +40,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     constructor(
         private notifyService: NotifyService,
         private userService: UserService,
+        private directMessagingService: DirectMessagingService,
         private chatService: ChatService,
     ) { }
 
@@ -78,14 +80,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
             .newInvitation
             .subscribe(invite => this.onInvite(invite));
 
-        this.userService
-            .getUser();
-
-        this.userService
-            .getSubscriptions();
-
-        this.chatService
-            .InitializeConnection();
+        this.userService.getUser();
+        this.userService.getSubscriptions();
+        this.directMessagingService.getUsers();
+        this.chatService.InitializeConnection();
     }
 
     /**

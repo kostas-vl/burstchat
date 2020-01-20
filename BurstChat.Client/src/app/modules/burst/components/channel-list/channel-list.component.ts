@@ -3,6 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { SidebarService } from '../../services/sidebar/sidebar.service';
+import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
 /**
  * This class represents an angular component that displays the list of channel that exist in a BurstChat
@@ -18,7 +20,7 @@ export class ChannelListComponent implements OnInit, OnDestroy {
 
     private queryParamsSub?: Subscription;
 
-    private activeServerSub?: Subscription;
+    private displaySub?: Subscription;
 
     private serverInfoSub?: Subscription;
 
@@ -32,6 +34,7 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      */
     constructor(
         private router: Router,
+        private sidebarService: SidebarService,
         private activatedRoute: ActivatedRoute,
         private serversService: ServersService,
     ) { }
@@ -55,14 +58,17 @@ export class ChannelListComponent implements OnInit, OnDestroy {
                     : undefined;
             });
 
-        this.activeServerSub = this
-            .serversService
-            .activeServer
-            .subscribe(server => {
-                if (server) {
-                    this.server = server;
-                    if (server.channels.length === 0) {
-                        this.serversService.get(server.id);
+        this.displaySub = this
+            .sidebarService
+            .display
+            .subscribe(options => {
+                if (options instanceof DisplayServer) {
+                    const server = (options as DisplayServer).server;
+                    if (server) {
+                        this.server = server;
+                        if (server.channels.length === 0) {
+                            this.serversService.get(server.id);
+                        }
                     }
                 }
             });
@@ -89,8 +95,8 @@ export class ChannelListComponent implements OnInit, OnDestroy {
             this.queryParamsSub.unsubscribe();
         }
 
-        if (this.activeServerSub) {
-            this.activeServerSub.unsubscribe();
+        if (this.displaySub) {
+            this.displaySub.unsubscribe();
         }
 
         if (this.serverInfoSub) {

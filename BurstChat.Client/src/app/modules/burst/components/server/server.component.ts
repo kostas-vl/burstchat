@@ -1,8 +1,9 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
 /**
  * This class represents an angular component that displays on screen a subscribed server.
@@ -17,11 +18,11 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class ServerComponent implements OnInit, OnDestroy {
 
-    private onReconnectedSubscription?: Subscription;
+    private displaySub?: Subscription;
 
-    private activeServerSubscription?: Subscription;
+    private onReconnectedSub?: Subscription;
 
-    public isActiveServer = false;
+    public isActive = false;
 
     @Input()
     public server?: Server;
@@ -43,7 +44,7 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     constructor(
-        private serversService: ServersService,
+        private sidebarService: SidebarService,
         private chatService: ChatService
     ) { }
 
@@ -52,21 +53,26 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public ngOnInit() {
-        this.onReconnectedSubscription = this
+        this.displaySub = this
+            .sidebarService
+            .display
+            .subscribe(options => {
+                if (options instanceof DisplayServer) {
+                    const server = (options as DisplayServer).server;
+                    this.isActive = server && server.id === this.server.id;
+                    if (this.isActive) {
+                        this.server = server;
+                    }
+                } else {
+                    this.isActive = false;
+                }
+            });
+
+        this.onReconnectedSub = this
             .chatService
             .onReconnected
             .subscribe(() => {
                 this.chatService.addToServer(this.server.id);
-            });
-
-        this.activeServerSubscription = this
-            .serversService
-            .activeServer
-            .subscribe(server => {
-                this.isActiveServer = server && server.id === this.server.id;
-                if (this.isActiveServer) {
-                    this.server = server;
-                }
             });
     }
 
@@ -75,14 +81,12 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public ngOnDestroy() {
-        if (this.onReconnectedSubscription) {
-            this.onReconnectedSubscription
-                .unsubscribe();
+        if (this.displaySub) {
+            this.displaySub.unsubscribe();
         }
 
-        if (this.activeServerSubscription) {
-            this.activeServerSubscription
-                .unsubscribe();
+        if (this.onReconnectedSub) {
+            this.onReconnectedSub.unsubscribe();
         }
     }
 
@@ -91,12 +95,10 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public onSelect() {
-        if (this.server && !this.isActiveServer) {
-            this.serversService
-                .setActiveServer(this.server);
-
-            this.chatService
-                .addToServer(this.server.id);
+        if (this.server && !this.isActive) {
+            const options = new DisplayServer(this.server);
+            this.sidebarService.toggleDisplay(options);
+            this.chatService.addToServer(this.server.id);
         }
     }
 
