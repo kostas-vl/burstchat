@@ -137,14 +137,15 @@ namespace BurstChat.Api
                 application.UseDeveloperExceptionPage();
             }
 
+
             application
                 .UseStaticFiles()
                 .UseRouting()
+                .UseCors("CorsPolicy")
                 .UseAuthentication()
                 .UseAuthorization()
-                .UseCors("CorsPolicy")
                 .UseSwagger()
-                .UseSwaggerUI(config => 
+                .UseSwaggerUI(config =>
                 {
                     config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat API V1");
                 })

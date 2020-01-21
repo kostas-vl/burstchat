@@ -70,6 +70,7 @@ namespace BurstChat.IdentityServer
         /// <param name="services">The services collection to be used for the configuration</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
             services
                 .AddSingleton<IBCryptService, BCryptProvider>();
 
@@ -97,6 +98,24 @@ namespace BurstChat.IdentityServer
             services
                 .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    var acceptedDomains = Configuration
+                        .GetSection("AcceptedDomains")
+                        .Get<string[]>();
+                    if (acceptedDomains != null && acceptedDomains.Count() > 0)
+                    {
+                        builder
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials()
+                            .WithOrigins(acceptedDomains);
+                    }
+                });
+            });
         }
 
         /// <summary>
@@ -120,6 +139,7 @@ namespace BurstChat.IdentityServer
             application
                 .UseRouting()
                 .UseIdentityServer()
+                .UseCors("CorsPolicy")
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
