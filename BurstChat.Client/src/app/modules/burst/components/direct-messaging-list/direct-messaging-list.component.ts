@@ -34,10 +34,7 @@ export class DirectMessagingListComponent implements OnInit, OnDestroy {
         this.usersSub = this
             .directMessagingService
             .users
-            .subscribe(users => {
-                this.users = users;
-                console.log(this.users);
-            });
+            .subscribe(users => this.users = users);
     }
 
     /**

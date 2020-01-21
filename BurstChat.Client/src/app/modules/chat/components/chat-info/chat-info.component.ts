@@ -3,7 +3,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
-import { faCommentAlt, faLock, faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import { faCommentAlt, faLock, faComments } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -28,7 +28,7 @@ export class ChatInfoComponent implements OnInit {
         } else if (this.options instanceof PrivateGroupConnectionOptions) {
             return faLock;
         } else if (this.options instanceof DirectMessagingConnectionOptions) {
-            return faUserFriends;
+            return faComments;
         } else {
             return undefined;
         }

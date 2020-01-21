@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { DisplayDirectMessages } from 'src/app/models/sidebar/display-direct-messages';
 import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 
@@ -19,7 +19,7 @@ export class DirectMessagingComponent implements OnInit, OnDestroy {
 
     private displaySub?: Subscription;
 
-    public users = faUsers;
+    public comments = faComments;
 
     public isActive = false;
 

@@ -28,7 +28,7 @@ import {
     faCircle,
     faDotCircle,
     faCubes,
-    faUsers
+    faComments
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -80,7 +80,7 @@ export class BurstModule {
             faSignOutAlt,
             faCircle,
             faDotCircle,
-            faUsers);
+            faComments);
     }
 
 }
