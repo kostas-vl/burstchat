@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from  '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { Credentials } from 'src/app/models/user/credentials';
 import { Registration } from 'src/app/models/user/registration';
 import { ChangePassword } from 'src/app/models/user/change-password';
@@ -41,12 +42,12 @@ export class SessionService {
      */
     public validate(data: Credentials): Observable<any> {
         const body = new HttpParams()
-            .set("client_id", "burstchat.web.client")
-            .set("client_secret", "secret")
-            .set("scope", "openid profile offline_access burstchat.api burstchat.signal")
-            .set("grant_type", "password")
-            .set("username", data.email)
-            .set("password", data.password);
+            .set('client_id', environment.clientId)
+            .set('client_secret', environment.clientSecret)
+            .set('scope', environment.scope)
+            .set('grant_type', environment.passwordGrantType)
+            .set('username', data.email)
+            .set('password', data.password);
 
         const httpOptions = {
             headers: new HttpHeaders({
@@ -74,7 +75,7 @@ export class SessionService {
         };
         return this
             .httpClient
-            .post('/connect/password/reset', "'" + email + "'", httpOptions);
+            .post('/connect/password/reset', '"' + email + '"', httpOptions);
     }
 
     /**
