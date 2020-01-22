@@ -112,6 +112,21 @@ namespace BurstChat.Shared.Services.ModelValidationService
         }
 
         /// <summary>
+        /// This method will check if the change password email has a value.
+        /// </summary>
+        /// <param name="changePassword">The change password instance that contains the email</param>
+        /// <returns>An either monad</returns>
+        private Either<ChangePassword, Error> EmailIsValid(ChangePassword changePassword)
+        {
+            var emailHasValue = EmailIsValid(changePassword.Email);
+
+            if (emailHasValue)
+                return new Success<ChangePassword, Error>(changePassword);
+            else
+                return new Success<ChangePassword, Error>(changePassword);
+        }
+
+        /// <summary>
         ///   This method will check the provided password under all neccessary rules.
         /// </summary>
         /// <param name="password">The password value</param>
@@ -265,6 +280,7 @@ namespace BurstChat.Shared.Services.ModelValidationService
         /// <returns>An either monad</returns>
         public Either<ChangePassword, Error> ValidateChangePassword(ChangePassword changePassword) =>
             ChangePasswordHasValue(changePassword)
+                .Bind(EmailIsValid)
                 .Bind(OneTimePassIsValid)
                 .Bind(NewPasswordIsValid)
                 .Bind(ConfirmNewPasswordIsValid);

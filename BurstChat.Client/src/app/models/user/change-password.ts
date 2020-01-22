@@ -5,6 +5,7 @@
  */
 export class ChangePassword {
 
+    public email = '';
     public oneTimePassword = '';
     public newPassword = '';
     public confirmNewPassword = '';

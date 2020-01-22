@@ -90,7 +90,7 @@ namespace BurstChat.IdentityServer.Controllers
         {
             var monad = _modelValidationService
                 .ValidateChangePassword(changePassword)
-                .Bind(c => _userService.ChangePassword(c.OneTimePassword, c.NewPassword));
+                .Bind(c => _userService.ChangePassword(c.Email, c.OneTimePassword, c.NewPassword));
 
             return this.UnwrapMonad(monad);
         }

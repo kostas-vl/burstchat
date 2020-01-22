@@ -94,10 +94,11 @@ namespace BurstChat.Shared.Services.UserService
         /// <summary>
         ///   Changes the current hashed password of the user to the one provided.
         /// </summary>
+        /// <param name="email">The email of the user</param>
         /// <param name="oneTimePass">The one time password of the user</param>
         /// <param name="password">The string value of the password that will be hashed</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> ChangePassword(string oneTimePass, string password);
+        Either<Unit, Error> ChangePassword(string email, string oneTimePass, string password);
 
         /// <summary>
         ///     Fetches all invitations sent to a user based on the provided id.

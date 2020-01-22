@@ -48,7 +48,11 @@ export class ResetPasswordComponent implements OnInit {
         this.sessionService
             .resetPassword(this.email)
             .subscribe(
-                () => this.router.navigateByUrl('/session/change'),
+                () => this.router.navigate(['/session/change'], {
+                    queryParams: {
+                        email: this.email
+                    }
+                }),
                 error => {
                     console.log(error);
                     let apiError = tryParseError(error.error);
