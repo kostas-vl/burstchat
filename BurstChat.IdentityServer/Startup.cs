@@ -16,6 +16,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using BurstChat.Shared.Services.EmailService;
+using BurstChat.Shared.Options;
 
 namespace BurstChat.IdentityServer
 {
@@ -70,9 +72,13 @@ namespace BurstChat.IdentityServer
         /// <param name="services">The services collection to be used for the configuration</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
             services
-                .AddSingleton<IBCryptService, BCryptProvider>();
+                .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"))
+                .Configure<SmtpOptions>(Configuration.GetSection("SmtpOptions"));
+
+            services
+                .AddSingleton<IBCryptService, BCryptProvider>()
+                .AddSingleton<IEmailService, EmailProvider>();
 
             services
                 .AddScoped<IUserService, UserProvider>()
@@ -138,8 +144,8 @@ namespace BurstChat.IdentityServer
 
             application
                 .UseRouting()
-                .UseIdentityServer()
                 .UseCors("CorsPolicy")
+                .UseIdentityServer()
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();

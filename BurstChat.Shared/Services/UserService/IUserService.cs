@@ -89,7 +89,7 @@ namespace BurstChat.Shared.Services.UserService
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> IssueOneTimePassword(string email);
+        Either<string, Error> IssueOneTimePassword(string email);
 
         /// <summary>
         ///   Changes the current hashed password of the user to the one provided.

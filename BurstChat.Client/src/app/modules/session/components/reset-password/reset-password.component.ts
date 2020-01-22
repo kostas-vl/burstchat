@@ -63,4 +63,16 @@ export class ResetPasswordComponent implements OnInit {
             );
     }
 
+    /**
+     *
+     * Handles the email input's key down event.
+     * @param {KeyboardEvent} event The event arguments.
+     * @memberof ResetPasswordComponent
+     */
+    public onKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            this.onResetPassword();
+        }
+    }
+
 }

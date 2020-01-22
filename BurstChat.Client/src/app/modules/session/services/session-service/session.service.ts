@@ -74,7 +74,7 @@ export class SessionService {
         };
         return this
             .httpClient
-            .post('/connect/password/reset', "'" + email + "'", httpOptions);
+            .post('/connect/password/reset', '"' + email + '"', httpOptions);
     }
 
     /**

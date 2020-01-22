@@ -11,6 +11,8 @@ using BurstChat.Shared.Schema.Servers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using BurstChat.Shared.Services.EmailService;
+using System.Threading.Tasks;
 
 namespace BurstChat.IdentityServer.Controllers
 {
@@ -25,6 +27,7 @@ namespace BurstChat.IdentityServer.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IModelValidationService _modelValidationService;
+        private readonly IEmailService _emailService;
         private readonly IUserService _userService;
 
         /// <summary>
@@ -33,11 +36,13 @@ namespace BurstChat.IdentityServer.Controllers
         public UserController(
             ILogger<UserController> logger,
             IModelValidationService modelValidationService,
+            IEmailService emailService,
             IUserService userService
         )
         {
             _logger = logger;
             _modelValidationService = modelValidationService;
+            _emailService = emailService;
             _userService = userService;
         }
 
@@ -63,9 +68,15 @@ namespace BurstChat.IdentityServer.Controllers
         /// <param name="email">The email of the user</param>
         /// <returns>An IActionResult instance</returns>
         [HttpPost("password/reset")]
-        public IActionResult IssueOneTimePassword([FromBody] string email)
+        public async Task<IActionResult> IssueOneTimePassword([FromBody] string email)
         {
-            var monad = _userService.IssueOneTimePassword(email);
+            var monad = await _userService
+                .IssueOneTimePassword(email)
+                .BindAsync(async oneTimePass =>
+                {
+                    return await _emailService.SendOneTimePasswordAsync(email, oneTimePass);
+                });
+
             return this.UnwrapMonad(monad);
         }
 
