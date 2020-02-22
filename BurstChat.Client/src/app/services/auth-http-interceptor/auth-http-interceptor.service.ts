@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { StorageService } from 'src/app/services/storage/storage.service';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { TokenInfo } from 'src/app/models/identity/token-info';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 /**
  * This class represents an angular http interceptor that will assign a bearer token to an http request.
@@ -12,6 +13,10 @@ import { environment } from 'src/environments/environment';
  */
 @Injectable()
 export class AuthHttpInterceptor implements HttpInterceptor {
+
+    private refreshingToken = false;
+
+    private tokenInfo?: TokenInfo;
 
     /**
      * Creates a new instance of AuthHttpInterceptor.
@@ -21,7 +26,15 @@ export class AuthHttpInterceptor implements HttpInterceptor {
         private router: Router,
         private httpClient: HttpClient,
         private storageService: StorageService
-    ) { }
+    ) {
+        this.storageService
+            .tokenInfo
+            .subscribe(info => {
+                if (info) {
+                    this.tokenInfo = info;
+                }
+            });
+    }
 
     /**
      * This method will request a new access token by using the stored refresh token.
@@ -35,7 +48,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
             .set('client_secret', environment.clientSecret)
             .set('scope', environment.scope)
             .set('grant_type', environment.refreshTokenGrantType)
-            .set('refresh_token', this.storageService.tokenInfo.refreshToken);
+            .set('refresh_token', this.tokenInfo.refreshToken);
 
         const httpOptions = {
             headers: new HttpHeaders({
@@ -46,18 +59,43 @@ export class AuthHttpInterceptor implements HttpInterceptor {
         return this
             .httpClient
             .post<any>('/connect/token', body.toString(), httpOptions)
-            .subscribe(data => {
-                if (data) {
-                    this.storageService.tokenInfo = {
-                        idToken: data.id_token || null,
-                        accessToken: data.access_token,
-                        expiresIn: data.expires_in,
-                        refreshToken: data.refresh_token,
-                        scope: data.scope,
-                        tokenType: data.token_type
-                    };
-                }
-            });
+            .pipe(
+                tap(data => {
+                    if (data) {
+                        const info: TokenInfo = {
+                            idToken: data.id_token || null,
+                            accessToken: data.access_token,
+                            expiresIn: data.expires_in,
+                            refreshToken: data.refresh_token,
+                            scope: data.scope,
+                            tokenType: data.token_type
+                        };
+                        this.storageService.setTokenInfo(info);
+                    }
+                })
+            );
+    }
+
+    /**
+     * This method will extend the provided request in order to add an access token to the Authorization
+     * header.
+     * @private
+     * @memberof AuthHttpInterceptor
+     * @param {HttpRequest(any)} request The request to be extended.
+     * @returns The modified HttpRequest.
+     */
+    private requestWithAccessToken(request: HttpRequest<any>) {
+        const accessToken = this
+            .tokenInfo
+            .accessToken;
+
+        const configuredRequest = request.clone({
+            setHeaders: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        return configuredRequest;
     }
 
     /**
@@ -68,28 +106,29 @@ export class AuthHttpInterceptor implements HttpInterceptor {
      * @return An observable that will conclude the request.
      */
     public intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const accessToken = this
-            .storageService
-            .tokenInfo
-            .accessToken;
+        if (this.tokenInfo) {
+            return next
+                .handle(this.requestWithAccessToken(request))
+                .pipe(
+                    catchError(error => {
+                        if (error && error.status === 401) {
+                            return this
+                                .refresh()
+                                .pipe(
+                                    switchMap(_ => next.handle(this.requestWithAccessToken(request))),
+                                    catchError(refreshError => {
+                                        this.router.navigateByUrl('/session/logout');
+                                        return throwError(refreshError);
+                                    })
+                                );
+                        }
 
-        const configuredRequest = request.clone({
-            setHeaders: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        });
+                        return throwError(error);
+                    })
+                );
+        }
 
-        return next
-            .handle(configuredRequest)
-            .pipe(
-                catchError(value => {
-                    if (value && value.status === 401) {
-                        this.router
-                            .navigateByUrl('/session/login');
-                    }
-                    return throwError(value);
-                }
-                ));
+        return next.handle(request);
     }
 
 }

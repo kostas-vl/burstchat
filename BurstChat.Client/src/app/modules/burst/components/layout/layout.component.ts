@@ -83,7 +83,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this.userService.getUser();
         this.userService.getSubscriptions();
         this.directMessagingService.getUsers();
-        this.chatService.InitializeConnection();
+        // this.chatService.InitializeConnection();
     }
 
     /**
@@ -111,8 +111,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
                 .unsubscribe();
         }
 
-        this.chatService
-            .DisposeConnection();
+        // this.chatService
+        //    .DisposeConnection();
     }
 
     /**

@@ -63,7 +63,8 @@ namespace BurstChat.IdentityServer.Extensions
                     new ClientScope { Scope = "openid" },
                     new ClientScope { Scope = "profile" },
                     new ClientScope { Scope = "burstchat.api" },
-                    new ClientScope { Scope = "burstchat.signal" }
+                    new ClientScope { Scope = "burstchat.signal" },
+                    new ClientScope { Scope = "offline_access" }
                 };
 
             webClient

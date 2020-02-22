@@ -4,7 +4,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { ServersRoutingModule } from 'src/app/modules/servers/servers.routing';
-import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { AddServerComponent } from 'src/app/modules/servers/components/add-server/add-server.component';
 import { EditServerComponent } from 'src/app/modules/servers/components/edit-server/edit-server.component';
@@ -25,17 +24,6 @@ import { EditServerUsersComponent } from 'src/app/modules/servers/components/edi
         EditServerChannelsComponent,
         EditServerUsersComponent
     ],
-    providers: [
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: UrlInterceptorService,
-            multi: true
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthHttpInterceptor,
-            multi: true
-        }
-    ]
+    providers: []
 })
 export class ServersModule { }

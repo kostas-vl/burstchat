@@ -12,27 +12,9 @@ import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection
 @Injectable()
 export class StorageService {
 
-    /**
-     * Fetches the value stored for the token info in the appropriate platform storage.
-     * @memberof StorageService
-     * @returns { TokenInfo | null } The TokenInfo instance or null if none is stored.
-     */
-    public get tokenInfo(): TokenInfo | null {
-        const rawTokenInfo = localStorage.getItem('tokenInfo');
-        return JSON.parse(rawTokenInfo) as TokenInfo | null;
-    }
+    private tokenInfoSource: BehaviorSubject<TokenInfo | null>;
 
-    /**
-     * Stores the provided token info to the appropriate platform storage.
-     * @memberof StorageService
-     * @param { TokenInfo } tokenInfo The information about the current tokens
-     */
-    public set tokenInfo(info: TokenInfo) {
-        if (info) {
-            const rawTokenInfo = JSON.stringify(info);
-            localStorage.setItem('tokenInfo', rawTokenInfo);
-        }
-    }
+    public tokenInfo: Observable<TokenInfo | null>;
 
     /**
      * Fetches the last active chat of the user that is stored in the appropriate platform storage.
@@ -70,7 +52,25 @@ export class StorageService {
      * Creates an instance of StorageService.
      * @memberof StorageService
      */
-    constructor() { }
+    constructor() {
+        const rawTokenInfo = localStorage.getItem('tokenInfo');
+        const info = JSON.parse(rawTokenInfo) as TokenInfo | null;
+        this.tokenInfoSource = new BehaviorSubject(info);
+        this.tokenInfo = this.tokenInfoSource.asObservable();
+    }
+
+    /**
+     * Stores the provided token info to the appropriate platform storage.
+     * @memberof StorageService
+     * @param { TokenInfo } tokenInfo The information about the current tokens
+     */
+    public setTokenInfo(info: TokenInfo) {
+        if (info) {
+            const rawTokenInfo = JSON.stringify(info);
+            localStorage.setItem('tokenInfo', rawTokenInfo);
+            this.tokenInfoSource.next(info);
+        }
+    }
 
     /**
      * Clears any neccessary value from the appropriate platform storage.

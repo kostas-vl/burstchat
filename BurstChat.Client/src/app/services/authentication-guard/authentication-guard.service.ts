@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { TokenInfo } from 'src/app/models/identity/token-info';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
 /**
@@ -10,6 +11,8 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 @Injectable()
 export class AuthenticationGuardService implements CanActivate {
 
+    private tokenInfo?: TokenInfo;
+
     /**
      * Creates a new instance of AuthenticationGuardService
      * @memberof AuthenticationGuardService
@@ -17,7 +20,15 @@ export class AuthenticationGuardService implements CanActivate {
     constructor(
         private router: Router,
         private storageService: StorageService
-    ) { }
+    ) {
+        this.storageService
+            .tokenInfo
+            .subscribe(info => {
+                if (info) {
+                    this.tokenInfo = info;
+                }
+            });
+    }
 
     /**
      * This method returns a boolean that reflects whether a route can be accessed based on if there is
@@ -28,10 +39,7 @@ export class AuthenticationGuardService implements CanActivate {
      * @returns { boolean } The boolean that specifies whether a route can be accessed.
      */
     public canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        const tokenInfo = this
-            .storageService
-            .tokenInfo;
-        const isAllowed = tokenInfo !== null && tokenInfo.accessToken !== null;
+        const isAllowed = this.tokenInfo && this.tokenInfo.accessToken !== null;
 
         if (!isAllowed) {
             this.router.navigateByUrl('/session/login');
