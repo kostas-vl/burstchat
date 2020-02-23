@@ -36,9 +36,7 @@ export class UserService {
     public getUser() {
         this.httpClient
             .get<User>('/api/user')
-            .subscribe(data => {
-                this.userSource.next(data);
-            });
+            .subscribe(data => this.userSource.next(data));
     }
 
     /**
