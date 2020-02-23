@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
+import { TokenInfo } from 'src/app/models/identity/token-info';
 import { Payload } from 'src/app/models/signal/payload';
 import { Server } from 'src/app/models/servers/server';
 import { Message } from 'src/app/models/chat/message';
@@ -97,9 +99,19 @@ export class ChatService {
      * @memberof ChatService
      */
     constructor(
+        private router: Router,
         private storageService: StorageService,
         private notifyService: NotifyService
-    ) { }
+    ) {
+        this.storageService
+            .tokenInfo
+            .subscribe(info => {
+                if (info) {
+                    this.disposeConnection();
+                    this.initializeConnection(info);
+                }
+            });
+    }
 
     /**
      * This method will process the data sent by a server signal and if the data is not of instance
@@ -139,14 +151,15 @@ export class ChatService {
 
     /**
      * Establishes a new connection to the chat hub and registers all required callbacks.
+     * @private
      * @memberof ChatService
      */
-    public InitializeConnection(): void {
+    private initializeConnection(tokenInfo: TokenInfo): void {
         try {
             const builder = new HubConnectionBuilder();
             builder
                 .withUrl(`${environment.signalUrl}/chat`, {
-                    accessTokenFactory: () => this.storageService.tokenInfo.accessToken
+                    accessTokenFactory: () => tokenInfo.accessToken
                 })
                 .withAutomaticReconnect();
 
@@ -227,11 +240,13 @@ export class ChatService {
 
     /**
      * Closes the active connection and executes any necessary clean up code.
+     * @private
      * @memberof ChatService
      */
-    public DisposeConnection(): void {
+    private disposeConnection(): void {
         if (this.connection && this.connection.state === HubConnectionState.Connected) {
             this.connection.stop();
+            this.connection = undefined;
         }
     }
 

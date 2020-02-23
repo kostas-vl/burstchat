@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { Credentials } from 'src/app/models/user/credentials';
 import { tryParseError, BurstChatError } from 'src/app/models/errors/error';
+import { TokenInfo } from 'src/app/models/identity/token-info';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
@@ -53,7 +54,7 @@ export class LoginComponent implements OnInit {
             .subscribe(
                 data => {
                     if (data) {
-                        this.storageService.tokenInfo = {
+                        const info: TokenInfo = {
                             idToken: data.id_token || null,
                             accessToken: data.access_token,
                             expiresIn: data.expires_in,
@@ -61,6 +62,7 @@ export class LoginComponent implements OnInit {
                             scope: data.scope,
                             tokenType: data.token_type
                         };
+                        this.storageService.setTokenInfo(info);
                         this.router.navigateByUrl('/core/home');
                     } else {
                         const error: BurstChatError = {
