@@ -113,7 +113,7 @@ namespace BurstChat.Api.Controllers
         /// This method will fetch all messages posted on a channel.
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
-        /// <param name="lastMessageId">The id of the message to be the interval for the rest</param> 
+        /// <param name="lastMessageId">The id of the message to be the interval for the rest</param>
         /// <returns>An IActionResult instance</returns>
         [HttpGet("{channelId:int}/messages")]
         [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
@@ -152,7 +152,7 @@ namespace BurstChat.Api.Controllers
         /// <param name="channelId">The id of the target channel</param>
         /// <param name="message">The message to be updated</param>
         /// <returns>An IActionResult instance</returns>
-        [HttpPut("{channelId:int}/messages")] 
+        [HttpPut("{channelId:int}/messages")]
         [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public IActionResult PutMessage(int channelId, [FromBody] Message message)

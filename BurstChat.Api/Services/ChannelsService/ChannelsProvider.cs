@@ -61,7 +61,7 @@ namespace BurstChat.Api.Services.ChannelsService
                    .Include(s => s.Channels)
                    .Include(s => s.Subscriptions)
                    .AsQueryable()
-                   .FirstOrDefault(s => s.Subscriptions.Any(s => s.UserId == userId)
+                   .FirstOrDefault(s => s.Subscriptions.Any(sub => sub.UserId == userId)
                                         && s.Channels.Any(c => c.Id == channelId));
 
                 if (server is { })
@@ -82,7 +82,7 @@ namespace BurstChat.Api.Services.ChannelsService
                                       .OrderByDescending(m => m.Id)
                                       .Take(100))
                         .ToList()
-                        .Aggregate(new List<Message>(), (current, next) => 
+                        .Aggregate(new List<Message>(), (current, next) =>
                         {
                             current.AddRange(next);
                             return current;
@@ -256,7 +256,7 @@ namespace BurstChat.Api.Services.ChannelsService
         /// <returns>An either monad</returns>
         public Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId, long? lastMessageId = null)
         {
-            return GetWithMessages(userId, channelId, lastMessageId).Attach(channel => channel.Messages as IEnumerable<Message>);  
+            return GetWithMessages(userId, channelId, lastMessageId).Attach(channel => channel.Messages as IEnumerable<Message>);
         }
 
         /// <summary>
