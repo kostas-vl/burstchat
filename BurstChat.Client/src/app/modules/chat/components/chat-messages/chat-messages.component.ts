@@ -64,7 +64,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             .subscribe(payload => this.onMessageReceived(payload));
     }
 
-    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    @ViewChild(CdkVirtualScrollViewport)
     public viewport?: CdkVirtualScrollViewport;
 
     /**
