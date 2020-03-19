@@ -12,4 +12,14 @@
 
     </div>
 
+    <div class="ml-auto pr-10" *ngIf="mediaIcon">
+
+        <div class="button-icon bg-secondary text" (click)="onMediaButtonClick()">
+
+            <fa-icon [icon]="mediaIcon"></fa-icon>
+
+        </div>
+
+    </div>
+
 </div>

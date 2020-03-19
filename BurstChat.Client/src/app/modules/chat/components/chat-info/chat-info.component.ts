@@ -3,7 +3,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
-import { faCommentAlt, faLock, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -34,6 +34,12 @@ export class ChatInfoComponent implements OnInit {
         }
     }
 
+    public get mediaIcon() {
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+            return faPhone;
+        }
+    }
+
     /**
      * Creates a new instance of ChatInfoComponent.
      * @memberof ChatInfoComponent
@@ -45,5 +51,15 @@ export class ChatInfoComponent implements OnInit {
      * @memberof ChatInfoComponent
      */
     public ngOnInit(): void { }
+
+    /**
+     * Handles the media button click event.
+     * @memberof ChatInfoComponent
+     */
+    public onMediaButtonClick() {
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+
+        }
+    }
 
 }
