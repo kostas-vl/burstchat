@@ -24,7 +24,11 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
 
     public inputDevices: InputDevice[] = [];
 
+    public selectedInputDevice?: string;
+
     public outputDevices: OutputDevice[] = [];
+
+    public selectedOutputDevice?: string;
 
     /**
      * Creates a new instance of EditUserMediaComponent.
@@ -59,20 +63,18 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
 
     /**
      * Handles the input device select box change event.
-     * @param {string} deviceId The id of the selected input device.
      * @memberof EditUserMediaComponent
      */
-    public onInputDeviceChange(deviceId: string) {
-
+    public onSelectedInputDeviceChange(value: string) {
+        this.selectedInputDevice = value;
     }
 
     /**
      * Handles the output device select box change event.
-     * @param {string} deviceId The id of the selected output device.
      * @memberof EditUserMediaComponent
      */
-    public onOutputDeviceChange(deviceId: string) {
-
+    public onSelectedOutputDeviceChange(value: string) {
+        this.selectedOutputDevice = value;
     }
 
 }

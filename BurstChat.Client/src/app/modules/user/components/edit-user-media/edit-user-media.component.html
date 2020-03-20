@@ -2,7 +2,7 @@
 
     <div class="column column-100">
 
-        Media
+        <h4>Media</h4>
 
     </div>
 
@@ -18,7 +18,8 @@
 
     <div class="column column-80">
 
-        <select class="text" (change)="onInputDeviceChange($event.target.value)">
+        <select class="text" [ngModel]="selectedInputDevice"
+                (ngModelChange)="onSelectedInputDeviceChange($event)">
 
             <option *ngFor="let device of inputDevices" [attr.value]="device.deviceId">
 
@@ -39,10 +40,10 @@
         Output Device:
 
     </div>
-
     <div class="column column-80">
 
-        <select class="text" (change)="onOutputDeviceChange($event.target.value)">
+        <select class="text" [ngModel]="selectedOutputDevice"
+                (ngModelChange)="onSelectedOutputDeviceChange($event)">
 
             <option *ngFor="let device of outputDevices" [attr.value]="device.deviceId">
 
@@ -51,6 +52,16 @@
             </option>
 
         </select>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-100">
+
+        <span class="text-danger">* Remember to give permission for the microphone in your browser's settings</span>
 
     </div>
 
