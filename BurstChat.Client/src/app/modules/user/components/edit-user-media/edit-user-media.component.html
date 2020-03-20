@@ -1,0 +1,57 @@
+<div class="row">
+
+    <div class="column column-100">
+
+        Media
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-20">
+
+        Input Device:
+
+    </div>
+
+    <div class="column column-80">
+
+        <select class="text" (change)="onInputDeviceChange($event.target.value)">
+
+            <option *ngFor="let device of inputDevices" [attr.value]="device.deviceId">
+
+                {{device.label}}
+
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="column column-20">
+
+        Output Device:
+
+    </div>
+
+    <div class="column column-80">
+
+        <select class="text" (change)="onOutputDeviceChange($event.target.value)">
+
+            <option *ngFor="let device of outputDevices" [attr.value]="device.deviceId">
+
+                {{device.label}}
+
+            </option>
+
+        </select>
+
+    </div>
+
+</div>

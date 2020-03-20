@@ -8,6 +8,7 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
 import { ChannelsService } from 'src/app/modules/burst/services/channels/channels.service';
 import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { MediaService } from 'src/app/modules/burst/services/media/media.service';
 
 /**
  * This class represents an angular component that displays on screen all components of
@@ -19,7 +20,15 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
     selector: 'app-layout',
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss'],
-    providers: [SidebarService, UserService, ServersService, ChannelsService, DirectMessagingService, ChatService]
+    providers: [
+        SidebarService,
+        UserService,
+        ServersService,
+        ChannelsService,
+        DirectMessagingService,
+        ChatService,
+        MediaService
+    ]
 })
 export class LayoutComponent implements OnInit, OnDestroy {
 

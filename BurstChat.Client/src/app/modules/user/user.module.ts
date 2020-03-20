@@ -10,6 +10,7 @@ import { UserRoutingModule } from 'src/app/modules/user/user.routing';
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { EditUserComponent } from 'src/app/modules/user/components/edit-user/edit-user.component';
 import { EditUserInvitationsComponent } from 'src/app/modules/user/components/edit-user-invitations/edit-user-invitations.component';
+import { EditUserMediaComponent } from 'src/app/modules/user/components/edit-user-media/edit-user-media.component';
 
 @NgModule({
     imports: [
@@ -22,7 +23,8 @@ import { EditUserInvitationsComponent } from 'src/app/modules/user/components/ed
     ],
     declarations: [
         EditUserComponent,
-        EditUserInvitationsComponent
+        EditUserInvitationsComponent,
+        EditUserMediaComponent
     ],
     providers: []
 })
