@@ -16,9 +16,13 @@ export class MediaService {
 
     private outputDevicesSource = new BehaviorSubject<OutputDevice[]>([]);
 
+    private inputStreamSource = new BehaviorSubject<MediaStream | null>(null);
+
     public inputDevices = this.inputDevicesSource.asObservable();
 
     public outputDevices = this.outputDevicesSource.asObservable();
+
+    public inputStream = this.inputStreamSource.asObservable();
 
     /**
      * Creates a new instance of MediaService.
@@ -69,6 +73,32 @@ export class MediaService {
 
                     this.inputDevicesSource.next(inputDevices);
                     this.outputDevicesSource.next(outputDevices);
+                }, error => {
+                    console.warn(error);
+                });
+        } catch (ex) {
+            console.warn(ex);
+        }
+    }
+
+    /**
+     * Enables the activation of a new stream for a device with the provided id.
+     * @param {string} deviceId The id of the input device
+     * @memberof MediaService
+     */
+    public activateInput(deviceId: string) {
+        try {
+            const constraints: MediaStreamConstraints = {
+                audio: {
+                    deviceId: deviceId
+                }
+            };
+
+            navigator
+                .mediaDevices
+                .getUserMedia(constraints)
+                .then(stream => {
+                    this.inputStreamSource.next(stream);
                 }, error => {
                     console.warn(error);
                 });

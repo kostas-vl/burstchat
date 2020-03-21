@@ -38,6 +38,31 @@ input:disabled {
     color: $text-muted-color;
 }
 
+select {
+    background-color: $primary-color;
+    color: white;
+    border-color: transparent;
+}
+
+select:disabled {
+    color: $text-muted-color;
+}
+
+progress[value] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: $primary-color;
+    border-radius: 2px;
+    height: 10px;
+}
+
+progress[value]::-webkit-progress-bar {
+    background: $primary-color;
+    border-radius: 2px;
+}
+
 textarea {
     background-color: $primary-color;
     color: white;
@@ -278,7 +303,7 @@ iframe {
 }
 
 .fs-16 {
-    font-size: 16px;    
+    font-size: 16px;
 }
 
 .fs-18 {
@@ -306,7 +331,7 @@ iframe {
 .entity-list {
     background-color: $dark-color;
     height: 400px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .entity {

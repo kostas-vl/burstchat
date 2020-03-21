@@ -10,16 +10,11 @@
 
 <div class="row">
 
-    <div class="column column-20">
+    <div class="column">
 
         Input Device:
 
-    </div>
-
-    <div class="column column-80">
-
-        <select class="text" [ngModel]="selectedInputDevice"
-                (ngModelChange)="onSelectedInputDeviceChange($event)">
+        <select [ngModel]="selectedInputDevice" (ngModelChange)="onSelectedInputDeviceChange($event)">
 
             <option *ngFor="let device of inputDevices" [attr.value]="device.deviceId">
 
@@ -31,19 +26,11 @@
 
     </div>
 
-</div>
-
-<div class="row">
-
-    <div class="column column-20">
+    <div class="column">
 
         Output Device:
 
-    </div>
-    <div class="column column-80">
-
-        <select class="text" [ngModel]="selectedOutputDevice"
-                (ngModelChange)="onSelectedOutputDeviceChange($event)">
+        <select [ngModel]="selectedOutputDevice" (ngModelChange)="onSelectedOutputDeviceChange($event)">
 
             <option *ngFor="let device of outputDevices" [attr.value]="device.deviceId">
 
@@ -52,6 +39,35 @@
             </option>
 
         </select>
+
+        <span class="text-muted">
+
+            * The output device cannot be changed in the browser.
+            Use the desktop application for better control of these devices.
+
+        </span>
+
+    </div>
+
+</div>
+
+<br>
+
+<div class="row">
+
+    <div class="column column-25">
+
+        <button class="button w-100" (click)="onTestInput()">
+
+            {{testingAudio ? 'Stop Testing' : 'Test Input'}}
+
+        </button>
+
+    </div>
+
+    <div class="column">
+
+        <progress class="w-100" max="100" value="70"></progress>
 
     </div>
 

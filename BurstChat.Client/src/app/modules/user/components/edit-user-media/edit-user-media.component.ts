@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { InputDevice } from 'src/app/models/media/input-device';
 import { OutputDevice } from 'src/app/models/media/output-device';
@@ -21,6 +21,12 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
     private inputDevicesSub?: Subscription;
 
     private outputDevicesSub?: Subscription;
+
+    private inputStreamSub?: Subscription;
+
+    private audio = new Audio();
+
+    public testingAudio = false;
 
     public inputDevices: InputDevice[] = [];
 
@@ -50,6 +56,15 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
             .mediaService
             .outputDevices
             .subscribe(devices => this.outputDevices = devices);
+
+        this.inputStreamSub = this
+            .mediaService
+            .inputStream
+            .subscribe(stream => {
+                if (stream) {
+                    this.startTestAudio(stream);
+                }
+            });
     }
 
     /**
@@ -59,6 +74,37 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
         this.inputDevicesSub?.unsubscribe();
         this.outputDevicesSub?.unsubscribe();
+        this.inputStreamSub?.unsubscribe();
+    }
+
+    /**
+     * Assigns to the test audio player the provided stream instance.
+     * @private
+     * @param {MediaStream} stream The media stream instance
+     * @memberof EditUserMediaComponent
+     */
+    private startTestAudio(stream: MediaStream) {
+        this.audio.srcObject = stream;
+        this.audio.play();
+        this.testingAudio = true;
+    }
+
+    /**
+     * Stops the current playing stream in the test audio player.
+     * @private
+     * @memberof EditUserMediaComponent
+     */
+    private stopTestAudio() {
+        const stream = this.audio.srcObject as MediaStream;
+        const tracks = stream?.getTracks();
+
+        for (const track of tracks) {
+            track.stop();
+        }
+
+        this.audio.srcObject = null;
+        this.audio.pause();
+        this.testingAudio = false;
     }
 
     /**
@@ -75,6 +121,18 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
      */
     public onSelectedOutputDeviceChange(value: string) {
         this.selectedOutputDevice = value;
+    }
+
+    /**
+     * Handles the test input button click event.
+     * @memberof EditUserMediaComponent
+     */
+    public onTestInput() {
+        if (!this.testingAudio) {
+            this.mediaService.activateInput(this.selectedInputDevice);
+        } else {
+            this.stopTestAudio();
+        }
     }
 
 }
