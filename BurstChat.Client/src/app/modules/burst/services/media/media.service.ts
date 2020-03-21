@@ -30,6 +30,7 @@ export class MediaService {
      */
     constructor() {
         this.enumerateDevices();
+        this.subscribeToDeviceChanges();
     }
 
     /**
@@ -73,12 +74,28 @@ export class MediaService {
 
                     this.inputDevicesSource.next(inputDevices);
                     this.outputDevicesSource.next(outputDevices);
-                }, error => {
+                })
+                .catch(error => {
                     console.warn(error);
                 });
         } catch (ex) {
             console.warn(ex);
         }
+    }
+
+    /**
+     * Assigns a new event listener function that will update all input
+     * and output devices when a device change on the user's system has
+     * occured.
+     * @private
+     * @memberof MediaService
+     */
+    private subscribeToDeviceChanges() {
+        navigator
+            .mediaDevices
+            .addEventListener('devicechange', event => {
+                this.enumerateDevices();
+            });
     }
 
     /**
@@ -99,7 +116,8 @@ export class MediaService {
                 .getUserMedia(constraints)
                 .then(stream => {
                     this.inputStreamSource.next(stream);
-                }, error => {
+                })
+                .catch(error => {
                     console.warn(error);
                 });
         } catch (ex) {
