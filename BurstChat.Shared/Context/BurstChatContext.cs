@@ -1,6 +1,7 @@
 #nullable disable
 
 using System;
+using BurstChat.Shared.Schema.Alpha;
 using BurstChat.Shared.Schema.Chat;
 using BurstChat.Shared.Schema.Servers;
 using BurstChat.Shared.Schema.Users;
@@ -32,6 +33,8 @@ namespace BurstChat.Shared.Context
         public DbSet<DirectMessaging> DirectMessaging { get; set; }
 
         public DbSet<OneTimePassword> OneTimePassword { get; set; }
+
+        public DbSet<AlphaInvitation> AlphaInvitations { get; set; }
 
         /// <summary>
         ///   Executes the necessary start up code for the burst chat database context.
