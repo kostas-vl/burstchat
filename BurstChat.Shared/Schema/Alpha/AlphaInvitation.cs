@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BurstChat.Shared.Schema.Alpha
 {
