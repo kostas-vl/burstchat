@@ -55,7 +55,7 @@ namespace BurstChat.Shared.Services.UserService
                 if (codeExists)
                     return new Success<Unit, Error>(new Unit());
                 else
-                    return new Failure<Unit, Error>(SystemErrors.Exception());
+                    return new Failure<Unit, Error>(ModelErrors.AlphaInvitationCodeIsNotValid());
             }
             catch (Exception e)
             {
