@@ -56,7 +56,10 @@ namespace BurstChat.IdentityServer.Controllers
         {
             var monad = _modelValidationService
                 .ValidateRegistration(registration)
-                .Bind(r => _userService.Insert(r.Email, r.Name, r.Password));
+                .Bind(r => _userService.Insert(r.AlphaInvitationCode,
+                                               r.Email,
+                                               r.Name,
+                                               r.Password));
 
             return this.UnwrapMonad(monad);
         }
