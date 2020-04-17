@@ -6,7 +6,7 @@
 
       <div class="register-card-header">
 
-        <fa-icon [icon]="faDragon" *ngIf="!loading"></fa-icon>
+        <fa-icon [icon]="dragon" *ngIf="!loading"></fa-icon>
 
         <div class="loader" *ngIf="loading"></div>
 
@@ -29,6 +29,16 @@
         </div>
 
         <br>
+
+        <div class="row">
+
+          <div class="column column-100">
+
+            <input type="text" placeholder="Invitation Code" [disabled]="loading" [(ngModel)]="registration.alphaInvitationCode">
+
+          </div>
+
+        </div>
 
         <div class="row">
 
