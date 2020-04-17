@@ -34,16 +34,6 @@
 
           <div class="column column-100">
 
-            <input type="text" placeholder="Invitation Code" [disabled]="loading" [(ngModel)]="registration.alphaInvitationCode">
-
-          </div>
-
-        </div>
-
-        <div class="row">
-
-          <div class="column column-100">
-
             <input type="text" placeholder="Name" [disabled]="loading" [(ngModel)]="registration.name">
 
           </div>
@@ -75,6 +65,16 @@
           <div class="column column-100">
 
             <input type="password" placeholder="CONFIRM PASSWORD" [disabled]="loading" [(ngModel)]="registration.confirmPassword">
+
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="column column-100">
+
+            <input type="password" placeholder="Invitation Code" [disabled]="loading" [(ngModel)]="registration.alphaInvitationCode">
 
           </div>
 
