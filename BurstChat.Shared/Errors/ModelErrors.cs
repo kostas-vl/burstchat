@@ -9,6 +9,10 @@ namespace BurstChat.Shared.Errors
     /// </summary>
     public static class ModelErrors
     {
+        public static Error AlphaInvitationCodeIsNotValid() => new Error(ErrorLevel.Critical,
+                                                                          ErrorType.Validation,
+                                                                          "The alpha invitation code is not valid");
+
         public static Error NameInvalid() => new Error(ErrorLevel.Critical,
                                                        ErrorType.Validation,
                                                        "The user name is not valid");
