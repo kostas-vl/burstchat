@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes, faBomb, faInfoCircle, faExclamationCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { AppRoutingModule } from 'src/app/app-routing.module';
+import { AppRoutingModule } from 'src/app/app.routing';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { AuthenticationGuardService } from 'src/app/services/authentication-guard/authentication-guard.service';
