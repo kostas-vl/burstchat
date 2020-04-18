@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 
 /**
@@ -11,7 +11,7 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
     templateUrl: './root.component.html',
     styleUrls: ['./root.component.scss']
 })
-export class RootComponent implements OnInit {
+export class RootComponent implements OnInit, AfterViewInit {
 
     /**
      * Creates an instance of RootComponent.
@@ -25,6 +25,12 @@ export class RootComponent implements OnInit {
      */
     public ngOnInit() {
         this.notifyService.permission();
+    }
+
+    public ngAfterViewInit() {
+        for (let i = 0; i < 15; i++) {
+            this.notifyService.popup('', 'Hello World!', 'This is a sample popup message.');
+        }
     }
 
 }

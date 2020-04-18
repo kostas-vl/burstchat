@@ -8,6 +8,8 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { AuthenticationGuardService } from 'src/app/services/authentication-guard/authentication-guard.service';
 import { RootComponent } from 'src/app/components/root/root.component';
+import { PopupListComponent } from 'src/app/components/popup-list/popup-list.component';
+import { PopupComponent } from 'src/app/components/popup/popup.component';
 
 @NgModule({
     imports: [
@@ -17,6 +19,8 @@ import { RootComponent } from 'src/app/components/root/root.component';
     ],
     declarations: [
         RootComponent,
+        PopupListComponent,
+        PopupComponent,
     ],
     providers: [
         NotifyService,

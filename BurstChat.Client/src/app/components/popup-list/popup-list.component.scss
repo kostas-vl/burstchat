@@ -1,0 +1,15 @@
+@import '../../../scss/theme';
+
+.popup-list-container {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    z-index: $z-level-3;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.popup-list {
+    background: transparent;
+    width: 400px;
+}
