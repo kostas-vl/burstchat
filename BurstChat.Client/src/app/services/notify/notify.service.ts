@@ -116,14 +116,15 @@ export class NotifyService {
 
     /**
      * This method will invoke a new popup message on screen, that will be displayed
-     * as an error, based on the provided parameters.
-     * @param {string} title The title of the popup.
-     * @param {string} content The content of the popup.
+     * as an error, based on the provided BurstChat error.
+     * @param {BurstChatError | null} The error instance.
      * @memberof NotifyService
      */
-    public popupError(title: string, content: string) {
-        const message = new PopupMessage(faBomb, 'text-danger', title, content);
-        this.onPopupSource.next(message);
+    public popupError(error: BurstChatError | null): void {
+        if (error) {
+            const message = new PopupMessage(faBomb, 'text-danger', 'An error occured', error.message);
+            this.onPopupSource.next(message);
+        }
     }
 
 }
