@@ -77,7 +77,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
             .subscribe(
                 () => {
                     const title = 'Your password changed successfully';
-                    this.notifyService.notify(title);
+                    this.notifyService.popupSuccess(title, '');
                     this.router.navigateByUrl('/session/login');
                 },
                 error => {
@@ -87,7 +87,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
                         type: 'Validation',
                         message: 'Please try to change your password in a few seconds.'
                     };
-                    this.notifyService.notifyError(apiError);
+                    this.notifyService.popupError(apiError);
                     this.loading = false;
                 }
             );
