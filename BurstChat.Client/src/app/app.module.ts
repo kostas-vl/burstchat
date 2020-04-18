@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faBomb, faInfoCircle, faExclamationCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -36,7 +36,7 @@ export class AppModule {
      * @memberof AppModule
      */
     constructor() {
-        library.add(faTimes);
+        library.add(faTimes, faBomb, faInfoCircle, faExclamationCircle, faCheck);
     }
 
 }
