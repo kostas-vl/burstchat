@@ -38,6 +38,14 @@ namespace BurstChat.Shared.Services.ModelValidationService
                 return new Failure<Registration, Error>(ModelErrors.RegistrationNotProvided());
         }
 
+        private Either<Registration, Error> AlphaInvitationCodeProvided(Registration registration)
+        {
+            if (registration.AlphaInvitationCode != Guid.Empty)
+                return new Success<Registration, Error>(registration);
+            else
+                return new Failure<Registration, Error>(ModelErrors.AlphaInvitationCodeIsNotValid());
+        }
+
         /// <summary>
         ///   This method will check if the provided registration instance has a valid user name provided.
         /// </summary>
@@ -267,6 +275,7 @@ namespace BurstChat.Shared.Services.ModelValidationService
         /// <returns>An either monad</returns>
         public Either<Registration, Error> ValidateRegistration(Registration registration) =>
             RegistrationHasValue(registration)
+                .Bind(AlphaInvitationCodeProvided)
                 .Bind(NameIsValid)
                 .Bind(EmailIsValid)
                 .Bind(PasswordIsValid)

@@ -38,21 +38,26 @@ export class RegisterComponent implements OnInit {
      * Executes any neccessary start up code for the component.
      * @memberof RegisterComponent
      */
-    public ngOnInit(): void { }
+    public ngOnInit() { }
 
     /**
      * Handles the register button click event.
      * @memberof RegisterComponent
      */
-    public onRegister(): void {
+    public onRegister() {
         this.loading = true;
         this.sessionService
             .register(this.registration)
             .subscribe(
-                () => this.router.navigateByUrl('/session/login'),
+                () => {
+                    const title = 'Successful registration';
+                    const message = 'Thank you for registering an account on BurstChat. Use your credentials to login onto the application';
+                    this.notifyService.popupSuccess(title, message);
+                    this.router.navigateByUrl('/session/login')
+                },
                 httpError => {
                     const error = tryParseError(httpError.error);
-                    this.notifyService.notifyError(error);
+                    this.notifyService.popupError(error);
                     this.loading = false;
                 }
             );

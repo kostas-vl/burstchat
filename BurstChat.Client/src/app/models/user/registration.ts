@@ -5,6 +5,7 @@
  */
 export class Registration {
 
+    public alphaInvitationCode = '';
     public email = '';
     public name = '';
     public password = '';

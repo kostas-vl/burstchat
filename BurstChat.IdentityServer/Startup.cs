@@ -4,9 +4,12 @@ using BurstChat.IdentityServer.Extensions;
 using BurstChat.IdentityServer.Options;
 using BurstChat.IdentityServer.Services;
 using BurstChat.Shared.Context;
+using BurstChat.Shared.Extensions;
+using BurstChat.Shared.Options;
 using BurstChat.Shared.Services.BCryptService;
 using BurstChat.Shared.Services.UserService;
 using BurstChat.Shared.Services.ModelValidationService;
+using BurstChat.Shared.Services.EmailService;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -16,16 +19,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BurstChat.Shared.Services.EmailService;
-using BurstChat.Shared.Options;
+
 
 namespace BurstChat.IdentityServer
 {
     public class Startup
     {
-        public IConfiguration Configuration 
-        { 
-            get; 
+        public IConfiguration Configuration
+        {
+            get;
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace BurstChat.IdentityServer
                 .GetSection(databaseContextName)
                 .Bind(databaseOptions);
 
-            return (options) => 
+            return (options) =>
             {
                 switch (databaseOptions.Provider)
                 {
@@ -74,7 +76,8 @@ namespace BurstChat.IdentityServer
         {
             services
                 .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"))
-                .Configure<SmtpOptions>(Configuration.GetSection("SmtpOptions"));
+                .Configure<SmtpOptions>(Configuration.GetSection("SmtpOptions"))
+                .Configure<AlphaInvitationCodesOptions>(Configuration.GetSection("AlphaCodes"));
 
             services
                 .AddSingleton<IBCryptService, BCryptProvider>()
@@ -135,6 +138,7 @@ namespace BurstChat.IdentityServer
             {
                 application.UseDeveloperExceptionPage();
                 application.UseBurstChatDevelopmentResources(options => Configuration.GetSection("Secrets").Bind(options));
+                application.UseAlphaInvitationCodes(options => Configuration.GetSection("Invitations").Bind(options));
             }
             else
             {

@@ -6,7 +6,7 @@
 
       <div class="register-card-header">
 
-        <fa-icon [icon]="faDragon" *ngIf="!loading"></fa-icon>
+        <fa-icon [icon]="dragon" *ngIf="!loading"></fa-icon>
 
         <div class="loader" *ngIf="loading"></div>
 
@@ -65,6 +65,16 @@
           <div class="column column-100">
 
             <input type="password" placeholder="CONFIRM PASSWORD" [disabled]="loading" [(ngModel)]="registration.confirmPassword">
+
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="column column-100">
+
+            <input type="password" placeholder="Invitation Code" [disabled]="loading" [(ngModel)]="registration.alphaInvitationCode">
 
           </div>
 

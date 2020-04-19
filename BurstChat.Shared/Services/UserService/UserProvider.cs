@@ -39,6 +39,32 @@ namespace BurstChat.Shared.Services.UserService
         }
 
         /// <summary>
+        /// Will check if the provided alpha invitation code exists in the database and is valid.
+        /// </summary>
+        /// <param name="alphaInvitationCode">The alpha invitation code instance</param>
+        /// <returns>An either monad</returns>
+        private Either<Unit, Error> AlphaInvitationCodeExists(Guid alphaInvitationCode)
+        {
+            try
+            {
+                var codeExists = _burstChatContext
+                    .AlphaInvitations
+                    .Any(a => a.Code == alphaInvitationCode
+                              && a.DateExpired >= DateTime.Now);
+
+                if (codeExists)
+                    return new Success<Unit, Error>(new Unit());
+                else
+                    return new Failure<Unit, Error>(ModelErrors.AlphaInvitationCodeIsNotValid());
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new Failure<Unit, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
         ///   This method returns a User instance if the provided id belongs to one.
         /// </summary>
         /// <param name="id">The id of the user</param>
@@ -93,31 +119,35 @@ namespace BurstChat.Shared.Services.UserService
         /// <summary>
         ///   Registers a new user based on the provided parameters.
         /// </summary>
+        /// <param name="alphaInvitationCode">The alpha invitation code</param>
         /// <param name="email">The email of the new user</param>
         /// <param name="name">The name of the new user</param>
         /// <param name="password">The password of the new user</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(string email, string name, string password)
+        public Either<Unit, Error> Insert(Guid alphaInvitationCode, string email, string name, string password)
         {
             try
             {
                 if (Get(email) is Success<User, Error>)
                     return new Failure<Unit, Error>(UserErrors.UserAlreadyExists());
 
-                var hashedPassword = _bcryptService.GenerateHash(password);
-
-                var user = new User
+                return AlphaInvitationCodeExists(alphaInvitationCode).Bind(_ =>
                 {
-                    Email = email,
-                    Name = name,
-                    Password = hashedPassword,
-                    DateCreated = DateTime.Now
-                };
+                    var hashedPassword = _bcryptService.GenerateHash(password);
 
-                _burstChatContext.Users.Add(user);
-                _burstChatContext.SaveChanges();
+                    var user = new User
+                    {
+                        Email = email,
+                        Name = name,
+                        Password = hashedPassword,
+                        DateCreated = DateTime.Now
+                    };
 
-                return new Success<Unit, Error>(new Unit());
+                    _burstChatContext.Users.Add(user);
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Unit, Error>(new Unit());
+                });
             }
             catch (Exception e)
             {
@@ -341,7 +371,7 @@ namespace BurstChat.Shared.Services.UserService
         {
             try
             {
-                var user = _burstChatContext 
+                var user = _burstChatContext
                     .Users
                     .FirstOrDefault(u => u.Email == email);
 
@@ -349,7 +379,7 @@ namespace BurstChat.Shared.Services.UserService
                 {
                     var otp = _burstChatContext
                         .Users
-                        .Where(u => u.Id == user.Id) 
+                        .Where(u => u.Id == user.Id)
                         .Include(u => u.OneTimePasswords)
                         .Select(u => u.OneTimePasswords
                                       .Where(o => o.ExpirationDate >= DateTime.Now))

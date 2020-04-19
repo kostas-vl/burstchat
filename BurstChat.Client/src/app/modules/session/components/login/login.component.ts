@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
                             type: 'Validation',
                             message: 'Could not properly login, please retry in a few minutes'
                         };
-                        this.notifyService.notifyError(error);
+                        this.notifyService.popupError(error);
                     }
                 },
                 error => {
@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
                         type: 'Validation',
                         message: 'Please try to login again in a few seconds.'
                     };
-                    this.notifyService.notifyError(apiError);
+                    this.notifyService.popupError(apiError);
                     this.loading = false;
                 }
             );

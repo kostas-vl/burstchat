@@ -61,7 +61,7 @@ export class ResetPasswordComponent implements OnInit {
                         type: 'validation',
                         message: 'Please try to reset your password in a few seconds.'
                     };
-                    this.notifyService.notifyError(apiError);
+                    this.notifyService.popupError(apiError);
                     this.loading = false;
                 }
             );

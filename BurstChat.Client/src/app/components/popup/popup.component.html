@@ -1,0 +1,33 @@
+<blockquote class="popup-container" *ngIf="message">
+
+    <div class="popup w-100">
+
+        <div class="popup-icon pr-10" [ngClass]="message.iconClass">
+
+            <fa-icon [icon]="message.icon"></fa-icon>
+
+        </div>
+
+        <div>
+
+            <span>{{message.title}}</span>
+
+            <br>
+
+            <small class="text-muted">{{message.content}}</small>
+
+        </div>
+
+        <div class="ml-auto">
+
+            <div class="button-icon" (click)="close()">
+
+                <fa-icon [icon]="closeIcon"></fa-icon>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</blockquote>
