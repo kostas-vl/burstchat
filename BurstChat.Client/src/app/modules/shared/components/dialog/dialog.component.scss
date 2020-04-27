@@ -1,0 +1,16 @@
+@import '../../../../../scss/theme';
+
+.dialog-container {
+    top: 0;
+    left: 0;
+    z-index: $z-level-4;
+    position: fixed;
+    background-color: $blurry-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog {
+    z-index: $z-level-4;
+}

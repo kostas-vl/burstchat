@@ -8,9 +8,10 @@ $success-color: #7fefa0;
 $danger-color: #ef7070;
 $warning-color: #efd670;
 
+$blurry-color: rgba(0, 0, 0, 0.6);
+
 $text-color: white;
 $text-muted-color: #777777;
-
 
 $sidebar-width: 330px;
 $layout-animation-speed: 0.4s;
@@ -23,6 +24,7 @@ $minor-width: 65px;
 $z-level-1: 1000;
 $z-level-2: 2000;
 $z-level-3: 3000;
+$z-level-4: 4000;
 
 hr {
     margin: 2.0rem 0;
@@ -278,7 +280,7 @@ iframe {
 }
 
 .fs-16 {
-    font-size: 16px;    
+    font-size: 16px;
 }
 
 .fs-18 {

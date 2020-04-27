@@ -12,4 +12,28 @@
 
     </div>
 
+    <div class="ml-auto">
+
+        <div class="button-icon" (click)="onCall()">
+
+            <fa-icon [icon]="phoneIcon"></fa-icon>
+
+        </div>
+
+    </div>
+
 </div>
+
+<app-dialog [visible]="showDialog">
+
+    <app-card class="chat-call-dialog">
+
+        <app-card-body>
+
+            <button class="button w-100" (click)="showDialog = false">close</button>
+
+        </app-card-body>
+
+    </app-card>
+
+</app-dialog>

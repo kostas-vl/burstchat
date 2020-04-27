@@ -4,6 +4,7 @@ import { CardComponent } from 'src/app/modules/shared/components/card/card.compo
 import { CardHeaderComponent } from 'src/app/modules/shared/components/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/modules/shared/components/card-body/card-body.component';
 import { CardFooterComponent } from 'src/app/modules/shared/components/card-footer/card-footer.component';
+import { DialogComponent } from 'src/app/modules/shared/components/dialog/dialog.component';
 
 @NgModule({
     imports: [
@@ -13,13 +14,15 @@ import { CardFooterComponent } from 'src/app/modules/shared/components/card-foot
         CardComponent,
         CardHeaderComponent,
         CardBodyComponent,
-        CardFooterComponent
+        CardFooterComponent,
+        DialogComponent
     ],
     exports: [
         CardComponent,
         CardHeaderComponent,
         CardBodyComponent,
-        CardFooterComponent
+        CardFooterComponent,
+        DialogComponent
     ]
 })
 export class SharedModule { }
