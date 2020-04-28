@@ -8,7 +8,7 @@ $success-color: #7fefa0;
 $danger-color: #ef7070;
 $warning-color: #efd670;
 
-$blurry-color: rgba(0, 0, 0, 0.6);
+$blurry-color: rgba(0, 0, 0, 0.4);
 
 $text-color: white;
 $text-muted-color: #777777;
@@ -153,6 +153,12 @@ iframe {
 
 .text-center {
     text-align: center;
+}
+
+.blurred-color {
+    background-color: $blurry-color;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .h-100 {

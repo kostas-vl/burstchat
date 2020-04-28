@@ -3,7 +3,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
-import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faCommentAlt, faLock, faComments } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -21,10 +21,6 @@ export class ChatInfoComponent implements OnInit {
 
     @Input()
     public options?: ChatConnectionOptions;
-
-    public phoneIcon = faPhone;
-
-    public showDialog = false;
 
     public get icon() {
         if (this.options instanceof ChannelConnectionOptions) {
@@ -49,9 +45,5 @@ export class ChatInfoComponent implements OnInit {
      * @memberof ChatInfoComponent
      */
     public ngOnInit(): void { }
-
-    public onCall() {
-        this.showDialog = !this.showDialog;
-    }
 
 }

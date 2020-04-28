@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPaperPlane, faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faCommentAlt, faLock, faComments } from '@fortawesome/free-solid-svg-icons';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
