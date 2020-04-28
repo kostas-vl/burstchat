@@ -49,8 +49,6 @@ export class DialogComponent implements OnInit {
     public onWindowResize(event: any) {
         this.height = event?.target?.innerHeight;
         this.width = event?.target?.innerWidth;
-        console.log(this.height);
-        console.log(this.width);
     }
 
 }
