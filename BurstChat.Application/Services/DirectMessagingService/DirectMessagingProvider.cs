@@ -5,7 +5,6 @@ using BurstChat.Application.Interfaces;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Extensions;
 using BurstChat.Application.Monads;
-using BurstChat.Domain.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
@@ -80,7 +79,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -109,7 +108,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -140,7 +139,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -173,7 +172,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch(Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<User>, Error>(SystemErrors.Exception());
             }
         }
@@ -219,7 +218,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -246,7 +245,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -309,7 +308,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -347,7 +346,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -376,7 +375,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }

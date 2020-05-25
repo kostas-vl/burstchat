@@ -6,7 +6,6 @@ using BurstChat.Application.Errors;
 using BurstChat.Application.Extensions;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Services.UserService;
-using BurstChat.Domain.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +62,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
@@ -110,7 +109,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
@@ -138,7 +137,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -176,7 +175,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
@@ -215,7 +214,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
@@ -253,7 +252,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<PrivateGroup, Error>(SystemErrors.Exception());
             }
         }
@@ -287,7 +286,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
             }
         }
@@ -332,7 +331,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -369,7 +368,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -406,7 +405,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }

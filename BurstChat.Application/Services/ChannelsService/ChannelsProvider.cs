@@ -7,7 +7,6 @@ using BurstChat.Application.Monads;
 using BurstChat.Application.Extensions;
 using BurstChat.Application.Services.ServersService;
 using BurstChat.Application.Services.UserService;
-using BurstChat.Domain.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
@@ -97,7 +96,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -134,7 +133,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -179,7 +178,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -214,7 +213,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -242,7 +241,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -300,7 +299,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -337,7 +336,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -366,7 +365,7 @@ namespace BurstChat.Application.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }

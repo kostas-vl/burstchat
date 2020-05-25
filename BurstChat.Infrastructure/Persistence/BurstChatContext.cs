@@ -1,18 +1,19 @@
 #nullable disable
 
 using System;
+using BurstChat.Application.Interfaces;
 using BurstChat.Domain.Schema.Alpha;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
 
-namespace BurstChat.Domain.Context
+namespace BurstChat.Infrastructure.Persistence
 {
     /// <summary>
     ///   This class represents the burst chat database context and all of its tables.
     /// </summary>
-    public class BurstChatContext : DbContext
+    public class BurstChatContext : DbContext, IBurstChatContext
     {
         public DbSet<Message> Messages { get; set; }
 

@@ -1,4 +1,4 @@
-namespace BurstChat.Domain.Options
+namespace BurstChat.Infrastructure.Options
 {
     /// <summary>
     /// This class contains all properties necessary for connecting to a remote smtp server.

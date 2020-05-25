@@ -2,20 +2,20 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using BurstChat.IdentityServer.Options;
+using BurstChat.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BurstChat.IdentityServer.Extensions
+namespace BurstChat.Infrastructure.Extensions
 {
     /// <summary>
-    ///   This class extends an IIdentityServerBuilder instance with new methods.
+    /// This class extends an IIdentityServerBuilder instance with new methods.
     /// </summary>
     public static class IIdentityServerBuilderExtensions
     {
         /// <summary>
-        ///   This method will extend the IIdentityServerBuilder instance by adding the proper signing credentials for the
-        ///   identity server based on a specific certificate file.
+        /// This method will extend the IIdentityServerBuilder instance by adding the proper signing credentials for the
+        /// identity server based on a specific certificate file.
         /// </summary>
         /// <param name="identityServerBuilder">The identity server builder instance</param>
         /// <returns>The modified identity server builder instance</returns>
@@ -31,5 +31,6 @@ namespace BurstChat.IdentityServer.Extensions
 
             return identityServerBuilder;
         }
+
     }
 }

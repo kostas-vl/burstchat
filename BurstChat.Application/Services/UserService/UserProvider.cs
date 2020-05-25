@@ -6,7 +6,6 @@ using BurstChat.Application.Errors;
 using BurstChat.Application.Interfaces;
 using BurstChat.Application.Services.BCryptService;
 using BurstChat.Application.Monads;
-using BurstChat.Domain.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
@@ -59,7 +58,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -86,7 +85,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<User, Error>(SystemErrors.Exception());
             }
         }
@@ -111,7 +110,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<User, Error>(SystemErrors.Exception());
             }
         }
@@ -151,7 +150,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -183,7 +182,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -205,7 +204,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -230,7 +229,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<Server>, Error>(SystemErrors.Exception());
             }
         }
@@ -259,7 +258,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<PrivateGroup>, Error>(SystemErrors.Exception());
             }
         }
@@ -286,7 +285,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<DirectMessaging>, Error>(SystemErrors.Exception());
             }
         }
@@ -314,7 +313,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<User, Error>(SystemErrors.Exception());
             }
         }
@@ -355,7 +354,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<string, Error>(SystemErrors.Exception());
             }
         }
@@ -402,7 +401,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -427,7 +426,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<Invitation>, Error>(SystemErrors.Exception());
             }
         }
@@ -487,7 +486,7 @@ namespace BurstChat.Application.Services.UserService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Invitation, Error>(SystemErrors.Exception());
             }
         }

@@ -1,8 +1,10 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using BurstChat.Domain.Schema.Alpha;
 
-namespace BurstChat.Domain.Options
+namespace BurstChat.Infrastructure.Options
 {
     /// <summary>
     /// This class contains configuration properties for the Alpha invitation codes.
