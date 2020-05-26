@@ -20,14 +20,13 @@ namespace BurstChat.Infrastructure
     /// </summary>
     public static class DependecyInjection
     {
-        private static readonly string BurstChatMigrationsPath =
-            Path.Combine(Environment.CurrentDirectory, "Persistence", "Migrations");
+        private static readonly string BurstChatMigrations = typeof(BurstChatContext).Assembly.FullName;
 
-        private static readonly string ConfigurationDbMigrationsPath =
-            Path.Combine(Environment.CurrentDirectory, "Persistence", "Migrations", "ConfigurationDb");
+        private static readonly string ConfigurationDbMigrations = typeof(BurstChatContext).Assembly.FullName;
 
-        private static readonly string PersistedGrantDbMigrationsPath =
-            Path.Combine(Environment.CurrentDirectory, "Persistence", "Migrations", "PersistedGrantDb");
+        private static readonly string PersistedGrantDbMigrations = typeof(BurstChatContext).Assembly.FullName;
+
+        public static readonly string CorsPolicyName = "CorsPolicy";
 
         /// <summary>
         /// This method returns a configuration action for any database context
@@ -78,14 +77,13 @@ namespace BurstChat.Infrastructure
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options => configuration.GetSection("AccessTokenValidation").Bind(options));
 
-            var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrationsPath,
-                                                             configuration.GetSection("Database"));
+            var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("Database"));
 
             services.AddDbContext<BurstChatContext>(dbBuilderCallback);
 
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", builder =>
+                options.AddPolicy(CorsPolicyName, builder =>
                 {
                     var acceptedDomains = configuration
                         .GetSection("AcceptedDomains")
@@ -120,8 +118,7 @@ namespace BurstChat.Infrastructure
 
             services.AddSingleton<IEmailService, EmailProvider>();
 
-            var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrationsPath,
-                                                             configuration.GetSection("BurstChat.Api"));
+            var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("BurstChat.Api"));
 
             services.AddDbContext<BurstChatContext>(dbBuilderCallback);
 
@@ -134,20 +131,20 @@ namespace BurstChat.Infrastructure
                 .AddBurstChatSigningCredentials(options => configuration.GetSection("X509").Bind(options))
                 .AddConfigurationStore(options =>
                 {
-                    var path = ConfigurationDbMigrationsPath;
+                    var path = ConfigurationDbMigrations;
                     var section = configuration.GetSection("IdentityServer.ConfigurationDbContext");
                     options.ConfigureDbContext = ConfigureDatabaseContext(path, section);
                 })
                 .AddOperationalStore(options =>
                 {
-                    var path = PersistedGrantDbMigrationsPath;
+                    var path = PersistedGrantDbMigrations;
                     var section = configuration.GetSection("IdentityServer.PersistedGrantDbContext");
                     options.ConfigureDbContext = ConfigureDatabaseContext(path, section);
                 });
 
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", builder =>
+                options.AddPolicy(CorsPolicyName, builder =>
                 {
                     var acceptedDomains = configuration
                         .GetSection("AcceptedDomains")

@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using BurstChat.Api.Errors;
-using BurstChat.Api.Services.DirectMessagingService;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Users;
+using BurstChat.Api.Extensions;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Services.DirectMessagingService;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +29,7 @@ namespace BurstChat.Api.Controllers
         {
             _directMessagingService = directMessagingService;
         }
-        
+
         /// <summary>
         /// Fetches all available information about the direct messages of a user.
         /// </summary>

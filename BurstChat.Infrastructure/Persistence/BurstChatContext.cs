@@ -1,6 +1,7 @@
 #nullable disable
 
 using System;
+using System.Reflection;
 using BurstChat.Application.Interfaces;
 using BurstChat.Domain.Schema.Alpha;
 using BurstChat.Domain.Schema.Chat;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BurstChat.Infrastructure.Persistence
 {
     /// <summary>
-    ///   This class represents the burst chat database context and all of its tables.
+    /// This class represents the burst chat database context and all of its tables.
     /// </summary>
     public class BurstChatContext : DbContext, IBurstChatContext
     {
@@ -38,9 +39,17 @@ namespace BurstChat.Infrastructure.Persistence
         public DbSet<AlphaInvitation> AlphaInvitations { get; set; }
 
         /// <summary>
-        ///   Executes the necessary start up code for the burst chat database context.
+        /// Executes the necessary start up code for the burst chat database context.
         /// </summary>
         public BurstChatContext(DbContextOptions<BurstChatContext> options)
             : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            base.OnModelCreating(builder);
+        }
+
     }
 }

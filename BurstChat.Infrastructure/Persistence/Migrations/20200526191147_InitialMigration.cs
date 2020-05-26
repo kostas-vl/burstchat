@@ -2,12 +2,27 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace BurstChat.Api.Migrations
+namespace BurstChat.Infrastructure.Persistence.Migrations
 {
-    public partial class UpdateDatabaseForPostgresql : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AlphaInvitations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Code = table.Column<Guid>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateExpired = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlphaInvitations", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "DirectMessaging",
                 columns: table => new
@@ -300,6 +315,9 @@ namespace BurstChat.Api.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AlphaInvitations");
+
             migrationBuilder.DropTable(
                 name: "Invitations");
 
