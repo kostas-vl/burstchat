@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +17,7 @@ namespace BurstChat.Signal
                 .CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(config =>
                 {
-                    config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
+                    config.AddJsonFile("appsettings.AcceptedDomains.json", optional: false, reloadOnChange: false);
                     config.AddJsonFile("appsettings.AccessTokenValidation.json", optional: false, reloadOnChange: false);
                 })
                 .ConfigureLogging(logging =>

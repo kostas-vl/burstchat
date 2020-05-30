@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
+using BurstChat.Application;
+using BurstChat.Infrastructure;
 using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.DirectMessagingService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
-using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +14,8 @@ using BurstChat.Signal.Services.ApiInteropService;
 using BurstChat.Signal.Services.InvitationsService;
 using BurstChat.Signal.Services.ServerService;
 using Microsoft.Extensions.Hosting;
+
+using DependencyInjection = BurstChat.Infrastructure.DependencyInjection;
 
 namespace BurstChat.Signal
 {
@@ -34,14 +35,20 @@ namespace BurstChat.Signal
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddApplication()
+                .AddInfrastructure(Configuration);
+
+            services.Configure<ApiDomainOptions>(options =>
+            {
+                options.BurstChatApiDomain = Configuration.GetValue<string>("BurstChatApiDomain");
+            });
+
+            services
                 .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services
                 .AddSignalR();
-
-            services
-                .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
 
             services
                 .AddScoped<BurstChatApiInteropService>()
@@ -56,32 +63,7 @@ namespace BurstChat.Signal
 
             services
                 .AddHttpClient<BurstChatApiInteropService>();
-
-            services
-                .AddAuthorization();
-
-            services
-                .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options => Configuration.GetSection("AccessTokenValidation").Bind(options));
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder =>
-                {
-                    var acceptedDomains = Configuration
-                        .GetSection("AcceptedDomains:Cors")
-                        .Get<string[]>();
-                    if (acceptedDomains != null && acceptedDomains.Count() > 0)
-                    {
-                        builder
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials()
-                            .WithOrigins(acceptedDomains);
-                    }
-                });
-            });
-        }
+       }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
@@ -99,7 +81,7 @@ namespace BurstChat.Signal
             application.UseAuthentication();
 
             application.UseRouting();
-            application.UseCors("CorsPolicy");
+            application.UseCors(DependencyInjection.CorsPolicyName);
             application.UseAuthentication();
             application.UseAuthorization();
             application.UseEndpoints(endpoints =>

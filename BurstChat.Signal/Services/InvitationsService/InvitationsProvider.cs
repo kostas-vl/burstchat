@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Servers;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Servers;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -51,7 +49,7 @@ namespace BurstChat.Signal.Services.InvitationsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<Invitation>, Error>(SystemErrors.Exception());
             }
         }
@@ -75,7 +73,7 @@ namespace BurstChat.Signal.Services.InvitationsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Invitation, Error>(SystemErrors.Exception());
             }
         }
@@ -99,7 +97,7 @@ namespace BurstChat.Signal.Services.InvitationsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Invitation, Error>(SystemErrors.Exception());
             }
         }

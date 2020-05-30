@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Servers;
-using BurstChat.Shared.Schema.Users;
-using BurstChat.Signal.Models;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Servers;
+using BurstChat.Signal.Extensions;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.DirectMessagingService;
 using BurstChat.Signal.Services.InvitationsService;
@@ -62,7 +59,7 @@ namespace BurstChat.Signal.Hubs.Chat
             await Context
                 .GetHttpContext()
                 .GetUserId()
-                .ExecuteAndContinueAsync(async userId => 
+                .ExecuteAndContinueAsync(async userId =>
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, userId.ToString());
                 });
@@ -76,14 +73,14 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A Task instance</returns>
         public override async Task OnDisconnectedAsync(Exception e)
         {
-            _logger.LogException(e);
+            _logger.LogError(e.Message);
 
             await Context
                 .GetHttpContext()
                 .GetUserId()
                 .ExecuteAndContinueAsync(async userId =>
                 {
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId.ToString());                    
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId.ToString());
                 });
         }
 
@@ -132,9 +129,9 @@ namespace BurstChat.Signal.Hubs.Chat
                     break;
 
                 case Failure<Invitation, Error> failure:
-                    await Clients.Caller.NewInvitation(failure.Value);  
+                    await Clients.Caller.NewInvitation(failure.Value);
                     break;
-                
+
                 default:
                     await Clients.Caller.NewInvitation(SystemErrors.Exception());
                     break;
@@ -171,7 +168,7 @@ namespace BurstChat.Signal.Hubs.Chat
                 case Failure<Invitation, Error> failure:
                     await Clients.Caller.UpdatedInvitation(failure.Value);
                     break;
-                
+
                 default:
                     await Clients.Caller.UpdatedInvitation(SystemErrors.Exception());
                     break;

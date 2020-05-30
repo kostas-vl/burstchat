@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Servers;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Servers;
 using Microsoft.AspNetCore.Http;
 
 namespace BurstChat.Signal.Services.ChannelsService
@@ -68,7 +67,7 @@ namespace BurstChat.Signal.Services.ChannelsService
         Task<Either<Message, Error>> PostMessageAsync(HttpContext context, int channelId, Message message);
 
         /// <summary>
-        /// This method will edit an existing message of a channel based on the provided channel id 
+        /// This method will edit an existing message of a channel based on the provided channel id
         /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>

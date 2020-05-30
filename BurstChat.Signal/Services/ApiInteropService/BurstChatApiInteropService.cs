@@ -2,9 +2,8 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Monads;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
 using BurstChat.Signal.Extensions;
 using BurstChat.Signal.Options;
 using Microsoft.AspNetCore.Http;
@@ -14,17 +13,17 @@ namespace BurstChat.Signal.Services.ApiInteropService
 {
     public class BurstChatApiInteropService
     {
-        private readonly AcceptedDomainsOptions _acceptedDomainsOptions;
+        private readonly ApiDomainOptions _acceptedDomainsOptions;
         private readonly HttpClient _httpClient;
-        
+
         /// <summary>
         ///     Creates a new instance of BurstChatApiInteropService.
         /// </summary>
         public BurstChatApiInteropService(
-            IOptions<AcceptedDomainsOptions> acceptedDomainsOptions,
+            IOptions<ApiDomainOptions> acceptedDomainsOptions,
             HttpClient httpClient
         )
-        {            
+        {
             _acceptedDomainsOptions = acceptedDomainsOptions.Value;
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri(_acceptedDomainsOptions.BurstChatApiDomain);

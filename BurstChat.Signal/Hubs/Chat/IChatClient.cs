@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Servers;
-using BurstChat.Shared.Schema.Users;
+using BurstChat.Application.Errors;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Servers;
+using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Models;
 
 namespace BurstChat.Signal.Hubs.Chat
@@ -259,7 +258,7 @@ namespace BurstChat.Signal.Hubs.Chat
         Task SelfAddedToDirectMessaging();
 
         /// <summary>
-        ///   Informs the caller that a new direct messaging has been created and that his 
+        ///   Informs the caller that a new direct messaging has been created and that his
         ///   connection id was added to a signal group.
         /// </summary>
         /// <param name="directMessaging">The direct messaging details</param>
