@@ -3,19 +3,19 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Services.UserService;
-using BurstChat.Shared.Schema.Users;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Application.Services.UserService;
+using BurstChat.Domain.Schema.Users;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 
-namespace BurstChat.IdentityServer.Services
+namespace BurstChat.Infrastructure.Services.ProfileService
 {
     /// <summary>
-    ///   The BurstChat implementation of the Identity Server 4 IProfileService interface.
+    /// The BurstChat implementation of the Identity Server 4 IProfileService interface.
     /// </summary>
     public class BurstChatProfileService : IProfileService
     {
@@ -23,7 +23,7 @@ namespace BurstChat.IdentityServer.Services
         private readonly IUserService _userService;
 
         /// <summary>
-        ///   Creates an instance of BurstChatProfileService.
+        /// Creates an instance of BurstChatProfileService.
         /// </summary>
         public BurstChatProfileService(
             ILogger<BurstChatProfileService> logger,
@@ -35,7 +35,7 @@ namespace BurstChat.IdentityServer.Services
         }
 
         /// <summary>
-        ///   This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint).
+        /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint).
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>A task instance</returns>
@@ -62,8 +62,8 @@ namespace BurstChat.IdentityServer.Services
         }
 
         /// <summary>
-        ///   This method gets called whenecet identity server needs to determine if teh user is valid or active (e.g. if the user's account has been deactivated since they lodded in).
-        ///   (e.g. during token issuance or validation).
+        /// This method gets called whenecet identity server needs to determine if teh user is valid or active (e.g. if the user's account has been deactivated since they lodded in).
+        /// (e.g. during token issuance or validation).
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>A task instance</returns>

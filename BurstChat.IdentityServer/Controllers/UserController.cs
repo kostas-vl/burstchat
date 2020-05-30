@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using BurstChat.Shared.Context;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Models;
-using BurstChat.Shared.Services.UserService;
-using BurstChat.Shared.Services.ModelValidationService;
-using BurstChat.Shared.Schema.Users;
-using BurstChat.Shared.Schema.Servers;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Extensions;
+using BurstChat.Application.Models;
+using BurstChat.Application.Services.UserService;
+using BurstChat.Application.Services.ModelValidationService;
+using BurstChat.Domain.Schema.Users;
+using BurstChat.Domain.Schema.Servers;
+using BurstChat.IdentityServer.Extensions;
+using BurstChat.Infrastructure.Services.EmailService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using BurstChat.Shared.Services.EmailService;
 using System.Threading.Tasks;
 
 namespace BurstChat.IdentityServer.Controllers

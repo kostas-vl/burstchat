@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace BurstChat.IdentityServer.Migrations.ConfigurationDb
+namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
 {
-    public partial class UpdateToIdentityServer4Postgresql : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

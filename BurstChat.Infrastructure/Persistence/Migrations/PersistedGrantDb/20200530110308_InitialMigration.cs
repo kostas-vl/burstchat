@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BurstChat.IdentityServer.Migrations
+namespace BurstChat.Infrastructure.Persistence.Migrations.PersistedGrantDb
 {
-    public partial class UpdateToIdentityServer4Postgresql : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

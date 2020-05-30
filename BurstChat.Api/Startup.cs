@@ -75,7 +75,7 @@ namespace BurstChat.Api
             application
                 .UseStaticFiles()
                 .UseRouting()
-                .UseCors("CorsPolicy")
+                .UseCors(Infrastructure.DependencyInjection.CorsPolicyName)
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseSwagger()

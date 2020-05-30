@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BurstChat.Infrastructure.Options;
+using BurstChat.Infrastructure.Persistence;
 using BurstChat.IdentityServer.Options;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.Extensions.Configuration;
 using IdentityServer4.Models;
+
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 using ApiResource = IdentityServer4.EntityFramework.Entities.ApiResource;
 using IdentityResource = IdentityServer4.EntityFramework.Entities.IdentityResource;
@@ -21,8 +24,8 @@ namespace BurstChat.IdentityServer.Extensions
     public static class IApplicationBuilderExtensions
     {
         /// <summary>
-        ///     This method creates a Client instance for the web application of BurstChat, with all
-        ///     the neccessary configuration.
+        /// This method creates a Client instance for the web application of BurstChat, with all
+        /// the neccessary configuration.
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
@@ -97,7 +100,7 @@ namespace BurstChat.IdentityServer.Extensions
         }
 
         /// <summary>
-        ///     This method creates an Api Resource for Burst Chat api with the neccessary configuration.
+        /// This method creates an Api Resource for Burst Chat api with the neccessary configuration.
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
@@ -129,7 +132,7 @@ namespace BurstChat.IdentityServer.Extensions
             apiResource
                 .Scopes = new List<ApiScope>
                 {
-                    new ApiScope 
+                    new ApiScope
                     {
                         Name = apiName,
                         Description = "The BurstChat API",
@@ -145,7 +148,7 @@ namespace BurstChat.IdentityServer.Extensions
         }
 
         /// <summary>
-        ///     This method creates an API Resource for the BurstChat Signal server with all the neccessary configuration.
+        /// This method creates an API Resource for the BurstChat Signal server with all the neccessary configuration.
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
@@ -177,7 +180,7 @@ namespace BurstChat.IdentityServer.Extensions
             signalResource
                 .Scopes = new List<ApiScope>
                 {
-                    new ApiScope 
+                    new ApiScope
                     {
                         Name = signalName,
                         Description = "The BurstChat Signal Server",
@@ -193,7 +196,7 @@ namespace BurstChat.IdentityServer.Extensions
         }
 
         /// <summary>
-        ///     This method creates the IdentityResource for the openid and profile scopes with all the neccessary configuration.
+        /// This method creates the IdentityResource for the openid and profile scopes with all the neccessary configuration.
         /// </summary>
         /// <param name="context">The configuration database context</param>
         private static void AddDevelopmentIdentityResources(ConfigurationDbContext context)
@@ -223,8 +226,8 @@ namespace BurstChat.IdentityServer.Extensions
         }
 
         /// <summary>
-        ///     This method will make all the neccessary changes to the identity database contextes in order to
-        ///     ensure the existance of clients and api configuration.
+        /// This method will make all the neccessary changes to the identity database contextes in order to
+        /// ensure the existance of clients and api configuration.
         /// </summary>
         /// <param name="application">The application builder instance</param>
         /// <param name="secretsCallback">The callback that will populate the identity secrets options</param>
@@ -279,7 +282,44 @@ namespace BurstChat.IdentityServer.Extensions
                 AddDevelopmentWebClient(context, identitySecretsOptions);
                 AddDevelopmentApiResource(context, identitySecretsOptions);
                 AddDevelopmentSignalResource(context, identitySecretsOptions);
-                AddDevelopmentIdentityResources(context);   
+                AddDevelopmentIdentityResources(context);
+
+                context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Register alpha invitation codes based on the configuration action provided.
+        /// </summary>
+        /// <param name="application">The application builder instance</param>
+        /// <param name="alphaInvitationsCallback">The invitations configuration callback</param>
+        public static void UseAlphaInvitationCodes(this IApplicationBuilder application, Action<AlphaInvitationCodesOptions> alphaInvitationsCallback)
+        {
+            var options = new AlphaInvitationCodesOptions();
+            alphaInvitationsCallback(options);
+
+            if (options?.AlphaCodes is {})
+            {
+                var serviceScopeFactory = application
+                    .ApplicationServices
+                    .GetService<IServiceScopeFactory>();
+
+                using var serviceScope = serviceScopeFactory.CreateScope();
+
+                var context = serviceScope
+                    .ServiceProvider
+                    .GetRequiredService<BurstChatContext>();
+
+                var alphaInvitationCodes = context
+                    .AlphaInvitations
+                    .ToList();
+
+                foreach (var code in alphaInvitationCodes)
+                {
+                    context.AlphaInvitations.Remove(code);
+                }
+
+                context.AlphaInvitations.AddRange(options.AlphaCodes);
 
                 context.SaveChanges();
             }

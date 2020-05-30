@@ -1,11 +1,15 @@
 using System;
-using System.IO;
 using System.Linq;
+using BurstChat.Application.Interfaces;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Infrastructure.Options;
 using BurstChat.Infrastructure.Persistence;
 using BurstChat.Infrastructure.Services.EmailService;
+using BurstChat.Infrastructure.Services.ProfileService;
+using BurstChat.Infrastructure.Services.ResourceOwnerPasswordValidator;
 using IdentityServer4.AccessTokenValidation;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +22,7 @@ namespace BurstChat.Infrastructure
     /// A static class that contains various extension methods for helping make dependency injection
     /// configurable with less code.
     /// </summary>
-    public static class DependecyInjection
+    public static class DependencyInjection
     {
         private static readonly string BurstChatMigrations = typeof(BurstChatContext).Assembly.FullName;
 
@@ -71,6 +75,8 @@ namespace BurstChat.Infrastructure
                 .Configure<DatabaseOptions>(configuration.GetSection("Database"))
                 .Configure<AcceptedDomainsOptions>(configuration.GetSection("AcceptedDomains"));
 
+            services.AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
+
             services.AddAuthorization();
 
             services
@@ -116,9 +122,15 @@ namespace BurstChat.Infrastructure
                 .Configure<SmtpOptions>(configuration.GetSection("SmtpOptions"))
                 .Configure<AlphaInvitationCodesOptions>(configuration.GetSection("AlphaCodes"));
 
+            services.AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
+
             services.AddSingleton<IEmailService, EmailProvider>();
 
-            var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("BurstChat.Api"));
+            services
+                .AddScoped<IProfileService, BurstChatProfileService>()
+                .AddScoped<IResourceOwnerPasswordValidator, BurstChatResourceOwnerPasswordValidator>();
+
+            var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("Database"));
 
             services.AddDbContext<BurstChatContext>(dbBuilderCallback);
 
@@ -132,13 +144,13 @@ namespace BurstChat.Infrastructure
                 .AddConfigurationStore(options =>
                 {
                     var path = ConfigurationDbMigrations;
-                    var section = configuration.GetSection("IdentityServer.ConfigurationDbContext");
+                    var section = configuration.GetSection("IdentityServer.Database");
                     options.ConfigureDbContext = ConfigureDatabaseContext(path, section);
                 })
                 .AddOperationalStore(options =>
                 {
                     var path = PersistedGrantDbMigrations;
-                    var section = configuration.GetSection("IdentityServer.PersistedGrantDbContext");
+                    var section = configuration.GetSection("IdentityServer.Database");
                     options.ConfigureDbContext = ConfigureDatabaseContext(path, section);
                 });
 
