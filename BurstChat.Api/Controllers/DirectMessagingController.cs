@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
-using BurstChat.Application.Services.DirectMessagingService;
 using BurstChat.Application.Monads;
+using BurstChat.Application.Services.DirectMessagingService;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -34,29 +35,24 @@ namespace BurstChat.Api.Controllers
         /// Fetches all available information about the direct messages of a user.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messages</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpGet("{directMessagingId:long}")]
         [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Get(long directMessagingId)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.Get(userId, directMessagingId));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<DirectMessaging, Error> Get(long directMessagingId) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.Get(userId, directMessagingId));
 
         /// <summary>
         /// Fetches all available information about the direct messages between two users.
         /// </summary>
         /// <param name="firstParticipantId">The user id of the first participant</param>
         /// <param name="secondParticipantId">The user id of the second participant</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpGet]
         [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Get([FromQuery] long firstParticipantId, [FromQuery] long secondParticipantId)
+        public MonadActionResult<DirectMessaging, Error> Get([FromQuery] long firstParticipantId, [FromQuery] long secondParticipantId)
         {
             var monad = HttpContext
                 .GetUserId()
@@ -71,59 +67,46 @@ namespace BurstChat.Api.Controllers
                 };
                 return Post(directMessaging);
             }
-            else
-                return this.UnwrapMonad(monad);
+
+            return monad;
         }
 
         /// <summary>
         /// Fetches all users that the authenticated user has sent a direct messages.
         /// </summary>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpGet("users")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult GetUsers()
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(_directMessagingService.GetUsers);
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<IEnumerable<User>, Error> GetUsers() =>
+            HttpContext.GetUserId()
+                       .Bind(_directMessagingService.GetUsers);
 
         /// <summary>
         /// Creates a new direct messaging association between 2 users.
         /// </summary>
         /// <param name="directMessaging">The direct messaging instance to be created</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpPost]
         [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Post([FromBody] DirectMessaging directMessaging)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.Insert(userId, directMessaging.FirstParticipantUserId, directMessaging.SecondParticipantUserId));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<DirectMessaging, Error> Post([FromBody] DirectMessaging directMessaging) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.Insert(userId,
+                                                                      directMessaging.FirstParticipantUserId,
+                                                                      directMessaging.SecondParticipantUserId));
 
         /// <summary>
         /// Deletes an existing direct messaging entry based on the provided id.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpDelete("{directMessagingId:long}")]
         [ProducesResponseType(typeof(DirectMessaging), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult Delete(long directMessagingId)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.Delete(userId, directMessagingId));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<DirectMessaging, Error> Delete(long directMessagingId) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.Delete(userId, directMessagingId));
 
         /// <summary>
         /// Fetches all messages of a direct messaging entry based on the provided id.
@@ -131,70 +114,50 @@ namespace BurstChat.Api.Controllers
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
         /// <param name="lastMessageId">The message id from which prior messages will be fetched</param>
-        /// <returns>An IActionResult entry</param>
+        /// <returns>A MonadActionResult entry</param>
         [HttpGet("{directMessagingId:long}/messages")]
         [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult GetMessages(long directMessagingId, [FromQuery] long? lastMessageId)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.GetMessages(userId, directMessagingId, lastMessageId));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<IEnumerable<Message>, Error> GetMessages(long directMessagingId, [FromQuery] long? lastMessageId) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.GetMessages(userId, directMessagingId, lastMessageId));
 
         /// <summary>
         /// Inserts a new message to a direct messaging entry.
         /// </summary>
         /// <param name="message">The message to be inserted.</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpPost("{directMessagingId:long}/messages")]
         [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult PostMessage(long directMessagingId, [FromBody] Message message)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.InsertMessage(userId, directMessagingId, message));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<Message, Error> PostMessage(long directMessagingId, [FromBody] Message message) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.InsertMessage(userId, directMessagingId, message));
 
         /// <summary>
         /// Updates an existing message of a direct messaging entry.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="message">The message to be updated</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpPut("{directMessagingId:long}/messages")]
         [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult PutMessage(long directMessagingId, [FromBody] Message message)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.UpdateMessage(userId, directMessagingId, message));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<Message, Error> PutMessage(long directMessagingId, [FromBody] Message message) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.UpdateMessage(userId, directMessagingId, message));
 
         /// <summary>
         /// Deletes a message from a direct messaging entry.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="messageId">The id of the message to be deleted</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpDelete("{directMessagingId:long}/messages")]
         [ProducesResponseType(typeof(Message), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public IActionResult DeleteMessage(long directMessagingId, [FromBody] long messageId)
-        {
-            var monad = HttpContext
-                .GetUserId()
-                .Bind(userId => _directMessagingService.DeleteMessage(userId, directMessagingId, messageId));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<Message, Error> DeleteMessage(long directMessagingId, [FromBody] long messageId) =>
+            HttpContext.GetUserId()
+                       .Bind(userId => _directMessagingService.DeleteMessage(userId, directMessagingId, messageId));
     }
 }
