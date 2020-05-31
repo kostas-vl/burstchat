@@ -1,13 +1,11 @@
 using BurstChat.Application.Errors;
-using BurstChat.Application.Extensions;
+using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
 using BurstChat.Application.Services.UserService;
 using BurstChat.Application.Services.ModelValidationService;
-using BurstChat.Domain.Schema.Users;
-using BurstChat.Domain.Schema.Servers;
+using BurstChat.IdentityServer.ActionResults;
 using BurstChat.IdentityServer.Extensions;
 using BurstChat.Infrastructure.Services.EmailService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -45,55 +43,40 @@ namespace BurstChat.IdentityServer.Controllers
         }
 
         /// <summary>
-        ///   This method will create a new user based on the parameters provided.
+        /// This method will create a new user based on the parameters provided.
         /// </summary>
         /// <param name="registration">The registration parameters</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpPost("register")]
-        public IActionResult Post([FromBody] Registration registration)
-        {
-            var monad = _modelValidationService
-                .ValidateRegistration(registration)
-                .Bind(r => _userService.Insert(r.AlphaInvitationCode,
-                                               r.Email,
-                                               r.Name,
-                                               r.Password));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<Unit, Error> Post([FromBody] Registration registration) =>
+            _modelValidationService.ValidateRegistration(registration)
+                                   .Bind(r => _userService.Insert(r.AlphaInvitationCode,
+                                                                  r.Email,
+                                                                  r.Name,
+                                                                  r.Password));
 
         /// <summary>
-        ///   This method will create a new one time password for a user registered with the provided email
-        ///   and it will be sent to the said mail.
+        /// This method will create a new one time password for a user registered with the provided email
+        /// and it will be sent to the said mail.
         /// </summary>
         /// <param name="email">The email of the user</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>An MonadActionResult instance</returns>
         [HttpPost("password/reset")]
-        public async Task<IActionResult> IssueOneTimePassword([FromBody] string email)
-        {
-            var monad = await _userService
-                .IssueOneTimePassword(email)
-                .BindAsync(async oneTimePass =>
-                {
-                    return await _emailService.SendOneTimePasswordAsync(email, oneTimePass);
-                });
-
-            return this.UnwrapMonad(monad);
-        }
+        public async Task<MonadActionResult<Unit, Error>> IssueOneTimePassword([FromBody] string email) =>
+            await _userService.IssueOneTimePassword(email)
+                              .BindAsync(async oneTimePass =>
+                              {
+                                  return await _emailService.SendOneTimePasswordAsync(email, oneTimePass);
+                              });
 
         /// <summary>
         ///   This method will change the password of a user based on the provided parameters.
         /// </summary>
         /// <param name="changePassword">The change password properties</param>
-        /// <returns>An IActionResult instance</returns>
+        /// <returns>An MonadActionResult instance</returns>
         [HttpPost("password/change")]
-        public IActionResult ChangePassword([FromBody] ChangePassword changePassword)
-        {
-            var monad = _modelValidationService
-                .ValidateChangePassword(changePassword)
-                .Bind(c => _userService.ChangePassword(c.Email, c.OneTimePassword, c.NewPassword));
-
-            return this.UnwrapMonad(monad);
-        }
+        public MonadActionResult<Unit, Error> ChangePassword([FromBody] ChangePassword changePassword) =>
+            _modelValidationService.ValidateChangePassword(changePassword)
+                                   .Bind(c => _userService.ChangePassword(c.Email, c.OneTimePassword, c.NewPassword));
     }
 }

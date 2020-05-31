@@ -1,9 +1,8 @@
-using System;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BurstChat.Api.ActionResults
+namespace BurstChat.IdentityServer.ActionResults
 {
     /// <summary>
     /// A class that can represent the instance of an Either monad as an ActionResult.
