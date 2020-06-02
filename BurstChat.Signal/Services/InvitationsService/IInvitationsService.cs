@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Servers;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Servers;
 using Microsoft.AspNetCore.Http;
 
 namespace BurstChat.Signal.Services.InvitationsService

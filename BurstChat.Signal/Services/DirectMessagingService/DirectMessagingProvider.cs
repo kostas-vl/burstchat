@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Users;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -54,7 +53,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -83,11 +82,11 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
-       
+
         /// <summary>
         ///   Creates a new direct messaging entry between two users based on the provided user ids.
         /// </summary>
@@ -107,7 +106,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -129,7 +128,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
             }
         }
@@ -141,8 +140,8 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="lastMessageId">The message id from which all the previous messages sent will be fetched</param>
         /// <returns>An either monad</returns>
-        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, 
-                                                                                long directMessagingId, 
+        public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context,
+                                                                                long directMessagingId,
                                                                                 long? lastMessageId = null)
         {
             try
@@ -160,13 +159,13 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
             }
         }
 
         /// <summary>
-        ///   Inserts a new message on a direct messaging entry.  
+        ///   Inserts a new message on a direct messaging entry.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
@@ -185,7 +184,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -210,7 +209,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -235,7 +234,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }

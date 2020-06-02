@@ -1,16 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BurstChat.Api.Options;
-using BurstChat.Api.Services.ChannelsService;
-using BurstChat.Api.Services.PrivateGroupsService;
-using BurstChat.Api.Services.DirectMessagingService;
-using BurstChat.Api.Services.ServersService;
-using BurstChat.Shared.Context;
-using BurstChat.Shared.Services.BCryptService;
-using BurstChat.Shared.Services.ModelValidationService;
-using BurstChat.Shared.Services.UserService;
+using BurstChat.Application;
+using BurstChat.Infrastructure;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,74 +43,15 @@ namespace BurstChat.Api
         /// <param name="services">The services collection to be used for the configuration</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            IdentityModelEventSource.ShowPII = true;
-
             services
-                .Configure<DatabaseOptions>(Configuration.GetSection("Database"))
-                .Configure<AcceptedDomainsOptions>(Configuration.GetSection("AcceptedDomains"));
-
-            services.AddSingleton<IBCryptService, BCryptProvider>();
-
-            services
-                .AddScoped<IChannelsService, ChannelsProvider>()
-                .AddScoped<IPrivateGroupsService, PrivateGroupsProvider>()
-                .AddScoped<IDirectMessagingService, DirectMessagingProvider>()
-                .AddScoped<IServersService, ServersProvider>()
-                .AddScoped<IModelValidationService, ModelValidationProvider>()
-                .AddScoped<IUserService, UserProvider>();
+                .AddApplication()
+                .AddInfrastructure(Configuration);
 
             services.AddMvc();
 
             services
                 .AddControllers()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            services.AddAuthorization();
-
-            services
-                .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options => Configuration.GetSection("AccessTokenValidation").Bind(options));
-
-            services.AddDbContext<BurstChatContext>(options =>
-            {
-                var databaseOptions = new DatabaseOptions();
-
-                Configuration
-                    .GetSection("Database")
-                    .Bind(databaseOptions);
-
-                switch (databaseOptions.Provider)
-                {
-                    case "npgsql":
-                        options
-                            .UseLoggerFactory(BurstChatContextLogger)
-                            .UseNpgsql(databaseOptions.ConnectionString, dbContextOptions =>
-                            {
-                                dbContextOptions.MigrationsAssembly("BurstChat.Api");
-                            });
-                        break;
-                    default:
-                        break;
-                }
-            });
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder =>
-                {
-                    var acceptedDomains = Configuration
-                        .GetSection("AcceptedDomains")
-                        .Get<string[]>();
-                    if (acceptedDomains != null && acceptedDomains.Count() > 0)
-                    {
-                        builder
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials()
-                            .WithOrigins(acceptedDomains);
-                    }
-                });
-            });
 
             services.AddSwaggerGen(config =>
             {
@@ -141,7 +75,7 @@ namespace BurstChat.Api
             application
                 .UseStaticFiles()
                 .UseRouting()
-                .UseCors("CorsPolicy")
+                .UseCors(Infrastructure.DependencyInjection.CorsPolicyName)
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseSwagger()

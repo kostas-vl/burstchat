@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BurstChat.Shared.Schema.Chat;
+using BurstChat.Domain.Schema.Chat;
 
 namespace BurstChat.Api.Extensions
 {
@@ -35,7 +35,7 @@ namespace BurstChat.Api.Extensions
         /// </summary>
         /// <param name="message">The message instance of which the content will be queried</param>
         /// <returns>A list of links</returns>
-        public static string RemoveLinksFromContent(this Message message) 
+        public static string RemoveLinksFromContent(this Message message)
         {
             var words = message
                 .Content

@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Users;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Users;
 using Microsoft.AspNetCore.Http;
 
 namespace BurstChat.Signal.Services.DirectMessagingService
@@ -56,12 +55,12 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="lastMessageId">The message id from which all the previous messages sent will be fetched</param>
         /// <returns>An either monad</returns>
-        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, 
-                                                                   long directMessagingId, 
+        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context,
+                                                                   long directMessagingId,
                                                                    long? lastMessageId = null);
 
         /// <summary>
-        ///   Inserts a new message on a direct messaging entry.  
+        ///   Inserts a new message on a direct messaging entry.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>

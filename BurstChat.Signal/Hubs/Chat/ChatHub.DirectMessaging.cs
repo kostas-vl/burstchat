@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Users;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Models;
 using Microsoft.AspNetCore.SignalR;
 
@@ -67,7 +66,7 @@ namespace BurstChat.Signal.Hubs.Chat
             };
             var monad = await _directMessagingService.PostAsync(httpContext, directMessaging);
 
-            switch (monad) 
+            switch (monad)
             {
                 case Success<DirectMessaging, Error> postSuccess:
                     var signalGroup = DirectMessagingName(postSuccess.Value.Id);

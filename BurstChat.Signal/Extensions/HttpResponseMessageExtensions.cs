@@ -1,9 +1,8 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Monads;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
 using Newtonsoft.Json;
 
 namespace BurstChat.Signal.Extensions

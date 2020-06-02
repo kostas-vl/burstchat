@@ -2,11 +2,11 @@ using System;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Shared.Errors;
-using BurstChat.Shared.Extensions;
-using BurstChat.Shared.Monads;
-using BurstChat.Shared.Schema.Chat;
-using BurstChat.Shared.Schema.Servers;
+using BurstChat.Application.Errors;
+using BurstChat.Application.Extensions;
+using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
+using BurstChat.Domain.Schema.Servers;
 using Microsoft.Extensions.Logging;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
@@ -53,7 +53,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -81,7 +81,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -106,7 +106,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -128,7 +128,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Channel, Error>(SystemErrors.Exception());
             }
         }
@@ -160,7 +160,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
             }
         }
@@ -186,13 +186,13 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
 
         /// <summary>
-        ///  This method will edit an existing message of a channel based on the provided channel id 
+        ///  This method will edit an existing message of a channel based on the provided channel id
         ///  and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
@@ -212,7 +212,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }
@@ -238,7 +238,7 @@ namespace BurstChat.Signal.Services.ChannelsService
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e.Message);
                 return new Failure<Message, Error>(SystemErrors.Exception());
             }
         }

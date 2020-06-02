@@ -9,11 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BurstChat.Shared\BurstChat.Shared.csproj" />
+    <ProjectReference Include="..\BurstChat.Infrastructure\BurstChat.Infrastructure.csproj" />
+    <ProjectReference Include="..\BurstChat.Application\BurstChat.Application.csproj" />
+    <ProjectReference Include="..\BurstChat.Domain\BurstChat.Domain.csproj" />
   </ItemGroup>
 
 </Project>
