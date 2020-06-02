@@ -17,6 +17,11 @@ This repository tries to follow the Clean Architecture design.
 ## Database
 PostgreSQL is used as the database, together with Entity Framework Core. All migrations are stored in the BurstChat.Infrastructure project in the Persistence directory.
 
+## Asterisk 
+BurstChat enables real time communication with voice calls, using the Asterisk SIP server and webRTC. For development purposes, there are sample configuration files for asterisk in the config/dev/asterisk directory. 
+
+> For obvious security reasons, do not use any config file in a production Asterisk instance.
+
 ## Settings
 All projects make use of static settings. So a quick list of them are:
 
