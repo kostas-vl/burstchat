@@ -1,11 +1,15 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
+using BurstChat.Application.Models;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Services.UserService;
 using BurstChat.Domain.Schema.Users;
 using BurstChat.Domain.Schema.Servers;
+using BurstChat.Infrastructure.Services.AsteriskService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,17 +28,23 @@ namespace BurstChat.Api.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly IAsteriskService _asteriskService;
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
+        ///
+        /// Exceptions
+        ///     ArgumentNullException: when any of the parameters is null.
         /// </summary>
         public UserController(
             ILogger<UserController> logger,
-            IUserService userService
+            IUserService userService,
+            IAsteriskService asteriskService
         )
         {
-            _logger = logger;
-            _userService = userService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _asteriskService = asteriskService ?? throw new ArgumentNullException(nameof(asteriskService));
         }
 
         /// <summary>
@@ -86,7 +96,7 @@ namespace BurstChat.Api.Controllers
         /// <summary>
         /// This method will fetch all private groups that the user with the provided id is part of.
         /// </summary>
-        /// <returns>An MonadActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpGet("groups")]
         [ProducesResponseType(typeof(IEnumerable<PrivateGroup>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -98,7 +108,7 @@ namespace BurstChat.Api.Controllers
         /// This method will fetch all direct messaging entries that the user with the provided id
         /// is part of.
         /// </summary>
-        /// <returns>An MonadActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpGet("direct")]
         [ProducesResponseType(typeof(IEnumerable<DirectMessaging>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -109,7 +119,7 @@ namespace BurstChat.Api.Controllers
         /// <summary>
         /// Fetches all invitations sent to the user.
         /// </summary>
-        /// <returns>An MonadActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpGet("invitations")]
         [ProducesResponseType(typeof(IEnumerable<Invitation>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -121,7 +131,7 @@ namespace BurstChat.Api.Controllers
         /// Updates the response of a user to a sent server invitation.
         /// </summary>
         /// <param name="invitation">The invitation instance to be used for the update</param>
-        /// <returns>An MonadActionResult instance</returns>
+        /// <returns>A MonadActionResult instance</returns>
         [HttpPut("invitation")]
         [ProducesResponseType(typeof(Invitation), 200)]
         [ProducesResponseType(typeof(Error), 400)]
@@ -129,5 +139,21 @@ namespace BurstChat.Api.Controllers
             HttpContext.GetUserId()
                        .Bind(userId => _userService.ValidateInvitation(userId, invitation))
                        .Bind(_userService.UpdateInvitation);
+
+        /// <summary>
+        /// Fetches the sip endpoint and password of the user.
+        /// </summary>
+        /// <returns>A task of a MonadActionResult instance</returns>
+        [HttpGet("sip")]
+        [ProducesResponseType(typeof(AsteriskEndpoint), 200)]
+        [ProducesResponseType(typeof(Error), 400)]
+        public async Task<MonadActionResult<AsteriskEndpoint, Error>> GetSipEndpoint() =>
+            await HttpContext.GetUserId()
+                             .Bind(_userService.Get)
+                             .BindAsync(async user =>
+                             {
+                                var endpoint = Guid.Parse(user.Sip.Username);
+                                return await _asteriskService.GetAsync(endpoint);
+                             });
     }
 }

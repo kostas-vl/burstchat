@@ -6,7 +6,6 @@ using BurstChat.Application.Errors;
 using BurstChat.Application.Interfaces;
 using BurstChat.Application.Services.BCryptService;
 using BurstChat.Application.Monads;
-using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
@@ -64,7 +63,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method returns a User instance if the provided id belongs to one.
+        /// This method returns a User instance if the provided id belongs to one.
         /// </summary>
         /// <param name="id">The id of the user</param>
         /// <returns>An either monad of a User instance or an Error instance</returns>
@@ -76,6 +75,7 @@ namespace BurstChat.Application.Services.UserService
 
                 var user = _burstChatContext
                     .Users
+                    .Include(u => u.Sip)
                     .FirstOrDefault(u => u.Id == id);
 
                 if (user is { })
@@ -91,7 +91,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method returns a User instance if the provided email belongs to one.
+        /// This method returns a User instance if the provided email belongs to one.
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <returns>An either monad</returns>
@@ -101,6 +101,7 @@ namespace BurstChat.Application.Services.UserService
             {
                 var user = _burstChatContext
                     .Users
+                    .Include(u => u.Sip)
                     .FirstOrDefault(u => u.Email == email);
 
                 if (user is { })
@@ -116,19 +117,19 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   Registers a new user based on the provided parameters.
+        /// Registers a new user based on the provided parameters.
         /// </summary>
         /// <param name="alphaInvitationCode">The alpha invitation code</param>
         /// <param name="email">The email of the new user</param>
         /// <param name="name">The name of the new user</param>
         /// <param name="password">The password of the new user</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Insert(Guid alphaInvitationCode, string email, string name, string password)
+        public Either<User, Error> Insert(Guid alphaInvitationCode, string email, string name, string password)
         {
             try
             {
                 if (Get(email) is Success<User, Error>)
-                    return new Failure<Unit, Error>(UserErrors.UserAlreadyExists());
+                    return new Failure<User, Error>(UserErrors.UserAlreadyExists());
 
                 return AlphaInvitationCodeExists(alphaInvitationCode).Bind(_ =>
                 {
@@ -139,24 +140,28 @@ namespace BurstChat.Application.Services.UserService
                         Email = email,
                         Name = name,
                         Password = hashedPassword,
-                        DateCreated = DateTime.Now
+                        DateCreated = DateTime.Now,
+                        Sip = new Sip
+                        {
+                            Username = Guid.NewGuid().ToString()
+                        }
                     };
 
                     _burstChatContext.Users.Add(user);
                     _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<User, Error>(user);
                 });
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<User, Error>(SystemErrors.Exception());
             }
         }
 
         /// <summary>
-        ///   Updates infomation about an existing user based on the user instance provided.
+        /// Updates infomation about an existing user based on the user instance provided.
         /// </summary>
         /// <param name="user">The user instance to be updated in the database</param>
         /// <returns>An either monad</returns>
@@ -188,7 +193,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   Deletes a registered user from the database based on the provided user instance.
+        /// Deletes a registered user from the database based on the provided user instance.
         /// </summary>
         /// <param name="id">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -210,7 +215,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method will return all available subscribed servers of a user.
+        /// This method will return all available subscribed servers of a user.
         /// <summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -235,8 +240,8 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method will return all private group that the user with the provided user id
-        ///   is part of.
+        /// This method will return all private group that the user with the provided user id
+        /// is part of.
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -264,7 +269,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///     This method will return all direct messaging that the user is part of.
+        /// This method will return all direct messaging that the user is part of.
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -291,8 +296,8 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method will validate the provided email and password in order to
-        ///   find any user that has registered these credentials.
+        /// This method will validate the provided email and password in order to
+        /// find any user that has registered these credentials.
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <param name="password">The password of the user</param>
@@ -319,8 +324,8 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method will validate the provided email and if a user is registered with it
-        ///   a new one time password will be generated for him and sent via email.
+        /// This method will validate the provided email and if a user is registered with it
+        /// a new one time password will be generated for him and sent via email.
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <returns>An either monad</returns>
@@ -360,7 +365,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   Changes the current hashed password of the user to the one provided.
+        /// Changes the current hashed password of the user to the one provided.
         /// </summary>
         /// <param name="email">The email of the user</param>
         /// <param name="oneTimePass">The one time password of the user</param>
@@ -407,7 +412,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///     Fetches all invitations sent to a user based on the provided id.
+        /// Fetches all invitations sent to a user based on the provided id.
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>An either monad</returns>
@@ -432,7 +437,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///     This method will validate the provided invitation against the provided user.
+        /// This method will validate the provided invitation against the provided user.
         /// </summary>
         /// <param name="invitation">The server invitation to be validated</param>
         /// <returns>An either monad</returns>
@@ -445,8 +450,8 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///     This method will updated the Accepted or Declined propery of an existing invitation based on the instance
-        ///     provided.
+        /// This method will updated the Accepted or Declined propery of an existing invitation based on the instance
+        /// provided.
         /// </summary>
         /// <param name="invitation">The server invitation to be updated</param>
         /// <returns>An either monad</returns>
@@ -492,7 +497,7 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        ///   This method will fetch all appropriate user claims based on the provided instance.
+        /// This method will fetch all appropriate user claims based on the provided instance.
         /// </summary>
         /// <param name="user">The user instance</param>
         /// <returns>An either monad</returns>

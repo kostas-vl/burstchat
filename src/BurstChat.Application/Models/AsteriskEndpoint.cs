@@ -1,4 +1,4 @@
-namespace BurstChat.Infrastructure.Asterisk
+namespace BurstChat.Application.Models
 {
     /// <summary>
     /// This class contains information about an Asterisk pjsip endpoint, that

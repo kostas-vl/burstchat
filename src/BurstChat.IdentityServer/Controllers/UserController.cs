@@ -1,3 +1,4 @@
+using System;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
@@ -5,6 +6,7 @@ using BurstChat.Application.Services.UserService;
 using BurstChat.Application.Services.ModelValidationService;
 using BurstChat.IdentityServer.ActionResults;
 using BurstChat.IdentityServer.Extensions;
+using BurstChat.Infrastructure.Services.AsteriskService;
 using BurstChat.Infrastructure.Services.EmailService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,21 +27,27 @@ namespace BurstChat.IdentityServer.Controllers
         private readonly IModelValidationService _modelValidationService;
         private readonly IEmailService _emailService;
         private readonly IUserService _userService;
+        private readonly IAsteriskService _asteriskService;
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
+        ///
+        /// Exceptions
+        ///     ArgumentNullException: when any of the parameters is null.
         /// </summary>
         public UserController(
             ILogger<UserController> logger,
             IModelValidationService modelValidationService,
             IEmailService emailService,
-            IUserService userService
+            IUserService userService,
+            IAsteriskService asteriskService
         )
         {
-            _logger = logger;
-            _modelValidationService = modelValidationService;
-            _emailService = emailService;
-            _userService = userService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _modelValidationService = modelValidationService ?? throw new ArgumentNullException(nameof(modelValidationService));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _asteriskService = asteriskService ?? throw new ArgumentNullException(nameof(asteriskService));
         }
 
         /// <summary>
@@ -48,12 +56,19 @@ namespace BurstChat.IdentityServer.Controllers
         /// <param name="registration">The registration parameters</param>
         /// <returns>A MonadActionResult instance</returns>
         [HttpPost("register")]
-        public MonadActionResult<Unit, Error> Post([FromBody] Registration registration) =>
-            _modelValidationService.ValidateRegistration(registration)
-                                   .Bind(r => _userService.Insert(r.AlphaInvitationCode,
-                                                                  r.Email,
-                                                                  r.Name,
-                                                                  r.Password));
+        public async Task<MonadActionResult<Unit, Error>> Post([FromBody] Registration registration) =>
+            await _modelValidationService.ValidateRegistration(registration)
+                                         .Bind(r => _userService.Insert(r.AlphaInvitationCode,
+                                                                        r.Email,
+                                                                        r.Name,
+                                                                        r.Password))
+                                         .BindAsync(async user =>
+                                         {
+                                              var endpoint = Guid.Parse(user.Sip.Username);
+                                              var password = Guid.NewGuid();
+                                              var monad = await _asteriskService.PostAsync(endpoint, password);
+                                              return monad.Attach(_ => Unit.New());
+                                         });
 
         /// <summary>
         /// This method will create a new one time password for a user registered with the provided email

@@ -4,6 +4,7 @@ using BurstChat.Application.Interfaces;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Infrastructure.Options;
 using BurstChat.Infrastructure.Persistence;
+using BurstChat.Infrastructure.Services.AsteriskService;
 using BurstChat.Infrastructure.Services.EmailService;
 using BurstChat.Infrastructure.Services.ProfileService;
 using BurstChat.Infrastructure.Services.ResourceOwnerPasswordValidator;
@@ -75,13 +76,19 @@ namespace BurstChat.Infrastructure
                 .Configure<DatabaseOptions>(configuration.GetSection("Database"))
                 .Configure<AcceptedDomainsOptions>(configuration.GetSection("AcceptedDomains"));
 
-            services.AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
+            services
+                .AddScoped<IAsteriskService, AsteriskProvider>()
+                .AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
 
             services.AddAuthorization();
 
             services
                 .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options => configuration.GetSection("AccessTokenValidation").Bind(options));
+
+            services.AddHttpContextAccessor();
+
+            services.AddHttpClient<AsteriskProvider>();
 
             var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("Database"));
 
@@ -122,13 +129,17 @@ namespace BurstChat.Infrastructure
                 .Configure<SmtpOptions>(configuration.GetSection("SmtpOptions"))
                 .Configure<AlphaInvitationCodesOptions>(configuration.GetSection("AlphaCodes"));
 
-            services.AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
+            services.AddHttpContextAccessor();
+
+            services.AddHttpClient<AsteriskProvider>();
 
             services.AddSingleton<IEmailService, EmailProvider>();
 
             services
+                .AddScoped<IAsteriskService, AsteriskProvider>()
                 .AddScoped<IProfileService, BurstChatProfileService>()
-                .AddScoped<IResourceOwnerPasswordValidator, BurstChatResourceOwnerPasswordValidator>();
+                .AddScoped<IResourceOwnerPasswordValidator, BurstChatResourceOwnerPasswordValidator>()
+                .AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
 
             var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("Database"));
 

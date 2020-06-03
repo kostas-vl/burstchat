@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
-using BurstChat.Infrastructure.Asterisk;
+using BurstChat.Application.Models;
 
 namespace BurstChat.Infrastructure.Services.AsteriskService
 {

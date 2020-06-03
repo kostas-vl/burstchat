@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
-using BurstChat.Infrastructure.Asterisk;
+using BurstChat.Application.Models;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Infrastructure.Options;
 using Microsoft.Extensions.Options;

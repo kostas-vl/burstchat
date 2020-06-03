@@ -1,4 +1,4 @@
-namespace BurstChat.Infrastructure.Asterisk
+namespace BurstChat.Application.Models
 {
     /// <summary>
     /// This class represents a property that can be returned by calling the Asterisk ARI
