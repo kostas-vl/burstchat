@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BurstChat.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BurstChatContext))]
-    [Migration("20200526191147_InitialMigration")]
+    [Migration("20200603180947_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,6 +274,22 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                     b.ToTable("PrivateGroups");
                 });
 
+            modelBuilder.Entity("BurstChat.Domain.Schema.Users.Sip", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sip");
+                });
+
             modelBuilder.Entity("BurstChat.Domain.Schema.Users.User", b =>
                 {
                     b.Property<long>("Id")
@@ -299,9 +315,14 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                     b.Property<long?>("PrivateGroupId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("SipId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PrivateGroupId");
+
+                    b.HasIndex("SipId");
 
                     b.ToTable("Users");
                 });
@@ -383,6 +404,12 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                     b.HasOne("BurstChat.Domain.Schema.Users.PrivateGroup", null)
                         .WithMany("Users")
                         .HasForeignKey("PrivateGroupId");
+
+                    b.HasOne("BurstChat.Domain.Schema.Users.Sip", "Sip")
+                        .WithMany()
+                        .HasForeignKey("SipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

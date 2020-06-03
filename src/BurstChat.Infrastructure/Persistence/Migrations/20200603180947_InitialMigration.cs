@@ -66,26 +66,16 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "Sip",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Email = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Password = table.Column<string>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    PrivateGroupId = table.Column<long>(nullable: true)
+                    Username = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_PrivateGroups_PrivateGroupId",
-                        column: x => x.PrivateGroupId,
-                        principalTable: "PrivateGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                    table.PrimaryKey("PK_Sip", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -108,6 +98,36 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         principalTable: "Servers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Email = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    SipId = table.Column<long>(nullable: false),
+                    PrivateGroupId = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_PrivateGroups_PrivateGroupId",
+                        column: x => x.PrivateGroupId,
+                        principalTable: "PrivateGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_Sip_SipId",
+                        column: x => x.SipId,
+                        principalTable: "Sip",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,6 +154,49 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Invitations_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<long>(nullable: false),
+                    Content = table.Column<string>(nullable: false),
+                    Edited = table.Column<bool>(nullable: false),
+                    DatePosted = table.Column<DateTime>(nullable: false),
+                    ChannelId = table.Column<int>(nullable: true),
+                    DirectMessagingId = table.Column<long>(nullable: true),
+                    PrivateGroupId = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Channels_ChannelId",
+                        column: x => x.ChannelId,
+                        principalTable: "Channels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_DirectMessaging_DirectMessagingId",
+                        column: x => x.DirectMessagingId,
+                        principalTable: "DirectMessaging",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_PrivateGroups_PrivateGroupId",
+                        column: x => x.PrivateGroupId,
+                        principalTable: "PrivateGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -182,49 +245,6 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Subscriptions_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<long>(nullable: false),
-                    Content = table.Column<string>(nullable: false),
-                    Edited = table.Column<bool>(nullable: false),
-                    DatePosted = table.Column<DateTime>(nullable: false),
-                    ChannelId = table.Column<int>(nullable: true),
-                    DirectMessagingId = table.Column<long>(nullable: true),
-                    PrivateGroupId = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Messages_Channels_ChannelId",
-                        column: x => x.ChannelId,
-                        principalTable: "Channels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_DirectMessaging_DirectMessagingId",
-                        column: x => x.DirectMessagingId,
-                        principalTable: "DirectMessaging",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_PrivateGroups_PrivateGroupId",
-                        column: x => x.PrivateGroupId,
-                        principalTable: "PrivateGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -311,6 +331,11 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 name: "IX_Users_PrivateGroupId",
                 table: "Users",
                 column: "PrivateGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_SipId",
+                table: "Users",
+                column: "SipId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -347,6 +372,9 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "PrivateGroups");
+
+            migrationBuilder.DropTable(
+                name: "Sip");
         }
     }
 }
