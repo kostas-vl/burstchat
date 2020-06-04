@@ -29,6 +29,7 @@ namespace BurstChat.IdentityServer
                         {
                             config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
                             config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
+                            config.AddJsonFile("appsettings.Asterisk.json", optional: false, reloadOnChange: false);
                             config.AddJsonFile("appsettings.Smtp.json", optional: false, reloadOnChange: false);
                             config.AddJsonFile("appsettings.IdentitySecrets.json", optional: true, reloadOnChange: false);
                             config.AddJsonFile("appsettings.SigningCredentials.json", optional: false, reloadOnChange: false);

@@ -76,9 +76,7 @@ namespace BurstChat.Infrastructure
                 .Configure<DatabaseOptions>(configuration.GetSection("Database"))
                 .Configure<AcceptedDomainsOptions>(configuration.GetSection("AcceptedDomains"));
 
-            services
-                .AddScoped<IAsteriskService, AsteriskProvider>()
-                .AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
+            services.AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
 
             services.AddAuthorization();
 
@@ -88,7 +86,7 @@ namespace BurstChat.Infrastructure
 
             services.AddHttpContextAccessor();
 
-            services.AddHttpClient<AsteriskProvider>();
+            services.AddHttpClient<IAsteriskService, AsteriskProvider>();
 
             var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("Database"));
 
@@ -126,20 +124,20 @@ namespace BurstChat.Infrastructure
         {
             services
                 .Configure<AcceptedDomainsOptions>(configuration.GetSection("AcceptedDomains"))
+                .Configure<AsteriskOptions>(configuration.GetSection("Asterisk"))
                 .Configure<SmtpOptions>(configuration.GetSection("SmtpOptions"))
                 .Configure<AlphaInvitationCodesOptions>(configuration.GetSection("AlphaCodes"));
-
-            services.AddHttpContextAccessor();
-
-            services.AddHttpClient<AsteriskProvider>();
 
             services.AddSingleton<IEmailService, EmailProvider>();
 
             services
-                .AddScoped<IAsteriskService, AsteriskProvider>()
                 .AddScoped<IProfileService, BurstChatProfileService>()
                 .AddScoped<IResourceOwnerPasswordValidator, BurstChatResourceOwnerPasswordValidator>()
                 .AddScoped<IBurstChatContext>(provider => provider.GetService<BurstChatContext>());
+
+            services.AddHttpContextAccessor();
+
+            services.AddHttpClient<IAsteriskService, AsteriskProvider>();
 
             var dbBuilderCallback = ConfigureDatabaseContext(BurstChatMigrations, configuration.GetSection("Database"));
 

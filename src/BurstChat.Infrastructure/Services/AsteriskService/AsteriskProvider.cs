@@ -55,12 +55,15 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
             {
                 var path = $"{_options.Domain}{_pjsipPath}/aor/aor{endpoint}";
                 var request = new HttpRequestMessage(HttpMethod.Put, path);
-                var aorContent = new List<AsteriskProperty>
+                var content = new AsteriskFields
                 {
-                    new AsteriskProperty { Attribute = "id", Value = $"aor{endpoint}" },
-                    new AsteriskProperty { Attribute = "max_contacts", Value = "5" },
+                    Fields = new List<AsteriskProperty>
+                    {
+                        new AsteriskProperty { Attribute = "id", Value = $"aor{endpoint}" },
+                        new AsteriskProperty { Attribute = "max_contacts", Value = "5" },
+                    }
                 };
-                var json = JsonSerializer.Serialize(aorContent);
+                var json = JsonSerializer.Serialize(content);
 
                 request.Content  = new StringContent(json, Encoding.UTF8, "application/json");
                 request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
@@ -73,6 +76,8 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                         return new Success<Unit, Error>(Unit.New());
 
                     case HttpStatusCode.BadRequest:
+                        var error = await response.Content.ReadAsStringAsync();
+                        _logger.LogError(error);
                         return new Failure<Unit, Error>(SystemErrors.Exception());
 
                     default:
@@ -81,6 +86,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
             } catch (Exception e)
             {
                 _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -98,14 +104,17 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
             {
                 var path = $"{_options.Domain}{_pjsipPath}/auth/auth{endpoint}";
                 var request = new HttpRequestMessage(HttpMethod.Put, path);
-                var aorContent = new List<AsteriskProperty>
+                var content = new AsteriskFields
                 {
-                    new AsteriskProperty { Attribute = "id", Value = $"auth{endpoint}" },
-                    new AsteriskProperty { Attribute = "auth_type", Value = "userpass" },
-                    new AsteriskProperty { Attribute = "username", Value = endpoint.ToString() },
-                    new AsteriskProperty { Attribute = "password", Value = password.ToString() }
+                    Fields = new List<AsteriskProperty>
+                    {
+                        new AsteriskProperty { Attribute = "id", Value = $"auth{endpoint}" },
+                        new AsteriskProperty { Attribute = "auth_type", Value = "userpass" },
+                        new AsteriskProperty { Attribute = "username", Value = endpoint.ToString() },
+                        new AsteriskProperty { Attribute = "password", Value = password.ToString() }
+                    }
                 };
-                var json = JsonSerializer.Serialize(aorContent);
+                var json = JsonSerializer.Serialize(content);
 
                 request.Content  = new StringContent(json, Encoding.UTF8, "application/json");
                 request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
@@ -118,6 +127,8 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                         return new Success<Unit, Error>(Unit.New());
 
                     case HttpStatusCode.BadRequest:
+                        var error = await response.Content.ReadAsStringAsync();
+                        _logger.LogError(error);
                         return new Failure<Unit, Error>(SystemErrors.Exception());
 
                     default:
@@ -143,18 +154,21 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
             {
                 var path = $"{_options.Domain}{_pjsipPath}/endpoint/{endpoint}";
                 var request = new HttpRequestMessage(HttpMethod.Put, path);
-                var aorContent = new List<AsteriskProperty>
+                var content = new AsteriskFields
                 {
-                    new AsteriskProperty { Attribute = "id", Value = endpoint.ToString() },
-                    new AsteriskProperty { Attribute = "transport", Value = "transport-ws" },
-                    new AsteriskProperty { Attribute = "aors", Value = $"aor{endpoint}" },
-                    new AsteriskProperty { Attribute = "auth", Value = $"auth{endpoint}" },
-                    new AsteriskProperty { Attribute = "context", Value = "burst" },
-                    new AsteriskProperty { Attribute = "disallow", Value = "all" },
-                    new AsteriskProperty { Attribute = "allow", Value = "opus" },
-                    new AsteriskProperty { Attribute = "dtls_auto_generate_url", Value = "yes" }
+                    Fields = new List<AsteriskProperty>
+                    {
+                        new AsteriskProperty { Attribute = "id", Value = endpoint.ToString() },
+                        new AsteriskProperty { Attribute = "transport", Value = "transport-ws" },
+                        new AsteriskProperty { Attribute = "aors", Value = $"aor{endpoint}" },
+                        new AsteriskProperty { Attribute = "auth", Value = $"auth{endpoint}" },
+                        new AsteriskProperty { Attribute = "context", Value = "burst" },
+                        new AsteriskProperty { Attribute = "disallow", Value = "all" },
+                        new AsteriskProperty { Attribute = "allow", Value = "opus" },
+                        new AsteriskProperty { Attribute = "dtls_auto_generate_url", Value = "yes" }
+                    }
                 };
-                var json = JsonSerializer.Serialize(aorContent);
+                var json = JsonSerializer.Serialize(content);
 
                 request.Content  = new StringContent(json, Encoding.UTF8, "application/json");
                 request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
@@ -167,6 +181,8 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                         return new Success<Unit, Error>(Unit.New());
 
                     case HttpStatusCode.BadRequest:
+                        var error = await response.Content.ReadAsStringAsync();
+                        _logger.LogError(error);
                         return new Failure<Unit, Error>(SystemErrors.Exception());
 
                     default:
@@ -210,6 +226,8 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                         return new Success<AsteriskEndpoint, Error>(info);
 
                     case HttpStatusCode.BadRequest:
+                        var error = await response.Content.ReadAsStringAsync();
+                        _logger.LogError(error);
                         return new Failure<AsteriskEndpoint, Error>(SystemErrors.Exception());
 
                     default:
