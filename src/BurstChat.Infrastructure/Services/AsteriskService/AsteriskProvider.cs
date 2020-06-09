@@ -11,20 +11,55 @@ using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Infrastructure.Options;
+using Dapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace BurstChat.Infrastructure.Services.AsteriskService
 {
     /// <summary>
     /// This class is the base implementation of the IAsteriskService interface.
     /// </summary>
-    public class AsteriskProvider : IAsteriskService
+    public class AsteriskProvider : IAsteriskService, IDisposable
     {
-        private readonly string _pjsipPath = "/ari/asterisk/config/dynamic/res_pjsip";
         private readonly ILogger<AsteriskProvider> _logger;
-        private readonly AsteriskOptions _options;
-        private readonly HttpClient _httpClient;
+        private readonly DatabaseOptions _options;
+        private NpgsqlConnection _connection;
+
+        private readonly string InsertAor = @"
+            insert into ps_aors
+                (id, max_contacts, remove_existing, support_path)
+            values
+                (@id, @maxContacts, @removeExisting, @supportPath);
+        ";
+
+        private readonly string InsertAuth = @"
+            insert into ps_auths
+                (id, auth_type, username, password)
+            values
+                (@id, @authType::pjsip_auth_type_values_v2, @username, @password);
+        ";
+
+        private readonly string InsertEndpoint = @"
+            insert into ps_endpoints
+                (id, transport, aors, auth, context, disallow, allow, dtls_auto_generate_cert)
+            values
+                (@id, @transport, @aors, @auth, @context, @disallow, @allow, @dtlsAutoGenerateCert);
+        ";
+
+        private readonly string GetEndpointCredentials = @"
+            select
+                a.username,
+                a.password
+            from
+                ps_endpoints as e
+                inner join ps_auths as a
+                    on e.auth = a.id
+            where
+                e.id = @endpoint
+        ";
 
         /// <summary>
         /// Creates a new instance of AsteriskProvider.
@@ -34,13 +69,12 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// </summary>
         public AsteriskProvider(
             ILogger<AsteriskProvider> logger,
-            IOptions<AsteriskOptions> options,
-            HttpClient httpClient
+            DatabaseOptions options
         )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _connection = new NpgsqlConnection(_options.ConnectionString);
         }
 
         /// <summary>
@@ -53,40 +87,20 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         {
             try
             {
-                var path = $"{_options.Domain}{_pjsipPath}/aor/aor{endpoint}";
-                var request = new HttpRequestMessage(HttpMethod.Put, path);
-                var content = new AsteriskFields
+                var parameters = new
                 {
-                    Fields = new List<AsteriskProperty>
-                    {
-                        new AsteriskProperty { Attribute = "id", Value = $"aor{endpoint}" },
-                        new AsteriskProperty { Attribute = "max_contacts", Value = "5" },
-                    }
+                    id = $"aor{endpoint}",
+                    maxContacts = 5,
+                    removeExisting = true,
+                    supportPath = true
                 };
-                var json = JsonSerializer.Serialize(content);
 
-                request.Content  = new StringContent(json, Encoding.UTF8, "application/json");
-                request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
+                await _connection.ExecuteAsync(InsertAor, parameters);
 
-                var response = await _httpClient.SendAsync(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        return new Success<Unit, Error>(Unit.New());
-
-                    case HttpStatusCode.BadRequest:
-                        var error = await response.Content.ReadAsStringAsync();
-                        _logger.LogError(error);
-                        return new Failure<Unit, Error>(SystemErrors.Exception());
-
-                    default:
-                        return new Failure<Unit, Error>(SystemErrors.Exception());
-                }
+                return new Success<Unit, Error>(Unit.New());
             } catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                _logger.LogError(e.StackTrace);
                 return new Failure<Unit, Error>(SystemErrors.Exception());
             }
         }
@@ -102,38 +116,17 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         {
             try
             {
-                var path = $"{_options.Domain}{_pjsipPath}/auth/auth{endpoint}";
-                var request = new HttpRequestMessage(HttpMethod.Put, path);
-                var content = new AsteriskFields
+                var parameters = new
                 {
-                    Fields = new List<AsteriskProperty>
-                    {
-                        new AsteriskProperty { Attribute = "id", Value = $"auth{endpoint}" },
-                        new AsteriskProperty { Attribute = "auth_type", Value = "userpass" },
-                        new AsteriskProperty { Attribute = "username", Value = endpoint.ToString() },
-                        new AsteriskProperty { Attribute = "password", Value = password.ToString() }
-                    }
+                    id = $"auth{endpoint}",
+                    authType = "userpass",
+                    username = endpoint.ToString(),
+                    password = password.ToString()
                 };
-                var json = JsonSerializer.Serialize(content);
 
-                request.Content  = new StringContent(json, Encoding.UTF8, "application/json");
-                request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
+                await _connection.ExecuteAsync(InsertAuth, parameters);
 
-                var response = await _httpClient.SendAsync(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        return new Success<Unit, Error>(Unit.New());
-
-                    case HttpStatusCode.BadRequest:
-                        var error = await response.Content.ReadAsStringAsync();
-                        _logger.LogError(error);
-                        return new Failure<Unit, Error>(SystemErrors.Exception());
-
-                    default:
-                        return new Failure<Unit, Error>(SystemErrors.Exception());
-                }
+                return new Success<Unit, Error>(Unit.New());
             }
             catch (Exception e)
             {
@@ -152,43 +145,21 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         {
             try
             {
-                var path = $"{_options.Domain}{_pjsipPath}/endpoint/{endpoint}";
-                var request = new HttpRequestMessage(HttpMethod.Put, path);
-                var content = new AsteriskFields
+                var parameters = new
                 {
-                    Fields = new List<AsteriskProperty>
-                    {
-                        new AsteriskProperty { Attribute = "id", Value = endpoint.ToString() },
-                        new AsteriskProperty { Attribute = "transport", Value = "transport-ws" },
-                        new AsteriskProperty { Attribute = "aors", Value = $"aor{endpoint}" },
-                        new AsteriskProperty { Attribute = "auth", Value = $"auth{endpoint}" },
-                        new AsteriskProperty { Attribute = "context", Value = "burst" },
-                        new AsteriskProperty { Attribute = "disallow", Value = "all" },
-                        new AsteriskProperty { Attribute = "allow", Value = "opus" },
-                        new AsteriskProperty { Attribute = "dtls_auto_generate_url", Value = "yes" }
-                    }
+                    id = endpoint.ToString(),
+                    transport = "transport-ws",
+                    aors = $"aor{endpoint}",
+                    auth = $"auth{endpoint}",
+                    context = "burst",
+                    disallow = "all",
+                    allow = "opus",
+                    dtlsAutoGenerateCert = true
                 };
-                var json = JsonSerializer.Serialize(content);
 
-                request.Content  = new StringContent(json, Encoding.UTF8, "application/json");
-                request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
+                await _connection.ExecuteAsync(InsertEndpoint, parameters);
 
-                var response = await _httpClient.SendAsync(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        return new Success<Unit, Error>(Unit.New());
-
-                    case HttpStatusCode.BadRequest:
-                        var error = await response.Content.ReadAsStringAsync();
-                        _logger.LogError(error);
-                        return new Failure<Unit, Error>(SystemErrors.Exception());
-
-                    default:
-                        return new Failure<Unit, Error>(SystemErrors.Exception());
-                }
-
+                return new Success<Unit, Error>(Unit.New());
             }
             catch (Exception e)
             {
@@ -207,32 +178,10 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         {
             try
             {
-                var path = $"{_options.Domain}{_pjsipPath}/endpoint/{endpoint}";
-                var request = new HttpRequestMessage(HttpMethod.Get, path);
-                request.Headers.Authorization = new BasicAuthenticationHeaderValue(_options.Username, _options.Password);
+                var info = await _connection
+                    .QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint });
 
-                var response = await _httpClient.SendAsync(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        var properties = await response.DeserializeContentAsync<List<AsteriskProperty>>();
-                        var password = properties.First(p => p.Attribute == "password");
-                        var info = new AsteriskEndpoint
-                        {
-                            Username = endpoint.ToString(),
-                            Password = password.Value
-                        };
-                        return new Success<AsteriskEndpoint, Error>(info);
-
-                    case HttpStatusCode.BadRequest:
-                        var error = await response.Content.ReadAsStringAsync();
-                        _logger.LogError(error);
-                        return new Failure<AsteriskEndpoint, Error>(SystemErrors.Exception());
-
-                    default:
-                        return new Failure<AsteriskEndpoint, Error>(SystemErrors.Exception());
-                }
+                return new Success<AsteriskEndpoint, Error>(info);
             }
             catch (Exception e)
             {
@@ -251,8 +200,8 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// <returns>A task of an either monad</returns>
         public async Task<Either<AsteriskEndpoint, Error>> PostAsync(Guid endpoint, Guid password)
         {
-            var aorMonad = await PostAorAsync(endpoint);
-            var authMonad = await aorMonad.BindAsync(_ => PostAuthAsync(endpoint, password));
+            var authMonad = await PostAuthAsync(endpoint, password);
+            var aorMonad = await authMonad.BindAsync(_ => PostAorAsync(endpoint));
             var endpointMonad = await authMonad.BindAsync(_ => PostEndpointAsync(endpoint));
 
             return endpointMonad.Attach(_ => new AsteriskEndpoint
@@ -260,6 +209,18 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                 Username = endpoint.ToString(),
                 Password = password.ToString()
             });
+        }
+
+        /// <summary>
+        /// Executes any neccessary code for the disposal of the service instance.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_connection is { })
+            {
+                _connection.Dispose();
+                _connection = null;
+            }
         }
     }
 }
