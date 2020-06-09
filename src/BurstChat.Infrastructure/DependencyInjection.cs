@@ -130,7 +130,6 @@ namespace BurstChat.Infrastructure
         {
             services
                 .Configure<AcceptedDomainsOptions>(configuration.GetSection("AcceptedDomains"))
-                .Configure<AsteriskOptions>(configuration.GetSection("Asterisk"))
                 .Configure<SmtpOptions>(configuration.GetSection("SmtpOptions"))
                 .Configure<AlphaInvitationCodesOptions>(configuration.GetSection("AlphaCodes"));
 
