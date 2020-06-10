@@ -164,6 +164,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
 
                 var users = _burstChatContext
                     .Users
+                    .Include(u => u.Sip)
                     .Where(u => userIds.Contains(u.Id))
                     .ToList();
 
