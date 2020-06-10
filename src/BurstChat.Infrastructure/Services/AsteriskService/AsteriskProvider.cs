@@ -179,7 +179,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
             try
             {
                 var info = await _connection
-                    .QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint });
+                    .QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint = endpoint.ToString() });
 
                 return new Success<AsteriskEndpoint, Error>(info);
             }
