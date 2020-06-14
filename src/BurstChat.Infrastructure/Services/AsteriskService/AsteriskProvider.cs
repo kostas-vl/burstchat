@@ -89,7 +89,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
             {
                 var parameters = new
                 {
-                    id = $"aor{endpoint}",
+                    id = endpoint.ToString(),
                     maxContacts = 5,
                     removeExisting = true,
                     supportPath = true
@@ -149,7 +149,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                 {
                     id = endpoint.ToString(),
                     transport = "transport-ws",
-                    aors = $"aor{endpoint}",
+                    aors = endpoint.ToString(),
                     auth = $"auth{endpoint}",
                     context = "burst",
                     disallow = "all",
