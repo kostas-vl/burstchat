@@ -1,9 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
-import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { User } from 'src/app/models/user/user';
+import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -19,24 +23,34 @@ import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-sol
 })
 export class ChatInfoComponent implements OnInit {
 
+    private userSub?: Subscription;
+
+    private user?: User;
+
+    public optionsValue?: ChatConnectionOptions;
+
+    public icon = undefined;
+
+    public callIcon = faPhone;
+
+    public canCall = false;
+
     @Input()
-    public options?: ChatConnectionOptions;
+    public set options(value: ChatConnectionOptions) {
+        this.optionsValue = value;
 
-    public get icon() {
-        if (this.options instanceof ChannelConnectionOptions) {
-            return faCommentAlt;
-        } else if (this.options instanceof PrivateGroupConnectionOptions) {
-            return faLock;
-        } else if (this.options instanceof DirectMessagingConnectionOptions) {
-            return faComments;
+        if (this.optionsValue instanceof ChannelConnectionOptions) { 1
+            this.icon = faCommentAlt;
+            this.canCall = false;
+        } else if (this.optionsValue instanceof PrivateGroupConnectionOptions) {
+            this.icon = faLock;
+            this.canCall = false;
+        } else if (this.optionsValue instanceof DirectMessagingConnectionOptions) {
+            this.icon = faComments;
+            this.canCall = true;
         } else {
-            return undefined;
-        }
-    }
-
-    public get mediaIcon() {
-        if (this.options instanceof DirectMessagingConnectionOptions) {
-            return faPhone;
+            this.icon = undefined;
+            this.canCall = false;
         }
     }
 
@@ -44,21 +58,47 @@ export class ChatInfoComponent implements OnInit {
      * Creates a new instance of ChatInfoComponent.
      * @memberof ChatInfoComponent
      */
-    constructor() { }
+    constructor(
+        private userService: UserService,
+        private rtcSessionService: RtcSessionService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof ChatInfoComponent
      */
-    public ngOnInit(): void { }
+    public ngOnInit() {
+        this.userSub = this
+            .userService
+            .user
+            .subscribe(user => this.user = user);
+    }
 
     /**
-     * Handles the media button click event.
+     * Executes any neccessary code for the destruction of the component.
      * @memberof ChatInfoComponent
      */
-    public onMediaButtonClick() {
-        if (this.options instanceof DirectMessagingConnectionOptions) {
+    public ngOnDestroy() {
+        this.userSub?.unsubscribe();
+    }
 
+    /**
+     * Handles the call button click event.
+     * @memberof ChatInfoComponent
+     */
+    public onCallClick() {
+        if (this.optionsValue instanceof DirectMessagingConnectionOptions) {
+            const options = this.optionsValue as DirectMessagingConnectionOptions;
+            const dm = options.directMessaging;
+            if (dm.firstParticipantUser.id !== this.user.id) {
+                this.rtcSessionService.call(dm.firstParticipantUser.sip.username);
+                return;
+            }
+
+            if (dm.secondParticipantUser.id !== this.user.id) {
+                this.rtcSessionService.call(dm.secondParticipantUser.sip.username);
+                return;
+            }
         }
     }
 

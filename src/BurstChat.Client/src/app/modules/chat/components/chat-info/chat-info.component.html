@@ -1,6 +1,6 @@
-<div class="chat-info">
+<div class="chat-info" *ngIf="optionsValue">
 
-    <div class="fs-10 pl-20 pr-10" *ngIf="options">
+    <div class="fs-10 pl-20 pr-10">
 
         <fa-icon [icon]="icon"></fa-icon>
 
@@ -8,17 +8,17 @@
 
     <div class="fs-18">
 
-        {{options.name}}
+        {{optionsValue.name}}
 
     </div>
 
-    <div class="ml-auto pr-10" *ngIf="mediaIcon">
+    <div class="ml-auto pr-5" *ngIf="canCall">
 
-        <div class="button-icon bg-secondary text" (click)="onMediaButtonClick()">
+        <button class="button my-auto" (click)="onCallClick()">
 
-            <fa-icon [icon]="mediaIcon"></fa-icon>
+            <fa-icon [icon]="callIcon"></fa-icon> Call
 
-        </div>
+        </button>
 
     </div>
 

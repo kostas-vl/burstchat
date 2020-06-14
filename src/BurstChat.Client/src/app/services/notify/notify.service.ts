@@ -49,6 +49,8 @@ export class NotifyService {
         if (this.canDisplay) {
             const options: NotificationOptions = { body: content };
             const _ = new Notification(title, options);
+        } else {
+            this.popupInfo(title, content);
         }
     }
 

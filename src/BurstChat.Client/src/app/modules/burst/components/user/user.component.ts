@@ -84,16 +84,21 @@ export class UserComponent implements OnInit, OnDestroy {
      */
     public onSelect() {
         if (this.currentUser && this.currentUser.id !== this.user.id) {
-            this.directMessagingService
-                .get(this.currentUser.id, this.user.id)
-                .subscribe(directMessaging => {
-                    this.router.navigate(['/core/chat/direct'], {
-                        queryParams: {
-                            id: directMessaging.id,
-                            name: `${this.currentUser.name}, ${this.user.name}`
-                        }
-                    });
-                });
+            this.router.navigate(['/core/chat/direct'], {
+                queryParams: {
+                    user: [this.currentUser.id, this.user.id]
+                }
+            });
+            // this.directMessagingService
+            //     .get(this.currentUser.id, this.user.id)
+            //     .subscribe(directMessaging => {
+            //         this.router.navigate(['/core/chat/direct'], {
+            //             queryParams: {
+            //                 id: directMessaging.id,
+            //                 name: `${this.currentUser.name}, ${this.user.name}`
+            //             }
+            //         });
+            //     });
         }
     }
 
