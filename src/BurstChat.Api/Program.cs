@@ -1,11 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using BurstChat.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace BurstChat.Api
@@ -19,16 +22,38 @@ namespace BurstChat.Api
                 .Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost
-                .CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, config) =>
+        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
-                    config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
-                    config.AddJsonFile("appsettings.AccessTokenValidation.json", optional: false, reloadOnChange: false);
-                })
-                .UseKestrel(options => options.ListenLocalhost(5000))
-                .UseStartup<Startup>();
+                    webBuilder
+                        .ConfigureAppConfiguration((context, config) =>
+                        {
+                            config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
+                            config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
+                            config.AddJsonFile("appsettings.AccessTokenValidation.json", optional: false, reloadOnChange: false);
+                        })
+                        .UseKestrel(options =>
+                        {
+                            var envHost = Environment.GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_API_HOST);
+                            var envPort = Environment.GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_API_PORT);
+
+                            if (envHost != null && envPort != null)
+                            {
+                                var canParseHost = IPAddress.TryParse(envHost, out var host);
+                                if (!canParseHost)
+                                    throw new Exception($"{EnvironmentVariables.BURST_CHAT_API_HOST} invalid value");
+
+                                var canParsePort = Int32.TryParse(envPort, out var port);
+                                if (!canParsePort)
+                                    throw new Exception($"{EnvironmentVariables.BURST_CHAT_API_PORT} invalid value");
+
+                                options.Listen(host, port);
+                            }
+                            else
+                                options.ListenLocalhost(5000);
+                        })
+                        .UseStartup<Startup>();
+                });
     }
 }

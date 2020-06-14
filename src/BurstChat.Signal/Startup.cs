@@ -51,7 +51,6 @@ namespace BurstChat.Signal
                 .AddSignalR();
 
             services
-                .AddScoped<BurstChatApiInteropService>()
                 .AddScoped<IInvitationsService, InvitationsProvider>()
                 .AddScoped<IServerService, ServerProvider>()
                 .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()

@@ -156,8 +156,18 @@ namespace BurstChat.Infrastructure
             services
                 .AddIdentityServer(options =>
                 {
-                    options.IssuerUri = "http://localhost:5002";
-                    options.PublicOrigin = "http://localhost:5002";
+                    var host = Environment
+                        .GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_IDENTITY_HOST)
+                        ?? "localhost";
+
+                    var port = Environment
+                        .GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_IDENTITY_PORT)
+                        ?? "5002";
+
+                    var domain = $"http://{host}:{port}";
+
+                    options.IssuerUri = domain;
+                    options.PublicOrigin = domain;
                 })
                 .AddBurstChatSigningCredentials(options => configuration.GetSection("X509").Bind(options))
                 .AddConfigurationStore(options =>

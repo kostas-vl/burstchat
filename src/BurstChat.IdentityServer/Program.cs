@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using BurstChat.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +36,26 @@ namespace BurstChat.IdentityServer
                             config.AddJsonFile("appsettings.SigningCredentials.json", optional: false, reloadOnChange: false);
                             config.AddJsonFile("appsettings.AlphaCodes.json", optional: false, reloadOnChange: false);
                         })
-                        .UseKestrel(options => options.ListenLocalhost(5002))
+                        .UseKestrel(options =>
+                        {
+                            var envHost = Environment.GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_IDENTITY_HOST);
+                            var envPort = Environment.GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_IDENTITY_PORT);
+
+                            if (envHost != null && envPort != null)
+                            {
+                                var canParseHost = IPAddress.TryParse(envHost, out var host);
+                                if (!canParseHost)
+                                    throw new Exception($"{EnvironmentVariables.BURST_CHAT_IDENTITY_HOST} invalid value");
+
+                                var canParsePort = Int32.TryParse(envPort, out var port);
+                                if (!canParsePort)
+                                    throw new Exception($"{EnvironmentVariables.BURST_CHAT_IDENTITY_PORT} invalid value");
+
+                                options.Listen(host, port);
+                            }
+                            else
+                                options.ListenLocalhost(5002);
+                        })
                         .UseStartup<Startup>();
                 });
     }
