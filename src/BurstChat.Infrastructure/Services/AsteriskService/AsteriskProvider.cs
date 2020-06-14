@@ -44,9 +44,9 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
 
         private readonly string InsertEndpoint = @"
             insert into ps_endpoints
-                (id, transport, aors, auth, context, disallow, allow, dtls_auto_generate_cert)
+                (id, transport, aors, auth, context, disallow, allow, dtls_auto_generate_cert, webrtc)
             values
-                (@id, @transport, @aors, @auth, @context, @disallow, @allow, @dtlsAutoGenerateCert);
+                (@id, @transport, @aors, @auth, @context, @disallow, @allow, @dtlsAutoGenerateCert, @webrtc);
         ";
 
         private readonly string GetEndpointCredentials = @"
@@ -154,7 +154,8 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                     context = "burst",
                     disallow = "all",
                     allow = "opus",
-                    dtlsAutoGenerateCert = true
+                    dtlsAutoGenerateCert = true,
+                    webrtc = true
                 };
 
                 await _connection.ExecuteAsync(InsertEndpoint, parameters);
