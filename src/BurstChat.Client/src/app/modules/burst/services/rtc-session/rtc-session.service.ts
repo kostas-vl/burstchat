@@ -68,6 +68,7 @@ export class RtcSessionService {
                 };
                 this.userAgent = new UA(this.userAgentConfig);
                 this.registerUserAgentEvent();
+                this.userAgent.start();
             });
     }
 
@@ -104,10 +105,12 @@ export class RtcSessionService {
      */
     private userAgentNewSession(event) {
         console.log('New incoming RTC session');
-
         const session = event.session;
-        this.registerSessionEvents(session);
-        this.incomingSession.next(session);
+
+        if (event.originator !== 'local') {
+            this.registerSessionEvents(session);
+            this.incomingSession.next(session);
+        }
     }
 
     /**
@@ -162,7 +165,7 @@ export class RtcSessionService {
     private sessionFailed(cause) {
         console.warn('RTC session failed with cause: ');
         console.warn(cause);
-        this.notifyService.popupWarning('Call failed', `The call was ${cause.cause}`);
+        this.notifyService.popupWarning('Call failed', 'Please try executing the call again in a few minutes.');
     }
 
     /**
@@ -172,7 +175,7 @@ export class RtcSessionService {
     private sessionEnded(cause) {
         console.warn('RTC session ended with cause: ');
         console.warn(cause);
-        this.notifyService.popupWarning('Call ended', `The call was ${cause.cause}`);
+        this.notifyService.popupWarning('Call ended', 'Please try executing the call again in a few minutes.');
     }
 
     /**

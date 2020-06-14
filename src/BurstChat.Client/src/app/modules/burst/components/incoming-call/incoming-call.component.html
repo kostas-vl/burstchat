@@ -1,0 +1,41 @@
+<app-dialog [visible]="dialogVisible">
+
+    <app-card>
+
+        <app-card-body>
+
+            <div class="dialog-size">
+
+                <h4>New incoming call</h4>
+
+                <div class="row">
+
+                    <div class="column column-50">
+
+                        <button class="button btn-success w-100 fs-16" (click)="onAnswer()">
+
+                            <fa-icon [icon]="answerIcon"></fa-icon>
+
+                        </button>
+
+                    </div>
+
+                    <div class="column column-50">
+
+                        <button class="button button-outline w-100 fs-16" (click)="onIgnore()">
+
+                            <fa-icon [icon]="ignoreIcon"></fa-icon>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </app-card-body>
+
+    </app-card>
+
+</app-dialog>

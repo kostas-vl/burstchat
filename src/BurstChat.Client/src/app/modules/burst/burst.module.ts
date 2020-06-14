@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
@@ -17,6 +18,7 @@ import { ChannelComponent } from 'src/app/modules/burst/components/channel/chann
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
 import { UserListComponent } from 'src/app/modules/burst/components/user-list/user-list.component';
 import { UserComponent } from 'src/app/modules/burst/components/user/user.component';
+import { IncomingCallComponent } from 'src/app/modules/burst/components/incoming-call/incoming-call.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -28,7 +30,9 @@ import {
     faCircle,
     faDotCircle,
     faCubes,
-    faComments
+    faComments,
+    faCheck,
+    faTimes
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -36,6 +40,7 @@ import {
         CommonModule,
         HttpClientModule,
         FontAwesomeModule,
+        SharedModule,
         BurstRoutingModule
     ],
     declarations: [
@@ -50,7 +55,8 @@ import {
         ChannelListComponent,
         ChannelComponent,
         UserListComponent,
-        UserComponent
+        UserComponent,
+        IncomingCallComponent
     ],
     providers: [
         {
@@ -80,7 +86,9 @@ export class BurstModule {
             faSignOutAlt,
             faCircle,
             faDotCircle,
-            faComments);
+            faComments,
+            faCheck,
+            faTimes);
     }
 
 }
