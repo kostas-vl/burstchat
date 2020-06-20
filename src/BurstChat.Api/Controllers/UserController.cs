@@ -58,6 +58,10 @@ namespace BurstChat.Api.Controllers
             HttpContext.GetUserId()
                        .Bind(_userService.Get);
 
+        public MonadActionResult<User, Error> Get([FromQuery] Guid sip) =>
+            HttpContext.GetUserId()
+                       .Bind(_ => _userService.Get(sip));
+
         /// <summary>
         /// This method will update the properties of a user based on the provided instance.
         /// </summary>

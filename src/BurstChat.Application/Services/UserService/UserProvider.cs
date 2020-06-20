@@ -116,6 +116,33 @@ namespace BurstChat.Application.Services.UserService
             }
         }
 
+
+        /// <summary>
+        /// This method returns a User instance if the provided sip belongs to one.
+        /// </summary>
+        /// <param name="sip">The sip addres of the user</param>
+        /// <returns>An either monad</returns>
+        public Either<User, Error> Get(Guid sip)
+        {
+            try
+            {
+                var user = _burstChatContext
+                    .Users
+                    .Include(u => u.Sip)
+                    .FirstOrDefault(u => u.Sip.Username == sip.ToString());
+
+                if (user is { })
+                    return new Success<User, Error>(user);
+                else
+                    return new Failure<User, Error>(UserErrors.UserNotFound());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return new Failure<User, Error>(SystemErrors.Exception());
+            }
+        }
+
         /// <summary>
         /// Registers a new user based on the provided parameters.
         /// </summary>

@@ -40,6 +40,17 @@ export class UserService {
     }
 
     /**
+     * Requests information about a user based on the provided sip username.
+     * @param {string} sip The sip username
+     * @memberof UserService
+     */
+    public getUserFromSip(sip: string) {
+        return this
+            .httpClient
+            .get<User>(`/api/user?sip=${sip}`);
+    }
+
+    /**
      * Requests the subscribed server of the current authenticate user.
      * @memberof UserService
      */

@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { User } from 'src/app/models/user/user';
+import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 
 /**
@@ -17,6 +19,8 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
 
     private incomingSessionSub?: Subscription;
 
+    public user?: User;
+
     public answerIcon = faCheck;
 
     public ignoreIcon = faTimes;
@@ -27,7 +31,10 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
      * Creates a new instance of IncomingCallComponent.
      * @memberof IncomingCallComponent
      */
-    constructor(private rtcSessionService: RtcSessionService) { }
+    constructor(
+        private userService: UserService,
+        private rtcSessionService: RtcSessionService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -40,6 +47,8 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
             .subscribe(session => {
                 if (session) {
                     this.dialogVisible = true;
+                    // this.userService
+                    //     .getUserFromSip()
                 }
             });
     }
