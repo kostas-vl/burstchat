@@ -64,10 +64,10 @@ namespace BurstChat.IdentityServer.Controllers
                                                                         r.Password))
                                          .BindAsync(async user =>
                                          {
-                                              var endpoint = Guid.Parse(user.Sip.Username);
-                                              var password = Guid.NewGuid();
-                                              var monad = await _asteriskService.PostAsync(endpoint, password);
-                                              return monad.Attach(_ => Unit.New());
+                                            var endpoint = user.Id.ToString();
+                                            var password = Guid.NewGuid();
+                                            var monad = await _asteriskService.PostAsync(endpoint, password);
+                                            return monad.Attach(_ => Unit.New());
                                          });
 
         /// <summary>

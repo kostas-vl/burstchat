@@ -38,11 +38,6 @@ namespace BurstChat.Domain.Schema.Users
         public DateTime DateCreated { get; set; }
 
         /// <summary>
-        /// The Sip information of the user.
-        /// </summary>
-        public Sip Sip { get; set; } = new Sip();
-
-        /// <summary>
         /// The list of subscribed servers.
         /// </summary>
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();

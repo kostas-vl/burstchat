@@ -130,9 +130,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                 var directMessaging = _burstChatContext
                     .DirectMessaging
                     .Include(dm => dm.FirstParticipantUser)
-                    .ThenInclude(u => u.Sip)
                     .Include(dm => dm.SecondParticipantUser)
-                    .ThenInclude(u => u.Sip)
                     .FirstOrDefault(dm => (dm.FirstParticipantUserId == firstParticipantId && dm.SecondParticipantUserId == secondParticipantId)
                                           || (dm.FirstParticipantUserId == secondParticipantId && dm.SecondParticipantUserId == firstParticipantId));
 
@@ -160,9 +158,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                 var users = _burstChatContext
                     .DirectMessaging
                     .Include(dm => dm.FirstParticipantUser)
-                    .ThenInclude(u => u.Sip)
                     .Include(dm => dm.SecondParticipantUser)
-                    .ThenInclude(u => u.Sip)
                     .Where(dm => dm.FirstParticipantUserId == userId
                                  || dm.SecondParticipantUserId == userId)
                     .ToList()

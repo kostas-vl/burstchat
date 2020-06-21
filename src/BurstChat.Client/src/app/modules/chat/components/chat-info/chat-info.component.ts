@@ -91,12 +91,12 @@ export class ChatInfoComponent implements OnInit {
             const options = this.optionsValue as DirectMessagingConnectionOptions;
             const dm = options.directMessaging;
             if (dm.firstParticipantUser.id !== this.user.id) {
-                this.rtcSessionService.call(dm.firstParticipantUser.sip.username);
+                this.rtcSessionService.call(dm.firstParticipantUser.id);
                 return;
             }
 
             if (dm.secondParticipantUser.id !== this.user.id) {
-                this.rtcSessionService.call(dm.secondParticipantUser.sip.username);
+                this.rtcSessionService.call(dm.secondParticipantUser.id);
                 return;
             }
         }

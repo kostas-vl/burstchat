@@ -29,13 +29,6 @@ namespace BurstChat.Application.Services.UserService
         Either<User, Error> Get(string email);
 
         /// <summary>
-        /// This method returns a User instance if the provided sip belongs to one.
-        /// </summary>
-        /// <param name="sip">The sip addres of the user</param>
-        /// <returns>An either monad</returns>
-        Either<User, Error> Get(Guid sip);
-
-        /// <summary>
         /// Registers a new user based on the provided parameters.
         /// </summary>
         /// <param name="alphaInvitationCode">The alpha invitation code</param>

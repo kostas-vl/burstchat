@@ -83,13 +83,13 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// </summary>
         /// <param name="endpoint">The endpoint name</param>
         /// <returns>A task of an either monad</returns>
-        private async Task<Either<Unit, Error>> PostAorAsync(Guid endpoint)
+        private async Task<Either<Unit, Error>> PostAorAsync(string endpoint)
         {
             try
             {
                 var parameters = new
                 {
-                    id = endpoint.ToString(),
+                    id = endpoint,
                     maxContacts = 5,
                     removeExisting = true,
                     supportPath = true
@@ -112,7 +112,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// <param name="endpoint">The endpoint name</param>
         /// <param name="password">The endpoint password</param>
         /// <returns>A task of an either monad</returns>
-        private async Task<Either<Unit, Error>> PostAuthAsync(Guid endpoint, Guid password)
+        private async Task<Either<Unit, Error>> PostAuthAsync(string endpoint, Guid password)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
                 {
                     id = $"auth{endpoint}",
                     authType = "userpass",
-                    username = endpoint.ToString(),
+                    username = endpoint,
                     password = password.ToString()
                 };
 
@@ -141,15 +141,15 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// </summary>
         /// <param name="endpoint">The endpoint name</param>
         /// <returns>A task of an either monad</returns>
-        private async Task<Either<Unit, Error>> PostEndpointAsync(Guid endpoint)
+        private async Task<Either<Unit, Error>> PostEndpointAsync(string endpoint)
         {
             try
             {
                 var parameters = new
                 {
-                    id = endpoint.ToString(),
+                    id = endpoint,
                     transport = "transport-ws",
-                    aors = endpoint.ToString(),
+                    aors = endpoint,
                     auth = $"auth{endpoint}",
                     context = "burst",
                     disallow = "all",
@@ -175,12 +175,12 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// </summary>
         /// <param name="endpoint">The endpoint name</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<AsteriskEndpoint, Error>> GetAsync(Guid endpoint)
+        public async Task<Either<AsteriskEndpoint, Error>> GetAsync(string endpoint)
         {
             try
             {
                 var info = await _connection
-                    .QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint = endpoint.ToString() });
+                    .QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint });
 
                 return new Success<AsteriskEndpoint, Error>(info);
             }
@@ -199,7 +199,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// <param name="endpoint">The endpoint name</param>
         /// <param name="password">The password for the endpoint</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<AsteriskEndpoint, Error>> PostAsync(Guid endpoint, Guid password)
+        public async Task<Either<AsteriskEndpoint, Error>> PostAsync(string endpoint, Guid password)
         {
             var authMonad = await PostAuthAsync(endpoint, password);
             var aorMonad = await authMonad.BindAsync(_ => PostAorAsync(endpoint));
@@ -207,7 +207,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
 
             return endpointMonad.Attach(_ => new AsteriskEndpoint
             {
-                Username = endpoint.ToString(),
+                Username = endpoint,
                 Password = password.ToString()
             });
         }

@@ -58,10 +58,6 @@ namespace BurstChat.Api.Controllers
             HttpContext.GetUserId()
                        .Bind(_userService.Get);
 
-        public MonadActionResult<User, Error> Get([FromQuery] Guid sip) =>
-            HttpContext.GetUserId()
-                       .Bind(_ => _userService.Get(sip));
-
         /// <summary>
         /// This method will update the properties of a user based on the provided instance.
         /// </summary>
@@ -152,12 +148,7 @@ namespace BurstChat.Api.Controllers
         [ProducesResponseType(typeof(AsteriskEndpoint), 200)]
         [ProducesResponseType(typeof(Error), 400)]
         public async Task<MonadActionResult<AsteriskEndpoint, Error>> GetSipEndpoint() =>
-            await HttpContext.GetUserId()
-                             .Bind(_userService.Get)
-                             .BindAsync(async user =>
-                             {
-                                var endpoint = Guid.Parse(user.Sip.Username);
-                                return await _asteriskService.GetAsync(endpoint);
-                             });
+            await HttpContext.GetUserId()                             
+                             .BindAsync(async userId => await _asteriskService.GetAsync(userId.ToString()));
     }
 }

@@ -1,5 +1,3 @@
-import { Sip } from 'src/app/models/user/sip';
-
 /**
  * This interface contains information about a user.
  * @export
@@ -12,7 +10,6 @@ export interface User {
     name: string;
     messages: any[];
     subscribedServers: any[];
-    sip: Sip;
     dateCreated: Date | string;
 
 }

@@ -190,10 +190,10 @@ export class RtcSessionService {
 
     /**
      * Dials the provided sip user.
-     * @param {string} sip The sip address of the target user.
+     * @param {number} sip The sip address of the target user.
      * @memberof RtcSessionService
      */
-    public call(sip: string) {
+    public call(sip: number) {
         if (this.userAgent) {
             const session = this
                 .userAgent
@@ -212,6 +212,21 @@ export class RtcSessionService {
         if (session) {
             session.answer(this.callConfig);
             this.session.next(session);
+            this.incomingSession.next(null);
+        }
+    }
+
+    /**
+     * Rejects an incoming call.
+     * @memberof RtcSessionService
+     */
+    public reject() {
+        const session = this.incomingSession.getValue();
+        if (session) {
+            session.terminate({
+                status_code: 300,
+                reason_phrase: 'reject'
+            });
             this.incomingSession.next(null);
         }
     }

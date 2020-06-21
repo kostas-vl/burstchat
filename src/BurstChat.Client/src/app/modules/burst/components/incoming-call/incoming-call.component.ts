@@ -71,10 +71,11 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Handles the ignore button click event.
+     * Handles the reject button click event.
      * @memberof IncomingCallComponent
      */
-    public onIgnore() {
+    public onReject() {
+        this.rtcSessionService.reject();
         this.dialogVisible = false;
     }
 

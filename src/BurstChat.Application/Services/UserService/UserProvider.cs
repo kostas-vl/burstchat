@@ -75,7 +75,6 @@ namespace BurstChat.Application.Services.UserService
 
                 var user = _burstChatContext
                     .Users
-                    .Include(u => u.Sip)
                     .FirstOrDefault(u => u.Id == id);
 
                 if (user is { })
@@ -101,35 +100,7 @@ namespace BurstChat.Application.Services.UserService
             {
                 var user = _burstChatContext
                     .Users
-                    .Include(u => u.Sip)
                     .FirstOrDefault(u => u.Email == email);
-
-                if (user is { })
-                    return new Success<User, Error>(user);
-                else
-                    return new Failure<User, Error>(UserErrors.UserNotFound());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
-
-
-        /// <summary>
-        /// This method returns a User instance if the provided sip belongs to one.
-        /// </summary>
-        /// <param name="sip">The sip addres of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<User, Error> Get(Guid sip)
-        {
-            try
-            {
-                var user = _burstChatContext
-                    .Users
-                    .Include(u => u.Sip)
-                    .FirstOrDefault(u => u.Sip.Username == sip.ToString());
 
                 if (user is { })
                     return new Success<User, Error>(user);
@@ -167,11 +138,7 @@ namespace BurstChat.Application.Services.UserService
                         Email = email,
                         Name = name,
                         Password = hashedPassword,
-                        DateCreated = DateTime.Now,
-                        Sip = new Sip
-                        {
-                            Username = Guid.NewGuid().ToString()
-                        }
+                        DateCreated = DateTime.Now
                     };
 
                     _burstChatContext.Users.Add(user);

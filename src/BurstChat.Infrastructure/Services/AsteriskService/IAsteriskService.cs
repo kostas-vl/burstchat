@@ -17,7 +17,7 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// </summary>
         /// <param name="endpoint">The endpoint name</param>
         /// <returns>An either monad</returns>
-        Task<Either<AsteriskEndpoint, Error>> GetAsync(Guid endpoint);
+        Task<Either<AsteriskEndpoint, Error>> GetAsync(string endpoint);
 
         /// <summary>
         /// Sends an Http request to a remote Asterisk server in order to create a new
@@ -27,6 +27,6 @@ namespace BurstChat.Infrastructure.Services.AsteriskService
         /// <param name="endpoint">The endpoint name</param>
         /// <param name="password">The password for the endpoint</param>
         /// <returns>A task of an either monad</returns>
-        Task<Either<AsteriskEndpoint, Error>> PostAsync(Guid endpoint, Guid password);
+        Task<Either<AsteriskEndpoint, Error>> PostAsync(string endpoint, Guid password);
     }
 }
