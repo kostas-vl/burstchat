@@ -40,17 +40,6 @@ export class UserService {
     }
 
     /**
-     * Requests information about a user based on the provided sip username.
-     * @param {string} sip The sip username
-     * @memberof UserService
-     */
-    public getUserFromSip(sip: string) {
-        return this
-            .httpClient
-            .get<User>(`/api/user?sip=${sip}`);
-    }
-
-    /**
      * Requests the subscribed server of the current authenticate user.
      * @memberof UserService
      */
@@ -58,6 +47,17 @@ export class UserService {
         this.httpClient
             .get<Server[]>('/api/user/subscriptions')
             .subscribe(data => this.subscriptionsSource.next(data));
+    }
+
+    /**
+     * Requests information about a user from the BurstChat API.
+     * @param {number} userId The id of the target user.
+     * @memberof UserService
+     */
+    public whoIs(userId: number) {
+        return this
+            .httpClient
+            .get<User>(`/api/user/${userId}`);
     }
 
     /**

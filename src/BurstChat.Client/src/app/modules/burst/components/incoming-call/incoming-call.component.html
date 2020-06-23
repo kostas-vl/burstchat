@@ -6,7 +6,29 @@
 
             <div class="dialog-size">
 
-                <h4>New incoming call</h4>
+                <div class="row" *ngIf="user">
+
+                    <div class="column text-center">
+
+                        {{user.name}} is calling...
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="column text-center">
+
+                        <fa-icon class="user-icon text-accent" [icon]="userIcon"></fa-icon>
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <br>
 
                 <div class="row">
 

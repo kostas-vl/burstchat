@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
@@ -20,6 +20,8 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     private incomingSessionSub?: Subscription;
 
     public user?: User;
+
+    public userIcon = faUserCircle;
 
     public answerIcon = faCheck;
 
@@ -46,9 +48,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
             .onIncomingSession
             .subscribe(session => {
                 if (session) {
-                    this.dialogVisible = true;
-                    // this.userService
-                    //     .getUserFromSip()
+                    this.onNewSession(session);
                 }
             });
     }
@@ -59,6 +59,19 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
      */
     public ngOnDestroy() {
         this.incomingSessionSub?.unsubscribe();
+    }
+
+    /**
+     * Handles the new incoming rtc session.
+     * @param {any} session The session object.
+     * @memberof IncomingCallComponent
+     */
+    private onNewSession(session: any) {
+        const userId = +session.remote_identity.uri.user;
+        this.userService
+            .whoIs(userId)
+            .subscribe(user => this.user = user);
+        this.dialogVisible = true;
     }
 
     /**
