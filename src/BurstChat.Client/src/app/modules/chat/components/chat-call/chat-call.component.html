@@ -1,0 +1,33 @@
+<div class="chat-call-container bg-dark" *ngIf="visible">
+
+   <div class="chat-call-users">
+
+        <div class="pr-5 pl-5 pt-5 pb-5" *ngFor="let user of users">
+
+            <div class="text-center">
+
+                <fa-icon class="chat-call-user text-accent" [icon]="userIcon"></fa-icon>
+
+            </div>
+
+            <div class="text-center">
+
+                {{user.name}}
+
+            </div>
+
+        </div>
+
+   </div> 
+
+   <div class="pr-10 pl-10 pt-10 pb-10">
+
+        <div class="button-icon-interactive button-icon-lg bg-secondary">
+
+            <fa-icon [icon]="hangupIcon"></fa-icon>
+
+        </div>
+
+   </div>
+
+</div>

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPaperPlane, faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
@@ -15,6 +14,17 @@ import { ChatInfoComponent } from 'src/app/modules/chat/components/chat-info/cha
 import { ChatMessagesComponent } from 'src/app/modules/chat/components/chat-messages/chat-messages.component';
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
 import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-message/chat-message.component';
+import { ChatCallComponent } from 'src/app/modules/chat/components/chat-call/chat-call.component';
+
+import {
+    faPaperPlane,
+    faCommentAlt,
+    faLock,
+    faComments,
+    faPhone,
+    faPhoneSlash,
+    faUserCircle
+} from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
     imports: [
@@ -34,6 +44,7 @@ import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-messa
         ChatMessagesComponent,
         ChatMessageComponent,
         ChatInputComponent,
+        ChatCallComponent
     ],
 })
 export class ChatModule {
@@ -43,11 +54,14 @@ export class ChatModule {
      * @memberof ChatModule
      */
     constructor() {
-        library.add(faPaperPlane,
-                    faCommentAlt,
-                    faLock,
-                    faComments,
-                    faPhone);
+        library.add(
+            faPaperPlane,
+            faCommentAlt,
+            faLock,
+            faComments,
+            faPhone,
+            faPhoneSlash,
+            faUserCircle);
     }
 
 }

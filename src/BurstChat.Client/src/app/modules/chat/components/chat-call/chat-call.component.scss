@@ -1,0 +1,19 @@
+@import '../../../../../scss/theme';
+
+.chat-call-container {
+    padding-top: $minor-height;
+    height: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chat-call-users {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 2;
+}
+
+.chat-call-user {
+    font-size: 104px;
+}

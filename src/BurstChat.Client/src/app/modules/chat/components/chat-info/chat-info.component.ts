@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
@@ -21,7 +21,9 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
     templateUrl: './chat-info.component.html',
     styleUrls: ['./chat-info.component.scss']
 })
-export class ChatInfoComponent implements OnInit {
+export class ChatInfoComponent implements OnInit, OnDestroy {
+
+    private sessionSub?: Subscription;
 
     private userSub?: Subscription;
 
@@ -39,7 +41,7 @@ export class ChatInfoComponent implements OnInit {
     public set options(value: ChatConnectionOptions) {
         this.optionsValue = value;
 
-        if (this.optionsValue instanceof ChannelConnectionOptions) { 1
+        if (this.optionsValue instanceof ChannelConnectionOptions) {
             this.icon = faCommentAlt;
             this.canCall = false;
         } else if (this.optionsValue instanceof PrivateGroupConnectionOptions) {
@@ -68,6 +70,15 @@ export class ChatInfoComponent implements OnInit {
      * @memberof ChatInfoComponent
      */
     public ngOnInit() {
+        this.sessionSub = this
+            .rtcSessionService
+            .onSession
+            .subscribe(session => {
+                if (session) {
+                    this.canCall = false;
+                }
+            });
+
         this.userSub = this
             .userService
             .user
@@ -79,6 +90,7 @@ export class ChatInfoComponent implements OnInit {
      * @memberof ChatInfoComponent
      */
     public ngOnDestroy() {
+        this.sessionSub?.unsubscribe();
         this.userSub?.unsubscribe();
     }
 
@@ -88,8 +100,7 @@ export class ChatInfoComponent implements OnInit {
      */
     public onCallClick() {
         if (this.optionsValue instanceof DirectMessagingConnectionOptions) {
-            const options = this.optionsValue as DirectMessagingConnectionOptions;
-            const dm = options.directMessaging;
+            const dm = this.optionsValue.directMessaging;
             if (dm.firstParticipantUser.id !== this.user.id) {
                 this.rtcSessionService.call(dm.firstParticipantUser.id);
                 return;

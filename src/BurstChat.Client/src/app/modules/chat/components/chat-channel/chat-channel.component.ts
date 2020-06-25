@@ -9,7 +9,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * This class represents an angular component that is the root component that contains a server channel chat.
  * @export
  * @class ChatChannelComponent
- * @implements {OnInit}
+ * @implements {OnInit, OnDestroy}
  */
 @Component({
     selector: 'app-chat-channel',
