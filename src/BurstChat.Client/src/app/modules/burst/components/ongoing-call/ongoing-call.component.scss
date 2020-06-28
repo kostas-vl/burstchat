@@ -1,0 +1,14 @@
+@import '../../../../../scss/theme';
+
+.ongoing-call-container {
+    height: $minor-height;
+    padding-left: 15px;
+    padding-right: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.ongoing-call-actions {
+    display: flex;
+    flex-direction: row;
+}

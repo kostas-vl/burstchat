@@ -19,6 +19,7 @@ import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.
 import { UserListComponent } from 'src/app/modules/burst/components/user-list/user-list.component';
 import { UserComponent } from 'src/app/modules/burst/components/user/user.component';
 import { IncomingCallComponent } from 'src/app/modules/burst/components/incoming-call/incoming-call.component';
+import { OngoingCallComponent } from 'src/app/modules/burst/components/ongoing-call/ongoing-call.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -33,7 +34,11 @@ import {
     faComments,
     faCheck,
     faTimes,
-    faUserCircle
+    faUserCircle,
+    faMicrophone,
+    faMicrophoneSlash,
+    faVolumeUp,
+    faVolumeMute
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -57,7 +62,8 @@ import {
         ChannelComponent,
         UserListComponent,
         UserComponent,
-        IncomingCallComponent
+        IncomingCallComponent,
+        OngoingCallComponent
     ],
     providers: [
         {
@@ -90,7 +96,11 @@ export class BurstModule {
             faComments,
             faCheck,
             faTimes,
-            faUserCircle);
+            faUserCircle,
+            faMicrophone,
+            faMicrophoneSlash,
+            faVolumeUp,
+            faVolumeMute);
     }
 
 }

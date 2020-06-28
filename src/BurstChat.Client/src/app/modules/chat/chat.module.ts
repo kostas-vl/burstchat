@@ -66,6 +66,7 @@ export class ChatModule {
             faPhone,
             faPhoneSlash,
             faUserCircle,
+            faMicrophone,
             faMicrophoneSlash,
             faVolumeUp,
             faVolumeMute);
