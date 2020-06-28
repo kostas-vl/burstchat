@@ -40,6 +40,10 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     public chatIsEmpty = false;
 
+    public get options() {
+        return this.internalOptions;
+    }
+
     @Input()
     public set options(value: ChatConnectionOptions) {
         this.messages = [];
@@ -212,7 +216,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onSelfAddedToChat() {
-        this.chatService.getAllMessages(this.internalOptions);
+        this.chatService.getAllMessages(this.options);
     }
 
     /**
@@ -222,7 +226,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>) {
-        const newBatch = this.internalOptions.signalGroup === payload.signalGroup
+        const newBatch = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : [];
 
@@ -245,7 +249,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessageReceived(payload: Payload<Message>) {
-        const message = this.internalOptions.signalGroup === payload.signalGroup
+        const message = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : null;
 
@@ -275,7 +279,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             const oldestMessage = this.messages[0] || null;
             const messageId = oldestMessage.id || null;
 
-            this.chatService.getAllMessages(this.internalOptions, messageId);
+            this.chatService.getAllMessages(this.options, messageId);
             this.loadingMessages = true;
         }
     }

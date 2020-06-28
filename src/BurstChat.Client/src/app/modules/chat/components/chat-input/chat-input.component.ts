@@ -32,6 +32,10 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
     public loading = true;
 
+    public get options() {
+        return this.internalOptions;
+    }
+
     @Input()
     public set options(value: ChatConnectionOptions) {
         this.loading = true;
@@ -95,7 +99,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 links: []
             };
 
-            this.chatService.postMessage(this.internalOptions, message);
+            this.chatService.postMessage(this.options, message);
             this.inputContent = undefined;
         }
     }

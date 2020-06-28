@@ -30,7 +30,9 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     private sessionSub?: Subscription;
 
-    private session?: any;
+    private session?: RTCSessionContainer;
+
+    private internalOptions?: ChatConnectionOptions;
 
     public userIcon = faUserCircle;
 
@@ -48,8 +50,15 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     public users: User[] = [];
 
+    public get options() {
+        return this.internalOptions;
+    }
+
     @Input()
-    public options?: ChatConnectionOptions;
+    public set options(value: ChatConnectionOptions) {
+        this.internalOptions = value;
+        this.onNewSession(this.session);
+    }
 
     /**
      * Creates a new instance of ChatCallComponent.
@@ -65,7 +74,15 @@ export class ChatCallComponent implements OnInit, OnDestroy {
         this.sessionSub = this
             .rtcSessionService
             .onSession
-            .subscribe(session => this.onNewSession(session));
+            .subscribe(session => {
+                if (!session) {
+                    this.session = undefined;
+                    this.visible = false;
+                    return;
+                }
+
+                this.onNewSession(session);
+            });
     }
 
     /**
@@ -83,11 +100,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onNewSession(session: RTCSessionContainer) {
-        if (!session) {
-            this.session = undefined;
-            this.visible = false;
-            return;
-        }
+        this.session = session;
 
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;

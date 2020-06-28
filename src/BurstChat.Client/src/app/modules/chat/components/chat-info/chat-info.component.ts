@@ -29,7 +29,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
     private user?: User;
 
-    public optionsValue?: ChatConnectionOptions;
+    private internalOptions?: ChatConnectionOptions;
 
     public icon = undefined;
 
@@ -37,17 +37,21 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
     public canCall = false;
 
+    public get options() {
+        return this.internalOptions;
+    }
+
     @Input()
     public set options(value: ChatConnectionOptions) {
-        this.optionsValue = value;
+        this.internalOptions = value;
 
-        if (this.optionsValue instanceof ChannelConnectionOptions) {
+        if (this.internalOptions instanceof ChannelConnectionOptions) {
             this.icon = faCommentAlt;
             this.canCall = false;
-        } else if (this.optionsValue instanceof PrivateGroupConnectionOptions) {
+        } else if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             this.icon = faLock;
             this.canCall = false;
-        } else if (this.optionsValue instanceof DirectMessagingConnectionOptions) {
+        } else if (this.internalOptions instanceof DirectMessagingConnectionOptions) {
             this.icon = faComments;
             this.canCall = true;
         } else {
@@ -95,8 +99,8 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * @memberof ChatInfoComponent
      */
     public onCallClick() {
-        if (this.optionsValue instanceof DirectMessagingConnectionOptions) {
-            const dm = this.optionsValue.directMessaging;
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+            const dm = this.options.directMessaging;
             if (dm.firstParticipantUser.id !== this.user.id) {
                 this.rtcSessionService.call(dm.firstParticipantUser.id);
                 return;
