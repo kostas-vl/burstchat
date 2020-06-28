@@ -23,7 +23,11 @@ import {
     faComments,
     faPhone,
     faPhoneSlash,
-    faUserCircle
+    faUserCircle,
+    faMicrophone,
+    faMicrophoneSlash,
+    faVolumeUp,
+    faVolumeMute
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -61,7 +65,10 @@ export class ChatModule {
             faComments,
             faPhone,
             faPhoneSlash,
-            faUserCircle);
+            faUserCircle,
+            faMicrophoneSlash,
+            faVolumeUp,
+            faVolumeMute);
     }
 
 }

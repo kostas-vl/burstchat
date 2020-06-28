@@ -1,10 +1,19 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { faUserCircle, faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';
+import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
+
+import {
+    faUserCircle,
+    faPhoneSlash,
+    faVolumeUp,
+    faVolumeMute,
+    faMicrophone,
+    faMicrophoneSlash
+} from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays to the user information about a
@@ -25,9 +34,17 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     public userIcon = faUserCircle;
 
+    public volumeIcon = faVolumeUp;
+
+    public microphoneIcon = faMicrophone;
+
     public hangupIcon = faPhoneSlash;
 
     public visible = false;
+
+    public volumeActive = true;
+
+    public microphoneActive = true;
 
     public users: User[] = [];
 
@@ -62,23 +79,22 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     /**
      * Executes any neccessary code for a new call session.
      * @private
-     * @param {*} session The session call instance.
+     * @param {RTCSessionContainer} session The session call instance.
      * @memberof ChatCallComponent
      */
-    private onNewSession(session: any) {
+    private onNewSession(session: RTCSessionContainer) {
         if (!session) {
             this.session = undefined;
             this.visible = false;
             return;
         }
 
-        this.session = session;
-
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUser = +session.remote_identity.uri.user;
+            const sessionUser = +session.source.remote_identity.uri.user;
             if (sessionUser === first.id || sessionUser === second.id) {
+                this.session = session;
                 this.users = [first, second];
                 this.visible = true;
                 return;
@@ -86,6 +102,36 @@ export class ChatCallComponent implements OnInit, OnDestroy {
         }
 
         this.visible = false;
+    }
+
+    /**
+     * Handles the volume button click event.
+     * @memberof ChatInfoComponent
+     */
+    public onVolumeClick() {
+        this.volumeActive = !this.volumeActive;
+        this.volumeIcon = this.volumeActive
+            ? faVolumeUp
+            : faVolumeMute;
+    }
+
+    /**
+     * Handles the microhpone button click event.
+     * @memberof ChatInfoComponent
+     */
+    public onMicrophoneClick() {
+        this.microphoneActive = !this.microphoneActive;
+        this.microphoneIcon = this.microphoneActive
+            ? faMicrophone
+            : faMicrophoneSlash;
+    }
+
+    /**
+     * Handles the hangup button click event.
+     * @memberof ChatCallComponent
+     */
+    public onHangup() {
+        this.rtcSessionService.hangup();
     }
 
 }

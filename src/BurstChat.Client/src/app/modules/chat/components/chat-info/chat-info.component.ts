@@ -73,11 +73,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
         this.sessionSub = this
             .rtcSessionService
             .onSession
-            .subscribe(session => {
-                if (session) {
-                    this.canCall = false;
-                }
-            });
+            .subscribe(session => this.canCall = session ? false : true);
 
         this.userSub = this
             .userService

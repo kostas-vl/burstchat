@@ -73,7 +73,7 @@ export class NotifyService {
      * @param {string} content The content of the popup.
      * @memberof NotifyService
      */
-    public popup(icon: any, title: string, content: string) {
+    public popup(icon: any, title: string, content = '') {
         const message = new PopupMessage(icon, 'text', title, content);
         this.onPopupSource.next(message);
     }
@@ -85,7 +85,7 @@ export class NotifyService {
      * @param {string} content The content of the popup.
      * @memberof NotifyService
      */
-    public popupSuccess(title: string, content: string) {
+    public popupSuccess(title: string, content = '') {
         const message = new PopupMessage(faCheck, 'text-success', title, content)
         this.onPopupSource.next(message);
     }
@@ -97,7 +97,7 @@ export class NotifyService {
      * @param {string} content The content of the popup.
      * @memberof NotifyService
      */
-    public popupInfo(title: string, content: string) {
+    public popupInfo(title: string, content = '') {
         const message = new PopupMessage(faInfoCircle, 'text-accent', title, content)
         this.onPopupSource.next(message);
     }
@@ -109,7 +109,7 @@ export class NotifyService {
      * @param {string} content The content of the popup.
      * @memberof NotifyService
      */
-    public popupWarning(title: string, content: string) {
+    public popupWarning(title: string, content = '') {
         const message = new PopupMessage(faExclamationCircle, 'text-warning', title, content);
         this.onPopupSource.next(message);
     }

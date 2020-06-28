@@ -2,19 +2,19 @@
 
     <div class="popup w-100">
 
-        <div class="popup-icon pr-10" [ngClass]="message.iconClass">
+        <div class="popup-icon my-auto pr-10" [ngClass]="message.iconClass">
 
             <fa-icon [icon]="message.icon"></fa-icon>
 
         </div>
 
-        <div>
+        <div class="my-auto">
 
             <span>{{message.title}}</span>
 
-            <br>
+            <br *ngIf="message.content">
 
-            <small class="text-muted">{{message.content}}</small>
+            <small class="text-muted" *ngIf="message.content">{{message.content}}</small>
 
         </div>
 

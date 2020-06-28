@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { faCheck, faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
+import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 
@@ -63,11 +64,11 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
 
     /**
      * Handles the new incoming rtc session.
-     * @param {any} session The session object.
+     * @param {RTCSessionContainer} session The session object.
      * @memberof IncomingCallComponent
      */
-    private onNewSession(session: any) {
-        const userId = +session.remote_identity.uri.user;
+    private onNewSession(session: RTCSessionContainer) {
+        const userId = +session.source.remote_identity.uri.user;
         this.userService
             .whoIs(userId)
             .subscribe(user => this.user = user);
