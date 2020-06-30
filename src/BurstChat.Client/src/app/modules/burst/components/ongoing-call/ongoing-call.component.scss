@@ -8,7 +8,14 @@
     align-items: center;
 }
 
+.ongoing-call-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .ongoing-call-actions {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }

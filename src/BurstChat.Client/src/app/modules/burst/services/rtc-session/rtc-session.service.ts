@@ -189,7 +189,7 @@ export class RtcSessionService {
     private sessionFailed(source: RTCSession, event: any) {
         console.warn('RTC session failed with cause: ');
         console.warn(event);
-        this.notifyService.popupWarning('Call failed', 'Please try executing the call again in a few minutes.');
+        this.notifyService.popupWarning('Call failed');
 
         let incomingSession = this.incomingSession.getValue();
         if (incomingSession?.source === source) {

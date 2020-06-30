@@ -1,8 +1,14 @@
-<div class="ongoing-call-container bg-accent-light" *ngIf="session">
+<div class="ongoing-call-container bg-accent-light" *ngIf="visible">
 
-    <div>
+    <div class="ongoing-call-label">
 
-        Ongoing Call
+        <div class="button-icon text" (click)="onRedirectToChat()">
+
+            <fa-icon [icon]="chatRedirectIcon"></fa-icon>
+
+        </div>
+
+        <div>Ongoing Call</div>
 
     </div>
 

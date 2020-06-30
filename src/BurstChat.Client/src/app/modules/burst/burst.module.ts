@@ -38,7 +38,8 @@ import {
     faMicrophone,
     faMicrophoneSlash,
     faVolumeUp,
-    faVolumeMute
+    faVolumeMute,
+    faExternalLinkAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -85,7 +86,8 @@ export class BurstModule {
      * @memberof BurstModule
      */
     constructor() {
-        library.add(faDragon,
+        library.add(
+            faDragon,
             faCog,
             faCubes,
             faDatabase,
@@ -100,7 +102,9 @@ export class BurstModule {
             faMicrophone,
             faMicrophoneSlash,
             faVolumeUp,
-            faVolumeMute);
+            faVolumeMute,
+            faExternalLinkAlt
+        );
     }
 
 }
