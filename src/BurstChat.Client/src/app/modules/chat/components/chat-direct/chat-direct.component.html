@@ -2,9 +2,17 @@
 
     <app-chat-info [options]="options"></app-chat-info>
 
-    <app-chat-call [options]="options"></app-chat-call>
+    <div class="direct-chat-content">
 
-    <app-chat-messages [options]="options"></app-chat-messages>
+        <app-chat-call [options]="options"></app-chat-call>
+
+        <div class="direct-chat-messages">
+
+            <app-chat-messages [options]="options"></app-chat-messages>
+
+        </div>
+
+    </div>
 
     <app-chat-input [options]="options"></app-chat-input>
 

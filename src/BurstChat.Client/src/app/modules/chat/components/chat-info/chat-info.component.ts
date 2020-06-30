@@ -6,6 +6,7 @@ import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';
+import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 
@@ -23,11 +24,13 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
 })
 export class ChatInfoComponent implements OnInit, OnDestroy {
 
-    private sessionSub?: Subscription;
-
     private userSub?: Subscription;
 
+    private sessionSub?: Subscription;
+
     private user?: User;
+
+    private session?: RTCSessionContainer;
 
     private internalOptions?: ChatConnectionOptions;
 
@@ -47,17 +50,15 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
         if (this.internalOptions instanceof ChannelConnectionOptions) {
             this.icon = faCommentAlt;
-            this.canCall = false;
         } else if (this.internalOptions instanceof PrivateGroupConnectionOptions) {
             this.icon = faLock;
-            this.canCall = false;
         } else if (this.internalOptions instanceof DirectMessagingConnectionOptions) {
             this.icon = faComments;
-            this.canCall = true;
         } else {
             this.icon = undefined;
-            this.canCall = false;
         }
+
+        this.updateCallStatus();
     }
 
     /**
@@ -77,7 +78,10 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
         this.sessionSub = this
             .rtcSessionService
             .onSession
-            .subscribe(session => this.canCall = session ? false : true);
+            .subscribe(session => {
+                this.session = session;
+                this.updateCallStatus();
+            });
 
         this.userSub = this
             .userService
@@ -92,6 +96,22 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
         this.sessionSub?.unsubscribe();
         this.userSub?.unsubscribe();
+    }
+
+    /**
+     * Makes the neccessary checks in order to display the call button to the
+     * user or not.
+     * @memberof ChatInfoComponent
+     */
+    private updateCallStatus() {
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+            this.canCall = this.session
+                ? false
+                : true;
+            return;
+        }
+
+        this.canCall = false;
     }
 
     /**

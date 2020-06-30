@@ -6,8 +6,6 @@ hr {
 
 .viewport {
     @extend .h-100;
-    padding-top: $minor-height;
-    padding-bottom: $minor-height + 25px;
 }
 .messages-container {
     @extend .h-100;
