@@ -1,6 +1,26 @@
 <div class="chat-call-container bg-dark" *ngIf="visible">
 
-   <div class="chat-call-users">
+    <div class="chat-call-loading my-auto" *ngIf="!sessionConfirmed">
+
+        <div class="chat-call-loading-dot my-auto">
+
+            <div class="fs-20">Calling, please wait</div>
+
+            <div class="loading-dots text-center">
+
+                <div class="loading-dots--dot"></div>
+
+                <div class="loading-dots--dot"></div>
+
+                <div class="loading-dots--dot"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+   <div class="chat-call-users" *ngIf="sessionConfirmed">
 
         <div class="pr-5 pl-5 pt-5 pb-5" *ngFor="let user of users">
 
@@ -21,18 +41,6 @@
    </div>
 
    <div class="chat-call-actions pr-10 pl-10 pt-10 pb-10">
-
-        <div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onVolumeClick()">
-
-            <fa-icon [icon]="volumeIcon"></fa-icon>
-
-        </div>
-
-        <div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onMicrophoneClick()">
-
-            <fa-icon [icon]="microphoneIcon"></fa-icon>
-
-        </div>
 
         <div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onHangup()">
 

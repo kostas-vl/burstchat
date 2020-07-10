@@ -20,6 +20,8 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
 
     private incomingSessionSub?: Subscription;
 
+    private session?: RTCSessionContainer;
+
     public user?: User;
 
     public userIcon = faUserCircle;
@@ -47,11 +49,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
         this.incomingSessionSub = this
             .rtcSessionService
             .onIncomingSession
-            .subscribe(session => {
-                if (session) {
-                    this.onNewSession(session);
-                }
-            });
+            .subscribe(session => this.onNewSession(session));
     }
 
     /**
@@ -68,11 +66,17 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
      * @memberof IncomingCallComponent
      */
     private onNewSession(session: RTCSessionContainer) {
-        const userId = +session.source.remote_identity.uri.user;
-        this.userService
-            .whoIs(userId)
-            .subscribe(user => this.user = user);
-        this.dialogVisible = true;
+        if (session) {
+            this.session = session;
+            const userId = +session.source.remote_identity.uri.user;
+            this.userService
+                .whoIs(userId)
+                .subscribe(user => this.user = user);
+            this.dialogVisible = true;
+        } else {
+            this.session = undefined;
+            this.dialogVisible = false;
+        }
     }
 
     /**

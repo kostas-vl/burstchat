@@ -9,10 +9,6 @@ import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import {
     faUserCircle,
     faPhoneSlash,
-    faVolumeUp,
-    faVolumeMute,
-    faMicrophone,
-    faMicrophoneSlash
 } from '@fortawesome/free-solid-svg-icons';
 
 /**
@@ -30,23 +26,19 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     private sessionSub?: Subscription;
 
+    private sessionConfirmSub?: Subscription;
+
     private session?: RTCSessionContainer;
 
     private internalOptions?: ChatConnectionOptions;
 
     public userIcon = faUserCircle;
 
-    public volumeIcon = faVolumeUp;
-
-    public microphoneIcon = faMicrophone;
-
     public hangupIcon = faPhoneSlash;
 
     public visible = false;
 
-    public volumeActive = true;
-
-    public microphoneActive = true;
+    public sessionConfirmed = false;
 
     public users: User[] = [];
 
@@ -75,13 +67,11 @@ export class ChatCallComponent implements OnInit, OnDestroy {
             .rtcSessionService
             .onSession
             .subscribe(session => {
-                if (!session) {
-                    this.session = undefined;
-                    this.visible = false;
+                if (session) {
+                    this.onNewSession(session);
                     return;
                 }
-
-                this.onNewSession(session);
+                this.reset();
             });
     }
 
@@ -91,6 +81,19 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     public ngOnDestroy() {
         this.sessionSub?.unsubscribe();
+        this.sessionConfirmSub?.unsubscribe();
+    }
+
+
+    /**
+     * Resets the values of specific properties to their intended original value.
+     * @private
+     * @memberof ChatCallComponent
+     */
+    private reset() {
+        this.session = undefined;
+        this.visible = false;
+        this.sessionConfirmed = false;
     }
 
     /**
@@ -110,33 +113,15 @@ export class ChatCallComponent implements OnInit, OnDestroy {
                 this.session = session;
                 this.users = [first, second];
                 this.visible = true;
+                this.sessionConfirmSub = this
+                    .session
+                    .confirmed
+                    .subscribe(_ => this.sessionConfirmed = true);
                 return;
             }
         }
 
         this.visible = false;
-    }
-
-    /**
-     * Handles the volume button click event.
-     * @memberof ChatInfoComponent
-     */
-    public onVolumeClick() {
-        this.volumeActive = !this.volumeActive;
-        this.volumeIcon = this.volumeActive
-            ? faVolumeUp
-            : faVolumeMute;
-    }
-
-    /**
-     * Handles the microhpone button click event.
-     * @memberof ChatInfoComponent
-     */
-    public onMicrophoneClick() {
-        this.microphoneActive = !this.microphoneActive;
-        this.microphoneIcon = this.microphoneActive
-            ? faMicrophone
-            : faMicrophoneSlash;
     }
 
     /**

@@ -42,15 +42,7 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
 
     public chatRedirectIcon = faExternalLinkAlt;
 
-    public volumeIcon = faVolumeUp;
-
-    public microphoneIcon = faMicrophone;
-
     public hangupIcon = faPhoneSlash;
-
-    public volumeActive = true;
-
-    public microphoneActive = true;
 
     /**
      * Creates an instance of OngoingCallComponent.
@@ -79,10 +71,9 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
                 if (session) {
                     this.session = session;
                     this.visible = true;
-                } else {
-                    this.session = undefined;
-                    this.visible = false;
+                   return;
                 }
+                this.reset();
             });
     }
 
@@ -96,13 +87,23 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Resets the values of specific properties to their intended original value.
+     * @private
+     * @memberof OngoingCallComponent
+     */
+    private reset() {
+        this.session = undefined;
+        this.visible = false;
+    }
+
+    /**
      * Handles the redirect button click event.
      * @memberof OngoingCallComponent
      */
     public onRedirectToChat() {
         if (this.user && this.session) {
-            var first = this.user.id;
-            var second = +this.session.source.remote_identity.uri.user;
+            const first = this.user.id;
+            const second = +this.session.source.remote_identity.uri.user;
             console.log([first, second]);
             this.router.navigate(['/core/chat/direct'], {
                 queryParams: {
@@ -110,28 +111,6 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
                 }
             });
         }
-    }
-
-    /**
-     * Handles the volume button click event.
-     * @memberof OngoingCallComponent
-     */
-    public onVolume() {
-        this.volumeActive = !this.volumeActive;
-        this.volumeIcon = this.volumeActive
-            ? faVolumeUp
-            : faVolumeMute;
-    }
-
-    /**
-     * Handles the microphone button click event.
-     * @memberof OngoingCallComponent
-     */
-    public onMicrophone() {
-        this.microphoneActive = !this.microphoneActive;
-        this.microphoneIcon = this.microphoneActive
-            ? faMicrophone
-            : faMicrophoneSlash;
     }
 
     /**

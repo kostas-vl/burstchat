@@ -1,10 +1,18 @@
 @import '../../../../../scss/theme';
+@import '../../../../../scss/loader';
 
 .chat-call-container {
     height: 340px;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.chat-call-loading {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+    justify-items: center;
 }
 
 .chat-call-users {

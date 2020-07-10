@@ -26,7 +26,7 @@ export class RTCSessionContainer {
 
     public progress = this.progressSource.asObservable();
 
-    public confirmed = this.connectingSource.asObservable();
+    public confirmed = this.confirmedSource.asObservable();
 
     public failed = this.failedSource.asObservable();
 
