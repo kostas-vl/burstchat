@@ -7,5 +7,6 @@ export const environment = {
     clientId: 'burstchat.web.client',
     clientSecret: 'secret',
     scope: 'openid profile offline_access burstchat.api burstchat.signal',
-    grantType: 'password'
+    passwordGrantType: 'password',
+    refreshTokenGrantType: 'refresh_token'
 };
