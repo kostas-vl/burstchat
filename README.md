@@ -1,6 +1,8 @@
 # BurstChat
 A simple chat application built using ASPNET Core and angular.
 
+![burstchat-api](https://github.com/kostas-vl/burstchat/workflows/burstchat-api/badge.svg) ![burstchat-identity-server](https://github.com/kostas-vl/burstchat/workflows/burstchat-identity-server/badge.svg) ![burstchat-signal](https://github.com/kostas-vl/burstchat/workflows/burstchat-signal/badge.svg) ![burstchat-client](https://github.com/kostas-vl/burstchat/workflows/burstchat-client/badge.svg)
+
 ## Projects
 This repository tries to follow the Clean Architecture design.
 
