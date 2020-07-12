@@ -1,0 +1,11 @@
+<div class="avatar text-center" [ngClass]="'bg-' + color" [class.avatar-lg]="size === 'lg'" *ngIf="!avatar">
+
+    {{initials}}
+
+</div>
+
+<div class="avatar" *ngIf="avatar">
+
+    <img [attr.src]="avatarBlob">
+
+</div>

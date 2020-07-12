@@ -1,0 +1,83 @@
+<div class="user-info">
+
+    <div>
+
+        <app-avatar [name]="user.name" [avatar]="user.avatar" size="lg"></app-avatar>
+
+    </div>
+
+    <div class="pl-10">
+
+        <div class="row">
+
+            <div class="column column-100">
+
+                {{user.name}} <span class="text-muted">#{{user.id}} <small class="text-muted">Joined
+                        {{user.dateCreated | date}}</small></span>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="column column-100">
+
+                <small class="text-muted">email: {{user.email}}</small>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="column column-100 fs-12">
+
+                <a href="javascript:void()" (click)="onChangeAvatar()">Change picture</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<app-dialog [(visible)]="changeAvatarVisible">
+
+    <app-card>
+
+        <app-card-body>
+
+            <div class="image-crop">
+
+                <app-image-crop></app-image-crop>
+
+            </div>
+
+        </app-card-body>
+
+        <app-card-footer>
+
+            <div class="image-crop-actions">
+
+                <div>
+
+                    <button class="button" (click)="onSaveNewAvatar()">SAVE</button>
+
+                </div>
+
+                <div class="pl-10">
+
+                    <button class="button-outline" (click)="onCancelNewAvatar()">CANCEL</button>
+
+                </div>
+
+            </div>
+
+        </app-card-footer>
+
+    </app-card>
+
+</app-dialog>
+

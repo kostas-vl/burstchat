@@ -9,6 +9,7 @@ export interface Server {
 
     id: number;
     name: string;
+    avatar: string;
     dateCreated: Date | string;
     channels: Channel[];
     subscriptions: Subscription[];
@@ -23,6 +24,7 @@ export class BurstChatServer implements Server {
 
     public id = 0;
     public name = '';
+    public avatar = '';
     public dateCreated = new Date();
     public channels = [];
     public subscriptions = [];
