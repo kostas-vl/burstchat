@@ -153,6 +153,7 @@ namespace BurstChat.Application.Services.ServersService
                 return Get(userId, server.Id).Bind(serverEntry =>
                 {
                     serverEntry.Name = server.Name;
+                    serverEntry.Avatar = server.Avatar;
 
                     _burstChatContext.SaveChanges();
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using BurstChat.Domain.Schema.Chat;
@@ -31,6 +32,11 @@ namespace BurstChat.Domain.Schema.Users
         /// </summary>
         [JsonIgnore]
         public string Password { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The user's avatar binary data.
+        /// </summary>
+        public byte[] Avatar { get; set; } = new byte[0];
 
         /// <summary>
         /// The date that the user was created.

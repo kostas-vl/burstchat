@@ -171,6 +171,7 @@ namespace BurstChat.Application.Services.UserService
                     {
                         storedUser.Email = user.Email;
                         storedUser.Name = user.Name;
+                        storedUser.Avatar = user.Avatar;
 
                         _burstChatContext.SaveChanges();
                         return new Success<Unit, Error>(new Unit());

@@ -19,6 +19,11 @@ namespace BurstChat.Domain.Schema.Servers
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// The server's avatat, binary data.
+        /// </summary>
+        public byte[] Avatar { get; set; } = new byte[0];
+
+        /// <summary>
         /// The date that the server was created.
         /// </summary>
         public DateTime DateCreated { get; set; }
