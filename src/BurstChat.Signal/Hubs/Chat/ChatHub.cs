@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Servers;
+using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Extensions;
 using BurstChat.Signal.Services.ChannelsService;
 using BurstChat.Signal.Services.DirectMessagingService;
-using BurstChat.Signal.Services.InvitationsService;
+using BurstChat.Signal.Services.UserService;
 using BurstChat.Signal.Services.PrivateGroupMessaging;
 using BurstChat.Signal.Services.ServerService;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,7 @@ namespace BurstChat.Signal.Hubs.Chat
     public partial class ChatHub : Hub<IChatClient>
     {
         private readonly ILogger<ChatHub> _logger;
-        private readonly IInvitationsService _invitationsService;
+        private readonly IUserService _userService;
         private readonly IServerService _serverService;
         private readonly IPrivateGroupMessagingService _privateGroupMessagingService;
         private readonly IChannelsService _channelsService;
@@ -34,7 +35,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         public ChatHub(
             ILogger<ChatHub> logger,
-            IInvitationsService invitationsService,
+            IUserService userService,
             IServerService serverService,
             IPrivateGroupMessagingService privateGroupMessagingService,
             IChannelsService channelsService,
@@ -42,7 +43,7 @@ namespace BurstChat.Signal.Hubs.Chat
         )
         {
             _logger = logger;
-            _invitationsService = invitationsService;
+            _userService = userService;
             _serverService = serverService;
             _privateGroupMessagingService = privateGroupMessagingService;
             _channelsService = channelsService;
@@ -85,13 +86,40 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
+        /// Updates information about a user and propagates the changes to all of his connections and groups.
+        /// </summary>
+        /// <param name="user">The updated user instance</param>
+        /// <returns>A Task instance</returns>
+        public async Task UpdateUser(User user)
+        {
+            var httpContext = Context.GetHttpContext();
+            var monad = await _userService.UpdateAsync(httpContext, user);
+
+            switch (monad)
+            {
+                case Success<User, Error> success:
+                    await Clients.Groups(Context.ConnectionId).UpdateUser(success.Value);
+                    await Clients.Caller.UpdateUser(success.Value);
+                    break;
+
+                case Failure<User, Error> failure:
+                    await Clients.Caller.UpdateUser(failure.Value);
+                    break;
+
+                default:
+                    await Clients.Caller.UpdateUser(SystemErrors.Exception());
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Returns all invitations sent to a user.
         /// </summary>
         /// <returns>A Task instance</returns>
         public async Task GetInvitations()
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _invitationsService.GetAllAsync(httpContext);
+            var monad = await _userService.GetAllInvitationsAsync(httpContext);
 
             switch (monad)
             {
@@ -119,7 +147,7 @@ namespace BurstChat.Signal.Hubs.Chat
         {
             var httpContext = Context.GetHttpContext();
             var requestingUserId = httpContext.GetUserId().ToString();
-            var monad = await _invitationsService.InsertAsync(httpContext, serverId, username);
+            var monad = await _userService.InsertInvitationAsync(httpContext, serverId, username);
 
             switch (monad)
             {
@@ -146,7 +174,7 @@ namespace BurstChat.Signal.Hubs.Chat
         public async Task UpdateInvitation(Invitation invitation)
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _invitationsService.UpdateAsync(httpContext, invitation);
+            var monad = await _userService.UpdateInvitationAsync(httpContext, invitation);
             var signalGroup = string.Empty;
             var invite = new Invitation();
 

@@ -43,6 +43,20 @@ namespace BurstChat.Signal.Hubs.Chat
         Task SubscriptionDeleted(Error error);
 
         /// <summary>
+        /// Informs all associated connections and groups of a user, that his info has changed.
+        /// </summary>
+        /// <param name="user">The updated user info</param>
+        /// <returns>A task instance</returns>
+        Task UpdateUser(User user);
+
+        /// <summary>
+        /// Informs the caller that the update operation failed.
+        /// </summary>
+        /// <param name="error">The error that will be delivered to the caller</param>
+        /// <returns>A task instance</returns>
+        Task UpdateUser(Error error);
+
+        /// <summary>
         /// Informs the caller of all the invitations sent to him.
         /// </summary>
         /// <param name="invitations">The server invitations that will be delivered to the caller</param>
