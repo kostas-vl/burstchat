@@ -12,14 +12,14 @@ namespace BurstChat.Signal.Hubs.Chat
     public partial class ChatHub
     {
         /// <summary>
-        ///   Constructs the appropriate signal group name for a private group chat.
+        /// Constructs the appropriate signal group name for a private group chat.
         /// </summary>
         /// <param name="id">The id of the private group</param>
         /// <returns>The string signal group name</returns>
         private string PrivateGroupSignalName(long id) => $"privateGroup:{id}";
 
         /// <summary>
-        ///   Adds a new connection to a signalr group that is based on the id of a private BurstChat group.
+        /// Adds a new connection to a signalr group that is based on the id of a private BurstChat group.
         /// </summary>
         /// <param name="groupId">The id of the target group</param>
         /// <returns>A Task instance</returns>
@@ -37,8 +37,8 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///   Sends a new message to the caller that contains either all the messages posted to a
-        ///   group or an error explaining why the operation wasn't completed properly.
+        /// Sends a new message to the caller that contains either all the messages posted to a
+        /// group or an error explaining why the operation wasn't completed properly.
         /// </summary>
         /// <param name="groupId">The id of the target group</param>
         /// <returns>A task instance</returns>
@@ -48,20 +48,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _privateGroupMessagingService.GetAllAsync(httpContext, groupId);
             var signalGroup = PrivateGroupSignalName(groupId);
 
-            if (monad is Success<IEnumerable<Message>, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
-                await Clients.Caller.AllPrivateGroupMessages(payload);
-            }
-            else if (monad is Failure<IEnumerable<Message>, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.AllPrivateGroupMessages(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.AllPrivateGroupMessages(payload);
+                case Success<IEnumerable<Message>, Error> success:
+                    var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
+                    await Clients.Caller.AllPrivateGroupMessages(payload);
+                    break;
+
+                case Failure<IEnumerable<Message>, Error> failure:
+                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.AllPrivateGroupMessages(failurePayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.AllPrivateGroupMessages(exceptionPayload);
+                    break;
             }
         }
 
@@ -76,20 +78,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _privateGroupMessagingService.PostAsync(httpContext, groupId, message);
             var signalGroup = PrivateGroupSignalName(groupId);
 
-            if (monad is Success<Unit, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<Message>(signalGroup, message);
-                await Clients.Group(signalGroup).PrivateGroupMessageReceived(payload);
-            }
-            else if (monad is Failure<Unit, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.PrivateGroupMessageReceived(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.PrivateGroupMessageReceived(payload);
+                case Success<Unit, Error> _:
+                    var payload = new Payload<Message>(signalGroup, message);
+                    await Clients.Group(signalGroup).PrivateGroupMessageReceived(payload);
+                    break;
+
+                case Failure<Unit, Error> failure:
+                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.PrivateGroupMessageReceived(failurePayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.PrivateGroupMessageReceived(exceptionPayload);
+                    break;
             }
         }
 
@@ -104,20 +108,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _privateGroupMessagingService.PostAsync(httpContext, groupId, message);
             var signalGroup = PrivateGroupSignalName(groupId);
 
-            if (monad is Success<Unit, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<Message>(signalGroup, message);
-                await Clients.Groups(signalGroup).PrivateGroupMessageEdited(payload);
-            }
-            else if (monad is Failure<Unit, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.PrivateGroupMessageEdited(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.PrivateGroupMessageEdited(payload);
+                case Success<Unit, Error> _:
+                    var payload = new Payload<Message>(signalGroup, message);
+                    await Clients.Groups(signalGroup).PrivateGroupMessageEdited(payload);
+                    break;
+
+                case Failure<Unit, Error> failure:
+                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.PrivateGroupMessageEdited(failurePayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.PrivateGroupMessageEdited(exceptionPayload);
+                    break;
             }
         }
 
@@ -132,20 +138,22 @@ namespace BurstChat.Signal.Hubs.Chat
             var monad = await _privateGroupMessagingService.DeleteAsync(httpContext, groupId, message);
             var signalGroup = PrivateGroupSignalName(groupId);
 
-            if (monad is Success<Unit, Error> success)
+            switch (monad)
             {
-                var payload = new Payload<Message>(signalGroup, message);
-                await Clients.Groups(signalGroup).PrivateGroupMessageDeleted(payload);
-            }
-            else if (monad is Failure<Unit, Error> failure)
-            {
-                var payload = new Payload<Error>(signalGroup, failure.Value);
-                await Clients.Caller.PrivateGroupMessageDeleted(payload);
-            }
-            else
-            {
-                var payload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                await Clients.Caller.PrivateGroupMessageDeleted(payload);
+                case Success<Unit, Error> _:
+                    var payload = new Payload<Message>(signalGroup, message);
+                    await Clients.Groups(signalGroup).PrivateGroupMessageDeleted(payload);
+                    break;
+
+                case Failure<Unit, Error> failure:
+                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
+                    await Clients.Caller.PrivateGroupMessageDeleted(failurePayload);
+                    break;
+
+                default:
+                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
+                    await Clients.Caller.PrivateGroupMessageDeleted(exceptionPayload);
+                    break;
             }
         }
     }

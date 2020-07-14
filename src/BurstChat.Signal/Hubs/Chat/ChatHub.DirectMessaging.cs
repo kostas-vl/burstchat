@@ -12,15 +12,15 @@ namespace BurstChat.Signal.Hubs.Chat
     public partial class ChatHub
     {
         /// <summary>
-        ///   Constructs the appropriate signal direct messaging name of all users connected
-        ///   to a dm chat.
+        /// Constructs the appropriate signal direct messaging name of all users connected
+        /// to a dm chat.
         /// </summary>
         /// <param name="id">The id of the direct messaging entry</param>
         /// <returns>The string signal group name</returns>
         private string DirectMessagingName(long id) => $"dm:{id}";
 
         /// <summary>
-        ///   Adds a new connection to a signalr group based on the provided direct messaging id.
+        /// Adds a new connection to a signalr group based on the provided direct messaging id.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
         /// <returns>A task instance</returns>
@@ -38,8 +38,8 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///   Adds a new direct messaging entry, if it does not already exist, and also assings the callers
-        ///   connection id to a signalr group based on the resulting direct messaging id.
+        /// Adds a new direct messaging entry, if it does not already exist, and also assings the callers
+        /// connection id to a signalr group based on the resulting direct messaging id.
         /// </summary>
         /// <param name="firstParticipantId">The user id of the first participant</param>
         /// <param name="secondParticipantId">The user id of the second participant</param>
@@ -86,7 +86,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///   Informs the caller of all messages posted to a direct messaging chat.
+        /// Informs the caller of all messages posted to a direct messaging chat.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging chat</param>
         /// <param name="lastMessageId">The message id from which all previous messages will be fetched</param>
@@ -117,7 +117,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///   Informs a direct messaging chat about a new message from a user.
+        /// Informs a direct messaging chat about a new message from a user.
         /// </summary>
         /// <param name="directMessagingId">The id of the direct messaging chat</param>
         /// <param name="message">The message to be posted</param>
@@ -148,7 +148,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///   Informs a direct messaging chat about a message that was edited from a user.
+        /// Informs a direct messaging chat about a message that was edited from a user.
         /// </summary>
         /// <param name="directMessageId">The id of the direct messaging chat</param>
         /// <param name="message">The message to be updated</param>
@@ -179,7 +179,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///   Informs a direct messaging chat about a message that was deleted from a user.
+        /// Informs a direct messaging chat about a message that was deleted from a user.
         /// </summary>
         /// <param name="directMessageId">The id of the direct messaging chat</param>
         /// <param name="message">The message to be updated</param>

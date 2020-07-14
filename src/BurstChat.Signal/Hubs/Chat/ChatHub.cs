@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace BurstChat.Signal.Hubs.Chat
 {
     /// <summary>
-    ///   This class is a SignalR hub that is responsible for message of the delivered to the users of the chat.
+    /// This class is a SignalR hub that is responsible for message of the delivered to the users of the chat.
     /// </summary>
     [Authorize]
     public partial class ChatHub : Hub<IChatClient>
@@ -85,7 +85,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///     Returns all invitations sent to a user.
+        /// Returns all invitations sent to a user.
         /// </summary>
         /// <returns>A Task instance</returns>
         public async Task GetInvitations()
@@ -110,7 +110,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///     Sends to a user a new server invitation.
+        /// Sends to a user a new server invitation.
         /// </summary>
         /// <param name="server">The id of the server the invitation is from</param>
         /// <param name="username">The name of the user the invitation will be sent</param>
@@ -139,7 +139,7 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        ///     Updates an invitation's state and informs the appropriate users.
+        /// Updates an invitation's state and informs the appropriate users.
         /// </summary>
         /// <param name="invitation">The invitation to be updated</param>
         /// <returns>A Task instance</returns>
