@@ -7,6 +7,7 @@ import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { TokenInfo } from 'src/app/models/identity/token-info';
 import { Payload } from 'src/app/models/signal/payload';
 import { Server } from 'src/app/models/servers/server';
+import { User } from 'src/app/models/user/user';
 import { Message } from 'src/app/models/chat/message';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -42,6 +43,8 @@ export class ChatService {
 
     private channelDeletedSource = new Subject<number>();
 
+    private userUpdatedSource = new Subject<User>();
+
     private invitationsSource = new BehaviorSubject<Invitation[]>([]);
 
     private newInvitationSource = new Subject<Invitation>();
@@ -75,6 +78,8 @@ export class ChatService {
     public channelUpdated = this.channelUpdatedSource.asObservable();
 
     public channelDeleted = this.channelDeletedSource.asObservable();
+
+    public userUpdated = this.userUpdatedSource.asObservable();
 
     public invitations = this.invitationsSource.asObservable();
 
@@ -187,6 +192,8 @@ export class ChatService {
 
         this.connection.on('invitations', data => this.ProcessRawSignal(data, this.invitationsSource));
 
+        this.connection.on('userUpdated', data => this.ProcessRawSignal(data, this.userUpdatedSource));
+
         this.connection.on('newInvitation', data => this.ProcessRawSignal(data, this.newInvitationSource));
 
         this.connection.on('updatedInvitation', data => this.ProcessRawSignal(data, this.updatedInvitationSource));
@@ -235,7 +242,7 @@ export class ChatService {
         this.connection
             .start()
             .then(() => this.onConnectedSource.next())
-            .catch(error => console.log(error));
+            .catch(error => console.warn(error));
     }
 
     /**
@@ -259,7 +266,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('addServer', server)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -272,7 +279,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('addToServer', serverId)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -286,7 +293,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('deleteSubscription', serverId, subscription)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -300,7 +307,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('postChannel', serverId, channel)
-                .catch(err => console.log(err));
+                .catch(err => console.warn(err));
         }
     }
 
@@ -314,7 +321,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('putChannel', serverId, channel)
-                .catch(err => console.log(err));
+                .catch(err => console.warn(err));
         }
     }
 
@@ -328,7 +335,20 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('deleteChannel', serverId, channelId)
-                .catch(err => console.log(err));
+                .catch(err => console.warn(err));
+        }
+    }
+
+    /**
+     * Updates the information of a user.
+     * @param {User} user The updated user info.
+     * @memberof ChatService
+     */
+    public updateUser(user: User) {
+        if (this.connection) {
+            this.connection
+                .invoke('updateUser', user)
+                .catch(err => console.warn(err));
         }
     }
 
@@ -340,7 +360,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('getInvitations')
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -354,7 +374,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('sendInvitation', serverId, username)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -367,7 +387,7 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('updateInvitation', invitation)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -390,7 +410,7 @@ export class ChatService {
 
             this.connection
                 .invoke(methodName, options.id)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -416,7 +436,7 @@ export class ChatService {
 
             this.connection
                 .invoke(methodName, ...args)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
     /**
@@ -439,7 +459,7 @@ export class ChatService {
 
             this.connection
                 .invoke(methodName, options.id, message)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -462,7 +482,7 @@ export class ChatService {
 
             this.connection
                 .invoke(methodName, options.id, message)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 
@@ -485,7 +505,7 @@ export class ChatService {
 
             this.connection
                 .invoke(methodName, options.id, message)
-                .catch(error => console.log(error));
+                .catch(error => console.warn(error));
         }
     }
 

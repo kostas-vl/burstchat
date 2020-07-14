@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
+import { User } from 'src/app/models/user/user';
 import { Payload } from 'src/app/models/signal/payload';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
@@ -20,11 +21,13 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
 
-    private selfAddedToChatSubscription?: Subscription;
+    private selfAddedToChatSub?: Subscription;
 
-    private allMessagesReceivedSubscription?: Subscription;
+    private allMessagesReceivedSub?: Subscription;
 
-    private messageReceivedSubscription?: Subscription;
+    private messageReceivedSub?: Subscription;
+
+    private userUpdatedSub?: Subscription;
 
     private internalOptions?: ChatConnectionOptions;
 
@@ -52,20 +55,25 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         this.internalOptions = value;
         this.unsubscribeAll();
 
-        this.selfAddedToChatSubscription = this
+        this.selfAddedToChatSub = this
             .chatService
             .selfAddedToChat
             .subscribe(() => this.onSelfAddedToChat());
 
-        this.allMessagesReceivedSubscription = this
+        this.allMessagesReceivedSub = this
             .chatService
             .allMessagesReceived
             .subscribe(payload => this.onMessagesReceived(payload));
 
-        this.messageReceivedSubscription = this
+        this.messageReceivedSub = this
             .chatService
             .messageReceived
             .subscribe(payload => this.onMessageReceived(payload));
+
+        this.userUpdatedSub = this
+            .chatService
+            .userUpdated
+            .subscribe(user => this.onUserUpdated(user));
     }
 
     @ViewChild(CdkVirtualScrollViewport)
@@ -100,20 +108,10 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private unsubscribeAll() {
-        if (this.selfAddedToChatSubscription) {
-            this.selfAddedToChatSubscription
-                .unsubscribe();
-        }
-
-        if (this.allMessagesReceivedSubscription) {
-            this.allMessagesReceivedSubscription
-                .unsubscribe();
-        }
-
-        if (this.messageReceivedSubscription) {
-            this.messageReceivedSubscription
-                .unsubscribe();
-        }
+        this.selfAddedToChatSub?.unsubscribe();
+        this.allMessagesReceivedSub?.unsubscribe();
+        this.messageReceivedSub?.unsubscribe();
+        this.userUpdatedSub?.unsubscribe();
     }
 
     /**
@@ -260,6 +258,18 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         }
 
         setTimeout(() => this.scrollToBottom(), 50);
+    }
+
+    /**
+     * Checks if the updated user that was sent is in any of the messages.
+     * @param {User} user The updated user instance.
+     * @memberof ChatMessagesComponent
+     */
+    public onUserUpdated(user: User) {
+        const messages = this.messages.filter(m => m.user.id === user.id);
+        for (const message of messages) {
+            message.user = { ...user };
+        }
     }
 
     /**

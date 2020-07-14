@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays to the user his current info for editing.
@@ -28,7 +29,10 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
      * Creates a new instance of EditUserInfoComponent
      * @memberof EditUserInfoComponent
      */
-    constructor(private userService: UserService) { }
+    constructor(
+        private userService: UserService,
+        private chatService: ChatService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -72,7 +76,7 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
      */
     public onSaveNewAvatar() {
         const user = { ...this.user, avatar: this.newAvatar };
-        this.userService.updateUser(user);
+        this.chatService.updateUser(user);
         this.changeAvatarVisible = false;
     }
 
