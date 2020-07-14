@@ -98,16 +98,16 @@ namespace BurstChat.Signal.Hubs.Chat
             switch (monad)
             {
                 case Success<User, Error> success:
-                    await Clients.Groups(Context.ConnectionId).UpdateUser(success.Value);
-                    await Clients.Caller.UpdateUser(success.Value);
+                    await Clients.Groups(Context.ConnectionId).UserUpdated(success.Value);
+                    await Clients.Caller.UserUpdated(success.Value);
                     break;
 
                 case Failure<User, Error> failure:
-                    await Clients.Caller.UpdateUser(failure.Value);
+                    await Clients.Caller.UserUpdated(failure.Value);
                     break;
 
                 default:
-                    await Clients.Caller.UpdateUser(SystemErrors.Exception());
+                    await Clients.Caller.UserUpdated(SystemErrors.Exception());
                     break;
             }
         }

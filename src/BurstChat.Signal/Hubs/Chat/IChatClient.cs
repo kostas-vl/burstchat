@@ -47,14 +47,14 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="user">The updated user info</param>
         /// <returns>A task instance</returns>
-        Task UpdateUser(User user);
+        Task UserUpdated(User user);
 
         /// <summary>
         /// Informs the caller that the update operation failed.
         /// </summary>
         /// <param name="error">The error that will be delivered to the caller</param>
         /// <returns>A task instance</returns>
-        Task UpdateUser(Error error);
+        Task UserUpdated(Error error);
 
         /// <summary>
         /// Informs the caller of all the invitations sent to him.
