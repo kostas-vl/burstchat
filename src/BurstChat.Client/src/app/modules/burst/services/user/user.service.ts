@@ -40,6 +40,17 @@ export class UserService {
     }
 
     /**
+     * Sends the information of a user to be updated, to the remote API.
+     * @params {User} user The user instance to be updated.
+     * @memberof UserService
+     */
+    public updateUser(user: User) {
+        this.httpClient
+            .put<User>('/api/user', user)
+            .subscribe(user => this.userSource.next(user));
+    }
+
+    /**
      * Requests the subscribed server of the current authenticate user.
      * @memberof UserService
      */

@@ -12,9 +12,6 @@ export class ImageCropComponent implements OnInit {
 
     public preview?: string;
 
-    @Input()
-    public imageBase64?: string;
-
     @Output()
     public imageCropped = new EventEmitter<string>();
 

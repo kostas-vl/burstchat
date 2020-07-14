@@ -33,7 +33,7 @@
 
             <div class="column column-100 fs-12">
 
-                <a href="javascript:void()" (click)="onChangeAvatar()">Change picture</a>
+                <a href="javascript:void(0)" (click)="onChangeAvatar()">Change picture</a>
 
             </div>
 
@@ -51,7 +51,7 @@
 
             <div class="image-crop">
 
-                <app-image-crop></app-image-crop>
+                <app-image-crop (imageCropped)="onImageCropped($event)"></app-image-crop>
 
             </div>
 

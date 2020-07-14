@@ -25,13 +25,13 @@ export class AvatarComponent implements OnInit {
     @Input()
     public color: 'accent' | 'accent-light' | 'success' | 'danger' | 'warning' = 'accent-light';
 
+    public get visible() {
+        return this.avatar?.length > 0 && this.avatar !== '\\x';
+    }
+
     public get initials() {
         const words = this.name.split(' ');
         return words.reduce((acc, n) => acc + n[0]?.toUpperCase(), '');
-    }
-
-    public get avatarBlob() {
-        return `data:image/png;base64,${this.avatar}`;
     }
 
     /**

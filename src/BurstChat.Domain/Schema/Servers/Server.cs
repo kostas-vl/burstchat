@@ -19,9 +19,9 @@ namespace BurstChat.Domain.Schema.Servers
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// The server's avatat, binary data.
+        /// The server's base64 encoded avatar, binary data.
         /// </summary>
-        public byte[] Avatar { get; set; } = new byte[0];
+        public string? Avatar { get; set; } = null;
 
         /// <summary>
         /// The date that the server was created.

@@ -22,6 +22,8 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
 
     public changeAvatarVisible = false;
 
+    public newAvatar?: string;
+
     /**
      * Creates a new instance of EditUserInfoComponent
      * @memberof EditUserInfoComponent
@@ -56,10 +58,21 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Handles the image crop event.
+     * @param {string} event The event args.
+     * @memberof EditUserInfoComponent
+     */
+    public onImageCropped(event: string) {
+        this.newAvatar = event;
+    }
+
+    /**
      * Handles the change picture dialog's save button click event.
      * @memberof EditUserInfoComponent
      */
     public onSaveNewAvatar() {
+        const user = { ...this.user, avatar: this.newAvatar };
+        this.userService.updateUser(user);
         this.changeAvatarVisible = false;
     }
 

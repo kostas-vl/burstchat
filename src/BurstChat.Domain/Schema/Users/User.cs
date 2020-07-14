@@ -34,9 +34,9 @@ namespace BurstChat.Domain.Schema.Users
         public string Password { get; set; } = string.Empty;
 
         /// <summary>
-        /// The user's avatar binary data.
+        /// The user's base64 encoded avatar.
         /// </summary>
-        public byte[] Avatar { get; set; } = new byte[0];
+        public string? Avatar { get; set; } = null;
 
         /// <summary>
         /// The date that the user was created.

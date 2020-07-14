@@ -1,14 +1,14 @@
 <div class="row message-height">
 
-    <div class="column column-100 cluster">
+    <div class="column column-100 message-container">
 
         <div>
 
-            <fa-icon class="fs-20 pr-10 text-success" [icon]="plane"></fa-icon>
+            <app-avatar [name]="message.user.name" [avatar]="message.user.avatar"></app-avatar>
 
         </div>
 
-        <div>
+        <div class="pl-10">
 
             <div>
 

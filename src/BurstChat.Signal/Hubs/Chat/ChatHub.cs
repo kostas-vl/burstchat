@@ -73,7 +73,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// <returns>A Task instance</returns>
         public override async Task OnDisconnectedAsync(Exception e)
         {
-            _logger.LogError(e.Message);
+            _logger.LogError(e?.Message);
 
             await Context
                 .GetHttpContext()
