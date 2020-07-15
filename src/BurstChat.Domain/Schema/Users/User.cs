@@ -49,7 +49,7 @@ namespace BurstChat.Domain.Schema.Users
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         /// <summary>
-        ///   The list of one time passwords issued by the user.
+        /// The list of one time passwords issued by the user.
         /// </summary>
         [JsonIgnore]
         public List<OneTimePassword> OneTimePasswords { get; set; } = new List<OneTimePassword>();
