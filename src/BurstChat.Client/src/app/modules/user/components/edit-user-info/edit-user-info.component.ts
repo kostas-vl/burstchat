@@ -76,7 +76,9 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
      */
     public onSaveNewAvatar() {
         const user = { ...this.user, avatar: this.newAvatar };
-        this.chatService.updateUser(user);
+        this.userService
+            .update(user)
+            .subscribe(_ => this.chatService.updateMyInfo());
         this.changeAvatarVisible = false;
     }
 

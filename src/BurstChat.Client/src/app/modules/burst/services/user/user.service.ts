@@ -33,22 +33,30 @@ export class UserService {
      * Requests information about the user from the BurstChat API.
      * @memberof UserService
      */
-    public getUser() {
+    public get() {
         this.httpClient
             .get<User>('/api/user')
             .subscribe(data => this.userSource.next(data));
     }
 
     /**
-     * Executes the appropriate checks and updates the user information.
-     * @params {User} user The user instance to be updated.
+     * Requests for the update of the user's info based on the instance provided.
+     * @param {User} user The user instance for the update.
      * @memberof UserService
      */
     public update(user: User) {
-        const current = this.userSource.getValue();
-        if (user?.id === current?.id) {
-            this.userSource.next(user);
-        }
+        const observable = this
+            .httpClient
+            .put<User>('/api/user', user);
+
+        observable.subscribe(user => {
+            const current = this.userSource.getValue();
+            if (user?.id === current?.id) {
+                this.userSource.next(user);
+            }
+        });
+
+        return observable;
     }
 
     /**

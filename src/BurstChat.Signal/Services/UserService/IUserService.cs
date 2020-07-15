@@ -14,12 +14,11 @@ namespace BurstChat.Signal.Services.UserService
     public interface IUserService
     {
         /// <summary>
-        /// Updated the information of a user based on the instance provided.
+        /// Fetches the information of the currently authenticated user.
         /// </summary>
-        /// <param name="context">The currnt http context</param>
-        /// <param name="user">The updated user info</param>
+        /// <param name="context">The current http context</param>
         /// <returns>A task of an either monad</returns>
-        Task<Either<User, Error>> UpdateAsync(HttpContext context, User user);
+        Task<Either<User, Error>> GetAsync(HttpContext context);
 
         /// <summary>
         /// Fetches all invitations sent to an authenticated user.

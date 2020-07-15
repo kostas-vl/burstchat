@@ -93,12 +93,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
             .newInvitation
             .subscribe(invite => this.onInvite(invite));
 
-        this.userUpdatedSub = this
-            .chatService
-            .userUpdated
-            .subscribe(user => this.userService.update(user));
-
-        this.userService.getUser();
+        this.userService.get();
         this.userService.getSubscriptions();
         this.directMessagingService.getUsers();
     }

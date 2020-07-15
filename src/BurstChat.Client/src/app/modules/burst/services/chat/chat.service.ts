@@ -340,14 +340,13 @@ export class ChatService {
     }
 
     /**
-     * Updates the information of a user.
-     * @param {User} user The updated user info.
+     * Sends a signal to other connections/groups to update the user's info.
      * @memberof ChatService
      */
-    public updateUser(user: User) {
+    public updateMyInfo() {
         if (this.connection) {
             this.connection
-                .invoke('updateUser', user)
+                .invoke('updateMyInfo')
                 .catch(err => console.warn(err));
         }
     }

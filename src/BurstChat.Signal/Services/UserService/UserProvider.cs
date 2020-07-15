@@ -35,21 +35,18 @@ namespace BurstChat.Signal.Services.UserService
         }
 
         /// <summary>
-        /// Updated the information of a user based on the instance provided.
+        /// Fetches the information of the currently authenticated user.
         /// </summary>
-        /// <param name="context">The currnt http context</param>
-        /// <param name="user">The updated user info</param>
+        /// <param name="context">The current http context</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<User, Error>> UpdateAsync(HttpContext context, User user)
+        public async Task<Either<User, Error>> GetAsync(HttpContext context)
         {
             try
             {
-                var method = HttpMethod.Put;
+                var method = HttpMethod.Get;
                 var url = $"api/user";
-                var jsonMessage = JsonSerializer.Serialize(user);
-                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
-                return await _apiInteropService.SendAsync<User>(context, method, url, content);
+                return await _apiInteropService.SendAsync<User>(context, method, url);
             }
             catch (Exception e)
             {

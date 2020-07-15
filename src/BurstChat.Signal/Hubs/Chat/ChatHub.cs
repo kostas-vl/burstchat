@@ -86,14 +86,14 @@ namespace BurstChat.Signal.Hubs.Chat
         }
 
         /// <summary>
-        /// Updates information about a user and propagates the changes to all of his connections and groups.
+        /// Propagates the changes to a user's info to all of his connections and groups.
         /// </summary>
         /// <param name="user">The updated user instance</param>
         /// <returns>A Task instance</returns>
-        public async Task UpdateUser(User user)
+        public async Task UpdateMyInfo()
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _userService.UpdateAsync(httpContext, user);
+            var monad = await _userService.GetAsync(httpContext);
 
             switch (monad)
             {
