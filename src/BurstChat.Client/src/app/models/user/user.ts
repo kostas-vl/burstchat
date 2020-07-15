@@ -8,6 +8,7 @@ export interface User {
     id: number;
     email: string;
     name: string;
+    avatar: string;
     messages: any[];
     subscribedServers: any[];
     dateCreated: Date | string;

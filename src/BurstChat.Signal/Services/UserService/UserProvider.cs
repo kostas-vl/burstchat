@@ -7,25 +7,26 @@ using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Servers;
+using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Services.ApiInteropService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurstChat.Signal.Services.InvitationsService
+namespace BurstChat.Signal.Services.UserService
 {
     /// <summary>
-    ///     This class is the based implementation of the IInvitationsService.
+    /// This class is the based implementation of the IUserService.
     /// </summary>
-    public class InvitationsProvider : IInvitationsService
+    public class UserProvider: IUserService
     {
-        private readonly ILogger<InvitationsProvider> _logger;
+        private readonly ILogger<UserProvider> _logger;
         private readonly BurstChatApiInteropService _apiInteropService;
 
         /// <summary>
-        ///     Creates a new instance of InvitationsProvider.
+        /// Creates a new instance of UserProvider.
         /// </summary>
-        public InvitationsProvider(
-            ILogger<InvitationsProvider> logger,
+        public UserProvider(
+            ILogger<UserProvider> logger,
             BurstChatApiInteropService apiInteropService
         )
         {
@@ -34,11 +35,32 @@ namespace BurstChat.Signal.Services.InvitationsService
         }
 
         /// <summary>
-        ///     Fetches all invitations sent to an authenticated user.
+        /// Fetches the information of the currently authenticated user.
+        /// </summary>
+        /// <param name="context">The current http context</param>
+        /// <returns>A task of an either monad</returns>
+        public async Task<Either<User, Error>> GetAsync(HttpContext context)
+        {
+            try
+            {
+                var method = HttpMethod.Get;
+                var url = $"api/user";
+
+                return await _apiInteropService.SendAsync<User>(context, method, url);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return new Failure<User, Error>(SystemErrors.Exception());
+            }
+        }
+
+        /// <summary>
+        /// Fetches all invitations sent to an authenticated user.
         /// </summary>
         /// <param name="context">The current http context</param>
         /// <returns>An either monad</returns>
-        public async Task<Either<IEnumerable<Invitation>, Error>> GetAllAsync(HttpContext context)
+        public async Task<Either<IEnumerable<Invitation>, Error>> GetAllInvitationsAsync(HttpContext context)
         {
             try
             {
@@ -55,13 +77,13 @@ namespace BurstChat.Signal.Services.InvitationsService
         }
 
         /// <summary>
-        ///     Creates a new server invitation for a user based on the provided parameters.
+        /// Creates a new server invitation for a user based on the provided parameters.
         /// </summary>
         /// <param name="context">The current http context</param>
         /// <param name="server">The id of the server the invitation is from</param>
         /// <param name="username">The name of the user the invitation will be sent</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<Invitation, Error>> InsertAsync(HttpContext context, int serverId, string username)
+        public async Task<Either<Invitation, Error>> InsertInvitationAsync(HttpContext context, int serverId, string username)
         {
             try
             {
@@ -79,12 +101,12 @@ namespace BurstChat.Signal.Services.InvitationsService
         }
 
         /// <summary>
-        ///     Updates a sent invitations based on the provided parameters.
+        /// Updates a sent invitations based on the provided parameters.
         /// </summary>
         /// <param name="context">The current http context</param>
         /// <param name="invitation">The invitations instance to be updated</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<Invitation, Error>> UpdateAsync(HttpContext context, Invitation invitation)
+        public async Task<Either<Invitation, Error>> UpdateInvitationAsync(HttpContext context, Invitation invitation)
         {
             try
             {

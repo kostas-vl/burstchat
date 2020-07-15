@@ -1,0 +1,14 @@
+input[type="file"] {
+    display: none;
+}
+
+image-cropper {
+    min-width: 300px;
+    max-width: 1020px;
+    height: 220px;
+}
+
+.image-preview {
+    width: 120px;
+    height: 120px;
+}

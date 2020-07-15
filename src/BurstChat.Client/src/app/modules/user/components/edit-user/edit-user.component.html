@@ -1,29 +1,10 @@
-<div class="burst-container-fluid bg-secondary" *ngIf="user">
+<div class="burst-container-fluid bg-secondary">
 
     <app-card>
 
         <app-card-body>
 
-            <div class="row">
-
-                <div class="column column-100">
-
-                    {{user.name}} <span class="text-muted">#{{user.id}} <small class="text-muted">Joined
-                            {{user.dateCreated | date}}</small></span>
-
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="column column-100">
-
-                    <small class="text-muted">email: {{user.email}}</small>
-
-                </div>
-
-            </div>
+            <app-edit-user-info></app-edit-user-info>
 
         </app-card-body>
 

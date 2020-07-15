@@ -159,7 +159,7 @@ namespace BurstChat.Application.Services.UserService
         /// </summary>
         /// <param name="user">The user instance to be updated in the database</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Update(User user)
+        public Either<User, Error> Update(User user)
         {
             try
             {
@@ -171,18 +171,19 @@ namespace BurstChat.Application.Services.UserService
                     {
                         storedUser.Email = user.Email;
                         storedUser.Name = user.Name;
+                        storedUser.Avatar = user.Avatar;
 
                         _burstChatContext.SaveChanges();
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<User, Error>(storedUser);
                     });
                 }
                 else
-                    return new Failure<Unit, Error>(UserErrors.UserNotFound());
+                    return new Failure<User, Error>(UserErrors.UserNotFound());
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<User, Error>(SystemErrors.Exception());
             }
         }
 

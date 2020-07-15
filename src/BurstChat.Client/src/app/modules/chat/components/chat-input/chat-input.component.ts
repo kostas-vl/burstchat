@@ -92,7 +92,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
             const message: Message = {
                 id: 0,
                 userId: this.user.id,
-                user: this.user,
+                user: null,
                 content: this.inputContent,
                 datePosted: new Date(),
                 edited: false,

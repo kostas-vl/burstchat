@@ -45,7 +45,7 @@ namespace BurstChat.Application.Services.UserService
         /// </summary>
         /// <param name="user">The user instance to be updated in the database</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Update(User user);
+        Either<User, Error> Update(User user);
 
         /// <summary>
         /// Deletes a registered user from the database based on the provided user id.

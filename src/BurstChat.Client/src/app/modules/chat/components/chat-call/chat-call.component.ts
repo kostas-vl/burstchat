@@ -105,12 +105,11 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     private onNewSession(session: RTCSessionContainer) {
         this.session = session;
 
-        if (this.options instanceof DirectMessagingConnectionOptions) {
+        if (this.session && this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUser = +session.source.remote_identity.uri.user;
+            const sessionUser = +this.session.source.remote_identity.uri.user;
             if (sessionUser === first.id || sessionUser === second.id) {
-                this.session = session;
                 this.users = [first, second];
                 this.visible = true;
                 this.sessionConfirmSub = this

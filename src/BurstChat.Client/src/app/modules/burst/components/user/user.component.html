@@ -1,10 +1,6 @@
 <div class="user-container" (click)="onSelect()">
 
-    <div class="pl-20">
-
-        <fa-icon class="fs-10 text-accent-light" [ngClass]="textColor" [icon]="circle"></fa-icon>
-
-    </div>
+    <app-avatar [name]="user.name" [avatar]="user.avatar"></app-avatar>
 
     <div class="user" [ngClass]="textColor">
 

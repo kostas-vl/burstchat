@@ -76,9 +76,9 @@ namespace BurstChat.Api.Controllers
         /// <param name="user">The user instance to be user in the update</param>
         /// <returns>A MonadActionResult instance</returns>
         [HttpPut]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public MonadActionResult<Unit, Error> Put([FromBody] User user) =>
+        public MonadActionResult<User, Error> Put([FromBody] User user) =>
             _userService.Update(user);
 
         /// <summary>

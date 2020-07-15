@@ -3,15 +3,17 @@ using System;
 using BurstChat.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BurstChat.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BurstChatContext))]
-    partial class BurstChatContextModelSnapshot : ModelSnapshot
+    [Migration("20200712070400_AddedAvatarForUsersAndServers")]
+    partial class AddedAvatarForUsersAndServers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,8 +176,9 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("Avatar")
-                        .HasColumnType("text");
+                    b.Property<byte[]>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp without time zone");
@@ -286,8 +289,9 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("Avatar")
-                        .HasColumnType("text");
+                    b.Property<byte[]>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp without time zone");

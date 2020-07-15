@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using BurstChat.Domain.Schema.Chat;
@@ -33,6 +34,11 @@ namespace BurstChat.Domain.Schema.Users
         public string Password { get; set; } = string.Empty;
 
         /// <summary>
+        /// The user's base64 encoded avatar.
+        /// </summary>
+        public string? Avatar { get; set; } = null;
+
+        /// <summary>
         /// The date that the user was created.
         /// </summary>
         public DateTime DateCreated { get; set; }
@@ -43,7 +49,7 @@ namespace BurstChat.Domain.Schema.Users
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         /// <summary>
-        ///   The list of one time passwords issued by the user.
+        /// The list of one time passwords issued by the user.
         /// </summary>
         [JsonIgnore]
         public List<OneTimePassword> OneTimePasswords { get; set; } = new List<OneTimePassword>();

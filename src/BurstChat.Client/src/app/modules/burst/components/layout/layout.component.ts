@@ -34,13 +34,15 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
 })
 export class LayoutComponent implements OnInit, OnDestroy {
 
-    private onConnectedSubscription?: Subscription;
+    private onConnectedSub?: Subscription;
 
-    private onReconnectedSubscription?: Subscription;
+    private onReconnectedSub?: Subscription;
 
-    private invitationsSubscription?: Subscription;
+    private invitationsSub?: Subscription;
 
-    private newInvitationSubscription?: Subscription;
+    private newInvitationSub?: Subscription;
+
+    private userUpdatedSub?: Subscription;
 
     public loading = true;
 
@@ -60,7 +62,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
      * @memberof LayoutComponent
      */
     public ngOnInit() {
-        this.onConnectedSubscription = this
+        this.onConnectedSub = this
             .chatService
             .onConnected
             .subscribe(() => {
@@ -70,14 +72,14 @@ export class LayoutComponent implements OnInit, OnDestroy {
                 }, 300);
             });
 
-        this.onReconnectedSubscription = this
+        this.onReconnectedSub = this
             .chatService
             .onReconnected
             .subscribe(() => {
                 this.chatService.getInvitations();
             });
 
-        this.invitationsSubscription = this
+        this.invitationsSub = this
             .chatService
             .invitations
             .subscribe(data => {
@@ -86,12 +88,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
                 }
             });
 
-        this.newInvitationSubscription = this
+        this.newInvitationSub = this
             .chatService
             .newInvitation
             .subscribe(invite => this.onInvite(invite));
 
-        this.userService.getUser();
+        this.userService.get();
         this.userService.getSubscriptions();
         this.directMessagingService.getUsers();
     }
@@ -101,25 +103,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
      * @memberof LayoutComponent
      */
     public ngOnDestroy() {
-        if (this.onConnectedSubscription) {
-            this.onConnectedSubscription
-                .unsubscribe();
-        }
-
-        if (this.onReconnectedSubscription) {
-            this.onReconnectedSubscription
-                .unsubscribe();
-        }
-
-        if (this.invitationsSubscription) {
-            this.invitationsSubscription
-                .unsubscribe();
-        }
-
-        if (this.newInvitationSubscription) {
-            this.newInvitationSubscription
-                .unsubscribe();
-        }
+        this.onConnectedSub?.unsubscribe();
+        this.onReconnectedSub?.unsubscribe();
+        this.invitationsSub?.unsubscribe();
+        this.newInvitationSub?.unsubscribe();
+        this.userUpdatedSub?.unsubscribe();
     }
 
     /**
