@@ -2,15 +2,19 @@
 
     <div class="column column-100 message-container">
 
-        <div>
+        <div class="message-avatar">
 
-            <app-avatar [name]="message.user.name" [avatar]="message.user.avatar"></app-avatar>
+            <div *ngIf="fullDisplay">
+
+                <app-avatar [name]="message.user.name" [avatar]="message.user.avatar"></app-avatar>
+
+            </div>
 
         </div>
 
-        <div class="pl-10">
+        <div>
 
-            <div>
+            <div *ngIf="fullDisplay">
 
                 <strong class="pr-5">{{message.user.name}}</strong>
 

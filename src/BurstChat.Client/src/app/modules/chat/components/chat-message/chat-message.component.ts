@@ -17,6 +17,10 @@ export class ChatMessageComponent implements OnInit {
 
     public plane = faPaperPlane;
 
+    public get fullDisplay() {
+        return this.message?.displayMode === 'full';
+    }
+
     @Input()
     public message?: Message;
 

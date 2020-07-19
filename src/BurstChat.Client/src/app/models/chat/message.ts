@@ -15,5 +15,6 @@ export interface Message {
     datePosted: Date | string;
     edited: boolean;
     links: Link[];
+    displayMode?: 'simple' | 'full';
 
 }

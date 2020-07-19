@@ -154,6 +154,25 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Checks how the source message relates to the relative message based on user ids
+     * and dates posted and set the sources display mode.
+     * @param {Message} source The source message.
+     * @param {Message} relative The relative previous message.
+     * @returns {Message} A copy of the source with the display mode set.
+     * @memberof ChatMessagesComponent
+     */
+    private getMessageWithDisplayMode(source: Message, relative: Message): Message {
+        if (relative) {
+            const isSameDateTime = this.isSameDateTime(relative.datePosted, source.datePosted);
+            if (relative.userId === source.userId && isSameDateTime) {
+                return { ...source, displayMode: 'simple' };
+            }
+        }
+
+        return { ...source, displayMode: 'full' };
+    }
+
+    /**
      * This method will add a new message to the messages list either at the start or end.
      * This method mutates the provided messages list and returns it.
      * @private
@@ -164,14 +183,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      */
     private addMessageToClusters(messages: Message[], message: Message) {
         const first = messages[0];
-        const isSameDay = first
-            ? this.isSameDateTime(first.datePosted, message.datePosted)
-            : false;
 
         if (first && first.id > message.id) {
-            messages = [message, ...messages];
+            const msg = this.getMessageWithDisplayMode(message, messages[0]);
+            messages = [msg, ...messages];
         } else {
-            messages.push(message);
+            const msg = this.getMessageWithDisplayMode(message, messages[messages?.length - 1]);
+            messages.push(msg);
         }
 
         return messages;
