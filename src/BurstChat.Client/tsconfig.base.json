@@ -18,5 +18,10 @@
       "es2018",
       "dom"
     ]
+  },
+  "angularCompulerOptions": {
+      "enableIvy": true,
+      "fullTemplateTypeCheck": true,
+      "stringInjectionParameters": true
   }
 }

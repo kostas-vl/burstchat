@@ -16,6 +16,7 @@ $text-muted-color: #777777;
 $sidebar-width: 330px;
 $layout-animation-speed: 0.4s;
 
+$chat-call-height: 340px;
 $chat-input-height: 88px;
 
 $minor-height: 65px;
@@ -218,6 +219,18 @@ iframe {
     padding-top: 10px;
 }
 
+.pt-15 {
+    padding-top: 15px;
+}
+
+.pt-20 {
+    padding-top: 20px;
+}
+
+.pt-30 {
+    padding-top: 30px;
+}
+
 .pb-1 {
     padding-bottom: 1px;
 }
@@ -242,6 +255,18 @@ iframe {
     padding-bottom: 10px;
 }
 
+.pb-15 {
+    padding-bottom: 15px;
+}
+
+.pb-20 {
+    padding-bottom: 20px;
+}
+
+.pb-30 {
+    padding-bottom: 30px;
+}
+
 .pr-1 {
     padding-right: 1px;
 }
@@ -264,6 +289,10 @@ iframe {
 
 .pr-10 {
     padding-right: 10px;
+}
+
+.pr-15 {
+    padding-right: 15px;
 }
 
 .pr-20 {
@@ -296,6 +325,10 @@ iframe {
 
 .pl-10 {
     padding-left: 10px;
+}
+
+.pl-15 {
+    padding-left: 15px;
 }
 
 .pl-20 {

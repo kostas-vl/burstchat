@@ -4,14 +4,15 @@ blockquote {
     width: 430px;
 }
 
-.message-height {
-    height: 70px;
-}
-
 .message-container {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+}
+
+.message-container:hover {
+    background-color: $dark-color;
+    border-radius: 5px;
 }
 
 .message-avatar {

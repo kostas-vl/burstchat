@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { Datasource } from 'ngx-ui-scroll';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { Payload } from 'src/app/models/signal/payload';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
+import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 
 /**
@@ -21,27 +23,24 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
 
-    private selfAddedToChatSub?: Subscription;
-
-    private allMessagesReceivedSub?: Subscription;
-
-    private messageReceivedSub?: Subscription;
-
-    private userUpdatedSub?: Subscription;
+    private subscriptions?: Subscription[] = [];
 
     private internalOptions?: ChatConnectionOptions;
 
-    private scrollBottomOffset = 0;
+    private messages$ = new BehaviorSubject<Message[]>([]);
+
+    private session?: RTCSessionContainer;
 
     public loadingMessages = true;
 
-    public topIndex = 0;
-
-    public bottomIndex = 0;
-
-    public messages: Message[] = [];
+    public dataSource: Datasource;
 
     public chatIsEmpty = false;
+
+    public inCall = false;
+
+    @ViewChild('viewport', { read: ElementRef })
+    public viewport?: ElementRef;
 
     public get options() {
         return this.internalOptions;
@@ -49,35 +48,51 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     @Input()
     public set options(value: ChatConnectionOptions) {
-        this.messages = [];
+        this.messages$.next([]);
         this.chatIsEmpty = false;
         this.loadingMessages = true;
         this.internalOptions = value;
         this.unsubscribeAll();
 
-        this.selfAddedToChatSub = this
-            .chatService
-            .selfAddedToChat
-            .subscribe(() => this.onSelfAddedToChat());
+        this.subscriptions = [
+            this.chatService
+                .selfAddedToChat
+                .subscribe(() => this.onSelfAddedToChat()),
 
-        this.allMessagesReceivedSub = this
-            .chatService
-            .allMessagesReceived
-            .subscribe(payload => this.onMessagesReceived(payload));
+            this.chatService
+                .allMessagesReceived
+                .subscribe(payload => this.onMessagesReceived(payload)),
 
-        this.messageReceivedSub = this
-            .chatService
-            .messageReceived
-            .subscribe(payload => this.onMessageReceived(payload));
+            this.chatService
+                .messageReceived
+                .subscribe(payload => this.onMessageReceived(payload)),
 
-        this.userUpdatedSub = this
-            .chatService
-            .userUpdated
-            .subscribe(user => this.onUserUpdated(user));
+            this.chatService
+                .userUpdated
+                .subscribe(user => this.onUserUpdated(user)),
+
+            this.rtcSessionService
+                .onSession
+                .subscribe(session => this.inCall = session ? true : false),
+        ];
+
+        this.dataSource = new Datasource({
+            get: (index, count) => {
+                const messages = this.messages$.getValue();
+                this.chatService.getAllMessages(this.options, messages[index]?.id);
+                return this.messages$.asObservable();
+            },
+            settings: {
+                startIndex: 0,
+                inverse: false
+            },
+            devSettings: {
+                debug: true
+            }
+        });
     }
 
-    @ViewChild(CdkVirtualScrollViewport)
-    public viewport?: CdkVirtualScrollViewport;
+
 
     /**
      * Creates an instance of ChatMessagesComponent.
@@ -85,7 +100,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      */
     constructor(
         private chatService: ChatService,
-        private notifyService: NotifyService
+        private notifyService: NotifyService,
+        private rtcSessionService: RtcSessionService
     ) { }
 
     /**
@@ -108,10 +124,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private unsubscribeAll() {
-        this.selfAddedToChatSub?.unsubscribe();
-        this.allMessagesReceivedSub?.unsubscribe();
-        this.messageReceivedSub?.unsubscribe();
-        this.userUpdatedSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -120,12 +133,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @private
      * @memberof ChatMessagesComponent
      */
-    private scrollToBottom() {
-        const canScrollToBottom = this.viewport && this.scrollBottomOffset <= 100;
-
-        if (canScrollToBottom) {
-            this.viewport.scrollTo({ bottom: 0 });
-        }
+    private async scrollToBottom() {
+        const { adapter } = this.dataSource;
+        const element = this.viewport.nativeElement;
+        element.scrollTop = element.scrollHeight;
+        // adapter.clip();
     }
 
     /**
@@ -242,20 +254,18 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>) {
+        let messages = this.messages$.getValue();
         const newBatch = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : [];
 
         if (newBatch.length > 0) {
-            this.messages = this.addMessagesToClusters([...this.messages], newBatch);
-        } else if (newBatch.length === 0 && this.messages.length === 0) {
+            messages = this.addMessagesToClusters([...messages], newBatch);
+            this.messages$.next(messages);
+            this.scrollToBottom();
+        } else if (newBatch.length === 0 && messages.length === 0) {
             this.chatIsEmpty = true;
         }
-
-        setTimeout(() => {
-            this.scrollToBottom();
-            this.loadingMessages = false;
-        }, 50);
     }
 
     /**
@@ -270,12 +280,18 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             : null;
 
         if (message) {
-            this.messages = this.addMessageToClusters([...this.messages], message);
+            let messages = this.messages$.getValue();
+            messages = this.addMessageToClusters([...messages], message);
+            this.messages$.next(messages);
+            this.dataSource.adapter.append({
+                items: [messages[messages.length - 1]],
+                eof: true
+            });
             this.chatIsEmpty = false;
             this.notifyService.notify('New message', message.content);
         }
 
-        setTimeout(() => this.scrollToBottom(), 50);
+        // setTimeout(() => this.scrollToBottom(), 50);
     }
 
     /**
@@ -284,32 +300,34 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     public onUserUpdated(user: User) {
-        const messages = this.messages.filter(m => m.user.id === user.id);
+        let messages = this.messages$.getValue();
+        messages = messages.filter(m => m.user.id === user.id);
         for (const message of messages) {
             message.user = { ...user };
         }
+        this.messages$.next(messages);
     }
 
-    /**
-     * Handles the new index that was set on the virtual scroll viewport.
-     * @private
-     * @memberof ChatMessagesComponent
-     */
-    public onScrolledIndexChanged(event: any) {
-        this.scrollBottomOffset = this.viewport.measureScrollOffset('bottom');
+    // /**
+    //  * Handles the new index that was set on the virtual scroll viewport.
+    //  * @private
+    //  * @memberof ChatMessagesComponent
+    //  */
+    // public onScrolledIndexChanged(event: any) {
+    //     this.scrollBottomOffset = this.viewport.measureScrollOffset('bottom');
 
-        const scrollTopOffset = this.viewport.measureScrollOffset('top');
-        const canRequestMessages = this.messages
-            && !this.loadingMessages
-            && scrollTopOffset <= 100;
+    //     const scrollTopOffset = this.viewport.measureScrollOffset('top');
+    //     const canRequestMessages = this.messages
+    //         && !this.loadingMessages
+    //         && scrollTopOffset <= 100;
 
-        if (canRequestMessages) {
-            const oldestMessage = this.messages[0] || null;
-            const messageId = oldestMessage.id || null;
+    //     if (canRequestMessages) {
+    //         const oldestMessage = this.messages[0] || null;
+    //         const messageId = oldestMessage.id || null;
 
-            this.chatService.getAllMessages(this.options, messageId);
-            this.loadingMessages = true;
-        }
-    }
+    //         this.chatService.getAllMessages(this.options, messageId);
+    //         this.loadingMessages = true;
+    //     }
+    // }
 
 }

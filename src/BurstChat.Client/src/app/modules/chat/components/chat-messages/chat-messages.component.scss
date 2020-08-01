@@ -5,11 +5,19 @@ hr {
 }
 
 .viewport {
-    @extend .h-100;
+    height: calc(100vh - #{$chat-input-height} - 65px);
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow-anchor: none;
+    overflow-y: auto;
 }
+
+.viewport-sm {
+    height: calc(100vh - #{chat-call-height} - 65px);
+}
+
 .messages-container {
-    @extend .h-100;
-    padding-top: 20px;
+    padding-top: 100px;
     padding-left: 20px;
     padding-right: 20px;
 }

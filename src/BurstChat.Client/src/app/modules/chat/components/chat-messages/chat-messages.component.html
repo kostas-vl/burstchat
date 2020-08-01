@@ -1,19 +1,11 @@
-<div class="viewport">
+<span class="text-muted pt-30 pl-20" *ngIf="chatIsEmpty">No messages posted yet!</span>
 
-    <cdk-virtual-scroll-viewport class="h-100" itemSize="72" (scrolledIndexChange)="onScrolledIndexChanged($event)">
+<div #viewport class="viewport" [class.viewport-sm]="inCall">
 
-        <div class="messages-container">
+    <div *uiScroll="let entry of dataSource">
 
-            <div *cdkVirtualFor="let entry of messages">
+        <app-chat-message [message]="entry"></app-chat-message>
 
-                <app-chat-message [message]="entry"></app-chat-message>
-
-            </div>
-
-            <span class="text-muted" *ngIf="chatIsEmpty">No messages posted yet!</span>
-
-        </div>
-
-    </cdk-virtual-scroll-viewport>
+    </div>
 
 </div>
