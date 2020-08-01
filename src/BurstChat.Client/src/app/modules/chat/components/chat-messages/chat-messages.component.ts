@@ -75,6 +75,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
                 .onSession
                 .subscribe(session => this.inCall = session ? true : false),
         ];
+
+        this.chatService.addSelfToChat(this.options);
     }
 
     /**
@@ -269,8 +271,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.scrollToBottom();
             this.notifyService.notify('New message', message.content);
         }
-
-        // setTimeout(() => this.scrollToBottom(), 50);
     }
 
     /**

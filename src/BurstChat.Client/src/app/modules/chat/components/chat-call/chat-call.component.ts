@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
+import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
 
 import {
     faUserCircle,
@@ -24,9 +26,7 @@ import {
 })
 export class ChatCallComponent implements OnInit, OnDestroy {
 
-    private sessionSub?: Subscription;
-
-    private sessionConfirmSub?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     private session?: RTCSessionContainer;
 
@@ -49,30 +49,33 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     @Input()
     public set options(value: ChatConnectionOptions) {
         this.internalOptions = value;
-        this.onNewSession(this.session);
     }
 
     /**
      * Creates a new instance of ChatCallComponent.
      * @memberof ChatCallComponent
      */
-    constructor(private rtcSessionService: RtcSessionService) { }
+    constructor(
+        private rtcSessionService: RtcSessionService,
+        private chatLayoutService: ChatLayoutService
+    ) { }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof ChatCallComponent
      */
     public ngOnInit() {
-        this.sessionSub = this
-            .rtcSessionService
-            .onSession
-            .subscribe(session => {
-                if (session) {
-                    this.onNewSession(session);
-                    return;
-                }
-                this.reset();
-            });
+        this.subscriptions = [
+            this.rtcSessionService
+                .onSession
+                .subscribe(session => {
+                    if (session) {
+                        this.onNewSession(session);
+                        return;
+                    }
+                    this.reset();
+                })
+        ];
     }
 
     /**
@@ -80,8 +83,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     public ngOnDestroy() {
-        this.sessionSub?.unsubscribe();
-        this.sessionConfirmSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
 
@@ -111,16 +113,17 @@ export class ChatCallComponent implements OnInit, OnDestroy {
             const sessionUser = +this.session.source.remote_identity.uri.user;
             if (sessionUser === first.id || sessionUser === second.id) {
                 this.users = [first, second];
-                this.visible = true;
-                this.sessionConfirmSub = this
+                this.subscriptions[1] = this
                     .session
                     .confirmed
                     .subscribe(_ => this.sessionConfirmed = true);
+                this.subscriptions[2] = this
+                    .session
+                    .ended
+                    .subscribe(_ => this.chatLayoutService.toggle('chat'));
                 return;
             }
         }
-
-        this.visible = false;
     }
 
     /**
@@ -129,6 +132,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     public onHangup() {
         this.rtcSessionService.hangup();
+        this.chatLayoutService.toggle('chat');
     }
 
 }

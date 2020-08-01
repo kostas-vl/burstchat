@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, Subscribable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
 
 /**
  * This class represents an angular component that is the root component that contains a server channel chat.
@@ -14,17 +15,18 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 @Component({
     selector: 'app-chat-channel',
     templateUrl: './chat-channel.component.html',
-    styleUrls: ['./chat-channel.component.scss']
+    styleUrls: ['./chat-channel.component.scss'],
+    providers: [ChatLayoutService]
 })
 export class ChatChannelComponent implements OnInit, OnDestroy {
 
-    private routeParametersSubscription?: Subscription;
-
-    private onReconnectedSubscription?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     private options?: ChannelConnectionOptions;
 
     public noChatFound = false;
+
+    public layoutState: 'chat' | 'call' = 'chat';
 
     /**
      * Creates an instance of ChatChannelComponent.
@@ -33,7 +35,8 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
     constructor(
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
-        private chatService: ChatService
+        private chatService: ChatService,
+        private chatLayoutService: ChatLayoutService
     ) { }
 
     /**
@@ -41,34 +44,38 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
      * @memberof ChatChannelComponent
      */
     public ngOnInit() {
-        this.routeParametersSubscription = this
-            .activatedRoute
-            .queryParamMap
-            .subscribe(params => {
-                const name = params.get('name');
-                const id = +params.get('id');
-                if (name !== null && id !== null) {
-                    this.options = new ChannelConnectionOptions();
-                    this.options.signalGroup = `channel:${id}`;
-                    this.options.name = name;
-                    this.options.id = id;
-                    this.chatService.addSelfToChat(this.options);
-                } else {
-                    this.noChatFound = true;
-                    const title = 'No active chat found';
-                    const content = 'Consider joining a channel or start a new private chat!';
-                    this.notifyService.notify(title, content);
-                }
-            });
+        this.subscriptions = [
+            this.activatedRoute
+                .queryParamMap
+                .subscribe(params => {
+                    const name = params.get('name');
+                    const id = +params.get('id');
+                    if (name !== null && id !== null) {
+                        this.options = new ChannelConnectionOptions();
+                        this.options.signalGroup = `channel:${id}`;
+                        this.options.name = name;
+                        this.options.id = id;
+                    } else {
+                        this.noChatFound = true;
+                        const title = 'No active chat found';
+                        const content = 'Consider joining a channel or start a new private chat!';
+                        this.notifyService.notify(title, content);
+                    }
+                }),
 
-        this.onReconnectedSubscription = this
-            .chatService
-            .onReconnected
-            .subscribe(() => {
-                if (this.options) {
-                    this.chatService.addSelfToChat(this.options);
-                }
-            });
+            this.chatService
+                .onReconnected
+                .subscribe(() => {
+                    if (this.options) {
+                        this.chatService.addSelfToChat(this.options);
+                    }
+                }),
+
+            this.chatLayoutService
+                .toggle$
+                .subscribe(s => this.layoutState = s)
+        ];
+
     }
 
     /**
@@ -76,15 +83,7 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
      * @memberof ChatChannelComponent
      */
     public ngOnDestroy() {
-        if (this.routeParametersSubscription) {
-            this.routeParametersSubscription
-                .unsubscribe();
-        }
-
-        if (this.onReconnectedSubscription) {
-            this.onReconnectedSubscription
-                .unsubscribe();
-        }
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
 }

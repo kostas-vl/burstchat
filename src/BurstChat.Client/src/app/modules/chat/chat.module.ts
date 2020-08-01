@@ -49,7 +49,7 @@ import {
         ChatMessageComponent,
         ChatInputComponent,
         ChatCallComponent
-    ],
+    ]
 })
 export class ChatModule {
 

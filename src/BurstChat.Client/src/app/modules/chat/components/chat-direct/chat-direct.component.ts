@@ -5,6 +5,7 @@ import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-mes
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
+import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
 
 /**
  * This class represents an angular component that represents the root of the chat for
@@ -16,17 +17,18 @@ import { DirectMessagingService } from 'src/app/modules/burst/services/direct-me
 @Component({
     selector: 'app-chat-direct',
     templateUrl: './chat-direct.component.html',
-    styleUrls: ['./chat-direct.component.scss']
+    styleUrls: ['./chat-direct.component.scss'],
+    providers: [ChatLayoutService]
 })
 export class ChatDirectComponent implements OnInit, OnDestroy {
 
-    private routeParametersSub?: Subscription;
-
-    private onReconnectedSub?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     private options?: DirectMessagingConnectionOptions;
 
     public noChatFound = false;
+
+    public layoutState: 'chat' | 'call' = 'chat';
 
     /**
      * Creates an instance of ChatDirectComponent.
@@ -36,7 +38,8 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
         private chatService: ChatService,
-        private directMessagingService: DirectMessagingService
+        private directMessagingService: DirectMessagingService,
+        private chatLayoutService: ChatLayoutService
     ) { }
 
     /**
@@ -44,45 +47,39 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
      * @memberof ChatDirectComponent
      */
     public ngOnInit() {
-        this.routeParametersSub = this
-            .activatedRoute
-            .queryParamMap
-            .subscribe(params => {
-                const users = params.getAll('user');
-                if (users.length == 2) {
-                    this.initiateSignalConnection([
-                        +users[0], +users[1]
-                    ]);
-                } else {
-                    this.noChatFound = true;
-                    const title = 'No active chat found';
-                    const content = 'Consider joining a channel or start a new private chat!';
-                    this.notifyService.notify(title, content);
-                }
-                // const name = params.get('name');
-                // const id = +params.get('id');
-                // if (name !== null && id !== null) {
-                //     this.options = new DirectMessagingConnectionOptions();
-                //     this.options.signalGroup = `dm:${id}`;
-                //     this.options.name = name;
-                //     this.options.id = id;
-                //     this.chatService.addSelfToChat(this.options);
-                // } else {
-                //     this.noChatFound = true;
-                //     const title = 'No active chat found';
-                //     const content = 'Consider joining a channel or start a new private chat!';
-                //     this.notifyService.notify(title, content);
-                // }
-            });
+        this.subscriptions = [
+            this.activatedRoute
+                .queryParamMap
+                .subscribe(params => {
+                    const users = params.getAll('user');
+                    if (users.length === 2) {
+                        this.initiateSignalConnection([
+                            +users[0], +users[1]
+                        ]);
+                        const state = params.get('display');
+                        if (state === 'chat' || state === 'call'){
+                            this.chatLayoutService.toggle(state);
+                        }
+                    } else {
+                        this.noChatFound = true;
+                        const title = 'No active chat found';
+                        const content = 'Consider joining a channel or start a new private chat!';
+                        this.notifyService.notify(title, content);
+                    }
+                }),
 
-        this.onReconnectedSub = this
-            .chatService
-            .onReconnected
-            .subscribe(() => {
-                if (this.options) {
-                    this.chatService.addSelfToChat(this.options);
-                }
-            });
+            this.chatService
+                .onReconnected
+                .subscribe(() => {
+                    if (this.options) {
+                        this.chatService.addSelfToChat(this.options);
+                    }
+                }),
+
+            this.chatLayoutService
+                .toggle$
+                .subscribe(s => this.layoutState = s)
+        ];
     }
 
     /**
@@ -90,8 +87,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
      * @memberof ChatDirectComponent
      */
     public ngOnDestroy() {
-        this.routeParametersSub?.unsubscribe();
-        this.onReconnectedSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -110,7 +106,6 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                 options.id = directMessaging.id;
                 options.directMessaging = directMessaging;
                 this.options = options;
-                this.chatService.addSelfToChat(this.options);
             });
     }
 

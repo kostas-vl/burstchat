@@ -22,4 +22,16 @@
 
     </div>
 
+    <div class="ml-auto pr-5" *ngIf="displayGoToCall">
+
+        <button class="button" (click)="onToggleLayout('call')">Go to call</button>
+
+    </div>
+
+    <div class="ml-auto pr-5" *ngIf="displayGoToChat">
+
+        <button class="button" (click)="onToggleLayout('chat')">Go to chat</button>
+
+    </div>
+
 </div>

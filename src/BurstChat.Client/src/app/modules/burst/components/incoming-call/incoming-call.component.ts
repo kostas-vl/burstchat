@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { faCheck, faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
@@ -37,6 +38,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
      * @memberof IncomingCallComponent
      */
     constructor(
+        private router: Router,
         private userService: UserService,
         private rtcSessionService: RtcSessionService
     ) { }
@@ -85,6 +87,15 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
      */
     public onAnswer() {
         this.rtcSessionService.answer();
+        const first = this.user.id;
+        const second = +this.session.source.remote_identity.uri.user;
+        console.log([first, second]);
+        this.router.navigate(['/core/chat/direct'], {
+            queryParams: {
+                user: [first, second],
+                display: 'call'
+            }
+        });
         this.dialogVisible = false;
     }
 

@@ -3,12 +3,6 @@
 
 .direct-chat-content {
     @extend .h-100;
-    display: flex;
-    flex-direction: column;
     padding-top: $minor-height;
     padding-bottom: $minor-height + 25px;
-}
-
-.direct-chat-messages {
-    flex-grow: 2;
 }

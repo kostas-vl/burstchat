@@ -2,19 +2,19 @@
 
     <app-chat-info [options]="options"></app-chat-info>
 
-    <div class="direct-chat-content">
+    <div class="direct-chat-content" *ngIf="layoutState === 'chat'">
 
-        <app-chat-call [options]="options"></app-chat-call>
-
-        <div class="direct-chat-messages">
-
-            <app-chat-messages [options]="options"></app-chat-messages>
-
-        </div>
+        <app-chat-messages [options]="options"></app-chat-messages>
 
     </div>
 
-    <app-chat-input [options]="options"></app-chat-input>
+    <app-chat-input [options]="options" *ngIf="layoutState === 'chat'"></app-chat-input>
+
+    <div class="h-100" *ngIf="layoutState === 'call'">
+
+        <app-chat-call [options]="options"></app-chat-call>
+
+    </div>
 
 </div>
 

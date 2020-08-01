@@ -9,6 +9,7 @@ import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
+import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -24,9 +25,7 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
 })
 export class ChatInfoComponent implements OnInit, OnDestroy {
 
-    private userSub?: Subscription;
-
-    private sessionSub?: Subscription;
+    private subscription: Subscription[] = [];
 
     private user?: User;
 
@@ -39,6 +38,20 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
     public callIcon = faPhone;
 
     public canCall = false;
+
+    public layoutState: 'chat' | 'call' = 'chat';
+
+    public get displayGoToCall() {
+        return this.options instanceof DirectMessagingConnectionOptions
+            && !this.canCall
+            && this.layoutState === 'chat';
+    }
+
+    public get displayGoToChat() {
+        return this.options instanceof DirectMessagingConnectionOptions
+            && !this.canCall
+            && this.layoutState === 'call';
+    }
 
     public get options() {
         return this.internalOptions;
@@ -67,7 +80,8 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      */
     constructor(
         private userService: UserService,
-        private rtcSessionService: RtcSessionService
+        private rtcSessionService: RtcSessionService,
+        private chatLayoutService: ChatLayoutService
     ) { }
 
     /**
@@ -75,18 +89,23 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * @memberof ChatInfoComponent
      */
     public ngOnInit() {
-        this.sessionSub = this
-            .rtcSessionService
-            .onSession
-            .subscribe(session => {
-                this.session = session;
-                this.updateCallStatus();
-            });
+        this.subscription = [
+            this.rtcSessionService
+                .onSession
+                .subscribe(session => {
+                    this.session = session;
+                    this.updateCallStatus();
+                }),
 
-        this.userSub = this
-            .userService
-            .user
-            .subscribe(user => this.user = user);
+            this.userService
+                .user
+                .subscribe(user => this.user = user),
+
+            this.chatLayoutService
+                .toggle$
+                .subscribe(s => this.layoutState = s)
+        ];
+
     }
 
     /**
@@ -94,8 +113,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * @memberof ChatInfoComponent
      */
     public ngOnDestroy() {
-        this.sessionSub?.unsubscribe();
-        this.userSub?.unsubscribe();
+        this.subscription.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -123,14 +141,24 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
             const dm = this.options.directMessaging;
             if (dm.firstParticipantUser.id !== this.user.id) {
                 this.rtcSessionService.call(dm.firstParticipantUser.id);
+                this.chatLayoutService.toggle('call');
                 return;
             }
 
             if (dm.secondParticipantUser.id !== this.user.id) {
                 this.rtcSessionService.call(dm.secondParticipantUser.id);
+                this.chatLayoutService.toggle('call');
                 return;
             }
         }
+    }
+
+    /**
+     * Handles the click event of both the 'Go to call' and 'Go to chat' buttons.
+     * @memberof ChatInfoComponent
+     */
+    public onToggleLayout(state: 'chat' | 'call') {
+        this.chatLayoutService.toggle(state);
     }
 
 }

@@ -1,8 +1,9 @@
 @import '../../../../../scss/theme';
 @import '../../../../../scss/loader';
+@import '../../../../../scss/sizing';
 
 .chat-call-container {
-    height: $chat-call-height;
+    @extend .h-100;
     display: flex;
     flex-direction: column;
     align-items: center;
