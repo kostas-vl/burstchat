@@ -1,11 +1,12 @@
 <span class="text-muted pt-30 pl-20" *ngIf="chatIsEmpty">No messages posted yet!</span>
 
-<div #viewport class="viewport" [class.viewport-sm]="inCall">
+<virtual-scroller #scroller class="viewport" [class.height.px]="150"
+    [items]="messages" [enableUnequalChildrenSizes]="true" (vsChange)="onVirtualScrollerChange($event)">
 
-    <div *uiScroll="let entry of dataSource">
+    <div *ngFor="let entry of scroller.viewPortItems">
 
         <app-chat-message [message]="entry"></app-chat-message>
 
     </div>
 
-</div>
+</virtual-scroller>

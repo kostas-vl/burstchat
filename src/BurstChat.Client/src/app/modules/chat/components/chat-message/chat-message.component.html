@@ -1,46 +1,44 @@
-<div class="row" [class.pt-20]="fullDisplay">
+<div class="pt-20" *ngIf="fullDisplay"></div>
 
-    <div class="column column-100 message-container">
+<div class="message-container">
 
-        <div class="message-avatar">
+    <div class="message-avatar">
 
-            <div class="pt-4" *ngIf="fullDisplay">
+        <div class="pt-4" *ngIf="fullDisplay">
 
-                <app-avatar [name]="message.user.name" [avatar]="message.user.avatar"></app-avatar>
-
-            </div>
+            <app-avatar [name]="message.user.name" [avatar]="message.user.avatar"></app-avatar>
 
         </div>
 
-        <div>
+    </div>
 
-            <div *ngIf="fullDisplay">
+    <div>
 
-                <strong class="pr-5">{{message.user.name}}</strong>
+        <div *ngIf="fullDisplay">
 
-                <small class="text-muted">{{message.datePosted | date:'LLL d yyyy, h:mm a'}}</small>
+            <strong class="pr-5">{{message.user.name}}</strong>
+
+            <small class="text-muted">{{message.datePosted | date:'LLL d yyyy, h:mm a'}}</small>
+
+        </div>
+
+        <div class="message">
+
+            <div>
+
+                {{message.content}}
+
+                <small class="text-muted" *ngIf="message.edited">
+
+                    <i>(Edited)</i>
+
+                </small>
 
             </div>
 
-            <div class="message">
+            <div *ngFor="let link of message.links">
 
-                <div>
-
-                    {{message.content}}
-
-                    <small class="text-muted" *ngIf="message.edited">
-
-                        <i>(Edited)</i>
-
-                    </small>
-
-                </div>
-
-                <div *ngFor="let link of message.links">
-
-                    <a [href]="link.url" target="_blank">{{link.url}}</a>
-
-                </div>
+                <a [href]="link.url" target="_blank">{{link.url}}</a>
 
             </div>
 

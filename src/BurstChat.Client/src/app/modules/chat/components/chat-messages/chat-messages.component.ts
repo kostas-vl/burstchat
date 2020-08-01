@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
 import { Subscription, BehaviorSubject } from 'rxjs';
-import { Datasource } from 'ngx-ui-scroll';
+import { VirtualScrollerComponent, IPageInfo } from 'ngx-virtual-scroller';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { Payload } from 'src/app/models/signal/payload';
@@ -27,28 +27,28 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     private internalOptions?: ChatConnectionOptions;
 
-    private messages$ = new BehaviorSubject<Message[]>([]);
-
     private session?: RTCSessionContainer;
 
     public loadingMessages = true;
 
-    public dataSource: Datasource;
+    public messages: Message[] = [];
 
     public chatIsEmpty = false;
 
-    public inCall = false;
+    public canScrollToBottom = true;
 
-    @ViewChild('viewport', { read: ElementRef })
-    public viewport?: ElementRef;
+    public inCall = true;
 
     public get options() {
         return this.internalOptions;
     }
 
+    @ViewChild(VirtualScrollerComponent)
+    public scroller: VirtualScrollerComponent;
+
     @Input()
     public set options(value: ChatConnectionOptions) {
-        this.messages$.next([]);
+        this.messages = [];
         this.chatIsEmpty = false;
         this.loadingMessages = true;
         this.internalOptions = value;
@@ -75,24 +75,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
                 .onSession
                 .subscribe(session => this.inCall = session ? true : false),
         ];
-
-        this.dataSource = new Datasource({
-            get: (index, count) => {
-                const messages = this.messages$.getValue();
-                this.chatService.getAllMessages(this.options, messages[index]?.id);
-                return this.messages$.asObservable();
-            },
-            settings: {
-                startIndex: 0,
-                inverse: false
-            },
-            devSettings: {
-                debug: true
-            }
-        });
     }
-
-
 
     /**
      * Creates an instance of ChatMessagesComponent.
@@ -133,11 +116,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @private
      * @memberof ChatMessagesComponent
      */
-    private async scrollToBottom() {
-        const { adapter } = this.dataSource;
-        const element = this.viewport.nativeElement;
-        element.scrollTop = element.scrollHeight;
-        // adapter.clip();
+    private scrollToBottom() {
+        if (this.canScrollToBottom) {
+            const index = this.messages.length - 1;
+            this.scroller.scrollToIndex(index);
+        }
     }
 
     /**
@@ -254,18 +237,19 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private onMessagesReceived(payload: Payload<Message[]>) {
-        let messages = this.messages$.getValue();
         const newBatch = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : [];
 
         if (newBatch.length > 0) {
-            messages = this.addMessagesToClusters([...messages], newBatch);
-            this.messages$.next(messages);
+            this.messages = this.addMessagesToClusters([...this.messages], newBatch);
+            this.chatIsEmpty = false;
             this.scrollToBottom();
-        } else if (newBatch.length === 0 && messages.length === 0) {
+        } else if (newBatch.length === 0 && this.messages.length === 0) {
             this.chatIsEmpty = true;
         }
+
+        this.loadingMessages = false;
     }
 
     /**
@@ -280,14 +264,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             : null;
 
         if (message) {
-            let messages = this.messages$.getValue();
-            messages = this.addMessageToClusters([...messages], message);
-            this.messages$.next(messages);
-            this.dataSource.adapter.append({
-                items: [messages[messages.length - 1]],
-                eof: true
-            });
+            this.messages = this.addMessageToClusters([...this.messages], message);
             this.chatIsEmpty = false;
+            this.scrollToBottom();
             this.notifyService.notify('New message', message.content);
         }
 
@@ -300,34 +279,30 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     public onUserUpdated(user: User) {
-        let messages = this.messages$.getValue();
-        messages = messages.filter(m => m.user.id === user.id);
+        const messages = this.messages.filter(m => m.user.id === user.id);
         for (const message of messages) {
             message.user = { ...user };
         }
-        this.messages$.next(messages);
     }
 
-    // /**
-    //  * Handles the new index that was set on the virtual scroll viewport.
-    //  * @private
-    //  * @memberof ChatMessagesComponent
-    //  */
-    // public onScrolledIndexChanged(event: any) {
-    //     this.scrollBottomOffset = this.viewport.measureScrollOffset('bottom');
+    /**
+     * Handles the scroll change event of the virtul scroller.
+     * @private
+     * @memberof ChatMessagesComponent
+     */
+    public onVirtualScrollerChange(page: IPageInfo) {
+        if (page.startIndex === 0) {
+            const canRequestMessages = this.messages && !this.loadingMessages;
+            if (canRequestMessages) {
+                const oldestMessage = this.messages[0] || null;
+                const messageId = oldestMessage.id || null;
 
-    //     const scrollTopOffset = this.viewport.measureScrollOffset('top');
-    //     const canRequestMessages = this.messages
-    //         && !this.loadingMessages
-    //         && scrollTopOffset <= 100;
+                this.chatService.getAllMessages(this.options, messageId);
+                this.loadingMessages = true;
+            }
+        }
 
-    //     if (canRequestMessages) {
-    //         const oldestMessage = this.messages[0] || null;
-    //         const messageId = oldestMessage.id || null;
-
-    //         this.chatService.getAllMessages(this.options, messageId);
-    //         this.loadingMessages = true;
-    //     }
-    // }
+        this.canScrollToBottom = page.endIndex === (this.messages.length - 1);
+    }
 
 }
