@@ -1,9 +1,6 @@
 @import '../../../../../scss/theme';
+@import '../../../../../scss/text';
 @import '../../../../../scss/loader';
-
-input {
-    background-color: $secondary-color;
-}
 
 .messaging-input-container {
     position: fixed !important;
@@ -22,5 +19,4 @@ input {
     padding-bottom: 10px;
     padding-left: 10px;
     padding-right: 30px;
-
 }

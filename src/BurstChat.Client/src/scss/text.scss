@@ -1,0 +1,46 @@
+@import 'theme';
+
+.text {
+    color: $text-color;
+}
+
+.text-primary {
+    color: $primary-color;
+}
+
+.text-secondary {
+    color: $secondary-color;
+}
+
+.text-dark {
+    color: $dark-color;
+}
+
+.text-accent {
+    color: $accent-color;
+}
+
+.text-accent-light {
+    color: $accent-light-color;
+}
+
+.text-success {
+    color: $success-color;
+}
+
+.text-danger {
+    color: $danger-color;
+}
+
+.text-warning {
+    color: $warning-color;
+}
+
+.text-muted {
+    color: $text-muted-color;
+}
+
+.text-center {
+    text-align: center;
+}
+

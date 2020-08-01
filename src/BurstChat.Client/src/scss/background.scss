@@ -1,0 +1,34 @@
+@import 'theme';
+
+.bg-primary {
+    background-color: $primary-color;
+}
+
+.bg-secondary {
+    background-color: $secondary-color;
+}
+
+.bg-dark {
+    background-color: $dark-color;
+}
+
+.bg-accent {
+    background-color: $accent-color;
+}
+
+.bg-accent-light {
+    background-color: $accent-light-color;
+}
+
+.bg-success {
+    background-color: $success-color;
+}
+
+.bg-danger {
+    background-color: $danger-color;
+}
+
+.bg-warning {
+    background-color: $warning-color;
+}
+

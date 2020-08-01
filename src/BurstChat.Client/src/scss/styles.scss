@@ -1,7 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'https://fonts.googleapis.com/css?family=Titillium+Web&display=swap';
 @import 'theme';
+@import 'background';
 @import 'buttons';
+@import 'colors';
+@import 'container';
+@import 'font';
+@import 'list';
+@import 'loader';
+@import 'sizing';
+@import 'text';
 
 html,
 body {
@@ -12,3 +20,67 @@ body {
     color: $text-color;
     margin: 0 0 0 0;
 }
+
+div {
+    color: $text-color;
+}
+
+hr {
+    margin: 2.0rem 0;
+}
+
+input {
+    background-color: $dark-color !important;
+    color: $text-color;
+    border-color: $primary-color !important;
+}
+
+input:disabled {
+    color: $text-muted-color;
+}
+
+select {
+    background-color: $dark-color;
+    color: $text-color;
+    border-color: $primary-color;
+}
+
+select:disabled {
+    color: $text-muted-color;
+}
+
+progress[value] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: $primary-color;
+    border-radius: 2px;
+    height: 10px;
+}
+
+progress[value]::-webkit-progress-bar {
+    background: $primary-color;
+    border-radius: 2px;
+}
+
+textarea {
+    background-color: $primary-color;
+    color: white;
+    border-color: white;
+}
+
+blockquote {
+    background-color: $secondary-color;
+    border: 1px solid $dark-color;
+    border-left: 2px solid $accent-color;
+    padding-right: 5px;
+    margin: 5px 0 0 0;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+

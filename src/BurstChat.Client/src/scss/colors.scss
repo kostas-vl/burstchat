@@ -1,0 +1,7 @@
+@import 'theme';
+
+.blurred-color {
+    background-color: $blurry-color;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
