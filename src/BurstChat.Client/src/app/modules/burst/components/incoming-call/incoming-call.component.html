@@ -2,6 +2,16 @@
 
     <app-card>
 
+        <app-card-header>
+
+            <div class="avatar">
+
+                <app-avatar [name]="user.name" [avatar]="user.avatar" size="xlg"></app-avatar>
+
+            </div>
+
+        </app-card-header>
+
         <app-card-body>
 
             <div class="dialog-size">
@@ -11,16 +21,6 @@
                     <div class="column text-center">
 
                         {{user.name}} is calling...
-
-                    </div>
-
-                </div>
-
-                <div class="row">
-
-                    <div class="column text-center">
-
-                        <fa-icon class="user-icon text-accent" [icon]="userIcon"></fa-icon>
 
                     </div>
 

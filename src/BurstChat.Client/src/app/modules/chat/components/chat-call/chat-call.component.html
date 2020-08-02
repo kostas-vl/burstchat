@@ -1,6 +1,6 @@
-<div class="chat-call-container bg-dark">
+<div class="chat-call-container">
 
-    <div class="chat-call-loading my-auto" *ngIf="!sessionConfirmed">
+    <div class="chat-call-loading my-auto" *ngIf="!sessionEstablished">
 
         <div class="chat-call-loading-dot my-auto">
 
@@ -20,21 +20,33 @@
 
     </div>
 
-   <div class="chat-call-users" *ngIf="sessionConfirmed">
+   <div class="chat-call-users" *ngIf="sessionEstablished">
 
-        <div class="pr-5 pl-5 pt-5 pb-5" *ngFor="let user of users">
+        <div class="pr-20 pl-20 pt-5 pb-5 mx-auto my-auto" *ngFor="let user of users">
 
-            <div class="text-center">
+            <app-card>
 
-                <fa-icon class="chat-call-user text-accent" [icon]="userIcon"></fa-icon>
+                <app-card-header>
 
-            </div>
+                    <div class="text-center">
 
-            <div class="text-center">
+                        <app-avatar [name]="user.name" [avatar]="user.avatar" size="xlg"></app-avatar>
 
-                {{user.name}}
+                    </div>
 
-            </div>
+                </app-card-header>
+
+                <app-card-body>
+
+                    <div class="text-center">
+
+                        {{user.name}}
+
+                    </div>
+
+                </app-card-body>
+
+            </app-card>
 
         </div>
 

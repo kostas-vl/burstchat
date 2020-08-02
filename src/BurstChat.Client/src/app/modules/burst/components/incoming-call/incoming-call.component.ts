@@ -50,7 +50,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.incomingSessionSub = this
             .rtcSessionService
-            .onIncomingSession
+            .onIncomingSession$
             .subscribe(session => this.onNewSession(session));
     }
 

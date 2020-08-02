@@ -27,8 +27,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     private internalOptions?: ChatConnectionOptions;
 
-    private session?: RTCSessionContainer;
-
     public loadingMessages = true;
 
     public messages: Message[] = [];
@@ -70,10 +68,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatService
                 .userUpdated
                 .subscribe(user => this.onUserUpdated(user)),
-
-            this.rtcSessionService
-                .onSession
-                .subscribe(session => this.inCall = session ? true : false),
         ];
 
         this.chatService.addSelfToChat(this.options);
@@ -85,8 +79,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      */
     constructor(
         private chatService: ChatService,
-        private notifyService: NotifyService,
-        private rtcSessionService: RtcSessionService
+        private notifyService: NotifyService
     ) { }
 
     /**

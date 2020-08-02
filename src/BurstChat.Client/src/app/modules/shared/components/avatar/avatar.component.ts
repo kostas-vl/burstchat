@@ -20,7 +20,7 @@ export class AvatarComponent implements OnInit {
     public avatar?: string;
 
     @Input()
-    public size: 'sm' | 'lg' = 'sm';
+    public size: 'sm' | 'lg' | 'xlg' | 'planetSize' = 'sm';
 
     @Input()
     public color: 'accent' | 'accent-light' | 'success' | 'danger' | 'warning' = 'accent-light';

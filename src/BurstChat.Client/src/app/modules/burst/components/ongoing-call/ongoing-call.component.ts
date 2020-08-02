@@ -30,9 +30,7 @@ import {
 })
 export class OngoingCallComponent implements OnInit, OnDestroy {
 
-    private userSub?: Subscription;
-
-    private sessionSub?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     private user?: User;
 
@@ -59,22 +57,22 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
      * @memberof OngoingCallComponent
      */
     public ngOnInit() {
-        this.userSub = this
-            .userService
-            .user
-            .subscribe(user => this.user = user);
+        this.subscriptions = [
+            this.userService
+                .user
+                .subscribe(user => this.user = user),
 
-        this.sessionSub = this
-            .rtcSessionService
-            .onSession
+        this.rtcSessionService
+            .onSession$
             .subscribe(session => {
                 if (session) {
                     this.session = session;
                     this.visible = true;
-                   return;
+                    return;
                 }
                 this.reset();
-            });
+            })
+        ];
     }
 
     /**
@@ -82,8 +80,7 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
      * @memberof OngoingCallComponent
      */
     public ngOnDestroy() {
-        this.userSub?.unsubscribe();
-        this.sessionSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**

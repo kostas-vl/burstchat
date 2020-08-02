@@ -25,7 +25,7 @@ import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/cha
 })
 export class ChatInfoComponent implements OnInit, OnDestroy {
 
-    private subscription: Subscription[] = [];
+    private subscriptions: Subscription[] = [];
 
     private user?: User;
 
@@ -37,20 +37,39 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
     public callIcon = faPhone;
 
-    public canCall = false;
-
     public layoutState: 'chat' | 'call' = 'chat';
 
+    public get canCall() {
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+            return this.session === null;
+        }
+        return false;
+    }
+
     public get displayGoToCall() {
-        return this.options instanceof DirectMessagingConnectionOptions
-            && !this.canCall
-            && this.layoutState === 'chat';
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+            const first = this.options.directMessaging.firstParticipantUser;
+            const second = this.options.directMessaging.secondParticipantUser;
+            const sessionUserId = +this.session.source.remote_identity.uri.user;
+            const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
+            return isRightChat
+                && !this.canCall
+                && this.layoutState === 'chat';
+        }
+        return false;
     }
 
     public get displayGoToChat() {
-        return this.options instanceof DirectMessagingConnectionOptions
-            && !this.canCall
-            && this.layoutState === 'call';
+        if (this.options instanceof DirectMessagingConnectionOptions) {
+            const first = this.options.directMessaging.firstParticipantUser;
+            const second = this.options.directMessaging.secondParticipantUser;
+            const sessionUserId = +this.session.source.remote_identity.uri.user;
+            const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
+            return isRightChat
+                && !this.canCall
+                && this.layoutState === 'call';
+        }
+        return false;
     }
 
     public get options() {
@@ -70,8 +89,6 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
         } else {
             this.icon = undefined;
         }
-
-        this.updateCallStatus();
     }
 
     /**
@@ -89,13 +106,10 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * @memberof ChatInfoComponent
      */
     public ngOnInit() {
-        this.subscription = [
+        this.subscriptions = [
             this.rtcSessionService
-                .onSession
-                .subscribe(session => {
-                    this.session = session;
-                    this.updateCallStatus();
-                }),
+                .onSession$
+                .subscribe(session => this.session = session),
 
             this.userService
                 .user
@@ -103,7 +117,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
             this.chatLayoutService
                 .toggle$
-                .subscribe(s => this.layoutState = s)
+                .subscribe(state => this.layoutState = state)
         ];
 
     }
@@ -113,23 +127,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * @memberof ChatInfoComponent
      */
     public ngOnDestroy() {
-        this.subscription.forEach(s => s.unsubscribe());
-    }
-
-    /**
-     * Makes the neccessary checks in order to display the call button to the
-     * user or not.
-     * @memberof ChatInfoComponent
-     */
-    private updateCallStatus() {
-        if (this.options instanceof DirectMessagingConnectionOptions) {
-            this.canCall = this.session
-                ? false
-                : true;
-            return;
-        }
-
-        this.canCall = false;
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**

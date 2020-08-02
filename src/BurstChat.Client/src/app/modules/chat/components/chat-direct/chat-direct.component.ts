@@ -5,6 +5,7 @@ import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-mes
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
+import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
 
 /**

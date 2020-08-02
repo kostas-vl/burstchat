@@ -38,7 +38,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     public visible = false;
 
-    public sessionConfirmed = false;
+    public sessionEstablished = false;
 
     public users: User[] = [];
 
@@ -67,7 +67,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.subscriptions = [
             this.rtcSessionService
-                .onSession
+                .onSession$
                 .subscribe(session => {
                     if (session) {
                         this.onNewSession(session);
@@ -95,7 +95,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     private reset() {
         this.session = undefined;
         this.visible = false;
-        this.sessionConfirmed = false;
+        this.sessionEstablished = false;
     }
 
     /**
@@ -116,11 +116,16 @@ export class ChatCallComponent implements OnInit, OnDestroy {
                 this.subscriptions[1] = this
                     .session
                     .confirmed
-                    .subscribe(_ => this.sessionConfirmed = true);
+                    .subscribe(_ => this.sessionEstablished = true);
                 this.subscriptions[2] = this
                     .session
                     .ended
                     .subscribe(_ => this.chatLayoutService.toggle('chat'));
+
+                if (this.session.source.isEstablished()) {
+                    this.sessionEstablished = true;
+                }
+
                 return;
             }
         }

@@ -39,13 +39,13 @@ export class RtcSessionService {
         }
     };
 
-    private incomingSession = new BehaviorSubject<RTCSessionContainer | null>(null);
+    private incomingSession$ = new BehaviorSubject<RTCSessionContainer | null>(null);
 
-    private session = new BehaviorSubject<RTCSessionContainer | null>(null);
+    private session$ = new BehaviorSubject<RTCSessionContainer | null>(null);
 
-    public onIncomingSession = this.incomingSession.asObservable();
+    public onIncomingSession$ = this.incomingSession$.asObservable();
 
-    public onSession = this.session.asObservable();
+    public onSession$ = this.session$.asObservable();
 
     /**
      * Creates a new instance of RtcSessionService.
@@ -110,7 +110,7 @@ export class RtcSessionService {
 
         if (event.originator !== 'local') {
             this.registerSessionEvents(session);
-            this.incomingSession.next(session);
+            this.incomingSession$.next(session);
         }
     }
 
@@ -191,17 +191,17 @@ export class RtcSessionService {
         console.warn(event);
         this.notifyService.popupWarning('Call failed');
 
-        let incomingSession = this.incomingSession.getValue();
+        let incomingSession = this.incomingSession$.getValue();
         if (incomingSession?.source === source) {
             incomingSession = null;
-            this.incomingSession.next(null);
+            this.incomingSession$.next(null);
             return;
         }
 
-        let session = this.session.getValue();
+        let session = this.session$.getValue();
         if (session?.source === source) {
             session = null;
-            this.session.next(null);
+            this.session$.next(null);
             return;
         }
     }
@@ -215,17 +215,17 @@ export class RtcSessionService {
     private sessionEnded(source: RTCSession, event: any) {
         this.notifyService.popupInfo('Call ended');
 
-        let incomingSession = this.incomingSession.getValue();
+        let incomingSession = this.incomingSession$.getValue();
         if (incomingSession?.source === source) {
             incomingSession = null;
-            this.incomingSession.next(null);
+            this.incomingSession$.next(null);
             return;
         }
 
-        let session = this.session.getValue();
+        let session = this.session$.getValue();
         if (session?.source === source) {
             session = null;
-            this.session.next(null);
+            this.session$.next(null);
             return;
         }
     }
@@ -252,7 +252,7 @@ export class RtcSessionService {
                 .call(`sip:${sip}@${environment.asteriskUrl}`, this.callConfig);
             const container = new RTCSessionContainer(session);
             this.registerSessionEvents(container);
-            this.session.next(container);
+            this.session$.next(container);
         }
     }
 
@@ -261,11 +261,11 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public answer() {
-        const session = this.incomingSession.getValue();
+        const session = this.incomingSession$.getValue();
         if (session) {
             session.source.answer(this.callConfig);
-            this.session.next(session);
-            this.incomingSession.next(null);
+            this.session$.next(session);
+            this.incomingSession$.next(null);
         }
     }
 
@@ -274,13 +274,13 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public reject() {
-        const session = this.incomingSession.getValue();
+        const session = this.incomingSession$.getValue();
         if (session) {
             session.source.terminate({
                 status_code: 300,
                 reason_phrase: 'reject'
             });
-            this.incomingSession.next(null);
+            this.incomingSession$.next(null);
         }
     }
 
@@ -289,13 +289,13 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public hangup() {
-        const session = this.session.getValue();
+        const session = this.session$.getValue();
         if (session) {
             session.source.terminate({
                 status_code: 300,
                 reason_phrase: 'hang up'
             });
-            this.session.next(null);
+            this.session$.next(null);
         }
     }
 
