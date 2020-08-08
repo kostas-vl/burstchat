@@ -130,7 +130,7 @@ export class RtcSessionService {
                 session
                     .source
                     .connection
-                    .AddEventListener('addstream', event => this.sessionAddStream(event));
+                    .ontrack = event => this.sessionAddStream(event);
             });
 
         session
