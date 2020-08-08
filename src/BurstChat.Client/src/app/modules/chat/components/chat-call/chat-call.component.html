@@ -1,6 +1,6 @@
 <div class="chat-call-container">
 
-    <div class="chat-call-loading my-auto" *ngIf="!sessionEstablished">
+    <div class="chat-call-loading my-auto" *ngIf="state === 'waiting'">
 
         <div class="chat-call-loading-dot my-auto">
 
@@ -20,7 +20,7 @@
 
     </div>
 
-   <div class="chat-call-users" *ngIf="sessionEstablished">
+   <div class="chat-call-users" *ngIf="state === 'confirmed'">
 
         <div class="pr-20 pl-20 pt-5 pb-5 mx-auto my-auto" *ngFor="let user of users">
 
@@ -54,9 +54,10 @@
 
    <div class="chat-call-actions pr-10 pl-10 pt-10 pb-10">
 
-        <div class="button-icon-interactive button-icon-lg bg-secondary" (click)="onHangup()">
+        <div class="button-icon-interactive button-icon-lg" (click)="onHangup()"
+            *ngIf="state === 'waiting' || state === 'confirmed'">
 
-            <fa-icon [icon]="hangupIcon"></fa-icon>
+            <fa-icon [icon]="icons['hangup']"></fa-icon>
 
         </div>
 

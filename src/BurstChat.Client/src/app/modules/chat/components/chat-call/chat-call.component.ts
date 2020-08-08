@@ -1,17 +1,13 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
-
-import {
-    faUserCircle,
-    faPhoneSlash,
-} from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays to the user information about a
@@ -32,15 +28,13 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     private internalOptions?: ChatConnectionOptions;
 
-    public userIcon = faUserCircle;
-
-    public hangupIcon = faPhoneSlash;
-
-    public visible = false;
-
-    public sessionEstablished = false;
+    public icons: any = {
+        hangup: faPhoneSlash,
+    }
 
     public users: User[] = [];
+
+    public state: 'waiting' | 'confirmed' = 'waiting';
 
     public get options() {
         return this.internalOptions;
@@ -94,8 +88,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     private reset() {
         this.session = undefined;
-        this.visible = false;
-        this.sessionEstablished = false;
+        this.state = 'waiting';
     }
 
     /**
@@ -113,22 +106,56 @@ export class ChatCallComponent implements OnInit, OnDestroy {
             const sessionUser = +this.session.source.remote_identity.uri.user;
             if (sessionUser === first.id || sessionUser === second.id) {
                 this.users = [first, second];
+
                 this.subscriptions[1] = this
                     .session
                     .confirmed
-                    .subscribe(_ => this.sessionEstablished = true);
+                    .subscribe(_ => this.onSessionConfirmed());
+
                 this.subscriptions[2] = this
                     .session
                     .ended
-                    .subscribe(_ => this.chatLayoutService.toggle('chat'));
+                    .subscribe(_ => this.onSessionEnded());
+
+                this.subscriptions[3] = this
+                    .session
+                    .failed
+                    .subscribe(_ => this.onSessionFailed());
 
                 if (this.session.source.isEstablished()) {
-                    this.sessionEstablished = true;
+                    this.state = 'confirmed';
                 }
 
                 return;
             }
         }
+    }
+
+    /**
+     * Handles the confirmed event of the active call session.
+     * @private
+     * @memberof ChatCallComponent
+     */
+    private onSessionConfirmed() {
+        this.state = 'confirmed';
+    }
+
+    /**
+     * Handles the ended event of the active call session.
+     * @private
+     * @memberof ChatCallComponent
+     */
+    private onSessionEnded() {
+        this.chatLayoutService.toggle('chat');
+    }
+
+    /**
+     * Handles the failed event of the active call session.
+     * @private
+     * @memberof ChatCallComponent
+     */
+    private onSessionFailed() {
+        this.chatLayoutService.toggle('chat');
     }
 
     /**

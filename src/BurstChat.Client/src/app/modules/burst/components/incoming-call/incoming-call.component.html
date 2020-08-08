@@ -1,6 +1,6 @@
 <app-dialog [visible]="dialogVisible">
 
-    <app-card>
+    <app-card *ngIf="user">
 
         <app-card-header>
 
@@ -16,7 +16,7 @@
 
             <div class="dialog-size">
 
-                <div class="row" *ngIf="user">
+                <div class="row">
 
                     <div class="column text-center">
 

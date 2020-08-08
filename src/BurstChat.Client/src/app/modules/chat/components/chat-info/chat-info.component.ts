@@ -50,7 +50,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUserId = +this.session.source.remote_identity.uri.user;
+            const sessionUserId = +this.session?.source.remote_identity.uri.user;
             const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
             return isRightChat
                 && !this.canCall
@@ -63,7 +63,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUserId = +this.session.source.remote_identity.uri.user;
+            const sessionUserId = +this.session?.source.remote_identity.uri.user;
             const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
             return isRightChat
                 && !this.canCall
