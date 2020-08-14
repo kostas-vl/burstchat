@@ -56,10 +56,10 @@ export class ServersService {
      * @param {Server} server The server instance to be updated.
      * @returns An obseravable.
      */
-    public put(server: Server): Observable<{}> {
+    public put(server: Server) {
         return this
             .httpClient
-            .put('/api/servers', server);
+            .put<Server>('/api/servers', server);
     }
 
     /**

@@ -13,7 +13,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-edit-server-channels',
+    selector: 'burst-edit-server-channels',
     templateUrl: './edit-server-channels.component.html',
     styleUrls: ['./edit-server-channels.component.scss']
 })

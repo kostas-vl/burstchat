@@ -6,7 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@a
  * @class DialogComponent
  */
 @Component({
-    selector: 'app-dialog',
+    selector: 'burst-dialog',
     templateUrl: './dialog.component.html',
     styleUrls: ['./dialog.component.scss']
 })

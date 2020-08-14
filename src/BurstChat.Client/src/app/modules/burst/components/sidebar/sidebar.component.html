@@ -4,35 +4,35 @@
 
         <div class="sidebar-user-info">
 
-            <app-sidebar-user-info></app-sidebar-user-info>
+            <burst-sidebar-user-info></burst-sidebar-user-info>
 
         </div>
 
     </div>
 
-    <app-ongoing-call></app-ongoing-call>
-    
+    <burst-ongoing-call></burst-ongoing-call>
+
     <div class="sidebar-content">
-        
+
         <div class="sidebar-selection">
-            
-            <app-sidebar-selection></app-sidebar-selection>
-            
+
+            <burst-sidebar-selection></burst-sidebar-selection>
+
         </div>
 
         <div class="sidebar-lists" *ngIf="display === 'direct'">
 
-            <app-direct-messaging-list></app-direct-messaging-list>
+            <burst-direct-messaging-list></burst-direct-messaging-list>
 
         </div>
-        
+
         <div class="sidebar-lists" *ngIf="display === 'server'">
-            
-            <app-server-info></app-server-info>
 
-            <app-channel-list></app-channel-list>
+            <burst-server-info></burst-server-info>
 
-            <app-user-list></app-user-list>
+            <burst-channel-list></burst-channel-list>
+
+            <burst-user-list></burst-user-list>
 
         </div>
 

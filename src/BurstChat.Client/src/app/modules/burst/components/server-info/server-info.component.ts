@@ -15,7 +15,7 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-server-info',
+    selector: 'burst-server-info',
     templateUrl: './server-info.component.html',
     styleUrls: ['./server-info.component.scss']
 })

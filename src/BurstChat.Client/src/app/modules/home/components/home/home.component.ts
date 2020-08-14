@@ -8,7 +8,7 @@ import { faDragon } from '@fortawesome/free-solid-svg-icons';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-home',
+    selector: 'burst-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss']
 })

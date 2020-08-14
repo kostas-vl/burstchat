@@ -12,7 +12,7 @@ import { SessionService } from 'src/app/modules/session/services/session-service
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-register',
+  selector: 'burst-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })

@@ -19,7 +19,7 @@ import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/cha
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-chat-info',
+    selector: 'burst-chat-info',
     templateUrl: './chat-info.component.html',
     styleUrls: ['./chat-info.component.scss']
 })

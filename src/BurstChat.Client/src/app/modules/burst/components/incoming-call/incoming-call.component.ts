@@ -13,7 +13,7 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
  * @implements {OnInit, OnDestroy}
  */
 @Component({
-    selector: 'app-incoming-call',
+    selector: 'burst-incoming-call',
     templateUrl: './incoming-call.component.html',
     styleUrls: ['./incoming-call.component.scss']
 })

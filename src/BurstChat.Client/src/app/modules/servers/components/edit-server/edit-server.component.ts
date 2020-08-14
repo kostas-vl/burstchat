@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 
 /**
  * This class represents an angular component that presents information about the active server and enables
@@ -10,19 +11,15 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
  * @class EditServerComponent
  */
 @Component({
-  selector: 'app-edit-server',
-  templateUrl: './edit-server.component.html',
-  styleUrls: ['./edit-server.component.scss']
+    selector: 'burst-edit-server',
+    templateUrl: './edit-server.component.html',
+    styleUrls: ['./edit-server.component.scss']
 })
 export class EditServerComponent implements OnInit, OnDestroy {
 
-    private serversSub?: Subscription;
-
-    private serverInfoSub?: Subscription;
+    private subscriptions?: Subscription[] = [];
 
     public server?: Server;
-
-    public newUserId = '';
 
     /**
      * Creates a new instance of EditServerComponent.
@@ -38,23 +35,23 @@ export class EditServerComponent implements OnInit, OnDestroy {
      * @memberof EditServerComponent
      */
     public ngOnInit() {
-        this.serversSub = this
-            .serversService
-            .serverCache
-            .subscribe(servers => {
-                if (servers) {
-                    this.findServer(servers);
-                }
-            });
+        this.subscriptions = [
+            this.serversService
+                .serverCache
+                .subscribe(servers => {
+                    if (servers) {
+                        this.findServer(servers);
+                    }
+                }),
 
-        this.serverInfoSub = this
-            .serversService
-            .serverInfo
-            .subscribe(server => {
-                if (server && server.id === this.server.id) {
-                    this.server = server;
-                }
-            });
+            this.serversService
+                .serverInfo
+                .subscribe(server => {
+                    if (server && server.id === this.server.id) {
+                        this.server = server;
+                    }
+                })
+        ];
     }
 
     /**
@@ -62,13 +59,7 @@ export class EditServerComponent implements OnInit, OnDestroy {
      * @memberof EditServerComponent
      */
     public ngOnDestroy() {
-        if (this.serversSub) {
-            this.serversSub.unsubscribe();
-        }
-
-        if (this.serverInfoSub) {
-            this.serverInfoSub.unsubscribe();
-        }
+        this.subscriptions?.forEach(s => s.unsubscribe());
     }
 
     /**

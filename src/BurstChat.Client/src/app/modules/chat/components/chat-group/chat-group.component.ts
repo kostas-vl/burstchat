@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app-chat-group',
+    selector: 'burst-chat-group',
     templateUrl: './chat-group.component.html',
     styleUrls: ['./chat-group.component.scss']
 })

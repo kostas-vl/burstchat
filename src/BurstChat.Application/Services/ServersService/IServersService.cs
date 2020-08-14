@@ -45,7 +45,7 @@ namespace BurstChat.Application.Services.ServersService
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="server">The server instance from which the information update will be based upon</param>
         /// <returns>An either monad</returns>
-        Either<Unit, Error> Update(long userId, Server server);
+        Either<Server, Error> Update(long userId, Server server);
 
         /// <summary>
         /// Fetches all users subscribed to the server based on the server id provided.

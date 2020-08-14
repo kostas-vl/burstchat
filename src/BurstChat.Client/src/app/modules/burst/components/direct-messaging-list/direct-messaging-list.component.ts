@@ -11,7 +11,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-direct-messaging-list',
+    selector: 'burst-direct-messaging-list',
     templateUrl: './direct-messaging-list.component.html',
     styleUrls: ['./direct-messaging-list.component.scss']
 })

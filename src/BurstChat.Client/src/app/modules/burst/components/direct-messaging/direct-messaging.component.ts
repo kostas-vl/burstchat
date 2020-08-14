@@ -11,7 +11,7 @@ import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.s
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-direct-messaging',
+    selector: 'burst-direct-messaging',
     templateUrl: './direct-messaging.component.html',
     styleUrls: ['./direct-messaging.component.scss']
 })

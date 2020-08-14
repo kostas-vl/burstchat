@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-edit-user',
+    selector: 'burst-edit-user',
     templateUrl: './edit-user.component.html',
     styleUrls: ['./edit-user.component.scss']
 })

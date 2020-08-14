@@ -11,7 +11,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-edit-user-info',
+    selector: 'burst-edit-user-info',
     templateUrl: './edit-user-info.component.html',
     styleUrls: ['./edit-user-info.component.scss']
 })

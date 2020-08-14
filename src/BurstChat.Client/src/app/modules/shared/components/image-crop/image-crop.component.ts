@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Dimensions, ImageCroppedEvent, ImageTransform, base64ToFile } from 'ngx-image-cropper';
 
 @Component({
-    selector: 'app-image-crop',
+    selector: 'burst-image-crop',
     templateUrl: './image-crop.component.html',
     styleUrls: ['./image-crop.component.scss']
 })

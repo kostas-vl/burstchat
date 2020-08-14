@@ -17,7 +17,7 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-chat-messages',
+    selector: 'burst-chat-messages',
     templateUrl: './chat-messages.component.html',
     styleUrls: ['./chat-messages.component.scss']
 })

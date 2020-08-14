@@ -14,7 +14,7 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-edit-server-users',
+    selector: 'burst-edit-server-users',
     templateUrl: './edit-server-users.component.html',
     styleUrls: ['./edit-server-users.component.scss']
 })

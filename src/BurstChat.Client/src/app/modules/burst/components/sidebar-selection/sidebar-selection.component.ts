@@ -18,31 +18,13 @@ import { Invitation } from 'src/app/models/servers/invitation';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-sidebar-selection',
+    selector: 'burst-sidebar-selection',
     templateUrl: './sidebar-selection.component.html',
     styleUrls: ['./sidebar-selection.component.scss']
 })
 export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
-    private userSub?: Subscription;
-
-    private subscribedServersSub?: Subscription;
-
-    private usersCacheSub?: Subscription;
-
-    private serverInfoSub?: Subscription;
-
-    private addedServerSub?: Subscription;
-
-    private subcriptionDeletedSub?: Subscription;
-
-    private channelCreatedSub?: Subscription;
-
-    private channelUpdatedSub?: Subscription;
-
-    private channelDeletedSub?: Subscription;
-
-    private updateInvitationSub?: Subscription;
+    private subscriptions?: Subscription[] = [];
 
     private user?: User;
 
@@ -70,61 +52,54 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @memberof SidebarSelectionComponent
      */
     public ngOnInit() {
-        this.userSub = this
-            .userService
-            .user
-            .subscribe(user => this.user = user);
+        this.subscriptions = [
+            this.userService
+                .user
+                .subscribe(user => this.user = user),
 
-        this.subscribedServersSub = this
-            .userService
-            .subscriptions
-            .subscribe(servers => {
-                this.servers = servers;
-                this.serversService.updateCache(servers);
-            });
+            this.userService
+                .subscriptions
+                .subscribe(servers => {
+                    this.servers = servers;
+                    this.serversService.updateCache(servers);
+                }),
 
-        this.usersCacheSub = this
-            .userService
-            .usersCache
-            .subscribe(cache => this.usersCache = cache);
+            this.userService
+                .usersCache
+                .subscribe(cache => this.usersCache = cache),
 
-        this.serverInfoSub = this
-            .serversService
-            .serverInfo
-            .subscribe(server => this.serverInfoCallback(server));
+            this.serversService
+                .serverInfo
+                .subscribe(server => this.serverInfoCallback(server)),
 
-        this.addedServerSub = this
-            .chatService
-            .addedServer
-            .subscribe(server => {
-                this.servers.push(server);
-                this.serversService.updateCache(this.servers);
-            });
+            this.chatService
+                .addedServer
+                .subscribe(server => this.serverInfoCallback(server)),
 
-        this.subcriptionDeletedSub = this
-            .chatService
-            .subscriptionDeleted
-            .subscribe(data => this.subcriptionDeletedCallback(data));
+            this.chatService
+                .updatedServer
+                .subscribe(server => this.serverInfoCallback(server)),
 
-        this.channelCreatedSub = this
-            .chatService
-            .channelCreated
-            .subscribe(data => this.channelCreatedCallback(data));
+            this.chatService
+                .subscriptionDeleted
+                .subscribe(data => this.subcriptionDeletedCallback(data)),
 
-        this.channelUpdatedSub = this
-            .chatService
-            .channelUpdated
-            .subscribe(channel => this.channelUpdatedCallback(channel));
+            this.chatService
+                .channelCreated
+                .subscribe(data => this.channelCreatedCallback(data)),
 
-        this.channelDeletedSub = this
-            .chatService
-            .channelDeleted
-            .subscribe(channelId => this.channelDeletedCallback(channelId));
+            this.chatService
+                .channelUpdated
+                .subscribe(channel => this.channelUpdatedCallback(channel)),
 
-        this.updateInvitationSub = this
-            .chatService
-            .updatedInvitation
-            .subscribe(invite => this.updatedInvitationCallback(invite));
+            this.chatService
+                .channelDeleted
+                .subscribe(channelId => this.channelDeletedCallback(channelId)),
+
+            this.chatService
+                .updatedInvitation
+                .subscribe(invite => this.updatedInvitationCallback(invite))
+        ];
     }
 
     /**
@@ -132,45 +107,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @memberof SidebarSelectionComponent
      */
     public ngOnDestroy() {
-        if (this.userSub) {
-            this.userSub.unsubscribe();
-        }
-
-        if (this.subscribedServersSub) {
-            this.subscribedServersSub.unsubscribe();
-        }
-
-        if (this.usersCacheSub) {
-            this.usersCacheSub.unsubscribe();
-        }
-
-        if (this.serverInfoSub) {
-            this.serverInfoSub.unsubscribe();
-        }
-
-        if (this.addedServerSub) {
-            this.addedServerSub.unsubscribe();
-        }
-
-        if (this.subcriptionDeletedSub) {
-            this.subcriptionDeletedSub.unsubscribe();
-        }
-
-        if (this.channelCreatedSub) {
-            this.channelCreatedSub.unsubscribe();
-        }
-
-        if (this.channelUpdatedSub) {
-            this.channelUpdatedSub.unsubscribe();
-        }
-
-        if (this.channelDeletedSub) {
-            this.channelDeletedSub.unsubscribe();
-        }
-
-        if (this.updateInvitationSub) {
-            this.updateInvitationSub.unsubscribe();
-        }
+        this.subscriptions?.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -184,6 +121,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         if (server) {
             const index = this.servers.findIndex(s => s.id === server.id);
             if (index !== -1) {
+                console.log(`old === new: ${this.servers[index].avatar === server.avatar}`);
                 this.servers[index] = server;
             } else {
                 this.servers.push(server);

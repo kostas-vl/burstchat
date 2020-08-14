@@ -16,7 +16,7 @@ import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/cha
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-chat-direct',
+    selector: 'burst-chat-direct',
     templateUrl: './chat-direct.component.html',
     styleUrls: ['./chat-direct.component.scss'],
     providers: [ChatLayoutService]

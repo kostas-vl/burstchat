@@ -1,18 +1,18 @@
 <div class="h-100" *ngIf="!noChatFound">
 
-    <app-chat-info [options]="options"></app-chat-info>
+    <burst-chat-info [options]="options"></burst-chat-info>
 
     <div class="direct-chat-content" *ngIf="layoutState === 'chat'">
 
-        <app-chat-messages [options]="options"></app-chat-messages>
+        <burst-chat-messages [options]="options"></burst-chat-messages>
 
     </div>
 
-    <app-chat-input [options]="options" *ngIf="layoutState === 'chat'"></app-chat-input>
+    <burst-chat-input [options]="options" *ngIf="layoutState === 'chat'"></burst-chat-input>
 
     <div class="h-100" *ngIf="layoutState === 'call'">
 
-        <app-chat-call [options]="options"></app-chat-call>
+        <burst-chat-call [options]="options"></burst-chat-call>
 
     </div>
 

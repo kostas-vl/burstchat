@@ -35,6 +35,8 @@ export class ChatService {
 
     private addedServerSource = new Subject<Server>();
 
+    private updatedServerSource = new Subject<Server>();
+
     private subscriptionDeletedSource = new Subject<[number, Subscription]>();
 
     private channelCreatedSource = new Subject<[number, Channel]>();
@@ -70,6 +72,8 @@ export class ChatService {
     public onReconnected = this.onReconnectedSource.asObservable();
 
     public addedServer = this.addedServerSource.asObservable();
+
+    public updatedServer = this.updatedServerSource.asObservable();
 
     public subscriptionDeleted = this.subscriptionDeletedSource.asObservable();
 
@@ -182,6 +186,8 @@ export class ChatService {
 
         this.connection.on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource));
 
+        this.connection.on('updatedServer', data => this.ProcessRawSignal(data, this.updatedServerSource));
+
         this.connection.on('subscriptionDeleted', data => this.ProcessRawSignal(data, this.subscriptionDeletedSource));
 
         this.connection.on('channelCreated', data => this.ProcessRawSignal(data, this.channelCreatedSource));
@@ -279,6 +285,19 @@ export class ChatService {
         if (this.connection) {
             this.connection
                 .invoke('addToServer', serverId)
+                .catch(error => console.warn(error));
+        }
+    }
+
+    /**
+     * Sends a message to all associated connections of a server, that its info was updated.
+     * @param {number} serverId The id of the target server.
+     * @memberod ChatService
+     */
+    public updateServerInfo(serverId: number) {
+        if (this.connection) {
+            this.connection
+                .invoke('updateServerInfo', serverId)
                 .catch(error => console.warn(error));
         }
     }

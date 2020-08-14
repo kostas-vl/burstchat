@@ -12,7 +12,7 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-server',
+    selector: 'burst-server',
     templateUrl: './server.component.html',
     styleUrls: ['./server.component.scss']
 })
@@ -28,12 +28,9 @@ export class ServerComponent implements OnInit, OnDestroy {
     public server?: Server;
 
     public get serverInitials(): string {
-        if (this.server) {
-            return this
-                .server
-                .name
-                .slice(0, 1)
-                .toUpperCase();
+        if (this.server && !this.server.avatar) {
+            const words = this.server.name.split(' ');
+            return words.reduce((acc, n) => acc + n[0]?.toUpperCase(), '');
         }
 
         return '';

@@ -14,7 +14,7 @@ import { DirectMessagingService } from 'src/app/modules/burst/services/direct-me
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-user',
+    selector: 'burst-user',
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.scss']
 })

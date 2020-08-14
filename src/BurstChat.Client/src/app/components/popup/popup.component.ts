@@ -9,7 +9,7 @@ import { PopupMessage } from 'src/app/models/notify/popup-message';
  * @class PopupComponent
  */
 @Component({
-    selector: 'app-popup',
+    selector: 'burst-popup',
     templateUrl: './popup.component.html',
     styleUrls: ['./popup.component.scss']
 })

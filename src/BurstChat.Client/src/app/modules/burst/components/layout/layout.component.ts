@@ -18,7 +18,7 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-layout',
+    selector: 'burst-layout',
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss'],
     providers: [

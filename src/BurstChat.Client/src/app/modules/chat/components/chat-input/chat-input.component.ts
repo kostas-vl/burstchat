@@ -14,7 +14,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-chat-input',
+    selector: 'burst-chat-input',
     templateUrl: './chat-input.component.html',
     styleUrls: ['./chat-input.component.scss']
 })

@@ -12,7 +12,7 @@ import { MediaService } from 'src/app/modules/burst/services/media/media.service
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-edit-user-media',
+    selector: 'burst-edit-user-media',
     templateUrl: './edit-user-media.component.html',
     styleUrls: ['./edit-user-media.component.scss']
 })

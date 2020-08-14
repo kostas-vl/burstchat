@@ -13,7 +13,7 @@ import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/cha
  * @implements {OnInit, OnDestroy}
  */
 @Component({
-    selector: 'app-chat-channel',
+    selector: 'burst-chat-channel',
     templateUrl: './chat-channel.component.html',
     styleUrls: ['./chat-channel.component.scss'],
     providers: [ChatLayoutService]

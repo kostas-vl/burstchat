@@ -146,7 +146,7 @@ namespace BurstChat.Application.Services.ServersService
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="server">The server instance from which the information update will be based upon</param>
         /// <returns>An either monad</returns>
-        public Either<Unit, Error> Update(long userId, Server server)
+        public Either<Server, Error> Update(long userId, Server server)
         {
             try
             {
@@ -157,13 +157,13 @@ namespace BurstChat.Application.Services.ServersService
 
                     _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<Server, Error>(serverEntry);
                 });
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
+                return new Failure<Server, Error>(SystemErrors.Exception());
             }
         }
 

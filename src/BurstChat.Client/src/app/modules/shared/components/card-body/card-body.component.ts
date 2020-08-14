@@ -6,9 +6,9 @@ import { Component, OnInit } from '@angular/core';
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-card-body',
-  templateUrl: './card-body.component.html',
-  styleUrls: ['./card-body.component.scss']
+    selector: 'burst-card-body',
+    templateUrl: './card-body.component.html',
+    styleUrls: ['./card-body.component.scss']
 })
 export class CardBodyComponent implements OnInit {
 

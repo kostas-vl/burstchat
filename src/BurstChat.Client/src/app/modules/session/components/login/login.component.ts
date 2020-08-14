@@ -14,7 +14,7 @@ import { SessionService } from 'src/app/modules/session/services/session-service
  * @memberof {OnInit}
  */
 @Component({
-  selector: 'app-login',
+  selector: 'burst-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

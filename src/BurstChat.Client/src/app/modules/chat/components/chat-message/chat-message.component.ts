@@ -9,7 +9,7 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-chat-message',
+    selector: 'burst-chat-message',
     templateUrl: './chat-message.component.html',
     styleUrls: ['./chat-message.component.scss']
 })

@@ -12,7 +12,7 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
  * @class SidebarUserInfoComponent
  */
 @Component({
-  selector: 'app-sidebar-user-info',
+  selector: 'burst-sidebar-user-info',
   templateUrl: './sidebar-user-info.component.html',
   styleUrls: ['./sidebar-user-info.component.scss']
 })

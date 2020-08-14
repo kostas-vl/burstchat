@@ -24,7 +24,7 @@ import {
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-ongoing-call',
+  selector: 'burst-ongoing-call',
   templateUrl: './ongoing-call.component.html',
   styleUrls: ['./ongoing-call.component.scss']
 })

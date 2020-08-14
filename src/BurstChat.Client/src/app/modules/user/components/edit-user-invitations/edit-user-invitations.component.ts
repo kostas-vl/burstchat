@@ -11,7 +11,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-edit-user-invitations',
+    selector: 'burst-edit-user-invitations',
     templateUrl: './edit-user-invitations.component.html',
     styleUrls: ['./edit-user-invitations.component.scss']
 })

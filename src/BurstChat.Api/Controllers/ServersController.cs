@@ -68,7 +68,7 @@ namespace BurstChat.Api.Controllers
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public MonadActionResult<Unit, Error> Put([FromBody] Server server) =>
+        public MonadActionResult<Server, Error> Put([FromBody] Server server) =>
             HttpContext.GetUserId()
                        .Bind(userId => _serversService.Update(userId, server));
 

@@ -9,7 +9,7 @@ import { StorageService } from 'src/app/services/storage/storage.service';
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-logout',
+  selector: 'burst-logout',
   templateUrl: './logout.component.html',
   styleUrls: ['./logout.component.scss']
 })

@@ -7,7 +7,7 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
  * @class RootComponent
  */
 @Component({
-    selector: 'app-root',
+    selector: 'burst-root',
     templateUrl: './root.component.html',
     styleUrls: ['./root.component.scss']
 })

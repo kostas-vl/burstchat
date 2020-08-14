@@ -11,7 +11,7 @@ import { SessionService } from 'src/app/modules/session/services/session-service
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-reset-password',
+  selector: 'burst-reset-password',
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss']
 })

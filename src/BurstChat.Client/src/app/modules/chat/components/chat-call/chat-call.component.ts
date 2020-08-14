@@ -16,7 +16,7 @@ import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/cha
  * @implements {OnInit, OnDestroy}
  */
 @Component({
-    selector: 'app-chat-call',
+    selector: 'burst-chat-call',
     templateUrl: './chat-call.component.html',
     styleUrls: ['./chat-call.component.scss']
 })

@@ -13,7 +13,7 @@ import { SessionService } from 'src/app/modules/session/services/session-service
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-change-password',
+    selector: 'burst-change-password',
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.scss']
 })

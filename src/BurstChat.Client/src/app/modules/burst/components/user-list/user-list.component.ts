@@ -15,7 +15,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-user-list',
+    selector: 'burst-user-list',
     templateUrl: './user-list.component.html',
     styleUrls: ['./user-list.component.scss']
 })

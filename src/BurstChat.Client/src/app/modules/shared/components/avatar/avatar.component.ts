@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-avatar',
+    selector: 'burst-avatar',
     templateUrl: './avatar.component.html',
     styleUrls: ['./avatar.component.scss']
 })

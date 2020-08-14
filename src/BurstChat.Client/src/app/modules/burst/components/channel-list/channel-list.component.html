@@ -14,7 +14,7 @@
 
     <div *ngFor="let channel of server.channels">
 
-        <app-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></app-channel>
+        <burst-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></burst-channel>
 
     </div>
 

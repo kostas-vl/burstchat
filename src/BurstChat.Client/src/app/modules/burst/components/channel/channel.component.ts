@@ -9,7 +9,7 @@ import { Channel } from 'src/app/models/servers/channel';
  * @class ChannelComponent
  */
 @Component({
-  selector: 'app-channel',
+  selector: 'burst-channel',
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss']
 })

@@ -19,7 +19,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// Adds a new server and informs the caller of the results.
         /// </summary>
         /// <param name="server">The server instance to be added</param>
-        /// <returns>A Task instance</returns>
+        /// <returns>A task instance</returns>
         public async Task AddServer(Server server)
         {
             var httpContext = Context.GetHttpContext();
@@ -46,7 +46,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// Adds a new connection to a signalr group that is based on the id of a BurstChat server.
         /// </summary>
         /// <param name="serverId">The id of the target server</param>
-        /// <returns>A Task instance</returns>
+        /// <returns>A task instance</returns>
         public async Task AddToServer(int serverId)
         {
             var httpContext = Context.GetHttpContext();
@@ -56,6 +56,33 @@ namespace BurstChat.Signal.Hubs.Chat
             {
                 var signalGroup = ServerSignalName(serverId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
+            }
+        }
+
+        /// <summary>
+        /// Informs all associated connection of a server, that its information were updated.
+        /// </summary>
+        /// <param name="serverId">The id of the target server</param>
+        /// <returns>A task instance</returns>
+        public async Task UpdateServerInfo(int serverId)
+        {
+            var httpContext = Context.GetHttpContext();
+            var monad = await _serverService.GetAsync(httpContext, serverId);
+
+            switch (monad)
+            {
+                case Success<Server, Error> success:
+                    var signalGroup = ServerSignalName(serverId);
+                    await Clients.Group(signalGroup).UpdatedServer(success.Value);
+                    break;
+
+                case Failure<Server, Error> failure:
+                    await Clients.Caller.UpdatedServer(failure.Value);
+                    break;
+
+                default:
+                    await Clients.Caller.UpdatedServer(SystemErrors.Exception());
+                    break;
             }
         }
 

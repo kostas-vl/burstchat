@@ -10,7 +10,7 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
  * @implements {OnInit}
  */
 @Component({
-    selector: 'app-sidebar',
+    selector: 'burst-sidebar',
     templateUrl: './sidebar.component.html',
     styleUrls: ['./sidebar.component.scss']
 })

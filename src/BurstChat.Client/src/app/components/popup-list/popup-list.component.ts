@@ -10,7 +10,7 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
  * @class PopupListComponent
  */
 @Component({
-    selector: 'app-popup-list',
+    selector: 'burst-popup-list',
     templateUrl: './popup-list.component.html',
     styleUrls: ['./popup-list.component.scss']
 })

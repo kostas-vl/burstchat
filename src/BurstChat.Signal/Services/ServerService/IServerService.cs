@@ -20,7 +20,7 @@ namespace BurstChat.Signal.Services.ServerService
         Task<Either<Server, Error>> GetAsync(HttpContext context, int serverId);
 
         /// <summary>
-        /// Requests the createion of a new server based on the provided id.
+        /// Requests the creation of a new server based on the provided id.
         /// </summary>
         /// <param name="context">The current http context</param>
         /// <param name="server">The server instance to be created</param>

@@ -29,6 +29,20 @@ namespace BurstChat.Signal.Hubs.Chat
         Task AddedServer(Error error);
 
         /// <summary>
+        /// Informs all all associated connection of a server, that his info was updated.
+        /// </summary>
+        /// <param name="server">The updated server instance</param>
+        /// <returns>A task instance</returns>
+        Task UpdatedServer(Server server);
+
+        /// <summary>
+        /// Informs the caller that the server info update did not complete successfully.
+        /// </summary>
+        /// <param name="error">The error that will be delived to the caller</param>
+        /// <returns>A task instance</returns>
+        Task UpdatedServer(Error error);
+
+        /// <summary>
         /// Informs the members of a server that a user was removed.
         /// </summary>
         /// <param name="data">The server id and subscription instance</param>

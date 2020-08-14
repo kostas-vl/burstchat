@@ -6,9 +6,9 @@ import { Component, OnInit } from '@angular/core';
  * @implements {OnInit}
  */
 @Component({
-  selector: 'app-card-footer',
-  templateUrl: './card-footer.component.html',
-  styleUrls: ['./card-footer.component.scss']
+    selector: 'burst-card-footer',
+    templateUrl: './card-footer.component.html',
+    styleUrls: ['./card-footer.component.scss']
 })
 export class CardFooterComponent implements OnInit {
 

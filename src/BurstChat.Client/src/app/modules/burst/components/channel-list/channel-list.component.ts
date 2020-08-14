@@ -12,7 +12,7 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
  * @class ChannelListComponent
  */
 @Component({
-    selector: 'app-channel-list',
+    selector: 'burst-channel-list',
     templateUrl: './channel-list.component.html',
     styleUrls: ['./channel-list.component.scss']
 })

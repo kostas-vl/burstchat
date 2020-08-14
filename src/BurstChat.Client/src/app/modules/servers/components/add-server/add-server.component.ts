@@ -9,7 +9,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
  * @class AddServerComponent
  */
 @Component({
-    selector: 'app-add-server',
+    selector: 'burst-add-server',
     templateUrl: './add-server.component.html',
     styleUrls: ['./add-server.component.scss']
 })

@@ -1,8 +1,8 @@
-<div class="user-info">
+<div class="server-info">
 
     <div>
 
-        <burst-avatar [name]="user.name" [avatar]="user.avatar" size="lg"></burst-avatar>
+        <burst-avatar [name]="server.name" [avatar]="server.avatar" size="lg"></burst-avatar>
 
     </div>
 
@@ -12,18 +12,8 @@
 
             <div class="column column-100">
 
-                {{user.name}} <span class="text-muted">#{{user.id}} <small class="text-muted">Joined
-                        {{user.dateCreated | date}}</small></span>
-
-            </div>
-
-        </div>
-
-        <div class="row">
-
-            <div class="column column-100">
-
-                <small class="text-muted">email: {{user.email}}</small>
+                {{server.name}} <span class="text-muted">#{{server.id}} <small class="text-muted">Created at
+                        {{server.dateCreated | date}}</small></span>
 
             </div>
 
@@ -69,7 +59,7 @@
 
                 <div class="pl-10">
 
-                    <button class="button-outline" (click)="onCancelNewAvatar()">CANCEL</button>
+                    <button class="button" (click)="onCancelNewAvatar()">CANCEL</button>
 
                 </div>
 
@@ -80,4 +70,3 @@
     </burst-card>
 
 </burst-dialog>
-
