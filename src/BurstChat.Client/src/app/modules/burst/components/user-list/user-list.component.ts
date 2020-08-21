@@ -21,11 +21,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class UserListComponent implements OnInit, OnDestroy {
 
-    private displaySub?: Subscription;
-
-    private usersCacheSub?: Subscription;
-
-    private userUpdatedSub?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     public server?: Server;
 
@@ -38,7 +34,6 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     constructor(
-        private sidebarService: SidebarService,
         private serversService: ServersService,
         private usersService: UserService,
         private chatService: ChatService
@@ -49,39 +44,35 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     public ngOnInit() {
-        this.displaySub = this
-            .sidebarService
-            .display
-            .subscribe(options => {
-                if (options instanceof DisplayServer) {
-                    const server = (options as DisplayServer).server;
+        this.subscriptions = [
+            this.serversService
+                .serverInfo
+                .subscribe(server => {
                     if (server) {
                         this.server = server;
                         this.getSubscribedUsers(this.server.id);
                     }
-                }
-            });
+                }),
 
-        this.usersCacheSub = this
-            .usersService
-            .usersCache
-            .subscribe(cache => {
-                if (this.server) {
-                    const id = this.server.id.toString();
-                    this.users = cache[id] || [];
-                }
-            });
+            this.usersService
+                .usersCache
+                .subscribe(cache => {
+                    if (this.server) {
+                        const id = this.server.id.toString();
+                        this.users = cache[id] || [];
+                    }
+                }),
 
-        this.userUpdatedSub = this
-            .chatService
-            .userUpdated
-            .subscribe(user => {
-                const entry = this.users.find(u => u.id === user.id);
-                if (entry) {
-                    const index = this.users.indexOf(entry);
-                    this.users[index] = { ...user };
-                }
-            });
+            this.chatService
+                .userUpdated
+                .subscribe(user => {
+                    const entry = this.users.find(u => u.id === user.id);
+                    if (entry) {
+                        const index = this.users.indexOf(entry);
+                        this.users[index] = { ...user };
+                    }
+                })
+        ];
     }
 
     /**
@@ -89,9 +80,7 @@ export class UserListComponent implements OnInit, OnDestroy {
      * @memberof UserListComponent
      */
     public ngOnDestroy() {
-        this.displaySub?.unsubscribe();
-        this.usersCacheSub?.unsubscribe();
-        this.userUpdatedSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**

@@ -4,8 +4,6 @@ import { Subscription } from 'rxjs';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { SidebarService } from '../../services/sidebar/sidebar.service';
-import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
 /**
  * This class represents an angular component that displays to the users information about
@@ -21,7 +19,7 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
 })
 export class ServerInfoComponent implements OnInit, OnDestroy {
 
-    private displaySub?: Subscription;
+    private serverInfoSub?: Subscription;
 
     public database = faDatabase;
 
@@ -33,7 +31,7 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
      */
     constructor(
         private router: Router,
-        private sidebarService: SidebarService,
+        private serversService: ServersService
     ) { }
 
     /**
@@ -41,15 +39,12 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
      * @memberof ServerInfoComponent
      */
     public ngOnInit() {
-        this.displaySub = this
-            .sidebarService
-            .display
-            .subscribe(options => {
-                if (options instanceof DisplayServer) {
-                    const server = (options as DisplayServer).server;
-                    if (server) {
-                        this.server = server;
-                    }
+        this.serverInfoSub = this
+            .serversService
+            .serverInfo
+            .subscribe(server => {
+                if (server) {
+                    this.server = server;
                 }
             });
     }
@@ -59,9 +54,7 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
      * @memberof ServerInfoComponent
      */
     public ngOnDestroy() {
-        if (this.displaySub) {
-            this.displaySub.unsubscribe();
-        }
+        this.serverInfoSub?.unsubscribe();
     }
 
     /**

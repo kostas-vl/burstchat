@@ -2,8 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
+import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 
 /**
  * This class represents an angular component that presents information about the active server and enables
@@ -19,6 +20,8 @@ export class EditServerComponent implements OnInit, OnDestroy {
 
     private subscriptions?: Subscription[] = [];
 
+    private routeServerId: number;
+
     public server?: Server;
 
     /**
@@ -27,7 +30,8 @@ export class EditServerComponent implements OnInit, OnDestroy {
      */
     constructor(
         private activatedRoute: ActivatedRoute,
-        private serversService: ServersService
+        private serversService: ServersService,
+        private sidebarService: SidebarService
     ) { }
 
     /**
@@ -36,6 +40,10 @@ export class EditServerComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
+        this.activatedRoute
+            .params
+            .subscribe(params => this.routeServerId = +params.id),
+
             this.serversService
                 .serverCache
                 .subscribe(servers => {
@@ -69,15 +77,12 @@ export class EditServerComponent implements OnInit, OnDestroy {
      * @memberof EditServerComponent
      */
     private findServer(servers: Server[]) {
-        this.activatedRoute
-            .params
-            .subscribe(params => {
-                const id = +params.id;
-                const server = servers.find(s => s.id === id);
-                if (server) {
-                    this.server = server;
-                }
-            });
+        const server = servers.find(s => s.id === this.routeServerId);
+        if (server) {
+            this.server = server;
+            const displayServer = new DisplayServer(server.id);
+            // this.sidebarService.toggleDisplay(displayServer);
+        }
     }
 
 }

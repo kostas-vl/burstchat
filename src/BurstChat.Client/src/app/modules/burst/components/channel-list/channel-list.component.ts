@@ -18,11 +18,7 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
 })
 export class ChannelListComponent implements OnInit, OnDestroy {
 
-    private queryParamsSub?: Subscription;
-
-    private displaySub?: Subscription;
-
-    private serverInfoSub?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     public activeChannelId?: number;
 
@@ -44,46 +40,28 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      * @memberof ChannelListComponent
      */
     public ngOnInit() {
-        this.queryParamsSub = this
-            .activatedRoute
-            .queryParamMap
-            .subscribe(params => {
-                const isChatUrl = this
-                    .router
-                    .url
-                    .includes('chat/channel');
-                const channelId: number | null = +params.get('id');
-                this.activeChannelId = isChatUrl && channelId !== null
-                    ? channelId
-                    : undefined;
-            });
+        this.subscriptions = [
+            this.activatedRoute
+                .queryParamMap
+                .subscribe(params => {
+                    const isChatUrl = this
+                        .router
+                        .url
+                        .includes('chat/channel');
+                    const channelId: number | null = +params.get('id');
+                    this.activeChannelId = isChatUrl && channelId !== null
+                        ? channelId
+                        : undefined;
+                }),
 
-        this.displaySub = this
-            .sidebarService
-            .display
-            .subscribe(options => {
-                if (options instanceof DisplayServer) {
-                    const server = (options as DisplayServer).server;
+            this.serversService
+                .serverInfo
+                .subscribe(server => {
                     if (server) {
                         this.server = server;
-                        if (server.channels.length === 0) {
-                            this.serversService.get(server.id);
-                        }
                     }
-                }
-            });
-
-        this.serverInfoSub = this
-            .serversService
-            .serverInfo
-            .subscribe(server => {
-                const canAssign = server
-                    && this.server
-                    && this.server.id === server.id;
-                if (canAssign) {
-                    this.server = server;
-                }
-            });
+                })
+        ];
     }
 
     /**
@@ -91,17 +69,7 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      * @memberof ChannelListComponent
      */
     public ngOnDestroy() {
-        if (this.queryParamsSub) {
-            this.queryParamsSub.unsubscribe();
-        }
-
-        if (this.displaySub) {
-            this.displaySub.unsubscribe();
-        }
-
-        if (this.serverInfoSub) {
-            this.serverInfoSub.unsubscribe();
-        }
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
 }

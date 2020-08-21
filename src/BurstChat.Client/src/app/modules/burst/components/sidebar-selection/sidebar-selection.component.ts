@@ -4,12 +4,14 @@ import { Subscription } from 'rxjs';
 import { faCubes, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
+import { DisplayServer } from 'src/app/models/sidebar/display-server';
+import { Channel } from 'src/app/models/servers/channel';
+import { Invitation } from 'src/app/models/servers/invitation';
 import { Subscription as BurstSubscription } from 'src/app/models/servers/subscription';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { Channel } from 'src/app/models/servers/channel';
-import { Invitation } from 'src/app/models/servers/invitation';
+import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 
 /**
  * This class represents an angular component that displays on screen a list of subscribed servers.
@@ -44,7 +46,8 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         private router: Router,
         private userService: UserService,
         private serversService: ServersService,
-        private chatService: ChatService
+        private chatService: ChatService,
+        private sidebarService: SidebarService
     ) { }
 
     /**
@@ -98,7 +101,15 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
             this.chatService
                 .updatedInvitation
-                .subscribe(invite => this.updatedInvitationCallback(invite))
+                .subscribe(invite => this.updatedInvitationCallback(invite)),
+
+            this.sidebarService
+                .display
+                .subscribe(options => {
+                    if (options instanceof DisplayServer && options.serverId) {
+                        this.serversService.get(options.serverId);
+                    }
+                })
         ];
     }
 
@@ -121,7 +132,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         if (server) {
             const index = this.servers.findIndex(s => s.id === server.id);
             if (index !== -1) {
-                console.log(`old === new: ${this.servers[index].avatar === server.avatar}`);
                 this.servers[index] = server;
             } else {
                 this.servers.push(server);
@@ -252,6 +262,14 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      */
     public onNew() {
         this.router.navigateByUrl('/core/servers/add');
+    }
+
+    /**
+      * A custom track method for the template loop over the server list.
+      * @memberof SidebarSelectionComponent
+      */
+    public trackServerBy(index: number, server: Server) {
+        return server.id;
     }
 
 }

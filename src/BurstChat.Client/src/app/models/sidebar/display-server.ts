@@ -7,6 +7,6 @@ import { Server } from 'src/app/models/servers/server';
  */
 export class DisplayServer {
 
-    constructor(public server: Server) { }
+    constructor(public serverId: number) { }
 
 }

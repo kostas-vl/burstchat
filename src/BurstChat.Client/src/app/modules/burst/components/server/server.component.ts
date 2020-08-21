@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
+import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
@@ -18,17 +19,19 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
 })
 export class ServerComponent implements OnInit, OnDestroy {
 
-    private displaySub?: Subscription;
-
-    private onReconnectedSub?: Subscription;
+    private subscriptions: Subscription[] = [];
 
     public isActive = false;
 
     @Input()
     public server?: Server;
 
+    public get avatarExists() {
+        return this.server.avatar?.length > 0 && this.server.avatar !== '\\x';
+    }
+
     public get serverInitials(): string {
-        if (this.server && !this.server.avatar) {
+        if (this.server) {
             const words = this.server.name.split(' ');
             return words.reduce((acc, n) => acc + n[0]?.toUpperCase(), '');
         }
@@ -42,6 +45,7 @@ export class ServerComponent implements OnInit, OnDestroy {
      */
     constructor(
         private sidebarService: SidebarService,
+        private serversService: ServersService,
         private chatService: ChatService
     ) { }
 
@@ -50,27 +54,30 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public ngOnInit() {
-        this.displaySub = this
-            .sidebarService
-            .display
-            .subscribe(options => {
-                if (options instanceof DisplayServer) {
-                    const server = (options as DisplayServer).server;
-                    this.isActive = server && server.id === this.server.id;
-                    if (this.isActive) {
+        this.subscriptions = [
+            this.sidebarService
+                .display
+                .subscribe(options => {
+                    if (options instanceof DisplayServer) {
+                        this.isActive = options.serverId === this.server.id;
+                    } else {
+                        this.isActive = false;
+                    }
+                }),
+
+            this.serversService
+                .serverInfo
+                .subscribe(server => {
+                    if (server?.id === this.server.id) {
                         this.server = server;
                     }
-                } else {
-                    this.isActive = false;
-                }
-            });
+                }),
 
-        this.onReconnectedSub = this
-            .chatService
-            .onReconnected
-            .subscribe(() => {
-                this.chatService.addToServer(this.server.id);
-            });
+            this.chatService
+                .onReconnected
+                .subscribe(() => this.chatService.addToServer(this.server.id))
+        ];
+
     }
 
     /**
@@ -78,13 +85,7 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public ngOnDestroy() {
-        if (this.displaySub) {
-            this.displaySub.unsubscribe();
-        }
-
-        if (this.onReconnectedSub) {
-            this.onReconnectedSub.unsubscribe();
-        }
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -93,7 +94,7 @@ export class ServerComponent implements OnInit, OnDestroy {
      */
     public onSelect() {
         if (this.server && !this.isActive) {
-            const options = new DisplayServer(this.server);
+            const options = new DisplayServer(this.server.id);
             this.sidebarService.toggleDisplay(options);
             this.chatService.addToServer(this.server.id);
         }

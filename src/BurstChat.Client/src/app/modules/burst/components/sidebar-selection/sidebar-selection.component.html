@@ -16,7 +16,7 @@
 
     </div>
 
-    <div class="selection-entry" *ngFor="let server of servers">
+    <div class="selection-entry" *ngFor="let server of servers; trackBy trackServerBy">
 
         <burst-server [server]="server"></burst-server>
 
