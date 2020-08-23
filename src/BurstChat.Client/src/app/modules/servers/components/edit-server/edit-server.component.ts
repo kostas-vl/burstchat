@@ -42,20 +42,16 @@ export class EditServerComponent implements OnInit, OnDestroy {
         this.subscriptions = [
         this.activatedRoute
             .params
-            .subscribe(params => this.routeServerId = +params.id),
-
-            this.serversService
-                .serverCache
-                .subscribe(servers => {
-                    if (servers) {
-                        this.findServer(servers);
-                    }
-                }),
+            .subscribe(params => {
+                this.routeServerId = +params.id;
+                const displayServer = new DisplayServer(this.routeServerId);
+                this.sidebarService.toggleDisplay(displayServer);
+            }),
 
             this.serversService
                 .serverInfo
                 .subscribe(server => {
-                    if (server && server.id === this.server.id) {
+                    if (server && server.id === this.routeServerId) {
                         this.server = server;
                     }
                 })
@@ -68,21 +64,6 @@ export class EditServerComponent implements OnInit, OnDestroy {
      */
     public ngOnDestroy() {
         this.subscriptions?.forEach(s => s.unsubscribe());
-    }
-
-    /**
-     * Fitlers the provided server list and finds the target server based on the url parameter found.
-     * @private
-     * @param {Server[]} servers The server list to be filtered.
-     * @memberof EditServerComponent
-     */
-    private findServer(servers: Server[]) {
-        const server = servers.find(s => s.id === this.routeServerId);
-        if (server) {
-            this.server = server;
-            const displayServer = new DisplayServer(server.id);
-            // this.sidebarService.toggleDisplay(displayServer);
-        }
     }
 
 }

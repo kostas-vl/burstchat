@@ -13,7 +13,7 @@ export class ServersService {
 
     private activeServerSource = new BehaviorSubject<Server | null>(null);
 
-    private serverInfoSource = new Subject<Server>();
+    private serverInfoSource = new BehaviorSubject<Server | null>(null);
 
     private serverCacheSource = new BehaviorSubject<Server[]>([]);
 
@@ -26,6 +26,33 @@ export class ServersService {
      * @memberof ServersService
      */
     constructor(private httpClient: HttpClient) { }
+
+    /**
+     * Fetches the current value of the server info source.
+     * @memberof ServersService
+     */
+    public current() {
+        return this.serverInfoSource.getValue();
+    }
+
+    /**
+     * Assigns the current focused server based on the provided id and the registered cache.
+     * @param {number} serverId The id of the target server
+     * @memberof ServersService
+     */
+    public set(serverId: number) {
+        const servers = this.serverCacheSource.getValue();
+        const server = servers.find(s => s.id === serverId);
+        const invalidInfo = server
+            && (server.channels?.length === 0 || server.subscriptions?.length === 0);
+
+        if (invalidInfo) {
+            this.get(serverId);
+            return;
+        }
+
+        this.serverInfoSource.next(server);
+    }
 
     /**
      * Requests to the BurstChat API all information about a server based on the provided id.

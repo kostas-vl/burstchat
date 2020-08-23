@@ -81,7 +81,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
             this.chatService
                 .updatedServer
-                .subscribe(server => this.serverInfoCallback(server)),
+                .subscribe(server => this.updatedServer(server)),
 
             this.chatService
                 .subscriptionDeleted
@@ -107,7 +107,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
                 .display
                 .subscribe(options => {
                     if (options instanceof DisplayServer && options.serverId) {
-                        this.serversService.get(options.serverId);
+                        this.serversService.set(options.serverId);
                     }
                 })
         ];
@@ -137,6 +137,22 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
                 this.servers.push(server);
             }
             this.serversService.updateCache(this.servers);
+        }
+    }
+
+    /**
+     * Updates the info of the provided server both the cached entry and the current selected
+     * server
+     * @param {Server} server The updated server instance.
+     * @memberof SidebarSelectionComponent
+     */
+    private updatedServer(server: Server) {
+        if (server) {
+            this.serverInfoCallback(server);
+            const current = this.serversService.current();
+            if (server.id === current.id) {
+                this.serversService.set(server.id);
+            }
         }
     }
 
