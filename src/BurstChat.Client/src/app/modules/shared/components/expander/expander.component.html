@@ -1,0 +1,23 @@
+<div class="expander">
+
+    <div class="expander-header" (click)="toggle()">
+
+        <fa-icon class="pr-10" [icon]="icon"></fa-icon>
+
+        <div>{{title}}</div>
+
+    </div>
+
+    <div *ngIf="expanded">
+
+        <ng-content *ngIf="!loading"></ng-content>
+
+        <div class="pl-25" *ngIf="loading">
+
+            <burst-shimmer-list [showSmallLines]="false"></burst-shimmer-list>
+
+        </div>
+
+    </div>
+
+</div>

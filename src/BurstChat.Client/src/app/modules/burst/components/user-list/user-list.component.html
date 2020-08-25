@@ -1,31 +1,13 @@
-<div class="w-100" *ngIf="server">
+<div class="w-100">
 
-    <div class="user-list-header">
+    <burst-expander title="Users" [loading]="loading">
 
-        Users
+        <div *ngFor="let user of users">
 
-        <div class="w-100 text-muted pl-5 pr-5">
-
-            <hr>
+            <burst-user [user]="user"></burst-user>
 
         </div>
 
-    </div>
-
-    <div class="loading-dots text-center" *ngIf="loading">
-
-        <div class="loading-dots--dot"></div>
-
-        <div class="loading-dots--dot"></div>
-
-        <div class="loading-dots--dot"></div>
-
-    </div>
-
-    <div *ngFor="let user of users">
-
-        <burst-user [user]="user"></burst-user>
-
-    </div>
+    </burst-expander>
 
 </div>

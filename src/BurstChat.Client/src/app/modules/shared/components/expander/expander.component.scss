@@ -1,27 +1,23 @@
 @import '../../../../../scss/theme';
-@import '../../../../../scss/font';
 @import '../../../../../scss/sizing';
+@import '../../../../../scss/text';
 
-.channel-container {
+.expander {
+    @extend .w-100;
+}
+
+.expander-header {
     @extend .pt-15;
     @extend .pb-15;
-    @extend .pl-35;
+    @extend .pl-15;
     @extend .pr-15;
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.channel-container:hover {
+.expander-header:hover {
     background-color: $dark-color;
     cursor: pointer;
 }
 
-.channel {
-    @extend .fs-16;
-    @extend .pl-10;
-    max-width: 190px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}

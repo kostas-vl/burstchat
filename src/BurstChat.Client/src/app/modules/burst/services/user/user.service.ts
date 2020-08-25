@@ -93,4 +93,14 @@ export class UserService {
         this.usersCacheSource.next(cache);
     }
 
+    /**
+     * Fetches the current cached users of a server.
+     * @param {number} serverId The id of the target server.
+     * @memberof UserService
+     */
+    public getFromCache(serverId: number) {
+        const cache = this.usersCacheSource.getValue();
+        return cache[serverId.toString()];
+    }
+
 }

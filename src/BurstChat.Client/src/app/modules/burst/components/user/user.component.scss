@@ -3,7 +3,10 @@
 @import '../../../../../scss/sizing';
 
 .user-container {
-    padding: 10px 10px 10px 10px;
+    @extend .pt-15;
+    @extend .pb-15;
+    @extend .pl-25;
+    @extend .pr-15;
     display: flex;
     flex-direction: row;
     align-items: center;

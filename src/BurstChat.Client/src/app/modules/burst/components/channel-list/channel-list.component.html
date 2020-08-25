@@ -1,21 +1,13 @@
-<div class="w-100" *ngIf="server">
+<div class="w-100">
 
-    <div class="channel-list-header">
+    <burst-expander title="Channels" [loading]="loading">
 
-        Channels
+        <div *ngFor="let channel of channels">
 
-        <div class="w-100 text-muted pl-5 pr-5">
-
-            <hr>
+            <burst-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></burst-channel>
 
         </div>
 
-    </div>
-
-    <div *ngFor="let channel of server.channels">
-
-        <burst-channel [channel]="channel" [isActive]="channel.id === activeChannelId"></burst-channel>
-
-    </div>
+    </burst-expander>
 
 </div>

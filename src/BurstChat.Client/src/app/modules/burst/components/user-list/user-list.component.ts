@@ -50,7 +50,12 @@ export class UserListComponent implements OnInit, OnDestroy {
                 .subscribe(server => {
                     if (server) {
                         this.server = server;
-                        this.getSubscribedUsers(this.server.id);
+                        const users = this.usersService.getFromCache(this.server.id);
+                        if (!users) {
+                            this.getSubscribedUsers(this.server.id);
+                        } else {
+                            this.users = users;
+                        }
                     }
                 }),
 

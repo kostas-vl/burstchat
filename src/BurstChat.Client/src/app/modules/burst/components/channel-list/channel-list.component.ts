@@ -1,10 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Server } from 'src/app/models/servers/server';
+import { Channel } from 'src/app/models/servers/channel';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { SidebarService } from '../../services/sidebar/sidebar.service';
-import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
 /**
  * This class represents an angular component that displays the list of channel that exist in a BurstChat
@@ -22,7 +20,9 @@ export class ChannelListComponent implements OnInit, OnDestroy {
 
     public activeChannelId?: number;
 
-    public server?: Server;
+    public channels: Channel[] = [];
+
+    public loading = true;
 
     /**
      * Creates a new instance of ChannelListComponent.
@@ -30,7 +30,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
      */
     constructor(
         private router: Router,
-        private sidebarService: SidebarService,
         private activatedRoute: ActivatedRoute,
         private serversService: ServersService,
     ) { }
@@ -58,8 +57,11 @@ export class ChannelListComponent implements OnInit, OnDestroy {
                 .serverInfo
                 .subscribe(server => {
                     if (server) {
-                        this.server = server;
+                        this.channels = server?.channels || [];
+                        console.log(this.channels);
                     }
+
+                    this.loading = false;
                 })
         ];
     }

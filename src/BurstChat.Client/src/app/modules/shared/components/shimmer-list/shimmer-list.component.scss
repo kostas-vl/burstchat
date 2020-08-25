@@ -1,0 +1,55 @@
+@import '../../../../../scss/theme';
+
+@-webkit-keyframes placeholderShimmer {
+    0% {
+        background-position: -468px 0;
+    }
+
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+.shimmer {
+    background: $primary-color;
+    background-image: linear-gradient(to right, $primary-color 0%, $dark-color 20%, $primary-color 40%, $primary-color 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    display: inline-block;
+    position: relative;
+
+    -webkit-animation-duration: 2s;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeholderShimmer;
+    -webkit-animation-timing-function: linear;
+}
+
+.icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.line {
+    height: 10px;
+    width: 150px;
+    border-radius: 15px;
+}
+
+.small-line {
+    height: 10px;
+    width: 100px;
+    border-radius: 15px;
+}
+
+.shimmer-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.shimmer-entry {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
