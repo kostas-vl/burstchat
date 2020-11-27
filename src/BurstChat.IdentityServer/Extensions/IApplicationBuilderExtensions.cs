@@ -1,23 +1,20 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using BurstChat.Infrastructure.Options;
 using BurstChat.Infrastructure.Persistence;
 using BurstChat.IdentityServer.Options;
-using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.EntityFramework.Entities;
-using Microsoft.Extensions.Configuration;
 using IdentityServer4.Models;
 
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 using ApiResource = IdentityServer4.EntityFramework.Entities.ApiResource;
 using IdentityResource = IdentityServer4.EntityFramework.Entities.IdentityResource;
+using BurstChat.Domain.Schema.Alpha;
 
 namespace BurstChat.IdentityServer.Extensions
 {
@@ -29,8 +26,10 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        private static void AddDevelopmentWebClient(ConfigurationDbContext context, IdentitySecretsOptions identitySecretsOptions)
+        private static void AddDevelopmentWebClient(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
         {
+            if (context == null) return;
+            
             var creationDate = DateTime.Now;
             var webClientId = "burstchat.web.client";
             var webClientSecret = identitySecretsOptions
@@ -104,8 +103,10 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        public static void AddDevelopmentApiResource(ConfigurationDbContext context, IdentitySecretsOptions identitySecretsOptions)
+        public static void AddDevelopmentApiResource(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
         {
+            if (context == null) return;
+
             var creationDate = DateTime.Now;
             var apiName = "burstchat.api";
             var apiSecret = identitySecretsOptions
@@ -120,9 +121,9 @@ namespace BurstChat.IdentityServer.Extensions
             };
 
             apiResource
-                .Secrets = new List<ApiSecret>
+                .Secrets = new List<ApiResourceSecret>
                 {
-                    new ApiSecret
+                    new ApiResourceSecret
                     {
                         Value = apiSecret.Sha256(),
                         Created = creationDate,
@@ -130,15 +131,11 @@ namespace BurstChat.IdentityServer.Extensions
                 };
 
             apiResource
-                .Scopes = new List<ApiScope>
+                .Scopes = new List<ApiResourceScope>
                 {
-                    new ApiScope
+                    new ApiResourceScope
                     {
-                        Name = apiName,
-                        Description = "The BurstChat API",
-                        DisplayName = "BurstChat APi",
-                        ShowInDiscoveryDocument = true,
-                        Required = true
+                        Scope = apiName,
                     }
                 };
 
@@ -152,8 +149,10 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        public static void AddDevelopmentSignalResource(ConfigurationDbContext context, IdentitySecretsOptions identitySecretsOptions)
+        public static void AddDevelopmentSignalResource(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
         {
+            if (context == null) return;
+
             var creationDate = DateTime.Now;
             var signalName = "burstchat.signal";
             var signalSecret = identitySecretsOptions
@@ -168,9 +167,9 @@ namespace BurstChat.IdentityServer.Extensions
             };
 
             signalResource
-                .Secrets = new List<ApiSecret>
+                .Secrets = new List<ApiResourceSecret>
                 {
-                    new ApiSecret
+                    new ApiResourceSecret
                     {
                         Value = signalSecret.Sha256(),
                         Created = creationDate,
@@ -178,15 +177,11 @@ namespace BurstChat.IdentityServer.Extensions
                 };
 
             signalResource
-                .Scopes = new List<ApiScope>
+                .Scopes = new List<ApiResourceScope>
                 {
-                    new ApiScope
+                    new ApiResourceScope 
                     {
-                        Name = signalName,
-                        Description = "The BurstChat Signal Server",
-                        DisplayName = "BurstChat Signal Server",
-                        ShowInDiscoveryDocument = true,
-                        Required = true
+                        Scope = signalName,
                     }
                 };
 
@@ -199,8 +194,10 @@ namespace BurstChat.IdentityServer.Extensions
         /// This method creates the IdentityResource for the openid and profile scopes with all the neccessary configuration.
         /// </summary>
         /// <param name="context">The configuration database context</param>
-        private static void AddDevelopmentIdentityResources(ConfigurationDbContext context)
+        private static void AddDevelopmentIdentityResources(ConfigurationDbContext? context)
         {
+            if (context == null) return;
+
             var creationDate = DateTime.Now;
             var openIdResource = new IdentityResource
             {
@@ -240,52 +237,50 @@ namespace BurstChat.IdentityServer.Extensions
                 .ApplicationServices
                 .GetService<IServiceScopeFactory>();
 
-            using (var serviceScope = serviceScopeFactory.CreateScope())
-            {
-                var creationDate = DateTime.Now;
+            using var serviceScope = serviceScopeFactory?.CreateScope();
+            var creationDate = DateTime.Now;
 
-                serviceScope
-                    .ServiceProvider
-                    .GetRequiredService<PersistedGrantDbContext>()
-                    .Database
-                    .Migrate();
+            serviceScope?
+                .ServiceProvider
+                .GetRequiredService<PersistedGrantDbContext>()
+                .Database
+                .Migrate();
 
-                var context = serviceScope
-                    .ServiceProvider
-                    .GetRequiredService<ConfigurationDbContext>();
+            var context = serviceScope?
+                .ServiceProvider
+                .GetRequiredService<ConfigurationDbContext>();
 
-                context
-                    .Database
-                    .Migrate();
+            context?
+                .Database
+                .Migrate();
 
-                var clients = context
-                    .Clients
-                    .ToList();
+            var clients = context?
+                .Clients
+                .ToList();
 
-                var apis = context
-                    .ApiResources
-                    .ToList();
+            var apis = context?
+                .ApiResources
+                .ToList();
 
-                var identities = context
-                    .IdentityResources
-                    .ToList();
+            var identities = context?
+                .IdentityResources
+                .ToList();
 
-                foreach (var client in clients)
-                    context.Clients.Remove(client);
+            foreach (var client in clients ?? Enumerable.Empty<Client>())
+                context?.Clients.Remove(client);
 
-                foreach (var api in apis)
-                    context.ApiResources.Remove(api);
+            foreach (var api in apis ?? Enumerable.Empty<ApiResource>())
+                context?.ApiResources.Remove(api);
 
-                foreach (var identity in identities)
-                    context.IdentityResources.Remove(identity);
+            foreach (var identity in identities ?? Enumerable.Empty<IdentityResource>())
+                context?.IdentityResources.Remove(identity);
 
-                AddDevelopmentWebClient(context, identitySecretsOptions);
-                AddDevelopmentApiResource(context, identitySecretsOptions);
-                AddDevelopmentSignalResource(context, identitySecretsOptions);
-                AddDevelopmentIdentityResources(context);
+            AddDevelopmentWebClient(context, identitySecretsOptions);
+            AddDevelopmentApiResource(context, identitySecretsOptions);
+            AddDevelopmentSignalResource(context, identitySecretsOptions);
+            AddDevelopmentIdentityResources(context);
 
-                context.SaveChanges();
-            }
+            context?.SaveChanges();
         }
 
         /// <summary>
@@ -304,24 +299,22 @@ namespace BurstChat.IdentityServer.Extensions
                     .ApplicationServices
                     .GetService<IServiceScopeFactory>();
 
-                using var serviceScope = serviceScopeFactory.CreateScope();
+                using var serviceScope = serviceScopeFactory?.CreateScope();
 
-                var context = serviceScope
+                var context = serviceScope?
                     .ServiceProvider
                     .GetRequiredService<BurstChatContext>();
 
-                var alphaInvitationCodes = context
+                var alphaInvitationCodes = context?
                     .AlphaInvitations
                     .ToList();
 
-                foreach (var code in alphaInvitationCodes)
-                {
-                    context.AlphaInvitations.Remove(code);
-                }
+                foreach (var code in alphaInvitationCodes ?? Enumerable.Empty<AlphaInvitation>())
+                    context?.AlphaInvitations.Remove(code);
 
-                context.AlphaInvitations.AddRange(options.AlphaCodes);
+                context?.AlphaInvitations.AddRange(options.AlphaCodes);
 
-                context.SaveChanges();
+                context?.SaveChanges();
             }
         }
     }
