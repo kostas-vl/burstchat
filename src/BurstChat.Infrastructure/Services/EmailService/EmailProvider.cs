@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
-using BurstChat.Application.Extensions;
 using BurstChat.Application.Monads;
 using BurstChat.Infrastructure.Options;
 using Microsoft.AspNetCore.Hosting;

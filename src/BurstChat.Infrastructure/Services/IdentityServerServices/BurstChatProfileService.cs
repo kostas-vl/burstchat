@@ -24,14 +24,17 @@ namespace BurstChat.Infrastructure.Services.ProfileService
 
         /// <summary>
         /// Creates an instance of BurstChatProfileService.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public BurstChatProfileService(
             ILogger<BurstChatProfileService> logger,
             IUserService userService
         )
         {
-            _logger = logger;
-            _userService = userService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         /// <summary>

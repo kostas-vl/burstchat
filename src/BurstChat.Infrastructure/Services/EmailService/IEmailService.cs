@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;

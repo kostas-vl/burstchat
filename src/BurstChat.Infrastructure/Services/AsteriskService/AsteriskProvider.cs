@@ -1,19 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
-using BurstChat.Infrastructure.Extensions;
 using BurstChat.Infrastructure.Options;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 

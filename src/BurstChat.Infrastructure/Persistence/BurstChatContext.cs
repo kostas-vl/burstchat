@@ -1,6 +1,5 @@
 #nullable disable
 
-using System;
 using System.Reflection;
 using BurstChat.Application.Interfaces;
 using BurstChat.Domain.Schema.Alpha;
@@ -50,6 +49,5 @@ namespace BurstChat.Infrastructure.Persistence
 
             base.OnModelCreating(builder);
         }
-
     }
 }
