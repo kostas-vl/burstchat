@@ -1,14 +1,9 @@
-using System;
-using System.Linq;
 using BurstChat.Application;
 using BurstChat.Infrastructure;
 using BurstChat.IdentityServer.Extensions;
-using IdentityServer4.Services;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,10 +12,7 @@ namespace BurstChat.IdentityServer
 {
     public class Startup
     {
-        public IConfiguration Configuration
-        {
-            get;
-        }
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Creates an instance of Startup.
@@ -46,7 +38,7 @@ namespace BurstChat.IdentityServer
         }
 
         /// <summary>
-        ///   This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="application">The application builder to be used in the configuration</param>
         /// <param name="env">The hosting environment that the application is running</param>
