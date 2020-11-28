@@ -16,7 +16,7 @@ using System.Text.Json;
 namespace BurstChat.Signal.Services.DirectMessagingService
 {
     /// <summary>
-    ///   This class is the base implementation of the IDirectMessagingService interface.
+    /// This class is the base implementation of the IDirectMessagingService interface.
     /// </summary>
     public class DirectMessagingProvider : IDirectMessagingService
     {
@@ -24,20 +24,22 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         private readonly BurstChatApiInteropService _apiInteropService;
 
         /// <summary>
-        ///   Creates a new instance of DirectMessagingProvider.
+        /// Creates a new instance of DirectMessagingProvider.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public DirectMessagingProvider(
             ILogger<DirectMessagingProvider> logger,
             BurstChatApiInteropService apiInteropService
         )
         {
-            _logger = logger;
-            _apiInteropService = apiInteropService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _apiInteropService = apiInteropService ?? throw new ArgumentNullException(nameof(apiInteropService));
         }
 
         /// <summary>
-        ///   Fetches all available information about a direct messaging entry based on the provided
-        ///   id.
+        /// Fetches all available information about a direct messaging entry based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the target entry</param>
@@ -59,8 +61,8 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Fetches all available information about a direct messaging entry based on the provided
-        ///   participants.
+        /// Fetches all available information about a direct messaging entry based on the provided
+        /// participants.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="firstParticipantId">The user id of the first participant</param>
@@ -72,10 +74,10 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Get;
                 var url = "/api/direct";
-                var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+                var content = new FormUrlEncodedContent(new[] 
                 {
-                    new KeyValuePair<string, string>("firstParticipantId", firstParticipantId.ToString()),
-                    new KeyValuePair<string, string>("secondParticipantId", secondParticipantId.ToString())
+                    new KeyValuePair<string?, string?>("firstParticipantId", firstParticipantId.ToString()),
+                    new KeyValuePair<string?, string?>("secondParticipantId", secondParticipantId.ToString())
                 });
 
                 return await _apiInteropService.SendAsync<DirectMessaging>(context, method, url, content);
@@ -88,7 +90,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Creates a new direct messaging entry between two users based on the provided user ids.
+        /// Creates a new direct messaging entry between two users based on the provided user ids.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessaging">The direct messaging instance to be added</param>
@@ -112,7 +114,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Removes a direct messaging entry based on the provided id.
+        /// Removes a direct messaging entry based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the target entry</param>
@@ -134,7 +136,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Fetches all messages posted on a direct messaging entry.
+        /// Fetches all messages posted on a direct messaging entry.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
@@ -165,7 +167,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Inserts a new message on a direct messaging entry.
+        /// Inserts a new message on a direct messaging entry.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
@@ -190,7 +192,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Updates a message on a direct messaging entry.
+        /// Updates a message on a direct messaging entry.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
@@ -215,7 +217,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   Removes a message from a direct messagin entry.
+        /// Removes a message from a direct messagin entry.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace BurstChat.Signal.Options
 {
     /// <summary>
@@ -9,7 +6,7 @@ namespace BurstChat.Signal.Options
     public class ApiDomainOptions
     {
         /// <summary>
-        ///   The burst chat api domain url.
+        /// The burst chat api domain url.
         /// </summary>
         public string BurstChatApiDomain { get; set; } = string.Empty;
     }

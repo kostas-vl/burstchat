@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
-using BurstChat.Application.Extensions;
 using BurstChat.Application.Monads;
 using BurstChat.Infrastructure.Options;
 using Microsoft.AspNetCore.Hosting;
@@ -35,23 +34,10 @@ namespace BurstChat.Infrastructure.Services.EmailService
             _webHostEnvironment = webHostEnvironment;
             _logger = logger;
             _smtpOptions = smtpOptions?.Value ?? throw new Exception("SmtpOptions are required");
-
-            try
+            _smtpClient = new SmtpClient(_smtpOptions.Host, _smtpOptions.Port)
             {
-                _smtpClient = new SmtpClient()
-                {
-                    Host = _smtpOptions.Host,
-                    Port = _smtpOptions.Port,
-                    Credentials = new NetworkCredential(_smtpOptions.Username, _smtpOptions.Password)
-                };
-            }
-            catch (Exception e)
-            {
-                if (_webHostEnvironment.IsDevelopment())
-                    _smtpClient = new SmtpClient();
-                else
-                    throw e;
-            }
+                Credentials = new NetworkCredential(_smtpOptions.Username, _smtpOptions.Password)
+            };
         }
 
         /// <summary>

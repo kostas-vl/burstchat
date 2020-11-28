@@ -5,7 +5,6 @@ using BurstChat.Application.Models;
 using BurstChat.Application.Services.UserService;
 using BurstChat.Application.Services.ModelValidationService;
 using BurstChat.IdentityServer.ActionResults;
-using BurstChat.IdentityServer.Extensions;
 using BurstChat.Infrastructure.Services.AsteriskService;
 using BurstChat.Infrastructure.Services.EmailService;
 using Microsoft.AspNetCore.Mvc;

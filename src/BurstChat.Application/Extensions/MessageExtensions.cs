@@ -8,7 +8,7 @@ namespace BurstChat.Application.Extensions
     public static class MessageExtensions
     {
         /// <summary>
-        ///     Queries the content of the provided message and returns a list of found links in it.
+        /// Queries the content of the provided message and returns a list of found links in it.
         /// </summary>
         /// <param name="message">The message instance of which the content will be queried</param>
         /// <returns>A list of links</returns>
@@ -31,7 +31,7 @@ namespace BurstChat.Application.Extensions
         }
 
         /// <summary>
-        ///     Queries the content of the provided message and returns a list of found links in it.
+        /// Queries the content of the provided message and returns a list of found links in it.
         /// </summary>
         /// <param name="message">The message instance of which the content will be queried</param>
         /// <returns>A list of links</returns>
@@ -41,12 +41,11 @@ namespace BurstChat.Application.Extensions
                 .Content
                 .Split(" ");
 
-            var normilizedContent = words
+            var filteredContent = words
                 .Where(word => !Uri.TryCreate(word, UriKind.Absolute, out _))
-                .ToList()
-                .Aggregate(String.Empty, (current, next) => $"{current} {next}");
+                .ToList();
 
-            return normilizedContent;
+            return String.Join(" ", filteredContent);
         }
     }
 }

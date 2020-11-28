@@ -167,7 +167,6 @@ namespace BurstChat.Infrastructure
                     var domain = $"http://{host}:{port}";
 
                     options.IssuerUri = domain;
-                    options.PublicOrigin = domain;
                 })
                 .AddBurstChatSigningCredentials(options => configuration.GetSection("X509").Bind(options))
                 .AddConfigurationStore(options =>

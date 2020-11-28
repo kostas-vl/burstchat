@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace BurstChat.Application.Services.ServersService
 {
     /// <summary>
-    ///   This class represents the base implementation of the IServersService.
+    /// This class represents the base implementation of the IServersService.
     /// </summary>
     public class ServersProvider : IServersService
     {
@@ -20,20 +20,23 @@ namespace BurstChat.Application.Services.ServersService
         private readonly IBurstChatContext _burstChatContext;
 
         /// <summary>
-        ///   Executes any necessary start up code for the service.
+        /// Executes any necessary start up code for the service.
+        ///
+        /// Exceptions:
+        ///     ArgumentNullException: When any of the parameters is null.
         /// </summary>
         public ServersProvider(
             ILogger<ServersProvider> logger,
             IBurstChatContext burstChatContext
         )
         {
-            _logger = logger;
-            _burstChatContext = burstChatContext;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
         }
 
         /// <summary>
-        ///   This method will fetch information available for a server based on the provided
-        ///   server id.
+        /// This method will fetch information available for a server based on the provided
+        /// server id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the target server</param>
@@ -48,13 +51,9 @@ namespace BurstChat.Application.Services.ServersService
                     .Include(s => s.Subscriptions)
                     .FirstOrDefault(s => s.Id == serverId);
 
-                var serverExists = server is { }
-                                   && server.Subscriptions.Any(s => s.UserId == userId);
-
-                if (serverExists)
-                    return new Success<Server, Error>(server!);
-                else
-                    return new Failure<Server, Error>(ServerErrors.ServerNotFound());
+                return server is { } && server.Subscriptions.Any(s => s.UserId == userId)
+                    ? new Success<Server, Error>(server!)
+                    : new Failure<Server, Error>(ServerErrors.ServerNotFound());
             }
             catch (Exception e)
             {
@@ -64,8 +63,8 @@ namespace BurstChat.Application.Services.ServersService
         }
 
         /// <summary>
-        ///   This method will delete any information available for a server based on the provided
-        ///   server id.
+        /// This method will delete any information available for a server based on the provided
+        /// server id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server to be removed</param>
@@ -82,7 +81,7 @@ namespace BurstChat.Application.Services.ServersService
 
                     _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<Unit, Error>(new());
                 });
             }
             catch (Exception e)
@@ -93,7 +92,7 @@ namespace BurstChat.Application.Services.ServersService
         }
 
         /// <summary>
-        ///   This method store information about a new server based on the provided Server instance.
+        /// This method store information about a new server based on the provided Server instance.
         /// </summary>
         /// <param name="userId">The id of the user that creates the server</param>
         /// <param name="server">The server instance of which the information will be stored in the database</param>
@@ -114,10 +113,7 @@ namespace BurstChat.Application.Services.ServersService
                         DateCreated = server.DateCreated,
                         Subscriptions = new List<Subscription>
                         {
-                            new Subscription
-                            {
-                                UserId = userId
-                            }
+                            new() { UserId = userId }
                         }
                     };
 
@@ -140,8 +136,8 @@ namespace BurstChat.Application.Services.ServersService
         }
 
         /// <summary>
-        ///   This method will update information about an existing server based on the provided server
-        ///   instance.
+        /// This method will update information about an existing server based on the provided server
+        /// instance.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="server">The server instance from which the information update will be based upon</param>
@@ -168,7 +164,7 @@ namespace BurstChat.Application.Services.ServersService
         }
 
         /// <summary>
-        ///     Fetches all users subscribed to the server based on the server id provided.
+        /// Fetches all users subscribed to the server based on the server id provided.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the target server</param>
@@ -233,7 +229,7 @@ namespace BurstChat.Application.Services.ServersService
         }
 
         /// <summary>
-        ///     Fetches all invitations sent for a server based on the provided id.
+        /// Fetches all invitations sent for a server based on the provided id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server</param>
@@ -260,7 +256,7 @@ namespace BurstChat.Application.Services.ServersService
         }
 
         /// <summary>
-        ///     This method will create a new server invitation entry based on the provided parameters.
+        /// This method will create a new server invitation entry based on the provided parameters.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="serverId">The id of the server</param>
@@ -278,7 +274,7 @@ namespace BurstChat.Application.Services.ServersService
 
                     var targetUser = _burstChatContext
                         .Users
-                        .FirstOrDefault(u => u.Name == username);
+                        .First(u => u.Name == username);
 
                     var targetAlreadyMember = server
                         .Subscriptions

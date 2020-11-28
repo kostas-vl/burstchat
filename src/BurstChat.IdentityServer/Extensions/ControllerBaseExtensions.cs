@@ -1,4 +1,3 @@
-using System;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Mvc;
@@ -6,14 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace BurstChat.IdentityServer.Extensions
 {
     /// <summary>
-    ///   This class contains static methods that extends the functionality of a ControllerBase instance.
+    /// This class contains static methods that extends the functionality of a ControllerBase instance.
     /// </summary>
     public static class ControllerBaseExtensions
     {
         /// <summary>
-        ///   This method will unwrap a provided monad in order to return a proper IActionResult instance.
+        /// This method will unwrap a provided monad in order to return a proper IActionResult instance.
         ///
-        ///   Exceptions
+        /// Exceptions
         ///     NotImplementedException: When the provided monad is not of type Success<TSuccess, TFailure> or Failure<TSuccess, TFailure>.
         /// </summary>
         /// <param name="controller">The ControllerBase instance that is extended</param>
@@ -32,10 +31,10 @@ namespace BurstChat.IdentityServer.Extensions
             };
 
         /// <summary>
-        ///   This method will unwrap a provided monad in order to return a proper IActionResult instance.
-        ///   Significant is that this method supports Success monads that will return an empty Ok IActionResult.
+        /// This method will unwrap a provided monad in order to return a proper IActionResult instance.
+        /// Significant is that this method supports Success monads that will return an empty Ok IActionResult.
         ///
-        ///   Exceptions
+        /// Exceptions
         ///     NotImplementedException: When the provided monad is not of type Success<Unit, TFailure> or Failure<Unit, TFailure>.
         /// </summary>
         /// <param name="controller">The ControllerBase instance that is extended</param>

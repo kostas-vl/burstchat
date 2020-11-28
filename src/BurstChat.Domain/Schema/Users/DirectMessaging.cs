@@ -22,7 +22,7 @@ namespace BurstChat.Domain.Schema.Users
         /// <summary>
         /// The first user participant.
         /// </summary>
-        public User FirstParticipantUser { get; set; }
+        public User? FirstParticipantUser { get; set; }
 
         /// <summary>
         /// The user id of the second participant.
@@ -32,7 +32,7 @@ namespace BurstChat.Domain.Schema.Users
         /// <summary>
         /// The second user participant.
         /// </summary>
-        public User SecondParticipantUser { get; set; }
+        public User? SecondParticipantUser { get; set; }
 
         /// <summary>
         /// The list of messages sent between the users.

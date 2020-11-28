@@ -29,6 +29,9 @@ namespace BurstChat.Application.Services.ChannelsService
 
         /// <summary>
         /// Executes any neccessary start up code for the controller.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any of the parameters is null.
         /// </summary>
         public ChannelsProvider(
             ILogger<ChannelsProvider> logger,
@@ -37,10 +40,10 @@ namespace BurstChat.Application.Services.ChannelsService
             IUserService userService
         )
         {
-            _logger = logger;
-            _burstChatContext = burstChatContext;
-            _serversService = serversService;
-            _userService = userService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
+            _serversService = serversService ?? throw new ArgumentNullException(nameof(serversService));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         /// <summary>
@@ -286,8 +289,7 @@ namespace BurstChat.Application.Services.ChannelsService
                             DatePosted = DateTime.Now
                         };
 
-                        channel.Messages
-                               .Add(newMessage);
+                        channel.Messages.Add(newMessage);
 
                         _burstChatContext.SaveChanges();
 

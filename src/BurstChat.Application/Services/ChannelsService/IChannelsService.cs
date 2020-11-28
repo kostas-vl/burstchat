@@ -8,12 +8,12 @@ using BurstChat.Domain.Schema.Servers;
 namespace BurstChat.Application.Services.ChannelsService
 {
     /// <summary>
-    ///  This interface exposes methods for interacting with data of chat channels.
+    /// This interface exposes methods for interacting with data of chat channels.
     /// </summary>
     public interface IChannelsService
     {
         /// <summary>
-        ///   This method will return the data of a channel based on the provided channel id.
+        /// This method will return the data of a channel based on the provided channel id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
@@ -21,8 +21,8 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<Channel, Error> Get(long userId, int channelId);
 
         /// <summary>
-        ///   This method will insert a new channel and associate it with a server based
-        ///   on the provided parameters.
+        /// This method will insert a new channel and associate it with a server based
+        /// on the provided parameters.
         /// </summary>
         /// <param name="serverId">The id of the server that the channel will be associated with</param>
         /// <param name="channel">The channel that will be created<param>
@@ -30,7 +30,7 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<Channel, Error> Insert(long userId, int serverId, Channel channel);
 
         /// <summary>
-        ///   This method will update the information of a channel based on the provided parameters.
+        /// This method will update the information of a channel based on the provided parameters.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channel">The channel instance to be updated</param>
@@ -38,7 +38,7 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<Channel, Error> Update(long userId, Channel channel);
 
         /// <summary>
-        ///   This method will remove a channel from the database based on the provided parameters.
+        /// This method will remove a channel from the database based on the provided parameters.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the channel to be deleted</param>
@@ -46,7 +46,7 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<Channel, Error> Delete(long userId, int channelId);
 
         /// <summary>
-        ///   This method will return all messages posted in a channel based on the provided channel id.
+        /// This method will return all messages posted in a channel based on the provided channel id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
@@ -55,7 +55,7 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId, long? lastMessageId = null);
 
         /// <summary>
-        ///   This method will insert a new message sent to the channel provided.
+        /// This method will insert a new message sent to the channel provided.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the channel to which the message will be inserted</param>
@@ -64,7 +64,7 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<Message, Error> InsertMessage(long userId, int channelId, Message message);
 
         /// <summary>
-        ///   This method will update the contents of the provided message on the provided channel.
+        /// This method will update the contents of the provided message on the provided channel.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the channel of which the message will be updated</param>
@@ -73,7 +73,7 @@ namespace BurstChat.Application.Services.ChannelsService
         Either<Message, Error> UpdateMessage(long userId, int channelId, Message message);
 
         /// <summary>
-        ///   This method will remove an existing message from a channel based on the provided id.
+        /// This method will remove an existing message from a channel based on the provided id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>

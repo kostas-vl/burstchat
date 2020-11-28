@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace BurstChat.Application.Services.DirectMessagingService
 {
     /// <summary>
-    ///     This class is the base implementation of the IDirectMessagingService.
+    /// This class is the base implementation of the IDirectMessagingService.
     /// </summary>
     public class DirectMessagingProvider : IDirectMessagingService
     {
@@ -21,20 +21,23 @@ namespace BurstChat.Application.Services.DirectMessagingService
         private readonly IBurstChatContext _burstChatContext;
 
         /// <summary>
-        ///     Creates a new instance of DirectMessagingProvider.
+        /// Creates a new instance of DirectMessagingProvider.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any paramenter is null.
         /// </summary>
         public DirectMessagingProvider(
             ILogger<DirectMessagingProvider> logger,
             IBurstChatContext burstChatContext
         )
         {
-            _logger = logger;
-            _burstChatContext = burstChatContext;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
         }
 
         /// <summary>
-        ///   This method will fetch all information about direct messaging entry.
-        ///   If a message id is provided then 300 messages sent prior will be returned.
+        /// This method will fetch all information about direct messaging entry.
+        /// If a message id is provided then 300 messages sent prior will be returned.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messages</param>
@@ -85,7 +88,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will fetch all information about direct messaging entry.
+        /// This method will fetch all information about direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messages</param>
@@ -100,11 +103,9 @@ namespace BurstChat.Application.Services.DirectMessagingService
                                           && (dm.FirstParticipantUserId == userId
                                               || dm.SecondParticipantUserId == userId));
 
-                if (directMessaging is { })
-                    return new Success<DirectMessaging, Error>(directMessaging);
-                else
-                    return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingNotFound());
-
+                return directMessaging is {}
+                    ? new Success<DirectMessaging, Error>(directMessaging)
+                    : new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagesNotFound());
             }
             catch (Exception e)
             {
@@ -114,7 +115,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will fetch all information about direct messaging entry.
+        /// This method will fetch all information about direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="firstParticipantId">The user id of the first participant</param>
@@ -134,10 +135,9 @@ namespace BurstChat.Application.Services.DirectMessagingService
                     .FirstOrDefault(dm => (dm.FirstParticipantUserId == firstParticipantId && dm.SecondParticipantUserId == secondParticipantId)
                                           || (dm.FirstParticipantUserId == secondParticipantId && dm.SecondParticipantUserId == firstParticipantId));
 
-                if (directMessaging is { })
-                    return new Success<DirectMessaging, Error>(directMessaging);
-                else
-                    return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingNotFound());
+                return directMessaging is {}
+                    ? new Success<DirectMessaging, Error>(directMessaging)
+                    : new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagesNotFound());
             }
             catch (Exception e)
             {
@@ -151,7 +151,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<User>, Error> GetUsers(long userId)
+        public Either<IEnumerable<User?>, Error> GetUsers(long userId)
         {
             try
             {
@@ -164,19 +164,20 @@ namespace BurstChat.Application.Services.DirectMessagingService
                     .ToList()
                     .Select(dm => dm.FirstParticipantUserId != userId
                                   ? dm.FirstParticipantUser
-                                  : dm.SecondParticipantUser);
+                                  : dm.SecondParticipantUser)
+                    .ToList();
 
-                return new Success<IEnumerable<User>, Error>(users);
+                return new Success<IEnumerable<User?>, Error>(users);
             }
             catch(Exception e)
             {
                 _logger.LogError(e.Message);
-                return new Failure<IEnumerable<User>, Error>(SystemErrors.Exception());
+                return new Failure<IEnumerable<User?>, Error>(SystemErrors.Exception());
             }
         }
 
         /// <summary>
-        ///   This method will create a new direct messaging entry.
+        /// This method will create a new direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="firstParticipantId">The user id of the first participant</param>
@@ -222,7 +223,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will delete a direct messaging entry.
+        /// This method will delete a direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the group</param>
@@ -249,8 +250,8 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will fetch all available messages of a direct messaging entry.
-        ///   If a message id is provided then 300 messages sent prior will be returned.
+        /// This method will fetch all available messages of a direct messaging entry.
+        /// If a message id is provided then 300 messages sent prior will be returned.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
@@ -265,7 +266,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will add a new message to a direct messaging entry.
+        /// This method will add a new message to a direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
@@ -312,7 +313,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will be edit a message of a direct messaging entry.
+        /// This method will be edit a message of a direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
@@ -350,7 +351,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         }
 
         /// <summary>
-        ///   This method will delete a message from the direct messaging entry.
+        /// This method will delete a message from the direct messaging entry.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
