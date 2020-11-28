@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DirectMessagingComponent } from './direct-messaging.component';
 
@@ -6,7 +6,7 @@ describe('DirectMessagingComponent', () => {
   let component: DirectMessagingComponent;
   let fixture: ComponentFixture<DirectMessagingComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DirectMessagingComponent ]
     })
