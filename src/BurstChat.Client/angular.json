@@ -45,7 +45,6 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
-                            "extractCss": true,
                             "namedChunks": false,
                             "extractLicenses": true,
                             "vendorChunk": false,
@@ -56,10 +55,10 @@
                                     "maximumWarning": "2mb",
                                     "maximumError": "5mb"
                                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb"
+                                }
                             ]
                         }
                     }
