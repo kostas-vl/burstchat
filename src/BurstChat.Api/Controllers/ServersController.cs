@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
@@ -26,14 +27,17 @@ namespace BurstChat.Api.Controllers
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public ServersController(
             ILogger<ServersController> logger,
             IServersService serversService
         )
         {
-            _logger = logger;
-            _serversService = serversService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _serversService = serversService ?? throw new ArgumentNullException(nameof(serversService));
         }
 
         /// <summary>

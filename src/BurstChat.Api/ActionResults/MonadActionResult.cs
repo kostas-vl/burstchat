@@ -1,4 +1,3 @@
-using System;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Mvc;

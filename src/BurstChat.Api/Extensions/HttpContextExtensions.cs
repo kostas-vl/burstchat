@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Http;
 namespace BurstChat.Api.Extensions
 {
     /// <summary>
-    ///   This class contains extensions methods for an HttpContext instance.
+    /// This class contains extensions methods for an HttpContext instance.
     /// </summary>
     public static class HttpContextExtensions
     {
         /// <summary>
-        ///   This method will get the user id for the current HttpContext instance based on the subject id
-        ///   of the authenticated user's claims.
+        /// This method will get the user id for the current HttpContext instance based on the subject id
+        /// of the authenticated user's claims.
         /// </summary>
         /// <param name="context">The http context instance</param>
         /// <returns>An either monad</returns>
@@ -40,7 +40,7 @@ namespace BurstChat.Api.Extensions
         }
 
         /// <summary>
-        ///   This method will fetch the value of a Bearer access token based on the instance of the HttpContext.
+        /// This method will fetch the value of a Bearer access token based on the instance of the HttpContext.
         /// </summary>
         /// <param name="context">The http context instance</param>
         public static string GetAccessToken(this HttpContext context)

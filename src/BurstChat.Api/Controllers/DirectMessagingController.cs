@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
@@ -25,10 +26,14 @@ namespace BurstChat.Api.Controllers
 
         /// <summary>
         /// Creates a new instance of DirectMessagingController.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public DirectMessagingController(IDirectMessagingService directMessagingService)
         {
-            _directMessagingService = directMessagingService;
+            _directMessagingService = directMessagingService 
+                ?? throw new ArgumentNullException(nameof(directMessagingService));
         }
 
         /// <summary>
@@ -78,7 +83,7 @@ namespace BurstChat.Api.Controllers
         [HttpGet("users")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public MonadActionResult<IEnumerable<User>, Error> GetUsers() =>
+        public MonadActionResult<IEnumerable<User?>, Error> GetUsers() =>
             HttpContext.GetUserId()
                        .Bind(_directMessagingService.GetUsers);
 

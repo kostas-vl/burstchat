@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
@@ -25,10 +26,14 @@ namespace BurstChat.Api.Controllers
 
         /// <summary>
         /// Executes any neccessary start up code for the controller.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public PrivateGroupsController(IPrivateGroupsService privateGroupsService)
         {
-            _privateGroupMessagingService = privateGroupsService;
+            _privateGroupMessagingService = privateGroupsService
+                ?? throw new ArgumentNullException(nameof(privateGroupsService));
         }
 
         /// <summary>
