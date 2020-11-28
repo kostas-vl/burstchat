@@ -13,6 +13,7 @@ using IdentityServer4.Models;
 
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 using ApiResource = IdentityServer4.EntityFramework.Entities.ApiResource;
+using ApiScope = IdentityServer4.EntityFramework.Entities.ApiScope;
 using IdentityResource = IdentityServer4.EntityFramework.Entities.IdentityResource;
 using BurstChat.Domain.Schema.Alpha;
 
@@ -29,7 +30,7 @@ namespace BurstChat.IdentityServer.Extensions
         private static void AddDevelopmentWebClient(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
         {
             if (context == null) return;
-            
+
             var creationDate = DateTime.Now;
             var webClientId = "burstchat.web.client";
             var webClientSecret = identitySecretsOptions
@@ -51,7 +52,7 @@ namespace BurstChat.IdentityServer.Extensions
             webClient
                 .ClientSecrets = new List<ClientSecret>
                 {
-                    new ClientSecret
+                    new()
                     {
                         Value = webClientSecret.Sha256(),
                         Description = "The secret of the BurstChat Web Client",
@@ -62,11 +63,11 @@ namespace BurstChat.IdentityServer.Extensions
             webClient
                 .AllowedScopes = new List<ClientScope>
                 {
-                    new ClientScope { Scope = "openid" },
-                    new ClientScope { Scope = "profile" },
-                    new ClientScope { Scope = "burstchat.api" },
-                    new ClientScope { Scope = "burstchat.signal" },
-                    new ClientScope { Scope = "offline_access" }
+                    new() { Scope = "openid" },
+                    new() { Scope = "profile" },
+                    new() { Scope = "burstchat.api" },
+                    new() { Scope = "burstchat.signal" },
+                    new() { Scope = "offline_access" }
                 };
 
             webClient
@@ -123,7 +124,7 @@ namespace BurstChat.IdentityServer.Extensions
             apiResource
                 .Secrets = new List<ApiResourceSecret>
                 {
-                    new ApiResourceSecret
+                    new()
                     {
                         Value = apiSecret.Sha256(),
                         Created = creationDate,
@@ -133,7 +134,7 @@ namespace BurstChat.IdentityServer.Extensions
             apiResource
                 .Scopes = new List<ApiResourceScope>
                 {
-                    new ApiResourceScope
+                    new()
                     {
                         Scope = apiName,
                     }
@@ -169,7 +170,7 @@ namespace BurstChat.IdentityServer.Extensions
             signalResource
                 .Secrets = new List<ApiResourceSecret>
                 {
-                    new ApiResourceSecret
+                    new()
                     {
                         Value = signalSecret.Sha256(),
                         Created = creationDate,
@@ -179,7 +180,7 @@ namespace BurstChat.IdentityServer.Extensions
             signalResource
                 .Scopes = new List<ApiResourceScope>
                 {
-                    new ApiResourceScope 
+                    new()
                     {
                         Scope = signalName,
                     }
@@ -188,6 +189,25 @@ namespace BurstChat.IdentityServer.Extensions
             context
                 .ApiResources
                 .Add(signalResource);
+        }
+
+        /// <summary>
+        /// This method creates the ApiScopes for the Api and Signal projects.
+        /// </summary>
+        /// <param name="context">The configuration database context</param>
+        private static void AddDevelopmeApiScopes(ConfigurationDbContext? context)
+        {
+            if (context == null) return;
+
+            var scopes = new List<ApiScope>
+            {
+                new() { Name = "burstchat.api", DisplayName = "The BurstChat Api scope" },
+                new() { Name = "burstchat.signal", DisplayName = "The BurstChat Signal scope" }
+            };
+
+            context
+                .ApiScopes
+                .AddRange(scopes);
         }
 
         /// <summary>
@@ -250,34 +270,44 @@ namespace BurstChat.IdentityServer.Extensions
                 .ServiceProvider
                 .GetRequiredService<ConfigurationDbContext>();
 
-            context?
-                .Database
-                .Migrate();
+            context?.Database.Migrate();
 
             var clients = context?
                 .Clients
-                .ToList();
+                .ToList()
+                ?? Enumerable.Empty<Client>();
 
             var apis = context?
                 .ApiResources
-                .ToList();
+                .ToList()
+                ?? Enumerable.Empty<ApiResource>();
+
+            var scopes = context?
+                .ApiScopes
+                .ToList()
+                ?? Enumerable.Empty<ApiScope>();
 
             var identities = context?
                 .IdentityResources
-                .ToList();
+                .ToList()
+                ?? Enumerable.Empty<IdentityResource>();
 
-            foreach (var client in clients ?? Enumerable.Empty<Client>())
+            foreach (var client in clients)
                 context?.Clients.Remove(client);
 
-            foreach (var api in apis ?? Enumerable.Empty<ApiResource>())
+            foreach (var api in apis)
                 context?.ApiResources.Remove(api);
 
-            foreach (var identity in identities ?? Enumerable.Empty<IdentityResource>())
+            foreach (var scope in scopes)
+                context?.ApiScopes.Remove(scope);
+
+            foreach (var identity in identities)
                 context?.IdentityResources.Remove(identity);
 
             AddDevelopmentWebClient(context, identitySecretsOptions);
             AddDevelopmentApiResource(context, identitySecretsOptions);
             AddDevelopmentSignalResource(context, identitySecretsOptions);
+            AddDevelopmeApiScopes(context);
             AddDevelopmentIdentityResources(context);
 
             context?.SaveChanges();

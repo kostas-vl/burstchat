@@ -21,7 +21,7 @@ namespace BurstChat.Signal.Services.HttpMessageHandlers
         /// </summary>
         public AuthorizationHeaderHandler(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace BurstChat.Signal.Services.HttpMessageHandlers
             try
             {
                 authorizationHeader = _httpContextAccessor
-                    .HttpContext
+                    .HttpContext?
                     .Request
-                    .Headers["Authorization"];
+                    .Headers["Authorization"] ?? new(string.Empty);
             }
             catch (Exception)
             {
@@ -53,7 +53,7 @@ namespace BurstChat.Signal.Services.HttpMessageHandlers
                     request.Headers.Authorization = new AuthenticationHeaderValue(accessToken);
                 }
             }
-            catch (Exception)
+            catch
             {
                 throw new Exception("Cant assign the access token to the request");
             }

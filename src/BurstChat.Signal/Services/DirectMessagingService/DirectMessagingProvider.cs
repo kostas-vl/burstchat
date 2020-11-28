@@ -72,10 +72,10 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Get;
                 var url = "/api/direct";
-                var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+                var content = new FormUrlEncodedContent(new[] 
                 {
-                    new KeyValuePair<string, string>("firstParticipantId", firstParticipantId.ToString()),
-                    new KeyValuePair<string, string>("secondParticipantId", secondParticipantId.ToString())
+                    new KeyValuePair<string?, string?>("firstParticipantId", firstParticipantId.ToString()),
+                    new KeyValuePair<string?, string?>("secondParticipantId", secondParticipantId.ToString())
                 });
 
                 return await _apiInteropService.SendAsync<DirectMessaging>(context, method, url, content);

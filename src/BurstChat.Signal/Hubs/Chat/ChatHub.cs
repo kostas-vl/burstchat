@@ -72,7 +72,7 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="e">The incoming exception</param>
         /// <returns>A Task instance</returns>
-        public override async Task OnDisconnectedAsync(Exception e)
+        public override async Task OnDisconnectedAsync(Exception? e)
         {
             _logger.LogError(e?.Message);
 
