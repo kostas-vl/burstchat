@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace BurstChat.Application.Services.PrivateGroupsService
 {
     /// <summary>
-    ///   This class is the base implementation of the IPrivateGroupsService.
+    /// This class is the base implementation of the IPrivateGroupsService.
     /// </summary>
     public class PrivateGroupsProvider : IPrivateGroupsService
     {
@@ -23,7 +23,10 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         private readonly IUserService _userService;
 
         /// <summary>
-        ///   Executes any neccessary start up code for the service.
+        /// Executes any neccessary start up code for the service.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: when any of the parameters is null.
         /// </summary>
         public PrivateGroupsProvider(
             ILogger<PrivateGroupsProvider> logger,
@@ -31,13 +34,13 @@ namespace BurstChat.Application.Services.PrivateGroupsService
             IUserService userService
         )
         {
-            _logger = logger;
-            _burstChatContext = burstChatContext;
-            _userService = userService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         /// <summary>
-        ///   This method will fetch all information about a private group.
+        /// This method will fetch all information about a private group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target group</param>
@@ -51,14 +54,14 @@ namespace BurstChat.Application.Services.PrivateGroupsService
                     .Include(pgm => pgm.Users)
                     .FirstOrDefault(pgm => pgm.Id == groupId);
 
-                var userInList = privateGroup
+                var userInList = privateGroup?
                     .Users
-                    .Any(u => u.Id == userId);
+                    .Any(u => u.Id == userId)
+                    ?? false;
 
-                if (privateGroup is { } && userInList)
-                    return new Success<PrivateGroup, Error>(privateGroup);
-                else
-                    return new Failure<PrivateGroup, Error>(PrivateGroupErrors.GroupNotFound());
+                return privateGroup is { } && userInList
+                    ? new Success<PrivateGroup, Error>(privateGroup)
+                    : new Failure<PrivateGroup, Error>(PrivateGroupErrors.GroupNotFound());
             }
             catch (Exception e)
             {
@@ -68,7 +71,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will create a new private group for messages.
+        /// This method will create a new private group for messages.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupName">The name of the group</param>
@@ -115,7 +118,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will delete a private group.
+        /// This method will delete a private group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
@@ -132,7 +135,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
 
                     _burstChatContext.SaveChanges();
 
-                    return new Success<Unit, Error>(new Unit());
+                    return new Success<Unit, Error>(new());
                 });
             }
             catch (Exception e)
@@ -143,7 +146,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will add a new user to a private group.
+        /// This method will add a new user to a private group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target group</param>
@@ -181,7 +184,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will add a new user to a private group.
+        /// This method will add a new user to a private group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target group</param>
@@ -220,7 +223,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will remove a user from a private group.
+        /// This method will remove a user from a private group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
@@ -258,7 +261,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will fetch all available messages of a group.
+        /// This method will fetch all available messages of a group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
@@ -292,7 +295,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will add a new message to a private group.
+        /// This method will add a new message to a private group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the target private group</param>
@@ -337,7 +340,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will be edit a message of a group.
+        /// This method will be edit a message of a group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
@@ -374,7 +377,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
         }
 
         /// <summary>
-        ///   This method will delete a message from the group.
+        /// This method will delete a message from the group.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="groupId">The id of the group</param>
@@ -397,7 +400,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
 
                         _burstChatContext.SaveChanges();
 
-                        return new Success<Unit, Error>(new Unit());
+                        return new Success<Unit, Error>(new());
                     }
                     else
                         return new Failure<Unit, Error>(PrivateGroupErrors.GroupMessageNotFound());

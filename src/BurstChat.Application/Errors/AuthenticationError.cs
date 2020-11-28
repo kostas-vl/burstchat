@@ -2,7 +2,7 @@ using System;
 
 namespace BurstChat.Application.Errors
 {
-    public class AuthenticationError : Error
+    public record AuthenticationError : Error
     {
         public AuthenticationError() : base(ErrorLevel.Critical,
                                             ErrorType.Validation,

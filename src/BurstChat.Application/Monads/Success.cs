@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 namespace BurstChat.Application.Monads
 {
     /// <summary>
-    ///   This class is a monad implementation of Either that can be used to represent a successful execution
-    ///   of a method.
+    /// This class is a monad implementation of Either that can be used to represent a successful execution
+    /// of a method.
     /// </summary>
     /// <typeparam name="TSuccess">The type encapsulated by the success instance of the monad</typeparam>
     /// <typeparam name="TFailure">The type encapsulated by the failure instance of the monad</typeparam>
     public class Success<TSuccess, TFailure> : Either<TSuccess, TFailure>
     {
         /// <summary>
-        ///   The value contained within the monad instance.
+        /// The value contained within the monad instance.
         /// </summary>
         public TSuccess Value
         {
@@ -20,7 +20,7 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   Executes any necessary start up code for the monad.
+        /// Executes any necessary start up code for the monad.
         /// </summary>
         public Success(TSuccess value)
         {
@@ -28,8 +28,8 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   This method in a success scenario will invoke the callback provided and return its
-        ///   results, and will not in a failure scenario.
+        /// This method in a success scenario will invoke the callback provided and return its
+        /// results, and will not in a failure scenario.
         /// </summary>
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
@@ -40,8 +40,8 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   This method in a success scenario will invoke the callback asynchronously and return its
-        ///   results. In a failure scenario it will not invoke the callback at all.
+        /// This method in a success scenario will invoke the callback asynchronously and return its
+        /// results. In a failure scenario it will not invoke the callback at all.
         /// </summary>
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callbackTask">The callback task to be executed</param>
@@ -52,9 +52,9 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   This method will invoke the provided callback and will wrap the resulting instance
-        ///   to an either monad and return it. This behavious is in a success scenario, the callback
-        ///   will not execute in a failure scenario.
+        /// This method will invoke the provided callback and will wrap the resulting instance
+        /// to an either monad and return it. This behavious is in a success scenario, the callback
+        /// will not execute in a failure scenario.
         /// </summary>
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
@@ -66,9 +66,9 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   This method will invoke the provided callback asynchronously and will wrap the resulting instance
-        ///   to an either monad and return it. This behavious is in a success scenario, the callback
-        ///   will not execute in a failure scenario.
+        /// This method will invoke the provided callback asynchronously and will wrap the resulting instance
+        /// to an either monad and return it. This behavious is in a success scenario, the callback
+        /// will not execute in a failure scenario.
         /// </summary>
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
@@ -80,8 +80,8 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   This method will execute the provided callback and simply return it self at the end.
-        ///   This behaviour is the same in a success and in a failure scenario.
+        /// This method will execute the provided callback and simply return it self at the end.
+        /// This behaviour is the same in a success and in a failure scenario.
         /// </summary>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>An either monad</returns>
@@ -92,8 +92,8 @@ namespace BurstChat.Application.Monads
         }
 
         /// <summary>
-        ///   This method will execute the provided callback asynchronously and simply return it self at the end.
-        ///   This behaviour is the same in a success and in a failure scenario.
+        /// This method will execute the provided callback asynchronously and simply return it self at the end.
+        /// This behaviour is the same in a success and in a failure scenario.
         /// </summary>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>An either monad</returns>

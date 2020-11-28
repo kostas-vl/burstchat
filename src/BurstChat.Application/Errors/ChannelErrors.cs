@@ -8,12 +8,12 @@ namespace BurstChat.Application.Errors
     /// </summary>
     public static class ChannelErrors
     {
-        public static Error ChannelNotFound() => new Error(ErrorLevel.Critical,
-                                                           ErrorType.DataProcess,
-                                                           "The channel was not found");
+        public static Error ChannelNotFound() => new(ErrorLevel.Critical,
+                                                     ErrorType.DataProcess,
+                                                     "The channel was not found");
 
-        public static Error ChannelMessageNotFound() => new Error(ErrorLevel.Critical,
-                                                                  ErrorType.Validation,
-                                                                  "The channel message was not found");
+        public static Error ChannelMessageNotFound() => new(ErrorLevel.Critical,
+                                                            ErrorType.Validation,
+                                                            "The channel message was not found");
     }
 }

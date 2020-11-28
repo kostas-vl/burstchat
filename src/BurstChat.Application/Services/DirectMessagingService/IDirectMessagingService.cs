@@ -35,7 +35,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <returns>An either monad</returns>
-        Either<IEnumerable<User>, Error> GetUsers(long userId);
+        Either<IEnumerable<User?>, Error> GetUsers(long userId);
 
         /// <summary>
         /// This method will create a new direct messaging entry.

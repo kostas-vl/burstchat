@@ -8,8 +8,8 @@ namespace BurstChat.Application.Errors
     /// </summary>
     public static class AlphaInvitationErrors
     {
-        public static Error AlphaInvitationCodeIsNotValid() => new Error(ErrorLevel.Critical,
-                                                                         ErrorType.Validation,
-                                                                         "The alpha invitation code is not valid");
+        public static Error AlphaInvitationCodeIsNotValid() => new(ErrorLevel.Critical,
+                                                                   ErrorType.Validation,
+                                                                   "The alpha invitation code is not valid");
     }
 }

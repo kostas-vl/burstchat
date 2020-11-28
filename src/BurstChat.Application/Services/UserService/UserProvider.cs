@@ -24,6 +24,9 @@ namespace BurstChat.Application.Services.UserService
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any of the parameters is null.
         /// </summary>
         public UserProvider(
             ILogger<UserProvider> logger,
@@ -31,9 +34,9 @@ namespace BurstChat.Application.Services.UserService
             IBCryptService bcryptService
         )
         {
-            _logger = logger;
-            _burstChatContext = burstChatContext;
-            _bcryptService = bcryptService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
+            _bcryptService = bcryptService ?? throw new ArgumentNullException(nameof(bcryptService));
         }
 
         /// <summary>
@@ -50,10 +53,9 @@ namespace BurstChat.Application.Services.UserService
                     .Any(a => a.Code == alphaInvitationCode
                               && a.DateExpired >= DateTime.Now);
 
-                if (codeExists)
-                    return new Success<Unit, Error>(new Unit());
-                else
-                    return new Failure<Unit, Error>(AlphaInvitationErrors.AlphaInvitationCodeIsNotValid());
+                return codeExists
+                    ? new Success<Unit, Error>(new Unit())
+                    : new Failure<Unit, Error>(AlphaInvitationErrors.AlphaInvitationCodeIsNotValid());
             }
             catch (Exception e)
             {
@@ -77,10 +79,9 @@ namespace BurstChat.Application.Services.UserService
                     .Users
                     .FirstOrDefault(u => u.Id == id);
 
-                if (user is { })
-                    return new Success<User, Error>(user);
-                else
-                    return new Failure<User, Error>(UserErrors.UserNotFound());
+                return user is { }
+                    ? new Success<User, Error>(user)
+                    : new Failure<User, Error>(UserErrors.UserNotFound());
             }
             catch (Exception e)
             {
@@ -102,10 +103,9 @@ namespace BurstChat.Application.Services.UserService
                     .Users
                     .FirstOrDefault(u => u.Email == email);
 
-                if (user is { })
-                    return new Success<User, Error>(user);
-                else
-                    return new Failure<User, Error>(UserErrors.UserNotFound());
+                return user is { }
+                    ? new Success<User, Error>(user)
+                    : new Failure<User, Error>(UserErrors.UserNotFound());
             }
             catch (Exception e)
             {
@@ -303,12 +303,9 @@ namespace BurstChat.Application.Services.UserService
             {
                 return Get(email).Bind<User>(user =>
                 {
-                    var passwordIsValid = _bcryptService.VerifyHash(password, user.Password);
-
-                    if (!passwordIsValid)
-                        return new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
-
-                    return new Success<User, Error>(user);
+                    return _bcryptService.VerifyHash(password, user.Password)
+                        ? new Success<User, Error>(user)
+                        : new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
                 });
             }
             catch (Exception e)
@@ -436,13 +433,10 @@ namespace BurstChat.Application.Services.UserService
         /// </summary>
         /// <param name="invitation">The server invitation to be validated</param>
         /// <returns>An either monad</returns>
-        public Either<Invitation, Error> ValidateInvitation(long userId, Invitation invitation)
-        {
-            if (invitation != null && userId == invitation.UserId)
-                return new Success<Invitation, Error>(invitation);
-            else
-                return new Failure<Invitation, Error>(UserErrors.CouldNotUpdateInvitation());
-        }
+        public Either<Invitation, Error> ValidateInvitation(long userId, Invitation invitation) =>
+            invitation != null && userId == invitation.UserId
+                ? new Success<Invitation, Error>(invitation)
+                : new Failure<Invitation, Error>(UserErrors.CouldNotUpdateInvitation());
 
         /// <summary>
         /// This method will updated the Accepted or Declined propery of an existing invitation based on the instance
