@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace BurstChat.Signal.Services.PrivateGroupMessaging
 {
     /// <summary>
-    ///   This class is a base implementation of the IPrivateGroupMessagingService interface.
+    /// This class is a base implementation of the IPrivateGroupMessagingService interface.
     /// </summary>
     public class PrivateGroupMessagingProvider : IPrivateGroupMessagingService
     {
@@ -23,7 +23,7 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         private readonly BurstChatApiInteropService _apiInteropService;
 
         /// <summary>
-        ///   Executes any neccessary start up code for the service.
+        /// Executes any neccessary start up code for the service.
         /// </summary>
         public PrivateGroupMessagingProvider(
             ILogger<PrivateGroupMessagingProvider> logger,
@@ -35,7 +35,7 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         }
 
         /// <summary>
-        ///   This method will fetch information about a private group based on the provided id.
+        /// This method will fetch information about a private group based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
@@ -57,7 +57,7 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         }
 
         /// <summary>
-        ///   This method will fetch all messages of a private group based on the provided id.
+        /// This method will fetch all messages of a private group based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the private group</param>
@@ -79,8 +79,8 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         }
 
         /// <summary>
-        ///   This method will post a new message to a private group based on the provided group id
-        ///   and message.
+        /// This method will post a new message to a private group based on the provided group id
+        /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
@@ -105,8 +105,8 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         }
 
         /// <summary>
-        ///   This method will edit an existing message of a private group based on the provided group id
-        ///   and message.
+        /// This method will edit an existing message of a private group based on the provided group id
+        /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>
@@ -131,8 +131,8 @@ namespace BurstChat.Signal.Services.PrivateGroupMessaging
         }
 
         /// <summary>
-        ///   This method will delete an existing message of a private group based on the provided group id
-        ///   and message.
+        /// This method will delete an existing message of a private group based on the provided group id
+        /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="groupId">The id of the group</param>

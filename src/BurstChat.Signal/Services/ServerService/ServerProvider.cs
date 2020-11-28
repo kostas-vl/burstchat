@@ -22,14 +22,17 @@ namespace BurstChat.Signal.Services.ServerService
 
         /// <summary>
         /// Creates a new instance of ServerProvider.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public ServerProvider(
             ILogger<ServerProvider> logger,
             BurstChatApiInteropService apiInteropService
         )
         {
-            _logger = logger;
-            _apiInteropService = apiInteropService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _apiInteropService = apiInteropService ?? throw new ArgumentNullException(nameof(apiInteropService));
         }
 
         /// <summary>

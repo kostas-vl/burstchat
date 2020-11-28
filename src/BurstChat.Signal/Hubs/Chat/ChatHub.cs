@@ -31,7 +31,10 @@ namespace BurstChat.Signal.Hubs.Chat
         private readonly IDirectMessagingService _directMessagingService;
 
         /// <summary>
-        ///   Executes any necessary start up code for the hub.
+        /// Executes any necessary start up code for the hub.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public ChatHub(
             ILogger<ChatHub> logger,
@@ -42,12 +45,12 @@ namespace BurstChat.Signal.Hubs.Chat
             IDirectMessagingService directMessagingService
         )
         {
-            _logger = logger;
-            _userService = userService;
-            _serverService = serverService;
-            _privateGroupMessagingService = privateGroupMessagingService;
-            _channelsService = channelsService;
-            _directMessagingService = directMessagingService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _serverService = serverService ?? throw new ArgumentNullException(nameof(serverService));
+            _privateGroupMessagingService = privateGroupMessagingService ?? throw new ArgumentNullException(nameof(privateGroupMessagingService));
+            _channelsService = channelsService ?? throw new ArgumentNullException(nameof(channelsService));
+            _directMessagingService = directMessagingService ?? throw new ArgumentNullException(nameof(directMessagingService));
         }
 
         /// <summary>

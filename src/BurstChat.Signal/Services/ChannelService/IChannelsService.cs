@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 namespace BurstChat.Signal.Services.ChannelsService
 {
     /// <summary>
-    ///   This interface exposes methods for fetching and manipulating channel messages
+    /// This interface exposes methods for fetching and manipulating channel messages
     /// </summary>
     public interface IChannelsService
     {

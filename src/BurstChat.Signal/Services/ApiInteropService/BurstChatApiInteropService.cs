@@ -17,21 +17,24 @@ namespace BurstChat.Signal.Services.ApiInteropService
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        ///     Creates a new instance of BurstChatApiInteropService.
+        /// Creates a new instance of BurstChatApiInteropService.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public BurstChatApiInteropService(
             IOptions<ApiDomainOptions> acceptedDomainsOptions,
             HttpClient httpClient
         )
         {
-            _acceptedDomainsOptions = acceptedDomainsOptions.Value;
-            _httpClient = httpClient;
+            _acceptedDomainsOptions = acceptedDomainsOptions?.Value ?? throw new ArgumentNullException(nameof(acceptedDomainsOptions));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _httpClient.BaseAddress = new Uri(_acceptedDomainsOptions.BurstChatApiDomain);
         }
 
         /// <summary>
-        ///     Sends a request to the BurstChat API based on the provided parameters and returns an either monad containing
-        ///     the specified type or an error.
+        /// Sends a request to the BurstChat API based on the provided parameters and returns an either monad containing
+        /// the specified type or an error.
         /// </summary>
         /// <typeparam name="T">The type contained by a success monad</typeparam>
         /// <param name="method">The http method of the request</param>
@@ -51,8 +54,8 @@ namespace BurstChat.Signal.Services.ApiInteropService
         }
 
         /// <summary>
-        ///     Sends a request to the BurstChat API based on the provided parameters and returns an either monad containing
-        ///     a unit instance or an error.
+        /// Sends a request to the BurstChat API based on the provided parameters and returns an either monad containing
+        /// a unit instance or an error.
         /// </summary>
         /// <param name="method">The http method of the request</param>
         /// <param name="path">The path of the request</param>

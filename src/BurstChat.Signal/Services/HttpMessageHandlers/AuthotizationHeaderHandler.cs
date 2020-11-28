@@ -9,15 +9,18 @@ using Microsoft.Extensions.Primitives;
 namespace BurstChat.Signal.Services.HttpMessageHandlers
 {
     /// <summary>
-    ///   This class represents a middleware that is invoked when an http request is executed to the BurstChat API.
-    ///   Its job is to assign the Authorization header with the proper access token.
+    /// This class represents a middleware that is invoked when an http request is executed to the BurstChat API.
+    /// Its job is to assign the Authorization header with the proper access token.
     /// </summary>
     public class AuthorizationHeaderHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        ///   Creates a new instance of AuthorizationHeaderHandler.
+        /// Creates a new instance of AuthorizationHeaderHandler.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public AuthorizationHeaderHandler(IHttpContextAccessor httpContextAccessor)
         {
@@ -25,7 +28,7 @@ namespace BurstChat.Signal.Services.HttpMessageHandlers
         }
 
         /// <summary>
-        ///   The method that will executed when the middleware is invoked.
+        /// The method that will executed when the middleware is invoked.
         /// </summary>
         /// <param name="request">The http request message instance</param>
         /// <param name="cancellationToken">The cancellation token of the asynchronous request</param>

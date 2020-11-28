@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
-using BurstChat.Application.Extensions;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
@@ -17,7 +16,7 @@ using System.Text.Json;
 namespace BurstChat.Signal.Services.ChannelsService
 {
     /// <summary>
-    ///   This class is the base implementation of the IChannelsService interface.
+    /// This class is the base implementation of the IChannelsService interface.
     /// </summary>
     public class ChannelsProvider : IChannelsService
     {
@@ -25,19 +24,22 @@ namespace BurstChat.Signal.Services.ChannelsService
         private readonly BurstChatApiInteropService _apiInteropService;
 
         /// <summary>
-        ///   Executes any neccessary start up code for the service.
+        /// Executes any neccessary start up code for the service.
+        /// 
+        /// Exceptions:
+        ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public ChannelsProvider(
             ILogger<ChannelsProvider> logger,
             BurstChatApiInteropService apiInteropService
         )
         {
-            _logger = logger;
-            _apiInteropService = apiInteropService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _apiInteropService = apiInteropService ?? throw new ArgumentNullException(nameof(apiInteropService));
         }
 
         /// <summary>
-        ///   This method will fetch information about a channel based on the provided id.
+        /// This method will fetch information about a channel based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
@@ -135,7 +137,7 @@ namespace BurstChat.Signal.Services.ChannelsService
 
 
         /// <summary>
-        ///   This method will fetch all messages of a channels based on the provided id.
+        /// This method will fetch all messages of a channels based on the provided id.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
@@ -166,8 +168,8 @@ namespace BurstChat.Signal.Services.ChannelsService
         }
 
         /// <summary>
-        ///   This method will post a new message to a channel based on the provided channel id
-        ///   and message.
+        /// This method will post a new message to a channel based on the provided channel id
+        /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
@@ -192,8 +194,8 @@ namespace BurstChat.Signal.Services.ChannelsService
         }
 
         /// <summary>
-        ///  This method will edit an existing message of a channel based on the provided channel id
-        ///  and message.
+        /// This method will edit an existing message of a channel based on the provided channel id
+        /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
@@ -218,8 +220,8 @@ namespace BurstChat.Signal.Services.ChannelsService
         }
 
         /// <summary>
-        ///   This method will delete an existing message from a channel based on the provided channel id
-        ///   and message.
+        /// This method will delete an existing message from a channel based on the provided channel id
+        /// and message.
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>

@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using BurstChat.Infrastructure;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +12,9 @@ namespace BurstChat.Signal
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args)
+                .Build()
+                .Run();
         }
 
         public static IHostBuilder CreateWebHostBuilder(string[] args) =>
