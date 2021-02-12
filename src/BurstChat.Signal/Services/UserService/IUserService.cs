@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
+using BurstChat.Application.Models;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.AspNetCore.Http;
@@ -40,8 +41,8 @@ namespace BurstChat.Signal.Services.UserService
         /// Updates a sent invitations based on the provided parameters.
         /// </summary>
         /// <param name="context">The current http context</param>
-        /// <param name="invitation">The invitations instance to be updated</param>
+        /// <param name="invitation">The invitations information to be updated</param>
         /// <returns>A task of an either monad</returns>
-        Task<Either<Invitation, Error>> UpdateInvitationAsync(HttpContext context, Invitation invitation);
+        Task<Either<Invitation, Error>> UpdateInvitationAsync(HttpContext context, UpdateInvitation invitation);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
+using BurstChat.Application.Models;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
@@ -109,19 +110,13 @@ namespace BurstChat.Application.Services.UserService
         Either<IEnumerable<Invitation>, Error> GetInvitations(long userId);
 
         /// <summary>
-        /// This method will validate the provided invitation against the provided user.
-        /// </summary>
-        /// <param name="invitation">The server invitation to be validated</param>
-        /// <returns>An either monad</returns>
-        Either<Invitation, Error> ValidateInvitation(long userId, Invitation invitation);
-
-        /// <summary>
         /// This method will updated the Accepted or Declined propery of an existing invitation based on the instance
         /// provided.
         /// </summary>
-        /// <param name="invitation">The server invitation to be updated</param>
+        /// <param name="userId">The user id that updated the invitation</param>
+        /// <param name="data">The server invitation to be updated</param>
         /// <returns>An either monad</returns>
-        Either<Invitation, Error> UpdateInvitation(Invitation invitation);
+        Either<Invitation, Error> UpdateInvitation(long userId, UpdateInvitation data);
 
         /// <summary>
         /// This method will fetch all appropriate user claims based on the provided instance.

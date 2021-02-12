@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
+using BurstChat.Application.Models;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Extensions;
@@ -32,7 +33,7 @@ namespace BurstChat.Signal.Hubs.Chat
 
         /// <summary>
         /// Executes any necessary start up code for the hub.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any parameter is null.
         /// </summary>
@@ -174,10 +175,15 @@ namespace BurstChat.Signal.Hubs.Chat
         /// </summary>
         /// <param name="invitation">The invitation to be updated</param>
         /// <returns>A Task instance</returns>
-        public async Task UpdateInvitation(Invitation invitation)
+        public async Task UpdateInvitation(long id, bool accepted)
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _userService.UpdateInvitationAsync(httpContext, invitation);
+            var data = new UpdateInvitation
+            {
+                InvitationId = id,
+                Accepted = accepted
+            };
+            var monad = await _userService.UpdateInvitationAsync(httpContext, data);
             var signalGroup = string.Empty;
             var invite = new Invitation();
 

@@ -147,10 +147,9 @@ namespace BurstChat.Api.Controllers
         [HttpPut("invitation")]
         [ProducesResponseType(typeof(Invitation), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public MonadActionResult<Invitation, Error> UpdateInvitation([FromBody] Invitation invitation) =>
+        public MonadActionResult<Invitation, Error> UpdateInvitation([FromBody] UpdateInvitation invitation) =>
             HttpContext.GetUserId()
-                       .Bind(userId => _userService.ValidateInvitation(userId, invitation))
-                       .Bind(_userService.UpdateInvitation);
+                       .Bind(userId => _userService.UpdateInvitation(userId, invitation));
 
         /// <summary>
         /// Fetches the sip endpoint and password of the user.

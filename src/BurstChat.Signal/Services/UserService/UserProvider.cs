@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
+using BurstChat.Application.Models;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using BurstChat.Signal.Services.ApiInteropService;
@@ -24,7 +25,7 @@ namespace BurstChat.Signal.Services.UserService
 
         /// <summary>
         /// Creates a new instance of UserProvider.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any paramter is null.
         /// </summary>
@@ -109,7 +110,7 @@ namespace BurstChat.Signal.Services.UserService
         /// <param name="context">The current http context</param>
         /// <param name="invitation">The invitations instance to be updated</param>
         /// <returns>A task of an either monad</returns>
-        public async Task<Either<Invitation, Error>> UpdateInvitationAsync(HttpContext context, Invitation invitation)
+        public async Task<Either<Invitation, Error>> UpdateInvitationAsync(HttpContext context, UpdateInvitation invitation)
         {
             try
             {

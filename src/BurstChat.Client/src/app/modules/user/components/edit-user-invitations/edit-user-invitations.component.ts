@@ -17,9 +17,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class EditUserInvitationsComponent implements OnInit, OnDestroy {
 
-    private invitationsSubscription?: Subscription;
-
-    private updatedInvitationSubscription?: Subscription;
+    private subscriptions: Subscription[];
 
     public invitations: Invitation[] = [];
 
@@ -36,28 +34,29 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
      * @memberof EditUserInvitationsComponent
      */
     public ngOnInit() {
-        this.invitationsSubscription = this
-            .chatService
-            .invitations
-            .subscribe(invitations => {
-                this.invitations = invitations;
-            });
+        this.subscriptions = [
+            this
+                .chatService
+                .invitations
+                .subscribe(invitations => {
+                    this.invitations = invitations;
+                }),
+            this
+                .chatService
+                .updatedInvitation
+                .subscribe(invite => {
+                    const storedInvite = this.invitations.find(entry => entry.serverId === invite.serverId);
+                    if (storedInvite) {
+                        const index = this.invitations.indexOf(storedInvite);
+                        this.invitations.splice(index, 1);
+                    }
 
-        this.updatedInvitationSubscription = this
-            .chatService
-            .updatedInvitation
-            .subscribe(invite => {
-                const storedInvite = this.invitations.find(entry => entry.serverId === invite.serverId);
-                if (storedInvite) {
-                    const index = this.invitations.indexOf(storedInvite);
-                    this.invitations.splice(index, 1);
-                }
-
-                const processingEntryIndex = this.processingQueue.indexOf(storedInvite.id);
-                if (processingEntryIndex !== -1) {
-                    this.processingQueue.splice(processingEntryIndex, 1);
-                }
-            });
+                    const processingEntryIndex = this.processingQueue.indexOf(storedInvite.id);
+                    if (processingEntryIndex !== -1) {
+                        this.processingQueue.splice(processingEntryIndex, 1);
+                    }
+                })
+        ];
     }
 
     /**
@@ -65,15 +64,7 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
      * @memberof EditUserInvitationsComponent
      */
     public ngOnDestroy() {
-        if (this.invitationsSubscription) {
-            this.invitationsSubscription
-                .unsubscribe();
-        }
-
-        if (this.updatedInvitationSubscription) {
-            this.updatedInvitationSubscription
-                .unsubscribe();
-        }
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -94,7 +85,7 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
     public onAccept(invite: Invitation) {
         if (invite) {
             invite.accepted = true;
-            this.chatService.updateInvitation(invite);
+            this.chatService.updateInvitation(invite.id, true);
         }
     }
 
@@ -106,7 +97,7 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
     public onDecline(invite: Invitation) {
         if (invite) {
             invite.declined = true;
-            this.chatService.updateInvitation(invite);
+            this.chatService.updateInvitation(invite.id, false);
             this.processingQueue.push(invite.id);
         }
     }

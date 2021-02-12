@@ -401,10 +401,10 @@ export class ChatService {
      * @param {Invitation} invitation The modified invitation details.
      * @memberof ChatService
      */
-    public updateInvitation(invitation: Invitation) {
+    public updateInvitation(id: number, accepted: boolean) {
         if (this.connection) {
             this.connection
-                .invoke('updateInvitation', invitation)
+                .invoke('updateInvitation', id, accepted)
                 .catch(error => console.warn(error));
         }
     }

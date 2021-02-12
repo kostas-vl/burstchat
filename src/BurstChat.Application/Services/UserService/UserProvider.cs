@@ -6,6 +6,7 @@ using BurstChat.Application.Errors;
 using BurstChat.Application.Interfaces;
 using BurstChat.Application.Services.BCryptService;
 using BurstChat.Application.Monads;
+using BurstChat.Application.Models;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace BurstChat.Application.Services.UserService
 
         /// <summary>
         /// Executes any necessary start up code for the controller.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any of the parameters is null.
         /// </summary>
@@ -429,22 +430,12 @@ namespace BurstChat.Application.Services.UserService
         }
 
         /// <summary>
-        /// This method will validate the provided invitation against the provided user.
-        /// </summary>
-        /// <param name="invitation">The server invitation to be validated</param>
-        /// <returns>An either monad</returns>
-        public Either<Invitation, Error> ValidateInvitation(long userId, Invitation invitation) =>
-            invitation != null && userId == invitation.UserId
-                ? new Success<Invitation, Error>(invitation)
-                : new Failure<Invitation, Error>(UserErrors.CouldNotUpdateInvitation());
-
-        /// <summary>
         /// This method will updated the Accepted or Declined propery of an existing invitation based on the instance
         /// provided.
         /// </summary>
-        /// <param name="invitation">The server invitation to be updated</param>
+        /// <param name="data">The server invitation to be updated</param>
         /// <returns>An either monad</returns>
-        public Either<Invitation, Error> UpdateInvitation(Invitation invitation)
+        public Either<Invitation, Error> UpdateInvitation(long userId, UpdateInvitation data)
         {
             try
             {
@@ -452,13 +443,13 @@ namespace BurstChat.Application.Services.UserService
                     .Invitations
                     .Include(i => i.Server)
                     .Include(i => i.User)
-                    .FirstOrDefault(i => i.Id == invitation.Id);
+                    .FirstOrDefault(i => i.Id == data.InvitationId && i.UserId == userId);
 
                 if (storedInvitation == null)
                     return new Failure<Invitation, Error>(UserErrors.CouldNotUpdateInvitation());
 
-                storedInvitation.Accepted = invitation.Accepted;
-                storedInvitation.Declined = invitation.Declined;
+                storedInvitation.Accepted = data.Accepted;
+                storedInvitation.Declined = !data.Accepted;
                 storedInvitation.DateUpdated = DateTime.Now;
 
                 if (storedInvitation.Accepted)
