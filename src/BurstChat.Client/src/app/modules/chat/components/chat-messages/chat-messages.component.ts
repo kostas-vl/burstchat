@@ -262,7 +262,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.messages = this.addMessageToClusters([...this.messages], message);
             this.chatIsEmpty = false;
             this.scrollToBottom();
-            this.notifyService.notify('New message', message.content);
+            this.notifyService.notify(`${message.user.name} sent:`, message.content);
         }
     }
 
