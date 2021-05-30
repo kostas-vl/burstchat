@@ -12,6 +12,12 @@
 
 </div>
 
+<burst-dialog [(visible)]="addServerDialogVisible">
+
+    <burst-add-server></burst-add-server>
+
+<burst-dialog>
+
 <div class="layout-loader" *ngIf="loading">
 
     <div class="loader"></div>
