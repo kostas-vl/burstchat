@@ -1,8 +1,10 @@
 <div class="user-info">
 
-    <div class="user-logo">
+    <div class="user-logo pl-10 pr-5">
 
-        <fa-icon [icon]="dragon"></fa-icon>
+        <fa-icon class="pl-5" [icon]="dragon" *ngIf="!user?.avatar"></fa-icon>
+
+        <burst-avatar [name]="user.name" [avatar]="user.avatar" size="lg" *ngIf="user?.avatar"></burst-avatar>
 
     </div>
 
@@ -10,7 +12,7 @@
 
     <div class="user-id" *ngIf="user">#{{user.id}}</div>
 
-    <div class="user-actions ml-auto">
+    <div class="user-actions">
 
         <div class="button-icon text" (click)="onEditUser()">
 

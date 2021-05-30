@@ -26,15 +26,11 @@
 
             <div class="row">
 
-                <div class="column column-50">
+                <div class="column column-100 add-server-actions">
 
-                    <button class="button w-100" [disabled]="loading" (click)="onPost()">ADD</button>
+                    <button class="button-clear" [disabled]="loading" (click)="onClose()">CANCEL</button>
 
-                </div>
-
-                <div class="column column-50">
-
-                    <button class="button button-outline w-100" [disabled]="loading" (click)="onClose()">CANCEL</button>
+                    <button class="button" [disabled]="loading" (click)="onPost()">ADD</button>
 
                 </div>
 
