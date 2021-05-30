@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
@@ -20,6 +21,7 @@ import { UserListComponent } from 'src/app/modules/burst/components/user-list/us
 import { UserComponent } from 'src/app/modules/burst/components/user/user.component';
 import { IncomingCallComponent } from 'src/app/modules/burst/components/incoming-call/incoming-call.component';
 import { OngoingCallComponent } from 'src/app/modules/burst/components/ongoing-call/ongoing-call.component';
+import { AddServerComponent } from 'src/app/modules/burst/components/add-server/add-server.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -46,6 +48,7 @@ import {
     imports: [
         CommonModule,
         HttpClientModule,
+        FormsModule,
         FontAwesomeModule,
         SharedModule,
         BurstRoutingModule
@@ -64,7 +67,8 @@ import {
         UserListComponent,
         UserComponent,
         IncomingCallComponent,
-        OngoingCallComponent
+        OngoingCallComponent,
+        AddServerComponent
     ],
     providers: [
         {

@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 
 /**
  * This class represents an angular component that displays a form for creating a new BurstChat server.
@@ -15,7 +17,9 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class AddServerComponent implements OnInit, OnDestroy {
 
-    private addedServerSubscription?: Subscription;
+    private addedServerSub?: Subscription;
+
+    public closeIcon = faTimes;
 
     public server: Server = new BurstChatServer();
 
@@ -27,7 +31,8 @@ export class AddServerComponent implements OnInit, OnDestroy {
      */
     constructor(
         private notifyService: NotifyService,
-        private chatService: ChatService
+        private chatService: ChatService,
+        private sidebarService: SidebarService
     ) { }
 
     /**
@@ -35,7 +40,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
      * @memberof AddServerComponent
      */
     public ngOnInit() {
-        this.addedServerSubscription = this
+        this.addedServerSub = this
             .chatService
             .addedServer
             .subscribe(server => {
@@ -45,6 +50,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
                     this.notifyService.notify(title, content);
                     this.server = new BurstChatServer();
                     this.loading = false;
+                    this.onClose();
                 }
             });
     }
@@ -54,10 +60,16 @@ export class AddServerComponent implements OnInit, OnDestroy {
      * @memberof AddServerComponent
      */
     public ngOnDestroy() {
-        if (this.addedServerSubscription) {
-            this.addedServerSubscription
-                .unsubscribe();
-        }
+        this.addedServerSub?.unsubscribe();
+    }
+
+    /**
+     * Handles the close button click event.
+     * @memberof AddServerComponent
+     */
+    public onClose() {
+        this.sidebarService
+            .toggleAddServerDialog(false);
     }
 
     /**
