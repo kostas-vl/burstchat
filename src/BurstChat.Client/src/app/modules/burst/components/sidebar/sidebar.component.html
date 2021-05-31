@@ -1,15 +1,5 @@
 <div id="sidebar" class="sidebar">
 
-    <div class="sidebar-header">
-
-        <div class="sidebar-user-info">
-
-            <burst-sidebar-user-info></burst-sidebar-user-info>
-
-        </div>
-
-    </div>
-
     <burst-ongoing-call></burst-ongoing-call>
 
     <div class="sidebar-content">
@@ -20,19 +10,29 @@
 
         </div>
 
-        <div class="sidebar-lists" *ngIf="display === 'direct'">
+        <div class="sidebar-dms" *ngIf="display === 'direct'">
 
             <burst-direct-messaging-list></burst-direct-messaging-list>
 
         </div>
 
-        <div class="sidebar-lists" *ngIf="display === 'server'">
+        <div class="sidebar-srv" *ngIf="display === 'server'">
 
             <burst-server-info></burst-server-info>
 
             <burst-channel-list></burst-channel-list>
 
             <burst-user-list></burst-user-list>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div class="sidebar-user-info">
+
+                <burst-sidebar-user-info></burst-sidebar-user-info>
+
+            </div>
 
         </div>
 

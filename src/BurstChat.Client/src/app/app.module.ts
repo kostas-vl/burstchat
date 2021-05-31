@@ -20,7 +20,7 @@ import { PopupComponent } from 'src/app/components/popup/popup.component';
     declarations: [
         RootComponent,
         PopupListComponent,
-        PopupComponent
+        PopupComponent,
     ],
     providers: [
         NotifyService,

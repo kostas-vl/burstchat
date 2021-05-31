@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Message } from 'src/app/models/chat/message';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen a message from a user.
@@ -16,6 +16,10 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 export class ChatMessageComponent implements OnInit {
 
     public plane = faPaperPlane;
+
+    public edit = faPen;
+
+    public delete = faTrashAlt;
 
     public get fullDisplay() {
         return this.message?.displayMode === 'full';

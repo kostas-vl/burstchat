@@ -2,9 +2,7 @@
 
     <div class="user-logo pl-10 pr-5">
 
-        <fa-icon class="pl-5" [icon]="dragon" *ngIf="!user?.avatar"></fa-icon>
-
-        <burst-avatar [name]="user.name" [avatar]="user.avatar" size="lg" *ngIf="user?.avatar"></burst-avatar>
+        <burst-avatar [name]="user.name" [avatar]="user.avatar"></burst-avatar>
 
     </div>
 

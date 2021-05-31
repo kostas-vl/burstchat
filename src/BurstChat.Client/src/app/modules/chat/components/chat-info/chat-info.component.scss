@@ -1,7 +1,8 @@
 @import '../../../../../scss/theme';
 
 .chat-info {
-    background-color: $dark-color;
+    background-color: $secondary-color;
+    border-bottom: 1px solid $dark-color;
     position: fixed !important;
     left: $sidebar-width !important;
     right: 0 !important;

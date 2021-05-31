@@ -1,4 +1,6 @@
-@import '../../../../../scss/theme.scss';
+@import '../../../../../scss/theme';
+@import '../../../../../scss/background';
+@import '../../../../../scss/sizing';
 
 blockquote {
     width: 430px;
@@ -15,6 +17,23 @@ blockquote {
 .message-container:hover {
     background-color: $dark-color;
     border-radius: 5px;
+    .message-actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+.message-actions {
+    @extend .ml-auto;
+    @extend .bg-secondary;
+    position: relative;
+    bottom: 15px;
+    right: 30px;
+    min-width: 60px;
+    padding: 3px;
+    border-radius: 3px;
+    display: none;
 }
 
 .message-avatar {

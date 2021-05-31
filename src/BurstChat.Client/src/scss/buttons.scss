@@ -1,7 +1,7 @@
 @import 'theme';
 
 .button-icon {
-    background-color: transparent;
+    background-color: inherit;
     color: $accent-color;
     width: 35px;
     height: 35px;
@@ -16,6 +16,7 @@
 
 .button-icon:hover {
     cursor: pointer;
+    background-color: $blurry-color;
 }
 
 .button-icon-interactive {

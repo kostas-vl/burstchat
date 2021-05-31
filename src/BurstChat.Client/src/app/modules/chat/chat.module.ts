@@ -15,6 +15,8 @@ import { ChatMessagesComponent } from 'src/app/modules/chat/components/chat-mess
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
 import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-message/chat-message.component';
 import { ChatCallComponent } from 'src/app/modules/chat/components/chat-call/chat-call.component';
+import { MessageEditDialogComponent } from 'src/app/modules/chat/components/message-edit-dialog/message-edit-dialog.component';
+import { MessageDeleteDialogComponent } from 'src/app/modules/chat/components/message-delete-dialog/message-delete-dialog.component';
 
 import {
     faPaperPlane,
@@ -27,7 +29,9 @@ import {
     faMicrophone,
     faMicrophoneSlash,
     faVolumeUp,
-    faVolumeMute
+    faVolumeMute,
+    faPen,
+    faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -48,7 +52,9 @@ import {
         ChatMessagesComponent,
         ChatMessageComponent,
         ChatInputComponent,
-        ChatCallComponent
+        ChatCallComponent,
+        MessageEditDialogComponent,
+        MessageDeleteDialogComponent
     ]
 })
 export class ChatModule {
@@ -69,7 +75,9 @@ export class ChatModule {
             faMicrophone,
             faMicrophoneSlash,
             faVolumeUp,
-            faVolumeMute);
+            faVolumeMute,
+            faPen,
+            faTrashAlt);
     }
 
 }

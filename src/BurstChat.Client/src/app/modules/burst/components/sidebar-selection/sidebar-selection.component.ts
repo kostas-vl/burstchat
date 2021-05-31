@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { faCubes, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faDragon, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
@@ -32,7 +32,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
     private usersCache: { [id: string]: User[] } = {};
 
-    public cubes = faCubes;
+    public dragon = faDragon;
 
     public users = faUsers;
 

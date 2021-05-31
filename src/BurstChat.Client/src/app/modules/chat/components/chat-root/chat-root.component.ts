@@ -20,13 +20,13 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class ChatRootComponent implements OnInit, OnDestroy {
 
-    private routeParametersSubscription?: Subscription;
-
-    private onReconnectedSubscription?: Subscription;
+    private subscriptions: Subscription[];
 
     public options?: ChatConnectionOptions;
 
     public noChatFound = false;
+
+    public editMessageDialogVisible = true;
 
     /**
      * Creates an instance of ChatRootComponent.
@@ -44,25 +44,26 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnInit() {
-        this.routeParametersSubscription = this
-            .activatedRoute
-            .queryParamMap
-            .subscribe(params => {
-                const name = params.get('name');
-                const id = +params.get('id');
-                const currentUrl = this.router.url;
-                this.assignOptions(currentUrl, name, id);
-                this.assignSelfToChat(this.options);
-            });
-
-        this.onReconnectedSubscription = this
-            .chatService
-            .onReconnected
-            .subscribe(() => {
-                if (this.options) {
-                    this.chatService.addSelfToChat(this.options);
-                }
-            });
+        this.subscriptions = [
+            this
+                .activatedRoute
+                .queryParamMap
+                .subscribe(params => {
+                    const name = params.get('name');
+                    const id = +params.get('id');
+                    const currentUrl = this.router.url;
+                    this.assignOptions(currentUrl, name, id);
+                    this.assignSelfToChat(this.options);
+                }),
+            this
+                .chatService
+                .onReconnected
+                .subscribe(() => {
+                    if (this.options) {
+                        this.chatService.addSelfToChat(this.options);
+                    }
+                })
+        ];
     }
 
     /**
@@ -70,15 +71,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnDestroy() {
-        if (this.routeParametersSubscription) {
-            this.routeParametersSubscription
-                .unsubscribe();
-        }
-
-        if (this.onReconnectedSubscription) {
-            this.onReconnectedSubscription
-                .unsubscribe();
-        }
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
