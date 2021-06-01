@@ -1,0 +1,43 @@
+<burst-card>
+
+    <burst-card-body>
+
+        <div class="add-server">
+
+            <div class="row">
+
+                <div class="column column-100">
+
+                    <h4>Add a new server</h4>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="column column-100">
+
+                    <input type="text" placeholder="Server name" [disabled]="loading" [(ngModel)]="server.name">
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="column column-100 add-server-actions">
+
+                    <button class="button-clear" [disabled]="loading" (click)="onClose()">CANCEL</button>
+
+                    <button class="button" [disabled]="loading" (click)="onPost()">ADD</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </burst-card-body>
+
+</burst-card>

@@ -34,17 +34,11 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
 })
 export class LayoutComponent implements OnInit, OnDestroy {
 
-    private onConnectedSub?: Subscription;
-
-    private onReconnectedSub?: Subscription;
-
-    private invitationsSub?: Subscription;
-
-    private newInvitationSub?: Subscription;
-
-    private userUpdatedSub?: Subscription;
+    private subscriptions: Subscription[];
 
     public loading = true;
+
+    public addServerDialogVisible = false;
 
     /**
      * Creates an instance of LayoutComponent.
@@ -55,6 +49,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private directMessagingService: DirectMessagingService,
         private chatService: ChatService,
+        private sidebarService: SidebarService,
     ) { }
 
     /**
@@ -62,36 +57,35 @@ export class LayoutComponent implements OnInit, OnDestroy {
      * @memberof LayoutComponent
      */
     public ngOnInit() {
-        this.onConnectedSub = this
-            .chatService
-            .onConnected
-            .subscribe(() => {
-                setTimeout(() => {
+        this.subscriptions = [
+            this.chatService
+                .onConnected
+                .subscribe(() => {
+                    setTimeout(() => {
+                        this.chatService.getInvitations();
+                        this.loading = false;
+                    }, 300);
+                }),
+            this.chatService
+                .onReconnected
+                .subscribe(() => {
                     this.chatService.getInvitations();
-                    this.loading = false;
-                }, 300);
-            });
+                }),
+            this.chatService
+                .invitations
+                .subscribe(data => {
+                    if (data.length > 0) {
+                        data.forEach(invite => this.onInvite(invite));
+                    }
+                }),
+            this.chatService
+                .newInvitation
+                .subscribe(invite => this.onInvite(invite)),
+            this.sidebarService
+                .addServerDialog
+                .subscribe(visible => this.addServerDialogVisible = visible)
+        ];
 
-        this.onReconnectedSub = this
-            .chatService
-            .onReconnected
-            .subscribe(() => {
-                this.chatService.getInvitations();
-            });
-
-        this.invitationsSub = this
-            .chatService
-            .invitations
-            .subscribe(data => {
-                if (data.length > 0) {
-                    data.forEach(invite => this.onInvite(invite));
-                }
-            });
-
-        this.newInvitationSub = this
-            .chatService
-            .newInvitation
-            .subscribe(invite => this.onInvite(invite));
 
         this.userService.get();
         this.userService.getSubscriptions();
@@ -103,11 +97,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
      * @memberof LayoutComponent
      */
     public ngOnDestroy() {
-        this.onConnectedSub?.unsubscribe();
-        this.onReconnectedSub?.unsubscribe();
-        this.invitationsSub?.unsubscribe();
-        this.newInvitationSub?.unsubscribe();
-        this.userUpdatedSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**

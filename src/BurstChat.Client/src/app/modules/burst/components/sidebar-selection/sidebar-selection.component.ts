@@ -277,7 +277,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @memberof SidebarSelectionComponent
      */
     public onNew() {
-        this.router.navigateByUrl('/core/servers/add');
+        this.sidebarService.toggleAddServerDialog(true);
     }
 
     /**

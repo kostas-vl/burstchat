@@ -1,4 +1,5 @@
 @import '../../../../../scss/theme';
+@import '../../../../../scss/sizing';
 
 .button-clear {
     color: white;
@@ -12,15 +13,12 @@
 .user-info {
     background-color: $accent-color;
     height: $minor-height;
-    padding-left: 15px;
-    padding-right: 5px;
     display: flex;
-    align-items: center;    
+    align-items: center;
 }
 
 .user-logo {
     font-size: 26px;
-    padding-right: 6px;
 }
 
 .user-name {
@@ -33,6 +31,8 @@
 }
 
 .user-actions {
+    @extend .ml-auto;
+    @extend .pr-5;
     display: flex;
     flex-direction: row;
 }
