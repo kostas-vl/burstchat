@@ -80,7 +80,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                     }
                 }),
             this.chatService
-                .onReconnected
+                .onReconnected$
                 .subscribe(() => {
                     if (this.options) {
                         this.chatService.addSelfToChat(this.options);

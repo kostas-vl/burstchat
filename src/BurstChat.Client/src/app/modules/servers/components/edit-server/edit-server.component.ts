@@ -40,14 +40,13 @@ export class EditServerComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-        this.activatedRoute
-            .params
-            .subscribe(params => {
-                this.routeServerId = +params.id;
-                const displayServer = new DisplayServer(this.routeServerId);
-                this.sidebarService.toggleDisplay(displayServer);
-            }),
-
+            this.activatedRoute
+                .params
+                .subscribe(params => {
+                    this.routeServerId = +params.id;
+                    const displayServer = new DisplayServer(this.routeServerId);
+                    this.sidebarService.toggleDisplay(displayServer);
+                }),
             this.serversService
                 .serverInfo
                 .subscribe(server => {

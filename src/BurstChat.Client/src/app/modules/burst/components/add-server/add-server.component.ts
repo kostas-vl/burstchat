@@ -44,7 +44,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.subscriptions = [
             this.chatService
-                .addedServer
+                .addedServer$
                 .subscribe(server => {
                     if (server.name === this.server.name) {
                         const title = 'Success';

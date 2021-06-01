@@ -60,7 +60,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                     this.assignSelfToChat(this.options);
                 }),
             this.chatService
-                .onReconnected
+                .onReconnected$
                 .subscribe(() => {
                     if (this.options) {
                         this.chatService.addSelfToChat(this.options);

@@ -59,50 +59,39 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.userService
                 .user
                 .subscribe(user => this.user = user),
-
             this.userService
                 .subscriptions
                 .subscribe(servers => {
                     this.servers = servers;
                     this.serversService.updateCache(servers);
                 }),
-
             this.userService
                 .usersCache
                 .subscribe(cache => this.usersCache = cache),
-
             this.serversService
                 .serverInfo
                 .subscribe(server => this.serverInfoCallback(server)),
-
             this.chatService
-                .addedServer
+                .addedServer$
                 .subscribe(server => this.serverInfoCallback(server)),
-
             this.chatService
-                .updatedServer
+                .updatedServer$
                 .subscribe(server => this.updatedServer(server)),
-
             this.chatService
-                .subscriptionDeleted
+                .subscriptionDeleted$
                 .subscribe(data => this.subcriptionDeletedCallback(data)),
-
             this.chatService
-                .channelCreated
+                .channelCreated$
                 .subscribe(data => this.channelCreatedCallback(data)),
-
             this.chatService
-                .channelUpdated
+                .channelUpdated$
                 .subscribe(channel => this.channelUpdatedCallback(channel)),
-
             this.chatService
-                .channelDeleted
+                .channelDeleted$
                 .subscribe(channelId => this.channelDeletedCallback(channelId)),
-
             this.chatService
-                .updatedInvitation
+                .updatedInvitation$
                 .subscribe(invite => this.updatedInvitationCallback(invite)),
-
             this.sidebarService
                 .display
                 .subscribe(options => {

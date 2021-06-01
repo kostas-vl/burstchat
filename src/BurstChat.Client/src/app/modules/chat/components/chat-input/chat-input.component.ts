@@ -20,9 +20,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class ChatInputComponent implements OnInit, OnDestroy {
 
-    private userSub?: Subscription;
-
-    private allMessagesReceivedSub?: Subscription;
+    private subscriptions: Subscription[];
 
     private user?: User;
 
@@ -56,21 +54,20 @@ export class ChatInputComponent implements OnInit, OnDestroy {
      * @memberof ChatInputComponent
      */
     public ngOnInit() {
-        this.userSub= this
-            .userService
-            .user
-            .subscribe(user => {
-                if (user) {
-                    this.user = user;
-                }
-            });
-
-        this.allMessagesReceivedSub= this
-            .chatService
-            .allMessagesReceived
-            .subscribe(_ => {
-                setTimeout(() => this.loading = false, 300);
-            });
+        this.subscriptions = [
+            this.userService
+                .user
+                .subscribe(user => {
+                    if (user) {
+                        this.user = user;
+                    }
+                }),
+            this.chatService
+                .allMessagesReceived$
+                .subscribe(_ => {
+                    setTimeout(() => this.loading = false, 300);
+                }),
+        ];
     }
 
     /**
@@ -78,8 +75,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
      * @memberof ChatInputComponent
      */
     public ngOnDestroy() {
-        this.userSub?.unsubscribe();
-        this.allMessagesReceivedSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
