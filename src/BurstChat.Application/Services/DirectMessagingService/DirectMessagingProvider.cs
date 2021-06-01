@@ -47,13 +47,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
         {
             try
             {
-                var directMessaging = _burstChatContext
-                    .DirectMessaging
-                    .FirstOrDefault(dm => dm.Id == directMessagingId
-                                          && (dm.FirstParticipantUserId == userId
-                                              || dm.SecondParticipantUserId == userId));
-
-                if (directMessaging is { })
+                return Get(userId, directMessagingId).Bind(directMessaging =>
                 {
                     directMessaging.Messages = _burstChatContext
                         .DirectMessaging
@@ -65,7 +59,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                         .Select(dm => dm.Messages
                                         .Where(m => m.Id < (lastMessageId ?? long.MaxValue))
                                         .OrderByDescending(m => m.Id)
-                                        .Take(300))
+                                        .Take(100))
                         .ToList()
                         .Aggregate(new List<Message>(), (current, next) =>
                         {
@@ -76,9 +70,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                         .ToList();
 
                     return new Success<DirectMessaging, Error>(directMessaging);
-                }
-                else
-                    return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingNotFound());
+                });
             }
             catch (Exception e)
             {
@@ -103,7 +95,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                                           && (dm.FirstParticipantUserId == userId
                                               || dm.SecondParticipantUserId == userId));
 
-                return directMessaging is {}
+                return directMessaging is not null 
                     ? new Success<DirectMessaging, Error>(directMessaging)
                     : new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagesNotFound());
             }
@@ -135,7 +127,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                     .FirstOrDefault(dm => (dm.FirstParticipantUserId == firstParticipantId && dm.SecondParticipantUserId == secondParticipantId)
                                           || (dm.FirstParticipantUserId == secondParticipantId && dm.SecondParticipantUserId == firstParticipantId));
 
-                return directMessaging is {}
+                return directMessaging is not null 
                     ? new Success<DirectMessaging, Error>(directMessaging)
                     : new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagesNotFound());
             }
@@ -195,25 +187,20 @@ namespace BurstChat.Application.Services.DirectMessagingService
                     .FirstOrDefault(dm => (dm.FirstParticipantUserId == firstParticipantId && dm.SecondParticipantUserId == secondParticipantId)
                                           || (dm.FirstParticipantUserId == secondParticipantId && dm.SecondParticipantUserId == firstParticipantId));
 
-                if (isProperUser && directMessaging is null)
-                {
-                    var newDirectMessaging = new DirectMessaging
-                    {
-                        FirstParticipantUserId = firstParticipantId,
-                        SecondParticipantUserId = secondParticipantId,
-                    };
-
-                    _burstChatContext
-                        .DirectMessaging
-                        .Add(newDirectMessaging);
-
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<DirectMessaging, Error>(newDirectMessaging);
-                }
-                else
+                if (!isProperUser || directMessaging is not null)
                     return new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagingAlreadyExists());
 
+                var newDirectMessaging = new DirectMessaging
+                {
+                    FirstParticipantUserId = firstParticipantId,
+                    SecondParticipantUserId = secondParticipantId,
+                };
+                _burstChatContext
+                    .DirectMessaging
+                    .Add(newDirectMessaging);
+                _burstChatContext.SaveChanges();
+
+                return new Success<DirectMessaging, Error>(newDirectMessaging);
             }
             catch (Exception e)
             {
@@ -257,13 +244,8 @@ namespace BurstChat.Application.Services.DirectMessagingService
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
         /// <param name="lastMessageId">The message id from which all prior messages will be fetched</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(long userId,
-                                                               long directMessagingId,
-                                                               long? lastMessageId = null)
-        {
-            return GetWithMessages(userId, directMessagingId, lastMessageId)
-               .Attach(directMessaging => directMessaging.Messages as IEnumerable<Message>);
-        }
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId, long directMessagingId, long? lastMessageId = null) =>
+            GetWithMessages(userId, directMessagingId, lastMessageId).Attach(dm => dm.Messages as IEnumerable<Message>);
 
         /// <summary>
         /// This method will add a new message to a direct messaging entry.
@@ -282,27 +264,21 @@ namespace BurstChat.Application.Services.DirectMessagingService
                         .Users
                         .FirstOrDefault(u => u.Id == userId);
 
-                    if (user is { } && message is { })
-                    {
-                        var newMessage = new Message
-                        {
-                            User = user,
-                            Links = message.GetLinksFromContent(),
-                            Content = message.RemoveLinksFromContent(),
-                            Edited = false,
-                            DatePosted = message.DatePosted
-                        };
-
-                        directMessaging.Messages
-                                    .Add(newMessage);
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Message, Error>(newMessage);
-                    }
-                    else
+                    if (user is null || message is null)
                         return new Failure<Message, Error>(DirectMessagingErrors.DirectMessagesNotFound());
 
+                    var newMessage = new Message
+                    {
+                        User = user,
+                        Links = message.GetLinksFromContent(),
+                        Content = message.RemoveLinksFromContent(),
+                        Edited = false,
+                        DatePosted = message.DatePosted
+                    };
+                    directMessaging.Messages.Add(newMessage);
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Message, Error>(newMessage);
                 });
             }
             catch (Exception e)
@@ -323,24 +299,31 @@ namespace BurstChat.Application.Services.DirectMessagingService
         {
             try
             {
-                return GetWithMessages(userId, directMessagingId, message.Id).Bind<Message>(directMessaging =>
+                if (message is null)
+                    return new Failure<Message, Error>(DirectMessagingErrors.DirectMessageNotFound());
+                    
+                return Get(userId, directMessagingId).Bind<Message>(_ =>
                 {
-                    var messageEntry = directMessaging
-                        .Messages
-                        .FirstOrDefault(m => m.Id == message.Id);
+                    var entries = _burstChatContext
+                        .DirectMessaging
+                        .Include(dm => dm.Messages)
+                        .ThenInclude(dm => dm.User)
+                        .Include(dm => dm.Messages)
+                        .ThenInclude(dm => dm.Links)
+                        .Where(dm => dm.Id == directMessagingId)
+                        .Select(dm => dm.Messages.FirstOrDefault(m => m.Id == message.Id))
+                        .ToList();
 
-                    if (messageEntry is { } && messageEntry.UserId == userId)
-                    {
-                        messageEntry.Links = message.GetLinksFromContent();
-                        messageEntry.Content = message.RemoveLinksFromContent();
-                        messageEntry.Edited = true;
+                    if (entries.Count != 1)
+                        return new Failure<Message, Error>(DirectMessagingErrors.DirectMessageNotFound());
 
-                        _burstChatContext.SaveChanges();
+                    var entry = entries.First()!;
+                    entry.Links = message.GetLinksFromContent();
+                    entry.Content = message.RemoveLinksFromContent();
+                    entry.Edited = true;
+                    _burstChatContext.SaveChanges();
 
-                        return new Success<Message, Error>(messageEntry);
-                    }
-                    else
-                        return new Failure<Message, Error>(DirectMessagingErrors.DirectMessagesNotFound());
+                    return new Success<Message, Error>(entry);
                 });
             }
             catch (Exception e)
@@ -361,12 +344,18 @@ namespace BurstChat.Application.Services.DirectMessagingService
         {
             try
             {
-                return GetWithMessages(userId, directMessagingId, messageId).Bind(directMessaging =>
+                return Get(userId, directMessagingId).Bind<Message>(_ =>
                 {
-                    var message = directMessaging.Messages.First(m => m.Id == messageId);
+                    var directMessaging = _burstChatContext
+                        .DirectMessaging
+                        .Include(dm => dm.Messages.Where(m => m.Id == messageId))
+                        .First(dm => dm.Id == directMessagingId);
 
+                    if (!directMessaging.Messages.Any())
+                        return new Failure<Message, Error>(DirectMessagingErrors.DirectMessagesNotFound());
+
+                    var message = directMessaging.Messages.First()!;
                     directMessaging.Messages.Remove(message);
-
                     _burstChatContext.SaveChanges();
 
                     return new Success<Message, Error>(message);
