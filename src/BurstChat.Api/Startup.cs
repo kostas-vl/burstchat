@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using BurstChat.Application;
 using BurstChat.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -74,6 +76,16 @@ namespace BurstChat.Api
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                })
+                .Use(async (context, next) =>
+                {
+                    var path = context?.Request?.Path;
+                    if (path?.Value?.IndexOf("/api", StringComparison.InvariantCulture) == -1)
+                    {
+                        context?.Response?.Redirect("/index.html");
+                        return;
+                    }
+                    await next();
                 });
         }
     }
