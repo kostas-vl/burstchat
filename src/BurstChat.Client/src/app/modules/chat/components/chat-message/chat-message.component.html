@@ -48,13 +48,13 @@
 
     <div class="message-actions">
 
-        <div class="button-icon text border-radius-15 fs-18" alt="edit">
+        <div class="button-icon text border-radius-15 fs-18" (click)="onEdit()">
 
             <fa-icon [icon]="edit"></fa-icon>
 
         </div>
 
-        <div class="button-icon text border-radius-15 fs-18">
+        <div class="button-icon text border-radius-15 fs-18" (click)="onDelete()">
 
             <fa-icon [icon]="delete"></fa-icon>
 
@@ -63,5 +63,3 @@
     </div>
 
 </div>
-
-

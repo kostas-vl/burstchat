@@ -241,9 +241,9 @@ export class ChatService {
 
         this.connection.on('directMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource));
 
-        this.connection.on('channelMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource));
+        this.connection.on('directMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource));
 
-        this.connection.on('channelMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
+        this.connection.on('directMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource));
 
         this.connection
             .start()

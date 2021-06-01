@@ -1,1 +1,24 @@
-<p>message-delete-dialog works!</p>
+<burst-dialog [visible]="isVisible">
+
+    <burst-card class="delete-message">
+
+        <burst-card-body>
+
+            <small>Are you sure you want to delete this message:</small>
+
+            <p>{{content}}</p>
+
+
+        </burst-card-body>
+
+        <burst-card-footer class="actions">
+
+            <button class="button-clear" (click)="onCancel()">CANCEL</button>
+
+            <button class="button" (click)="onDelete()">DELETE</button>
+
+        </burst-card-footer>
+
+    </burst-card>
+
+</burst-dialog>

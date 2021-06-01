@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Message } from 'src/app/models/chat/message';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
+import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
 
 /**
  * This class represents an angular component that is the root component that contains a server channel chat.
@@ -22,11 +24,19 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
 
     private subscriptions: Subscription[] = [];
 
-    private options?: ChannelConnectionOptions;
+    private internalOptions?: ChannelConnectionOptions;
 
     public noChatFound = false;
 
     public layoutState: 'chat' | 'call' = 'chat';
+
+    public get options() {
+        return this.internalOptions;
+    }
+
+    public editMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
+
+    public deleteMessageData: { visible: boolean, message?: Message} = { visible: false, message: null};
 
     /**
      * Creates an instance of ChatChannelComponent.
@@ -36,7 +46,8 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
         private chatService: ChatService,
-        private chatLayoutService: ChatLayoutService
+        private chatLayoutService: ChatLayoutService,
+        private chatDialogService: ChatDialogService
     ) { }
 
     /**
@@ -51,10 +62,10 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                     const name = params.get('name');
                     const id = +params.get('id');
                     if (name !== null && id !== null) {
-                        this.options = new ChannelConnectionOptions();
-                        this.options.signalGroup = `channel:${id}`;
-                        this.options.name = name;
-                        this.options.id = id;
+                        this.internalOptions = new ChannelConnectionOptions();
+                        this.internalOptions.signalGroup = `channel:${id}`;
+                        this.internalOptions.name = name;
+                        this.internalOptions.id = id;
                     } else {
                         this.noChatFound = true;
                         const title = 'No active chat found';
@@ -62,7 +73,6 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         this.notifyService.notify(title, content);
                     }
                 }),
-
             this.chatService
                 .onReconnected
                 .subscribe(() => {
@@ -70,10 +80,21 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         this.chatService.addSelfToChat(this.options);
                     }
                 }),
-
             this.chatLayoutService
                 .toggle$
-                .subscribe(s => this.layoutState = s)
+                .subscribe(s => this.layoutState = s),
+            this.chatDialogService
+                .editMessage$
+                .subscribe(message => this.editMessageData = {
+                    visible: true,
+                    message: message,
+                }),
+            this.chatDialogService
+                .deleteMessage$
+                .subscribe(message => this.deleteMessageData = {
+                    visible: true,
+                    message: message,
+                })
         ];
 
     }

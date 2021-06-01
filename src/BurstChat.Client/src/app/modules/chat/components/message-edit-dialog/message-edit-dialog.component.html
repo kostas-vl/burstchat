@@ -1,22 +1,20 @@
 <burst-dialog [visible]="isVisible">
 
-    <burst-card>
+    <burst-card class="edit-message">
 
         <burst-card-body>
 
-            <input type="text" [(ngModel)]="message">
+            <small>Edit your message and click save</small>
+
+            <input class="pt-10" type="text" [(ngModel)]="content">
 
         </burst-card-body>
 
-        <burst-card-footer>
+        <burst-card-footer class="actions">
 
-            <div class="actions">
+            <button class="button-clear" (click)="onCancel()">CANCEL</button>
 
-                <button class="button-clear">CANCEL</button>
-
-                <button class="button">EDIT</button>
-
-            </div>
+            <button class="button" (click)="onSave()">SAVE</button>
 
         </burst-card-footer>
 

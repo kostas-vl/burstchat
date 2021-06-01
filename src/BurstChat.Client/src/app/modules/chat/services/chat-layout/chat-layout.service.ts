@@ -14,8 +14,6 @@ export class ChatLayoutService {
 
     public toggle$ = this.toggleSource$.asObservable();
 
-    constructor() { }
-
     /**
      * Toggles to the next state of the layout based on the current value.
      * @memberof ChatLayoutService

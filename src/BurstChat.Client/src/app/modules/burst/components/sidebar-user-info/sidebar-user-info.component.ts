@@ -28,6 +28,14 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
 
     public user?: User;
 
+    public get name() {
+        return this.user?.name ?? '';
+    }
+
+    public get avatar() {
+        return this.user?.avatar ?? '';
+    }
+
     /**
      * Creates a new instance of SidebarUserInfoComponent.
      * @memberof SidebarUserInfoComponent

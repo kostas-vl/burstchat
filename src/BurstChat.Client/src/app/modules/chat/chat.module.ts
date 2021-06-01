@@ -5,6 +5,7 @@ import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
+import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
@@ -55,6 +56,9 @@ import {
         ChatCallComponent,
         MessageEditDialogComponent,
         MessageDeleteDialogComponent
+    ],
+    providers: [
+        ChatDialogService
     ]
 })
 export class ChatModule {

@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Message } from 'src/app/models/chat/message';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
 
 /**
  * This class represents an angular component that displauys a series of messages between users.
@@ -26,7 +28,9 @@ export class ChatRootComponent implements OnInit, OnDestroy {
 
     public noChatFound = false;
 
-    public editMessageDialogVisible = true;
+    public editMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
+
+    public deleteMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
 
     /**
      * Creates an instance of ChatRootComponent.
@@ -36,7 +40,8 @@ export class ChatRootComponent implements OnInit, OnDestroy {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
-        private chatService: ChatService
+        private chatService: ChatService,
+        private chatDialogService: ChatDialogService,
     ) { }
 
     /**
@@ -45,8 +50,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this
-                .activatedRoute
+            this.activatedRoute
                 .queryParamMap
                 .subscribe(params => {
                     const name = params.get('name');
@@ -55,13 +59,18 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                     this.assignOptions(currentUrl, name, id);
                     this.assignSelfToChat(this.options);
                 }),
-            this
-                .chatService
+            this.chatService
                 .onReconnected
                 .subscribe(() => {
                     if (this.options) {
                         this.chatService.addSelfToChat(this.options);
                     }
+                }),
+            this.chatDialogService
+                .editMessage$
+                .subscribe(message => this.editMessageData = {
+                    visible: true,
+                    message: message
                 })
         ];
     }
