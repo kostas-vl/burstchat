@@ -12,13 +12,31 @@
 
     </div>
 
-    <div class="ml-auto pr-5" *ngIf="canCall">
+    <div class="chat-info-actions ml-auto">
 
-        <button class="button my-auto" (click)="onCallClick()">
+        <div class="button-icon text mr-10" *ngIf="canCall" (click)="onCallClick()">
 
-            <fa-icon [icon]="callIcon"></fa-icon> Call
+            <fa-icon [icon]="callIcon"></fa-icon>
 
-        </button>
+        </div>
+
+        <div class="button-icon text mr-10" *ngIf="canCall" (click)="onCallClick()">
+
+            <fa-icon [icon]="videoIcon"></fa-icon>
+
+        </div>
+
+        <div class="mr-10">
+
+            <input type="text" placeholder="Search" />
+
+        </div>
+
+        <div class="button-icon text mr-10">
+
+            <fa-icon [icon]="helpIcon"></fa-icon>
+
+        </div>
 
     </div>
 

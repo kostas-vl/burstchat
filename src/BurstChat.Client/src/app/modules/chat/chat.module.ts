@@ -32,7 +32,9 @@ import {
     faVolumeUp,
     faVolumeMute,
     faPen,
-    faTrashAlt
+    faTrashAlt,
+    faQuestionCircle,
+    faVideo
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -81,7 +83,9 @@ export class ChatModule {
             faVolumeUp,
             faVolumeMute,
             faPen,
-            faTrashAlt);
+            faTrashAlt,
+            faQuestionCircle,
+            faVideo);
     }
 
 }

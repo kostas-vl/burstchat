@@ -7,9 +7,9 @@ blockquote {
 }
 
 .message-container {
+    width: calc(100vw - #{$sidebar-width} - 40px);
     display: flex;
     margin-left: 20px;
-    margin-right: 20px;
     flex-direction: row;
     align-items: flex-start;
 }
@@ -27,9 +27,8 @@ blockquote {
 .message-actions {
     @extend .ml-auto;
     @extend .bg-secondary;
-    position: relative;
-    bottom: 15px;
-    right: 30px;
+    position: fixed;
+    right: 40px;
     min-width: 60px;
     padding: 3px;
     border-radius: 3px;
@@ -41,6 +40,7 @@ blockquote {
 }
 
 .message {
+    width: calc(100vw - #{$sidebar-width} - 120px);
     display: flex;
     flex-direction: column;
 }

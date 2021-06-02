@@ -33,6 +33,7 @@ input {
     background-color: $dark-color !important;
     color: $text-color;
     border-color: $primary-color !important;
+    border-radius: .8rem !important;
 }
 
 input:disabled {

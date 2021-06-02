@@ -1,5 +1,12 @@
 @import '../../../../../scss/theme';
 
+hr {
+    border-top: 2px solid $secondary-color;
+    width: 30px;
+    padding: 0 0 0 0;
+    margin: 5px 0 5px 0;
+}
+
 .selection-list-container {
     text-align: center;
     padding-top: 10px;

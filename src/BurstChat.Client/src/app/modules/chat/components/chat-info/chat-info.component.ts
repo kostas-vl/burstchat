@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { faCommentAlt, faLock, faComments, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faCommentAlt, faLock, faComments, faPhone, faVideo, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
@@ -36,6 +36,10 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
     public icon = undefined;
 
     public callIcon = faPhone;
+
+    public videoIcon = faVideo;
+
+    public helpIcon = faQuestionCircle;
 
     public layoutState: 'chat' | 'call' = 'chat';
 
