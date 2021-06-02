@@ -26,6 +26,19 @@
 
         </div>
 
+        <div class="button-icon text mr-10" (click)="onToggleLayout('call')" *ngIf="displayGoToCall">
+
+            <fa-icon [icon]="switchIcon"></fa-icon>
+
+        </div>
+
+        <div class="button-icon text mr-10" (click)="onToggleLayout('chat')" *ngIf="displayGoToChat">
+
+            <fa-icon [icon]="switchIcon"></fa-icon>
+
+        </div>
+
+
         <div class="mr-10">
 
             <input type="text" placeholder="Search" />
@@ -40,16 +53,7 @@
 
     </div>
 
-    <div class="ml-auto pr-5" *ngIf="displayGoToCall">
 
-        <button class="button my-auto" (click)="onToggleLayout('call')">Go to call</button>
 
-    </div>
-
-    <div class="ml-auto pr-5" *ngIf="displayGoToChat">
-
-        <button class="button my-auto" (click)="onToggleLayout('chat')">Go to chat</button>
-
-    </div>
 
 </div>

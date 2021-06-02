@@ -34,7 +34,8 @@ import {
     faPen,
     faTrashAlt,
     faQuestionCircle,
-    faVideo
+    faVideo,
+    faClone,
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -85,7 +86,8 @@ export class ChatModule {
             faPen,
             faTrashAlt,
             faQuestionCircle,
-            faVideo);
+            faVideo,
+            faClone);
     }
 
 }

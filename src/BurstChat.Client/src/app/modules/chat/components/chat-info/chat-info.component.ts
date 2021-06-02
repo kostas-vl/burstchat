@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { faCommentAlt, faLock, faComments, faPhone, faVideo, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
@@ -10,6 +9,16 @@ import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
+
+import {
+    faCommentAlt,
+    faLock,
+    faComments,
+    faPhone,
+    faVideo,
+    faQuestionCircle,
+    faClone
+} from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays on screen the top bar of the application
@@ -40,6 +49,8 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
     public videoIcon = faVideo;
 
     public helpIcon = faQuestionCircle;
+
+    public switchIcon = faClone;
 
     public layoutState: 'chat' | 'call' = 'chat';
 
