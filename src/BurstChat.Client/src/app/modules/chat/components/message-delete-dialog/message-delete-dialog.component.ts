@@ -48,6 +48,18 @@ export class MessageDeleteDialogComponent implements OnInit {
     public ngOnInit() { }
 
     /**
+     * Sets the default value to various fields.
+     * @private
+     * @memberof MessageDeleteDialogComponent
+     */
+    private reset() {
+        this.visible = false;
+        this.visibleChange.emit(this.visible);
+        this.internalMessage = null;
+        this.content = '';
+    }
+
+    /**
      * Handles the delete button click event.
      * @memberof MessageDeleteDialogComponent
      */
@@ -60,8 +72,7 @@ export class MessageDeleteDialogComponent implements OnInit {
             },
         }
         this.chatService.deleteMessage(this.options, message);
-        this.visible = false;
-        this.visibleChange.emit(this.visible);
+        this.reset();
     }
 
     /**
@@ -69,8 +80,7 @@ export class MessageDeleteDialogComponent implements OnInit {
      * @memberof MessageDeleteDialogComponent
      */
     public onCancel() {
-        this.visible = false;
-        this.visibleChange.emit(this.visible);
+        this.reset();
     }
 
 }

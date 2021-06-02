@@ -48,6 +48,17 @@ export class MessageEditDialogComponent implements OnInit {
     public ngOnInit() { }
 
     /**
+     * Sets the default values to various fields.
+     * @private
+     * @memberof MessageEditDialogComponent
+     */
+    private reset() {
+        this.visible = false;
+        this.visibleChange.emit(this.visible);
+        this.content = '';
+    }
+
+    /**
      * Handles the save button click event.
      * @memberof MessageEditDialogComponent
      */
@@ -58,8 +69,7 @@ export class MessageEditDialogComponent implements OnInit {
             content: this.content
         };
         this.chatService.editMessage(this.options, this.internalMessage);
-        this.visible = false;
-        this.visibleChange.emit(this.visible);
+        this.reset();
     }
 
     /**
@@ -67,8 +77,7 @@ export class MessageEditDialogComponent implements OnInit {
      * @memberof MessageEditDialogComponent
      */
     public onCancel() {
-        this.isVisible = false;
-        this.visibleChange.emit(this.visible);
+        this.reset();
     }
 
 }

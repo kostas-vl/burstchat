@@ -75,6 +75,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
      */
     public onClose() {
         this.sidebarService.toggleAddServerDialog(false);
+        this.server = new BurstChatServer();
     }
 
     /**
@@ -90,6 +91,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
         }
         this.loading = true;
         this.chatService.addServer(this.server);
+        this.server = new BurstChatServer();
     }
 
 }
