@@ -9,6 +9,7 @@ import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
+import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
 /**
  * This class represents an angular component that displays on screen the messages of the chat.
@@ -28,6 +29,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private internalOptions?: ChatConnectionOptions;
 
     public loadingMessages = true;
+
+    public searchTerm?: string;
 
     public messages: Message[] = [];
 
@@ -71,6 +74,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatService
                 .userUpdated$
                 .subscribe(user => this.onUserUpdated(user)),
+            this.uiLayerService
+                .search$
+                .subscribe(term => this.onSearch(term)),
         ];
 
         this.chatService.addSelfToChat(this.options);
@@ -82,7 +88,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      */
     constructor(
         private chatService: ChatService,
-        private notifyService: NotifyService
+        private notifyService: NotifyService,
+        private uiLayerService: UiLayerService
     ) { }
 
     /**
@@ -115,10 +122,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @memberof ChatMessagesComponent
      */
     private scrollToBottom() {
-        if (this.canScrollToBottom) {
-            const index = this.messages.length - 1;
-            this.scroller.scrollToIndex(index);
-        }
+        if (!this.canScrollToBottom) return;
+        const index = this.messages.length - 1;
+        this.scroller.scrollToIndex(index);
     }
 
     /**
@@ -261,12 +267,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             ? payload.content
             : null;
 
-        if (message) {
-            this.messages = this.addMessageToClusters([...this.messages], message);
-            this.chatIsEmpty = false;
-            this.scrollToBottom();
-            this.notifyService.notify(`${message.user.name} sent:`, message.content);
-        }
+        if (!message) return;
+
+        this.messages = this.addMessageToClusters([...this.messages], message);
+        this.chatIsEmpty = false;
+        this.scrollToBottom();
+        this.notifyService.notify(`${message.user.name} sent:`, message.content);
     }
 
     /**
@@ -279,11 +285,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             ? payload.content
             : null;
 
-        if (message) {
-            const instance = this.messages.find(m => m.id === message.id);
-            instance.content = message.content;
-            instance.edited = message.edited;
-        }
+        if (!message) return;
+
+        const instance = this.messages.find(m => m.id === message.id);
+        instance.content = message.content;
+        instance.edited = message.edited;
     }
 
     /**
@@ -296,13 +302,22 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             ? payload.content
             : null;
 
-        if (message) {
-            const instance = this.messages.find(m => m.id === message.id);
-            if (instance) {
-                const indexOf = this.messages.indexOf(instance);
-                this.messages.splice(indexOf, 1);
-            }
+        if (!message) return;
+
+        const instance = this.messages.find(m => m.id === message.id);
+        if (instance) {
+            const indexOf = this.messages.indexOf(instance);
+            this.messages.splice(indexOf, 1);
         }
+    }
+
+    private onSearch(searchTerm?: string) {
+        if (this.loadingMessages) return;
+
+        this.messages = [];
+        this.searchTerm = searchTerm;
+        this.chatService.getAllMessages(this.options, this.searchTerm);
+        this.loadingMessages = true;
     }
 
     /**
@@ -329,7 +344,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
                 const oldestMessage = this.messages[0] || null;
                 const messageId = oldestMessage.id || null;
 
-                this.chatService.getAllMessages(this.options, messageId);
+                this.chatService.getAllMessages(this.options, this.searchTerm, messageId);
                 this.loadingMessages = true;
             }
         }

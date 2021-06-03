@@ -7,8 +7,7 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
-import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
-import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
+import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
 /**
  * This class represents an angular component that represents the root of the chat for
@@ -21,7 +20,7 @@ import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/cha
     selector: 'burst-chat-direct',
     templateUrl: './chat-direct.component.html',
     styleUrls: ['./chat-direct.component.scss'],
-    providers: [ChatLayoutService]
+    providers: [UiLayerService]
 })
 export class ChatDirectComponent implements OnInit, OnDestroy {
 
@@ -50,8 +49,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
         private notifyService: NotifyService,
         private chatService: ChatService,
         private directMessagingService: DirectMessagingService,
-        private chatLayoutService: ChatLayoutService,
-        private chatDialogService: ChatDialogService,
+        private uiLayerService: UiLayerService,
     ) { }
 
     /**
@@ -70,7 +68,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                         ]);
                         const state = params.get('display');
                         if (state === 'chat' || state === 'call'){
-                            this.chatLayoutService.toggle(state);
+                            this.uiLayerService.toggleChatView(state);
                         }
                     } else {
                         this.noChatFound = true;
@@ -86,16 +84,16 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                         this.chatService.addSelfToChat(this.options);
                     }
                 }),
-            this.chatLayoutService
-                .toggle$
+            this.uiLayerService
+                .toggleChatView$
                 .subscribe(s => this.layoutState = s),
-            this.chatDialogService
+            this.uiLayerService
                 .editMessage$
                 .subscribe(message => this.editMessageData = {
                     visible: true,
                     message: message,
                 }),
-            this.chatDialogService
+            this.uiLayerService
                 .deleteMessage$
                 .subscribe(message => this.deleteMessageData = {
                     visible: true,

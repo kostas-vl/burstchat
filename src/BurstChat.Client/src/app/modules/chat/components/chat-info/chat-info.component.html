@@ -41,7 +41,7 @@
 
         <div class="mr-10">
 
-            <input type="text" placeholder="Search" />
+            <input type="text" placeholder="Search" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" />
 
         </div>
 

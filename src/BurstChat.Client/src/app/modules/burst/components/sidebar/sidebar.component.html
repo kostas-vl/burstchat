@@ -1,7 +1,5 @@
 <div id="sidebar" class="sidebar">
 
-    <burst-ongoing-call></burst-ongoing-call>
-
     <div class="sidebar-content">
 
         <div class="sidebar-selection">
@@ -19,6 +17,8 @@
         <div class="sidebar-srv" *ngIf="display === 'server'">
 
             <burst-server-info></burst-server-info>
+
+            <burst-ongoing-call></burst-ongoing-call>
 
             <burst-channel-list></burst-channel-list>
 
