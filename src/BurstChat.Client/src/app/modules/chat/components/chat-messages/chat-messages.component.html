@@ -1,6 +1,6 @@
-<span class="text-muted pt-30 pl-20" *ngIf="chatIsEmpty">No messages posted yet!</span>
-
 <blockquote *ngIf="searchTerm">You are viewing search results of: {{searchTerm}}</blockquote>
+
+<span class="text-muted pt-30 pl-20" *ngIf="chatIsEmpty">No messages posted yet!</span>
 
 <virtual-scroller #scroller class="viewport" [class.height.px]="150"
     [items]="messages" [enableUnequalChildrenSizes]="true" (vsChange)="onVirtualScrollerChange($event)">
