@@ -26,13 +26,13 @@ namespace BurstChat.Api.Controllers
 
         /// <summary>
         /// Creates a new instance of DirectMessagingController.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any parameter is null.
         /// </summary>
         public DirectMessagingController(IDirectMessagingService directMessagingService)
         {
-            _directMessagingService = directMessagingService 
+            _directMessagingService = directMessagingService
                 ?? throw new ArgumentNullException(nameof(directMessagingService));
         }
 
@@ -118,14 +118,20 @@ namespace BurstChat.Api.Controllers
         /// When a message id is also provided then it will return 300 messages prior to that message.
         /// </summary>
         /// <param name="directMessagingId">The id of the target direct messaging entry</param>
+        /// <param name="searchTerm">A search term that needs to be present in all returned messages</param>
         /// <param name="lastMessageId">The message id from which prior messages will be fetched</param>
         /// <returns>A MonadActionResult entry</param>
         [HttpGet("{directMessagingId:long}/messages")]
         [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public MonadActionResult<IEnumerable<Message>, Error> GetMessages(long directMessagingId, [FromQuery] long? lastMessageId) =>
+        public MonadActionResult<IEnumerable<Message>, Error> GetMessages(long directMessagingId,
+                                                                          [FromQuery] string? searchTerm,
+                                                                          [FromQuery] long? lastMessageId) =>
             HttpContext.GetUserId()
-                       .Bind(userId => _directMessagingService.GetMessages(userId, directMessagingId, lastMessageId));
+                       .Bind(userId => _directMessagingService.GetMessages(userId,
+                                                                           directMessagingId,
+                                                                           searchTerm,
+                                                                           lastMessageId));
 
         /// <summary>
         /// Inserts a new message to a direct messaging entry.

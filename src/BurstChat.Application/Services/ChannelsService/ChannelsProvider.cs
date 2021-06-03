@@ -211,7 +211,7 @@ namespace BurstChat.Application.Services.ChannelsService
                         .Channels
                         .First(c => c.Id == channelId);
 
-                    channel.Messages = _burstChatContext
+                    var messages = _burstChatContext
                         .Channels
                         .Include(c => c.Messages)
                         .ThenInclude(m => m.User)
@@ -228,7 +228,7 @@ namespace BurstChat.Application.Services.ChannelsService
                         .OrderBy(m => m.Id)
                         .ToList();
 
-                    return new Success<IEnumerable<Message>, Error>(channel.Messages as IEnumerable<Message>);
+                    return new Success<IEnumerable<Message>, Error>(messages);
                 });
             }
             catch (Exception e)

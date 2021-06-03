@@ -22,7 +22,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
 
         /// <summary>
         /// Creates a new instance of DirectMessagingProvider.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any paramenter is null.
         /// </summary>
@@ -33,50 +33,6 @@ namespace BurstChat.Application.Services.DirectMessagingService
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
-        }
-
-        /// <summary>
-        /// This method will fetch all information about direct messaging entry.
-        /// If a message id is provided then 300 messages sent prior will be returned.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="directMessagingId">The id of the direct messages</param>
-        /// <param name="lastMessageId">The message id to be the interval of the message list</param>
-        /// <returns>An either monad</returns>
-        private Either<DirectMessaging, Error> GetWithMessages(long userId, long directMessagingId, long? lastMessageId = null)
-        {
-            try
-            {
-                return Get(userId, directMessagingId).Bind(directMessaging =>
-                {
-                    directMessaging.Messages = _burstChatContext
-                        .DirectMessaging
-                        .Include(dm => dm.Messages)
-                        .ThenInclude(m => m.User)
-                        .Include(dm => dm.Messages)
-                        .ThenInclude(m => m.Links)
-                        .Where(dm => dm.Id == directMessagingId)
-                        .Select(dm => dm.Messages
-                                        .Where(m => m.Id < (lastMessageId ?? long.MaxValue))
-                                        .OrderByDescending(m => m.Id)
-                                        .Take(100))
-                        .ToList()
-                        .Aggregate(new List<Message>(), (current, next) =>
-                        {
-                            current.AddRange(next);
-                            return current;
-                        })
-                        .OrderBy(m => m.Id)
-                        .ToList();
-
-                    return new Success<DirectMessaging, Error>(directMessaging);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<DirectMessaging, Error>(SystemErrors.Exception());
-            }
         }
 
         /// <summary>
@@ -95,7 +51,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                                           && (dm.FirstParticipantUserId == userId
                                               || dm.SecondParticipantUserId == userId));
 
-                return directMessaging is not null 
+                return directMessaging is not null
                     ? new Success<DirectMessaging, Error>(directMessaging)
                     : new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagesNotFound());
             }
@@ -127,7 +83,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
                     .FirstOrDefault(dm => (dm.FirstParticipantUserId == firstParticipantId && dm.SecondParticipantUserId == secondParticipantId)
                                           || (dm.FirstParticipantUserId == secondParticipantId && dm.SecondParticipantUserId == firstParticipantId));
 
-                return directMessaging is not null 
+                return directMessaging is not null
                     ? new Success<DirectMessaging, Error>(directMessaging)
                     : new Failure<DirectMessaging, Error>(DirectMessagingErrors.DirectMessagesNotFound());
             }
@@ -242,10 +198,48 @@ namespace BurstChat.Application.Services.DirectMessagingService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
+        /// <param name="searchTerm">A search term that needs to be present in all returned messages</param>
         /// <param name="lastMessageId">The message id from which all prior messages will be fetched</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(long userId, long directMessagingId, long? lastMessageId = null) =>
-            GetWithMessages(userId, directMessagingId, lastMessageId).Attach(dm => dm.Messages as IEnumerable<Message>);
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId,
+                                                               long directMessagingId,
+                                                               string? searchTerm = null,
+                                                               long? lastMessageId = null)
+        {
+            try
+            {
+                return Get(userId, directMessagingId).Bind(_ =>
+                {
+                    var messages = _burstChatContext
+                        .DirectMessaging
+                        .Include(dm => dm.Messages)
+                        .ThenInclude(m => m.User)
+                        .Include(dm => dm.Messages)
+                        .ThenInclude(m => m.Links)
+                        .Where(dm => dm.Id == directMessagingId)
+                        .Select(dm => dm.Messages
+                                        .Where(m => m.Id < (lastMessageId ?? long.MaxValue)
+                                                    && (searchTerm == null || m.Content.Contains(searchTerm)))
+                                        .OrderByDescending(m => m.Id)
+                                        .Take(100))
+                        .ToList()
+                        .Aggregate(new List<Message>(), (current, next) =>
+                        {
+                            current.AddRange(next);
+                            return current;
+                        })
+                        .OrderBy(m => m.Id)
+                        .ToList();
+
+                    return new Success<IEnumerable<Message>, Error>(messages);
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
+            }
+        }
 
         /// <summary>
         /// This method will add a new message to a direct messaging entry.
@@ -301,7 +295,7 @@ namespace BurstChat.Application.Services.DirectMessagingService
             {
                 if (message is null)
                     return new Failure<Message, Error>(DirectMessagingErrors.DirectMessageNotFound());
-                    
+
                 return Get(userId, directMessagingId).Bind<Message>(_ =>
                 {
                     var entries = _burstChatContext
