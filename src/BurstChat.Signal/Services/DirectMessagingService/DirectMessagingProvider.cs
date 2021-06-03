@@ -25,7 +25,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
 
         /// <summary>
         /// Creates a new instance of DirectMessagingProvider.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any parameter is null.
         /// </summary>
@@ -74,7 +74,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Get;
                 var url = "/api/direct";
-                var content = new FormUrlEncodedContent(new[] 
+                var content = new FormUrlEncodedContent(new[]
                 {
                     new KeyValuePair<string?, string?>("firstParticipantId", firstParticipantId.ToString()),
                     new KeyValuePair<string?, string?>("secondParticipantId", secondParticipantId.ToString())
@@ -140,22 +140,28 @@ namespace BurstChat.Signal.Services.DirectMessagingService
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="directMessagingId">The id of the direct messaging entry</param>
+        /// <param name="searchTerm">A search term that needs to be present in all returned messages</param>
         /// <param name="lastMessageId">The message id from which all the previous messages sent will be fetched</param>
         /// <returns>An either monad</returns>
         public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context,
                                                                                 long directMessagingId,
+                                                                                string? searchTerm = null,
                                                                                 long? lastMessageId = null)
         {
             try
             {
                 var method = HttpMethod.Get;
                 var url = $"/api/direct/{directMessagingId}/messages";
-                if (lastMessageId is { })
-                {
-                    var query = HttpUtility.ParseQueryString(string.Empty);
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                if (searchTerm is not null)
+                    query[nameof(searchTerm)] = searchTerm;
+
+                if (lastMessageId is not null)
                     query[nameof(lastMessageId)] = lastMessageId.Value.ToString();
+
+                if (query.Count > 0)
                     url += $"/?{query}";
-                }
 
                 return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
             }

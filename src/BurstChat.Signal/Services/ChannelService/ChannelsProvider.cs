@@ -155,11 +155,11 @@ namespace BurstChat.Signal.Services.ChannelsService
                 var url = $"api/channels/{channelId}/messages";
                 var query = HttpUtility.ParseQueryString(string.Empty);
 
-                if (lastMessageId is not null)
-                    query[nameof(lastMessageId)] = lastMessageId.ToString();
-
                 if (searchTerm is not null)
                     query[nameof(searchTerm)] = searchTerm;
+
+                if (lastMessageId is not null)
+                    query[nameof(lastMessageId)] = lastMessageId.Value.ToString();
 
                 if (query.Count > 0)
                     url += $"/?{query}";
