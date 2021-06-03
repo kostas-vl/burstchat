@@ -52,9 +52,13 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
+        /// <param name="searchTerm">A term that needs to be present on all returned messages</param>
         /// <param name="lastMessageId">The id of the interval message for the rest</param>
         /// <returns>A task that encapsulates an either monad</returns>
-        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context, int channelId, long? lastMessageId = null);
+        Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context,
+                                                                   int channelId,
+                                                                   string? searchTerm = null,
+                                                                   long? lastMessageId = null);
 
         /// <summary>
         /// This method will post a new message to a channel based on the provided channel id
