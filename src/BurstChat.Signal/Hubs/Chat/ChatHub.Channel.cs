@@ -124,12 +124,13 @@ namespace BurstChat.Signal.Hubs.Chat
         /// Informs the caller of all messages posted to a channel.
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
+        /// <param name="searchTerm">A term that needs to be present on all returned messages</param>
         /// <param name="lastMessageId">The id of the message to be the interval for the rest</param>
         /// <returns>A task instance</returns>
-        public async Task GetAllChannelMessages(int channelId, long? lastMessageId = null)
+        public async Task GetAllChannelMessages(int channelId, string? searchTerm = null, long? lastMessageId = null)
         {
             var httpContext = Context.GetHttpContext();
-            var monad = await _channelsService.GetMessagesAsync(httpContext, channelId, lastMessageId);
+            var monad = await _channelsService.GetMessagesAsync(httpContext, channelId, searchTerm, lastMessageId);
             var signalGroup = ChannelSignalName(channelId);
 
             switch (monad)

@@ -7,7 +7,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
-import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
+import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
 /**
  * This class represents an angular component that displays to the user information about a
@@ -51,7 +51,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     constructor(
         private rtcSessionService: RtcSessionService,
-        private chatLayoutService: ChatLayoutService
+        private uiLayerService: UiLayerService
     ) { }
 
     /**
@@ -146,7 +146,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onSessionEnded() {
-        this.chatLayoutService.toggle('chat');
+        this.uiLayerService.toggleChatView('chat');
     }
 
     /**
@@ -155,7 +155,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onSessionFailed() {
-        this.chatLayoutService.toggle('chat');
+        this.uiLayerService.toggleChatView('chat');
     }
 
     /**
@@ -164,7 +164,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     public onHangup() {
         this.rtcSessionService.hangup();
-        this.chatLayoutService.toggle('chat');
+        this.uiLayerService.toggleChatView('chat');
     }
 
 }

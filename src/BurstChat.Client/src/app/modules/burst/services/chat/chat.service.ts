@@ -435,8 +435,11 @@ export class ChatService {
     /**
      * Signals for all messages of a chat to be received.
      * @param {ChatConnectionOptions} options The options to be used for the proper call to the signal server.
+     * @param {string} searchTerm The search term based on which the messages will be filtered.
+     * @param {number} lastMessageId The last message id of which all messages will preceed.
+     * @memberof ChatService
      */
-    public getAllMessages(options: ChatConnectionOptions, lastMessageId?: number) {
+    public getAllMessages(options: ChatConnectionOptions, searchTerm?: string, lastMessageId?: number) {
         if (this.connection && options) {
             let methodName = '';
             let args = [];
@@ -446,10 +449,10 @@ export class ChatService {
                 args = [options.id];
             } else if (options instanceof ChannelConnectionOptions) {
                 methodName = 'getAllChannelMessages';
-                args = [options.id, lastMessageId];
+                args = [options.id, searchTerm, lastMessageId];
             } else {
                 methodName = 'getAllDirectMessages';
-                args = [options.id, lastMessageId];
+                args = [options.id, searchTerm, lastMessageId];
             }
 
             this.connection

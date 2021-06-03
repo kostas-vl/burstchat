@@ -25,7 +25,7 @@ namespace BurstChat.Signal.Services.ChannelsService
 
         /// <summary>
         /// Executes any neccessary start up code for the service.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any parameter is null.
         /// </summary>
@@ -141,22 +141,28 @@ namespace BurstChat.Signal.Services.ChannelsService
         /// </summary>
         /// <param name="context">The http context of the current request</param>
         /// <param name="channelId">The id of the channel</param>
+        /// <param name="searchTerm">A term that needs to be present on all returned messages</param>
         /// <param name="lastMessageId">The id of the interval message for the rest</param>
         /// <returns>A task that encapsulates an either monad</returns>
         public async Task<Either<IEnumerable<Message>, Error>> GetMessagesAsync(HttpContext context,
                                                                                 int channelId,
+                                                                                string? searchTerm = null,
                                                                                 long? lastMessageId = null)
         {
             try
             {
                 var method = HttpMethod.Get;
                 var url = $"api/channels/{channelId}/messages";
-                if (lastMessageId is { })
-                {
-                    var query = HttpUtility.ParseQueryString(string.Empty);
-                    query["lastMessageId"] = lastMessageId.ToString();
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                if (searchTerm is not null)
+                    query[nameof(searchTerm)] = searchTerm;
+
+                if (lastMessageId is not null)
+                    query[nameof(lastMessageId)] = lastMessageId.Value.ToString();
+
+                if (query.Count > 0)
                     url += $"/?{query}";
-                }
 
                 return await _apiInteropService.SendAsync<IEnumerable<Message>>(context, method, url);
             }

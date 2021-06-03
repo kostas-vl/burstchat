@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ChatDialogService } from './chat-dialog.service';
+import { UiLayerService } from './ui-layer.service';
 
-describe('ChatDialogService', () => {
-  let service: ChatDialogService;
+describe('UiLayerService', () => {
+  let service: UiLayerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ChatDialogService);
+    service = TestBed.inject(UiLayerService);
   });
 
   it('should be created', () => {

@@ -24,7 +24,7 @@ namespace BurstChat.Application.Services.ChannelsService
 
         /// <summary>
         /// Executes any neccessary start up code for the controller.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any of the parameters is null.
         /// </summary>
@@ -45,9 +45,9 @@ namespace BurstChat.Application.Services.ChannelsService
         /// <param name="userId">The id of the target user</param>
         /// <param name="channelId">the id of the target channel</param>
         /// <returns>An instance of a Server or null</returns>
-        private Either<Server, Error> GetServer(long userId, long channelId) 
+        private Either<Server, Error> GetServer(long userId, int channelId)
         {
-            try 
+            try
             {
                 var server = _burstChatContext
                     .Servers
@@ -56,7 +56,7 @@ namespace BurstChat.Application.Services.ChannelsService
                     .AsQueryable()
                     .FirstOrDefault(s => s.Subscriptions.Any(sub => sub.UserId == userId)
                                             && s.Channels.Any(c => c.Id == channelId));
-                
+
                 if (server is null)
                     return new Failure<Server, Error>(ChannelErrors.ChannelNotFound());
                 else
@@ -70,50 +70,6 @@ namespace BurstChat.Application.Services.ChannelsService
         }
 
         /// <summary>
-        /// This method will return data of a channel based on the provided channel id but will contain
-        /// also a batch of messages based on the last message id provided.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="channelId">The id of the target channel</param>
-        /// <param name="lastMessageId">The message id to be the interval of the message list</param>
-        /// <returns>An either monad</returns>
-        public Either<Channel, Error> GetWithMessages(long userId, int channelId, long? lastMessageId = null)
-        {
-            try
-            {
-                return GetServer(userId, channelId).Bind(_ => 
-                {
-                    var channel = _burstChatContext
-                        .Channels
-                        .First(c => c.Id == channelId);
-
-                    channel.Messages = _burstChatContext
-                        .Channels
-                        .Include(c => c.Messages)
-                        .ThenInclude(m => m.User)
-                        .Include(c => c.Messages)
-                        .ThenInclude(m => m.Links)
-                        .Where(c => c.Id == channelId)
-                        .Select(c => c.Messages
-                                      .Where(m => m.Id < (lastMessageId ?? long.MaxValue))
-                                      .OrderByDescending(m => m.Id)
-                                      .Take(100))
-                        .ToList()
-                        .SelectMany(_ => _)
-                        .OrderBy(m => m.Id)
-                        .ToList();
-
-                    return new Success<Channel, Error>(channel);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Channel, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
         /// This method will return the data of a channel based on the provided channel id.
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
@@ -123,7 +79,7 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                return GetServer(userId, channelId).Bind<Channel>(_ => 
+                return GetServer(userId, channelId).Bind<Channel>(_ =>
                 {
                     var channel = _burstChatContext
                         .Channels
@@ -131,7 +87,7 @@ namespace BurstChat.Application.Services.ChannelsService
 
                     if (channel is not null && channel.IsPublic)
                         return new Success<Channel, Error>(channel);
-                    else 
+                    else
                         return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
                 });
             }
@@ -191,13 +147,10 @@ namespace BurstChat.Application.Services.ChannelsService
                 if (channel is null)
                     return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
 
-                var channelId = channel.Id;
-
-                return Get(userId, channelId).Bind(channelEntry =>
+                return Get(userId, channel.Id).Bind(channelEntry =>
                 {
                     channelEntry.Name = channel.Name;
                     channelEntry.IsPublic = channel.IsPublic;
-
                     _burstChatContext.SaveChanges();
 
                     return new Success<Channel, Error>(channelEntry);
@@ -225,7 +178,6 @@ namespace BurstChat.Application.Services.ChannelsService
                     _burstChatContext
                         .Channels
                         .Remove(channel);
-
                     _burstChatContext.SaveChanges();
 
                     return new Success<Channel, Error>(channel);
@@ -243,10 +195,48 @@ namespace BurstChat.Application.Services.ChannelsService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
+        /// <param name="searchTerm">A specific term that needs to exist in all returned messages</param>
         /// <param name="lastMessageId">The message id to be the interval of the message list</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId, long? lastMessageId = null) =>
-            GetWithMessages(userId, channelId, lastMessageId).Attach(channel => channel.Messages as IEnumerable<Message>);
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId,
+                                                               int channelId,
+                                                               string? searchTerm = null,
+                                                               long? lastMessageId = null)
+        {
+            try
+            {
+                return GetServer(userId, channelId).Bind(_ =>
+                {
+                    var channel = _burstChatContext
+                        .Channels
+                        .First(c => c.Id == channelId);
+
+                    var messages = _burstChatContext
+                        .Channels
+                        .Include(c => c.Messages)
+                        .ThenInclude(m => m.User)
+                        .Include(c => c.Messages)
+                        .ThenInclude(m => m.Links)
+                        .Where(c => c.Id == channelId)
+                        .Select(c => c.Messages
+                                      .Where(m => m.Id < (lastMessageId ?? long.MaxValue)
+                                                  && (searchTerm == null || m.Content.Contains(searchTerm)))
+                                      .OrderByDescending(m => m.Id)
+                                      .Take(100))
+                        .ToList()
+                        .SelectMany(_ => _)
+                        .OrderBy(m => m.Id)
+                        .ToList();
+
+                    return new Success<IEnumerable<Message>, Error>(messages);
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return new Failure<IEnumerable<Message>, Error>(SystemErrors.Exception());
+            }
+        }
 
         /// <summary>
         /// This method will insert a new message sent to the channel provided.

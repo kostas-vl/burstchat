@@ -5,8 +5,7 @@ import { Message } from 'src/app/models/chat/message';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
-import { ChatLayoutService } from 'src/app/modules/chat/services/chat-layout/chat-layout.service';
-import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
+import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
 /**
  * This class represents an angular component that is the root component that contains a server channel chat.
@@ -18,7 +17,7 @@ import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/cha
     selector: 'burst-chat-channel',
     templateUrl: './chat-channel.component.html',
     styleUrls: ['./chat-channel.component.scss'],
-    providers: [ChatLayoutService]
+    providers: [UiLayerService]
 })
 export class ChatChannelComponent implements OnInit, OnDestroy {
 
@@ -46,8 +45,7 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
         private chatService: ChatService,
-        private chatLayoutService: ChatLayoutService,
-        private chatDialogService: ChatDialogService
+        private uiLayerService: UiLayerService
     ) { }
 
     /**
@@ -80,16 +78,16 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         this.chatService.addSelfToChat(this.options);
                     }
                 }),
-            this.chatLayoutService
-                .toggle$
+            this.uiLayerService
+                .toggleChatView$
                 .subscribe(s => this.layoutState = s),
-            this.chatDialogService
+            this.uiLayerService
                 .editMessage$
                 .subscribe(message => this.editMessageData = {
                     visible: true,
                     message: message,
                 }),
-            this.chatDialogService
+            this.uiLayerService
                 .deleteMessage$
                 .subscribe(message => this.deleteMessageData = {
                     visible: true,

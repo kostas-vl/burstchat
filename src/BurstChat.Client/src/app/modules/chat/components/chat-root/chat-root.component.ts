@@ -7,7 +7,6 @@ import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
-import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
 
 /**
  * This class represents an angular component that displauys a series of messages between users.
@@ -28,10 +27,6 @@ export class ChatRootComponent implements OnInit, OnDestroy {
 
     public noChatFound = false;
 
-    public editMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
-
-    public deleteMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
-
     /**
      * Creates an instance of ChatRootComponent.
      * @memberof ChatRootComponent
@@ -41,7 +36,6 @@ export class ChatRootComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
         private chatService: ChatService,
-        private chatDialogService: ChatDialogService,
     ) { }
 
     /**
@@ -66,12 +60,6 @@ export class ChatRootComponent implements OnInit, OnDestroy {
                         this.chatService.addSelfToChat(this.options);
                     }
                 }),
-            this.chatDialogService
-                .editMessage$
-                .subscribe(message => this.editMessageData = {
-                    visible: true,
-                    message: message
-                })
         ];
     }
 
