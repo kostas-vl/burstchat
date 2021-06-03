@@ -50,9 +50,13 @@ namespace BurstChat.Application.Services.ChannelsService
         /// </summary>
         /// <param name="userId">The id of the requesting user</param>
         /// <param name="channelId">The id of the target channel</param>
+        /// <param name="searchTerm">A specific term that needs to exist in all returned messages</param>
         /// <param name="lastMessageId">The message id to be the interval of the message list</param>
         /// <returns>An either monad</returns>
-        Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId, long? lastMessageId = null);
+        Either<IEnumerable<Message>, Error> GetMessages(long userId,
+                                                        int channelId,
+                                                        string? searchTerm = null,
+                                                        long? lastMessageId = null);
 
         /// <summary>
         /// This method will insert a new message sent to the channel provided.

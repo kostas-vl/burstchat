@@ -27,7 +27,7 @@ namespace BurstChat.Api.Controllers
 
         /// <summary>
         /// Executes any neccessary start up code for the controller.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any parameter is null.
         /// </summary>
@@ -96,14 +96,17 @@ namespace BurstChat.Api.Controllers
         /// This method will fetch all messages posted on a channel.
         /// </summary>
         /// <param name="channelId">The id of the target channel</param>
+        /// <param name="searchTerm">The term that needs to be present to all returned messaged</param>
         /// <param name="lastMessageId">The id of the message to be the interval for the rest</param>
         /// <returns>A MonadActionResult instance</returns>
         [HttpGet("{channelId:int}/messages")]
         [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
         [ProducesResponseType(typeof(Error), 400)]
-        public MonadActionResult<IEnumerable<Message>, Error> GetMessages(int channelId, [FromQuery] long? lastMessageId = null) =>
+        public MonadActionResult<IEnumerable<Message>, Error> GetMessages(int channelId,
+                                                                          [FromQuery] string? searchTerm,
+                                                                          [FromQuery] long? lastMessageId = null) =>
             HttpContext.GetUserId()
-                       .Bind(userId => _channelsService.GetMessages(userId, channelId, lastMessageId));
+                       .Bind(userId => _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId));
 
         /// <summary>
         /// This method will add a new message to the channel.

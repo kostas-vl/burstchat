@@ -2,6 +2,9 @@
 obj/
 bin/
 
+# Static files
+wwwroot/
+
 # Production settings.
 appsettings.Production.json
 
