@@ -64,7 +64,6 @@ export class ServerComponent implements OnInit, OnDestroy {
                         this.isActive = false;
                     }
                 }),
-
             this.serversService
                 .serverInfo
                 .subscribe(server => {
@@ -72,9 +71,8 @@ export class ServerComponent implements OnInit, OnDestroy {
                         this.server = server;
                     }
                 }),
-
             this.chatService
-                .onReconnected
+                .onReconnected$
                 .subscribe(() => this.chatService.addToServer(this.server.id))
         ];
 

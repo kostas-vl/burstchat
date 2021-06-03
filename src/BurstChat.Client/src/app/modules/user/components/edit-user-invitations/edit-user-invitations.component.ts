@@ -35,15 +35,13 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this
-                .chatService
-                .invitations
+            this.chatService
+                .invitations$
                 .subscribe(invitations => {
                     this.invitations = invitations;
                 }),
-            this
-                .chatService
-                .updatedInvitation
+            this.chatService
+                .updatedInvitation$
                 .subscribe(invite => {
                     const storedInvite = this.invitations.find(entry => entry.serverId === invite.serverId);
                     if (storedInvite) {

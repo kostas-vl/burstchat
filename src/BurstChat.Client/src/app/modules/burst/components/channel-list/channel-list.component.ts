@@ -58,7 +58,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
                 .subscribe(server => {
                     if (server) {
                         this.channels = server?.channels || [];
-                        console.log(this.channels);
                     }
 
                     this.loading = false;

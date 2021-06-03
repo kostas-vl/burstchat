@@ -42,7 +42,7 @@ export class EditServerChannelsComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.channelCreatedSub = this
             .chatService
-            .channelCreated
+            .channelCreated$
             .subscribe(data => {
                 const channel = data[1];
                 if (this.newChannelName === channel.name) {
@@ -56,9 +56,7 @@ export class EditServerChannelsComponent implements OnInit, OnDestroy {
      * @memberof EditServerChannelsComponent
      */
     public ngOnDestroy() {
-        if (this.channelCreatedSub) {
-            this.channelCreatedSub.unsubscribe();
-        }
+        this.channelCreatedSub?.unsubscribe();
     }
 
     /**

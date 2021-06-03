@@ -17,9 +17,7 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class DirectMessagingListComponent implements OnInit, OnDestroy {
 
-    private usersSub?: Subscription;
-
-    private userUpdatedSub?: Subscription;
+    private subscriptions?: Subscription[];
 
     public users: User[] = [];
 
@@ -37,21 +35,20 @@ export class DirectMessagingListComponent implements OnInit, OnDestroy {
      * @memberof DirectMessagingListComponent
      */
     public ngOnInit() {
-        this.usersSub = this
-            .directMessagingService
-            .users
-            .subscribe(users => this.users = users);
-
-        this.userUpdatedSub = this
-            .chatService
-            .userUpdated
-            .subscribe(user => {
-                const entry = this.users.find(u => u.id === user.id);
-                if (entry) {
-                    const index = this.users.indexOf(entry);
-                    this.users[index] = { ...user };
-                }
-            });
+        this.subscriptions = [
+            this.directMessagingService
+                .users
+                .subscribe(users => this.users = users),
+            this.chatService
+                .userUpdated$
+                .subscribe(user => {
+                    const entry = this.users.find(u => u.id === user.id);
+                    if (entry) {
+                        const index = this.users.indexOf(entry);
+                        this.users[index] = { ...user };
+                    }
+                }),
+        ];
     }
 
     /**
@@ -59,8 +56,7 @@ export class DirectMessagingListComponent implements OnInit, OnDestroy {
      * @memberof DirectMessagingListComponent
      */
     public ngOnDestroy() {
-        this.usersSub?.unsubscribe();
-        this.userUpdatedSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
 }

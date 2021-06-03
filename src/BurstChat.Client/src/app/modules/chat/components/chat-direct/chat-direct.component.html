@@ -18,4 +18,10 @@
 
 </div>
 
+<burst-message-edit-dialog [(visible)]="editMessageData.visible" [options]="options"
+    [message]="editMessageData.message"></burst-message-edit-dialog>
+
+<burst-message-delete-dialog [(visible)]="deleteMessageData.visible" [options]="options"
+    [message]="deleteMessageData.message"></burst-message-delete-dialog>
+
 <div *ngIf="noChatFound"></div>

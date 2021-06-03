@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Message } from 'src/app/models/chat/message';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
 
 /**
  * This class represents an angular component that displauys a series of messages between users.
@@ -20,13 +22,15 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 })
 export class ChatRootComponent implements OnInit, OnDestroy {
 
-    private routeParametersSubscription?: Subscription;
-
-    private onReconnectedSubscription?: Subscription;
+    private subscriptions: Subscription[];
 
     public options?: ChatConnectionOptions;
 
     public noChatFound = false;
+
+    public editMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
+
+    public deleteMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
 
     /**
      * Creates an instance of ChatRootComponent.
@@ -36,7 +40,8 @@ export class ChatRootComponent implements OnInit, OnDestroy {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private notifyService: NotifyService,
-        private chatService: ChatService
+        private chatService: ChatService,
+        private chatDialogService: ChatDialogService,
     ) { }
 
     /**
@@ -44,25 +49,30 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnInit() {
-        this.routeParametersSubscription = this
-            .activatedRoute
-            .queryParamMap
-            .subscribe(params => {
-                const name = params.get('name');
-                const id = +params.get('id');
-                const currentUrl = this.router.url;
-                this.assignOptions(currentUrl, name, id);
-                this.assignSelfToChat(this.options);
-            });
-
-        this.onReconnectedSubscription = this
-            .chatService
-            .onReconnected
-            .subscribe(() => {
-                if (this.options) {
-                    this.chatService.addSelfToChat(this.options);
-                }
-            });
+        this.subscriptions = [
+            this.activatedRoute
+                .queryParamMap
+                .subscribe(params => {
+                    const name = params.get('name');
+                    const id = +params.get('id');
+                    const currentUrl = this.router.url;
+                    this.assignOptions(currentUrl, name, id);
+                    this.assignSelfToChat(this.options);
+                }),
+            this.chatService
+                .onReconnected$
+                .subscribe(() => {
+                    if (this.options) {
+                        this.chatService.addSelfToChat(this.options);
+                    }
+                }),
+            this.chatDialogService
+                .editMessage$
+                .subscribe(message => this.editMessageData = {
+                    visible: true,
+                    message: message
+                })
+        ];
     }
 
     /**
@@ -70,15 +80,7 @@ export class ChatRootComponent implements OnInit, OnDestroy {
      * @memberof ChatRootComponent
      */
     public ngOnDestroy() {
-        if (this.routeParametersSubscription) {
-            this.routeParametersSubscription
-                .unsubscribe();
-        }
-
-        if (this.onReconnectedSubscription) {
-            this.onReconnectedSubscription
-                .unsubscribe();
-        }
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**

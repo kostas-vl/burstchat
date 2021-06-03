@@ -58,7 +58,6 @@ export class UserListComponent implements OnInit, OnDestroy {
                         }
                     }
                 }),
-
             this.usersService
                 .usersCache
                 .subscribe(cache => {
@@ -67,9 +66,8 @@ export class UserListComponent implements OnInit, OnDestroy {
                         this.users = cache[id] || [];
                     }
                 }),
-
             this.chatService
-                .userUpdated
+                .userUpdated$
                 .subscribe(user => {
                     const entry = this.users.find(u => u.id === user.id);
                     if (entry) {

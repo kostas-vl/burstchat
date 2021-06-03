@@ -17,13 +17,15 @@ import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.s
 })
 export class AddServerComponent implements OnInit, OnDestroy {
 
-    private addedServerSub?: Subscription;
+    private subscriptions?: Subscription[];
 
     public closeIcon = faTimes;
 
     public server: Server = new BurstChatServer();
 
     public loading = false;
+
+    public visible = false;
 
     /**
      * Creates a new instance of AddServerComponent.
@@ -40,19 +42,23 @@ export class AddServerComponent implements OnInit, OnDestroy {
      * @memberof AddServerComponent
      */
     public ngOnInit() {
-        this.addedServerSub = this
-            .chatService
-            .addedServer
-            .subscribe(server => {
-                if (server.name === this.server.name) {
-                    const title = 'Success';
-                    const content = `The server ${this.server.name} was created successfully`;
-                    this.notifyService.notify(title, content);
-                    this.server = new BurstChatServer();
-                    this.loading = false;
-                    this.onClose();
-                }
-            });
+        this.subscriptions = [
+            this.chatService
+                .addedServer$
+                .subscribe(server => {
+                    if (server.name === this.server.name) {
+                        const title = 'Success';
+                        const content = `The server ${this.server.name} was created successfully`;
+                        this.notifyService.notify(title, content);
+                        this.server = new BurstChatServer();
+                        this.loading = false;
+                        this.onClose();
+                    }
+                }),
+            this.sidebarService
+                .addServerDialog
+                .subscribe(visible => this.visible = visible)
+        ];
     }
 
     /**
@@ -60,7 +66,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
      * @memberof AddServerComponent
      */
     public ngOnDestroy() {
-        this.addedServerSub?.unsubscribe();
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -68,8 +74,8 @@ export class AddServerComponent implements OnInit, OnDestroy {
      * @memberof AddServerComponent
      */
     public onClose() {
-        this.sidebarService
-            .toggleAddServerDialog(false);
+        this.sidebarService.toggleAddServerDialog(false);
+        this.server = new BurstChatServer();
     }
 
     /**
@@ -83,11 +89,9 @@ export class AddServerComponent implements OnInit, OnDestroy {
             this.notifyService.notify(title, content);
             return;
         }
-
         this.loading = true;
-
-        this.chatService
-            .addServer(this.server);
+        this.chatService.addServer(this.server);
+        this.server = new BurstChatServer();
     }
 
 }

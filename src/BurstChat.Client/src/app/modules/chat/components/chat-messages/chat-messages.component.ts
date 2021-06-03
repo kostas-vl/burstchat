@@ -54,19 +54,22 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
         this.subscriptions = [
             this.chatService
-                .selfAddedToChat
+                .selfAddedToChat$
                 .subscribe(() => this.onSelfAddedToChat()),
-
             this.chatService
-                .allMessagesReceived
+                .allMessagesReceived$
                 .subscribe(payload => this.onMessagesReceived(payload)),
-
             this.chatService
-                .messageReceived
+                .messageReceived$
                 .subscribe(payload => this.onMessageReceived(payload)),
-
             this.chatService
-                .userUpdated
+                .messageEdited$
+                .subscribe(payload => this.onMessageEdited(payload)),
+            this.chatService
+                .messageDeleted$
+                .subscribe(payload => this.onMessageDeleted(payload)),
+            this.chatService
+                .userUpdated$
                 .subscribe(user => this.onUserUpdated(user)),
         ];
 
@@ -263,6 +266,42 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatIsEmpty = false;
             this.scrollToBottom();
             this.notifyService.notify(`${message.user.name} sent:`, message.content);
+        }
+    }
+
+    /**
+     * Handles the payload of a message that was edited.
+     * @param {Payload<Message>} message The message that was edited.
+     * @memberof ChatMessageComponent
+     */
+    private onMessageEdited(payload: Payload<Message>) {
+        const message = this.options.signalGroup === payload.signalGroup
+            ? payload.content
+            : null;
+
+        if (message) {
+            const instance = this.messages.find(m => m.id === message.id);
+            instance.content = message.content;
+            instance.edited = message.edited;
+        }
+    }
+
+    /**
+     * Handles the payload of a message that was deleted from the chat.
+     * @param {Payload<Message>} message The payload with the deleted message.
+     * @memberof ChatMessagesComponent
+     */
+    private onMessageDeleted(payload: Payload<Message>) {
+        const message= this.options.signalGroup === payload.signalGroup
+            ? payload.content
+            : null;
+
+        if (message) {
+            const instance = this.messages.find(m => m.id === message.id);
+            if (instance) {
+                const indexOf = this.messages.indexOf(instance);
+                this.messages.splice(indexOf, 1);
+            }
         }
     }
 

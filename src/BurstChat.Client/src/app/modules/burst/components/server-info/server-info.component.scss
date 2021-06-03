@@ -1,8 +1,11 @@
 @import '../../../../../scss/theme';
 
 .server-info {
-    background-color: $dark-color;
-    height: 70px;
+    position: fixed;
+    top: 0;
+    border-bottom: 1px solid $dark-color;
+    height: $minor-height;
+    width: ($sidebar-width - $minor-width);
     padding-top: 5px;
     padding-left: 10px;
     padding-right: 10px;

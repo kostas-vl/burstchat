@@ -30,7 +30,7 @@ export class AvatarComponent implements OnInit {
     }
 
     public get initials() {
-        const words = this.name.split(' ');
+        const words = this.name?.split(' ') ?? [];
         return words.reduce((acc, n) => acc + n[0]?.toUpperCase(), '');
     }
 

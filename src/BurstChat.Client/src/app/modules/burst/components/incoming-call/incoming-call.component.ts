@@ -89,7 +89,6 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
         this.rtcSessionService.answer();
         const first = this.user.id;
         const second = +this.session.source.remote_identity.uri.user;
-        console.log([first, second]);
         this.router.navigate(['/core/chat/direct'], {
             queryParams: {
                 user: [first, second],

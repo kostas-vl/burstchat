@@ -6,14 +6,10 @@ using BurstChat.Application.Interfaces;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Extensions;
 using BurstChat.Application.Services.ServersService;
-using BurstChat.Application.Services.UserService;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
-using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
-using UserErrors = BurstChat.Application.Errors.UserErrors;
 
 namespace BurstChat.Application.Services.ChannelsService
 {
@@ -25,7 +21,6 @@ namespace BurstChat.Application.Services.ChannelsService
         private readonly ILogger<ChannelsProvider> _logger;
         private readonly IBurstChatContext _burstChatContext;
         private readonly IServersService _serversService;
-        private readonly IUserService _userService;
 
         /// <summary>
         /// Executes any neccessary start up code for the controller.
@@ -36,14 +31,42 @@ namespace BurstChat.Application.Services.ChannelsService
         public ChannelsProvider(
             ILogger<ChannelsProvider> logger,
             IBurstChatContext burstChatContext,
-            IServersService serversService,
-            IUserService userService
+            IServersService serversService
         )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
             _serversService = serversService ?? throw new ArgumentNullException(nameof(serversService));
-            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        }
+
+        /// <summary>
+        /// This method will return the instance of a server based on the provided user and channel id.
+        /// </summary>
+        /// <param name="userId">The id of the target user</param>
+        /// <param name="channelId">the id of the target channel</param>
+        /// <returns>An instance of a Server or null</returns>
+        private Either<Server, Error> GetServer(long userId, long channelId) 
+        {
+            try 
+            {
+                var server = _burstChatContext
+                    .Servers
+                    .Include(s => s.Channels)
+                    .Include(s => s.Subscriptions)
+                    .AsQueryable()
+                    .FirstOrDefault(s => s.Subscriptions.Any(sub => sub.UserId == userId)
+                                            && s.Channels.Any(c => c.Id == channelId));
+                
+                if (server is null)
+                    return new Failure<Server, Error>(ChannelErrors.ChannelNotFound());
+                else
+                    return new Success<Server, Error>(server);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return new Failure<Server, Error>(SystemErrors.Exception());
+            }
         }
 
         /// <summary>
@@ -58,15 +81,7 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                var server = _burstChatContext
-                   .Servers
-                   .Include(s => s.Channels)
-                   .Include(s => s.Subscriptions)
-                   .AsQueryable()
-                   .FirstOrDefault(s => s.Subscriptions.Any(sub => sub.UserId == userId)
-                                        && s.Channels.Any(c => c.Id == channelId));
-
-                if (server is { })
+                return GetServer(userId, channelId).Bind(_ => 
                 {
                     var channel = _burstChatContext
                         .Channels
@@ -84,18 +99,12 @@ namespace BurstChat.Application.Services.ChannelsService
                                       .OrderByDescending(m => m.Id)
                                       .Take(100))
                         .ToList()
-                        .Aggregate(new List<Message>(), (current, next) =>
-                        {
-                            current.AddRange(next);
-                            return current;
-                        })
+                        .SelectMany(_ => _)
                         .OrderBy(m => m.Id)
                         .ToList();
 
                     return new Success<Channel, Error>(channel);
-                }
-
-                return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
+                });
             }
             catch (Exception e)
             {
@@ -114,25 +123,17 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                var server = _burstChatContext
-                    .Servers
-                    .Include(s => s.Channels)
-                    .Include(s => s.Subscriptions)
-                    .AsQueryable()
-                    .FirstOrDefault(s => s.Subscriptions.Any(s => s.UserId == userId)
-                                         && s.Channels.Any(c => c.Id == channelId));
-
-                if (server is { })
+                return GetServer(userId, channelId).Bind<Channel>(_ => 
                 {
                     var channel = _burstChatContext
                         .Channels
                         .FirstOrDefault(c => c.Id == channelId);
 
-                    if (channel is { } && channel.IsPublic)
+                    if (channel is not null && channel.IsPublic)
                         return new Success<Channel, Error>(channel);
-                }
-
-                return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
+                    else 
+                        return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
+                });
             }
             catch (Exception e)
             {
@@ -153,31 +154,21 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                return _serversService
-                    .Get(userId, serverId)
-                    .Bind<Channel>(server =>
+                return _serversService.Get(userId, serverId).Bind<Channel>(server =>
+                {
+                    var channelEntry = new Channel
                     {
-                        var userMonad = _userService.Get(userId);
-                        if (userMonad is Failure<User, Error>)
-                            return new Failure<Channel, Error>(UserErrors.UserNotFound());
+                        Name = channel.Name,
+                        IsPublic = channel.IsPublic,
+                        DateCreated = DateTime.Now
+                    };
+                    server
+                        .Channels
+                        .Add(channelEntry);
+                    _burstChatContext.SaveChanges();
 
-                        var user = (userMonad as Success<User, Error>)!.Value;
-
-                        var channelEntry = new Channel
-                        {
-                            Name = channel.Name,
-                            IsPublic = channel.IsPublic,
-                            DateCreated = DateTime.Now
-                        };
-
-                        server
-                            .Channels
-                            .Add(channelEntry);
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Channel, Error>(channelEntry);
-                    });
+                    return new Success<Channel, Error>(channelEntry);
+                });
             }
             catch (Exception e)
             {
@@ -197,22 +188,20 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                if (channel is { })
-                {
-                    var channelId = channel.Id;
-
-                    return Get(userId, channelId).Bind(channelEntry =>
-                    {
-                        channelEntry.Name = channel.Name;
-                        channelEntry.IsPublic = channel.IsPublic;
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Channel, Error>(channelEntry);
-                    });
-                }
-                else
+                if (channel is null)
                     return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
+
+                var channelId = channel.Id;
+
+                return Get(userId, channelId).Bind(channelEntry =>
+                {
+                    channelEntry.Name = channel.Name;
+                    channelEntry.IsPublic = channel.IsPublic;
+
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Channel, Error>(channelEntry);
+                });
             }
             catch (Exception e)
             {
@@ -256,10 +245,8 @@ namespace BurstChat.Application.Services.ChannelsService
         /// <param name="channelId">The id of the target channel</param>
         /// <param name="lastMessageId">The message id to be the interval of the message list</param>
         /// <returns>An either monad</returns>
-        public Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId, long? lastMessageId = null)
-        {
-            return GetWithMessages(userId, channelId, lastMessageId).Attach(channel => channel.Messages as IEnumerable<Message>);
-        }
+        public Either<IEnumerable<Message>, Error> GetMessages(long userId, int channelId, long? lastMessageId = null) =>
+            GetWithMessages(userId, channelId, lastMessageId).Attach(channel => channel.Messages as IEnumerable<Message>);
 
         /// <summary>
         /// This method will insert a new message sent to the channel provided.
@@ -278,25 +265,21 @@ namespace BurstChat.Application.Services.ChannelsService
                         .Users
                         .FirstOrDefault(u => u.Id == userId);
 
-                    if (user is { } && message is { })
-                    {
-                        var newMessage = new Message
-                        {
-                            User = user,
-                            Links = message.GetLinksFromContent(),
-                            Content = message.RemoveLinksFromContent(),
-                            Edited = false,
-                            DatePosted = DateTime.Now
-                        };
-
-                        channel.Messages.Add(newMessage);
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Message, Error>(newMessage);
-                    }
-                    else
+                    if (user is null || message is null)
                         return new Failure<Message, Error>(ChannelErrors.ChannelNotFound());
+
+                    var newMessage = new Message
+                    {
+                        User = user,
+                        Links = message.GetLinksFromContent(),
+                        Content = message.RemoveLinksFromContent(),
+                        Edited = false,
+                        DatePosted = DateTime.Now
+                    };
+                    channel.Messages.Add(newMessage);
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Message, Error>(newMessage);
                 });
             }
             catch (Exception e)
@@ -317,23 +300,31 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                return GetWithMessages(userId, channelId, message.Id).Bind<Message>(channel =>
+                if (message is null)
+                    return new Failure<Message, Error>(ChannelErrors.ChannelMessageNotFound());
+
+                return Get(userId, channelId).Bind<Message>(_ =>
                 {
-                    var messageEntry = channel.Messages
-                                              .FirstOrDefault(m => m.Id == message.Id);
+                    var entries = _burstChatContext
+                        .Channels
+                        .Include(c => c.Messages)
+                        .ThenInclude(m => m.User)
+                        .Include(c => c.Messages)
+                        .ThenInclude(m => m.Links)
+                        .Where(c => c.Id == channelId)
+                        .Select(c => c.Messages.FirstOrDefault(m => m.Id == message.Id))
+                        .ToList();
 
-                    if (messageEntry is { } && message is { })
-                    {
-                        messageEntry.Links = message.GetLinksFromContent();
-                        messageEntry.Content = message.RemoveLinksFromContent();
-                        messageEntry.Edited = true;
-
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Message, Error>(messageEntry);
-                    }
-                    else
+                    if (entries.Count != 1)
                         return new Failure<Message, Error>(ChannelErrors.ChannelMessageNotFound());
+
+                    var entry = entries.First()!;
+                    entry.Links = message.GetLinksFromContent();
+                    entry.Content = message.RemoveLinksFromContent();
+                    entry.Edited = true;
+                    _burstChatContext.SaveChanges();
+
+                    return new Success<Message, Error>(entry);
                 });
             }
             catch (Exception e)
@@ -354,12 +345,18 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                return GetWithMessages(userId, channelId, messageId).Bind(channel =>
+                return Get(userId, channelId).Bind<Message>(_ =>
                 {
-                    var message = channel.Messages.First(m => m.Id == messageId);
+                    var channel = _burstChatContext
+                        .Channels
+                        .Include(c => c.Messages.Where(m => m.Id == messageId))
+                        .First(c => c.Id == channelId);
 
+                    if (!channel.Messages.Any())
+                        return new Failure<Message, Error>(ChannelErrors.ChannelMessageNotFound());
+
+                    var message = channel.Messages.First();
                     channel.Messages.Remove(message);
-
                     _burstChatContext.SaveChanges();
 
                     return new Success<Message, Error>(message);

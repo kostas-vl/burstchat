@@ -38,8 +38,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
     public loading = true;
 
-    public addServerDialogVisible = false;
-
     /**
      * Creates an instance of LayoutComponent.
      * @memberof LayoutComponent
@@ -49,7 +47,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private directMessagingService: DirectMessagingService,
         private chatService: ChatService,
-        private sidebarService: SidebarService,
     ) { }
 
     /**
@@ -59,7 +56,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.subscriptions = [
             this.chatService
-                .onConnected
+                .onConnected$
                 .subscribe(() => {
                     setTimeout(() => {
                         this.chatService.getInvitations();
@@ -67,23 +64,20 @@ export class LayoutComponent implements OnInit, OnDestroy {
                     }, 300);
                 }),
             this.chatService
-                .onReconnected
+                .onReconnected$
                 .subscribe(() => {
                     this.chatService.getInvitations();
                 }),
             this.chatService
-                .invitations
+                .invitations$
                 .subscribe(data => {
                     if (data.length > 0) {
                         data.forEach(invite => this.onInvite(invite));
                     }
                 }),
             this.chatService
-                .newInvitation
+                .newInvitation$
                 .subscribe(invite => this.onInvite(invite)),
-            this.sidebarService
-                .addServerDialog
-                .subscribe(visible => this.addServerDialogVisible = visible)
         ];
 
 

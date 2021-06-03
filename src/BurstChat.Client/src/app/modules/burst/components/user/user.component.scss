@@ -3,10 +3,9 @@
 @import '../../../../../scss/sizing';
 
 .user-container {
-    @extend .pt-15;
-    @extend .pb-15;
     @extend .pl-25;
     @extend .pr-15;
+    min-height: $minor-height;
     display: flex;
     flex-direction: row;
     align-items: center;

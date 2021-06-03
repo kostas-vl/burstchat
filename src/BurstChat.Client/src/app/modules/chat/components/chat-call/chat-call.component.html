@@ -54,12 +54,12 @@
 
    <div class="chat-call-actions pr-10 pl-10 pt-10 pb-10">
 
-        <div class="button-icon-interactive button-icon-lg" (click)="onHangup()"
+        <button class="button" (click)="onHangup()"
             *ngIf="state === 'waiting' || state === 'confirmed'">
 
-            <fa-icon [icon]="icons['hangup']"></fa-icon>
+            <fa-icon [icon]="icons['hangup']"></fa-icon> End call
 
-        </div>
+        </button>
 
    </div>
 

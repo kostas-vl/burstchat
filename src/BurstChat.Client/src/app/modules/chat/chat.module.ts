@@ -5,6 +5,7 @@ import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
+import { ChatDialogService } from 'src/app/modules/chat/services/chat-dialog/chat-dialog.service';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
@@ -15,6 +16,8 @@ import { ChatMessagesComponent } from 'src/app/modules/chat/components/chat-mess
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
 import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-message/chat-message.component';
 import { ChatCallComponent } from 'src/app/modules/chat/components/chat-call/chat-call.component';
+import { MessageEditDialogComponent } from 'src/app/modules/chat/components/message-edit-dialog/message-edit-dialog.component';
+import { MessageDeleteDialogComponent } from 'src/app/modules/chat/components/message-delete-dialog/message-delete-dialog.component';
 
 import {
     faPaperPlane,
@@ -27,7 +30,12 @@ import {
     faMicrophone,
     faMicrophoneSlash,
     faVolumeUp,
-    faVolumeMute
+    faVolumeMute,
+    faPen,
+    faTrashAlt,
+    faQuestionCircle,
+    faVideo,
+    faClone,
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -48,7 +56,12 @@ import {
         ChatMessagesComponent,
         ChatMessageComponent,
         ChatInputComponent,
-        ChatCallComponent
+        ChatCallComponent,
+        MessageEditDialogComponent,
+        MessageDeleteDialogComponent
+    ],
+    providers: [
+        ChatDialogService
     ]
 })
 export class ChatModule {
@@ -69,7 +82,12 @@ export class ChatModule {
             faMicrophone,
             faMicrophoneSlash,
             faVolumeUp,
-            faVolumeMute);
+            faVolumeMute,
+            faPen,
+            faTrashAlt,
+            faQuestionCircle,
+            faVideo,
+            faClone);
     }
 
 }

@@ -101,7 +101,6 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
         if (this.user && this.session) {
             const first = this.user.id;
             const second = +this.session.source.remote_identity.uri.user;
-            console.log([first, second]);
             this.router.navigate(['/core/chat/direct'], {
                 queryParams: {
                     user: [first, second]

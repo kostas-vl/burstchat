@@ -17,12 +17,6 @@
     transform: translateX(calc($sidebar-width * -1));
 }
 
-.sidebar-header {
-    width: 100% !important;
-    display: flex;
-    flex-direction: row;
-}
-
 .sidebar-logo {
     text-align: center;
     font-size: 22px;
@@ -30,10 +24,6 @@
     height: 55px;
     width: $minor-width;
     padding-top: 10px;
-}
-
-.sidebar-user-info {
-    flex-grow: 12;
 }
 
 .sidebar-content {
@@ -51,6 +41,30 @@
 }
 
 .sidebar-lists {
+    margin-bottom: $minor-height;
     flex-grow: 9;
     overflow-y: auto !important;
+}
+
+.sidebar-dms {
+    @extend .sidebar-lists;
+}
+
+.sidebar-srv {
+    @extend .sidebar-lists;
+    margin-top: $minor-height;
+}
+
+.sidebar-footer {
+    position: fixed;
+    bottom: 0;
+    width: ($sidebar-width - $minor-width);
+    height: $minor-height;
+    margin-left: $minor-width;
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar-user-info {
+    flex-grow: 12;
 }

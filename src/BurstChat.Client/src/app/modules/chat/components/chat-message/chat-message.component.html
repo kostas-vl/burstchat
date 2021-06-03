@@ -4,7 +4,7 @@
 
     <div class="message-avatar">
 
-        <div class="pt-4" *ngIf="fullDisplay">
+        <div class="pl-5 pt-4" *ngIf="fullDisplay">
 
             <burst-avatar [name]="message.user.name" [avatar]="message.user.avatar"></burst-avatar>
 
@@ -12,7 +12,7 @@
 
     </div>
 
-    <div>
+    <div class="w-100">
 
         <div *ngIf="fullDisplay">
 
@@ -24,7 +24,7 @@
 
         <div class="message">
 
-            <div>
+            <div class="text-wrap">
 
                 {{message.content}}
 
@@ -41,6 +41,22 @@
                 <a [href]="link.url" target="_blank">{{link.url}}</a>
 
             </div>
+
+        </div>
+
+    </div>
+
+    <div class="message-actions">
+
+        <div class="button-icon text border-radius-15 fs-18" (click)="onEdit()">
+
+            <fa-icon [icon]="edit"></fa-icon>
+
+        </div>
+
+        <div class="button-icon text border-radius-15 fs-18" (click)="onDelete()">
+
+            <fa-icon [icon]="delete"></fa-icon>
 
         </div>
 

@@ -229,7 +229,7 @@ namespace BurstChat.Signal.Services.DirectMessagingService
             {
                 var method = HttpMethod.Delete;
                 var url = $"/api/direct/{directMessagingId}/messages";
-                var jsonMessage = JsonSerializer.Serialize(message);
+                var jsonMessage = JsonSerializer.Serialize(message.Id);
                 var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
 
                 return await _apiInteropService.SendAsync<Message>(context, method, url, content);

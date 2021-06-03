@@ -19,5 +19,9 @@ namespace BurstChat.Application.Errors
         public static Error DirectMessagesNotFound() => new(ErrorLevel.Critical,
                                                             ErrorType.DataProcess,
                                                             "The direct messages were not found");
+
+        public static Error DirectMessageNotFound() => new(ErrorLevel.Critical,
+                                                           ErrorType.DataProcess,
+                                                           "The direct message was not found");
     }
 }
