@@ -24,7 +24,7 @@ namespace BurstChat.Application.Services.ChannelsService
 
         /// <summary>
         /// Executes any neccessary start up code for the controller.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: When any of the parameters is null.
         /// </summary>
@@ -45,9 +45,9 @@ namespace BurstChat.Application.Services.ChannelsService
         /// <param name="userId">The id of the target user</param>
         /// <param name="channelId">the id of the target channel</param>
         /// <returns>An instance of a Server or null</returns>
-        private Either<Server, Error> GetServer(long userId, long channelId) 
+        private Either<Server, Error> GetServer(long userId, long channelId)
         {
-            try 
+            try
             {
                 var server = _burstChatContext
                     .Servers
@@ -56,7 +56,7 @@ namespace BurstChat.Application.Services.ChannelsService
                     .AsQueryable()
                     .FirstOrDefault(s => s.Subscriptions.Any(sub => sub.UserId == userId)
                                             && s.Channels.Any(c => c.Id == channelId));
-                
+
                 if (server is null)
                     return new Failure<Server, Error>(ChannelErrors.ChannelNotFound());
                 else
@@ -81,7 +81,7 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                return GetServer(userId, channelId).Bind(_ => 
+                return GetServer(userId, channelId).Bind(_ =>
                 {
                     var channel = _burstChatContext
                         .Channels
@@ -123,7 +123,7 @@ namespace BurstChat.Application.Services.ChannelsService
         {
             try
             {
-                return GetServer(userId, channelId).Bind<Channel>(_ => 
+                return GetServer(userId, channelId).Bind<Channel>(_ =>
                 {
                     var channel = _burstChatContext
                         .Channels
@@ -131,7 +131,7 @@ namespace BurstChat.Application.Services.ChannelsService
 
                     if (channel is not null && channel.IsPublic)
                         return new Success<Channel, Error>(channel);
-                    else 
+                    else
                         return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
                 });
             }
@@ -191,13 +191,10 @@ namespace BurstChat.Application.Services.ChannelsService
                 if (channel is null)
                     return new Failure<Channel, Error>(ChannelErrors.ChannelNotFound());
 
-                var channelId = channel.Id;
-
-                return Get(userId, channelId).Bind(channelEntry =>
+                return Get(userId, channel.Id).Bind(channelEntry =>
                 {
                     channelEntry.Name = channel.Name;
                     channelEntry.IsPublic = channel.IsPublic;
-
                     _burstChatContext.SaveChanges();
 
                     return new Success<Channel, Error>(channelEntry);
@@ -225,7 +222,6 @@ namespace BurstChat.Application.Services.ChannelsService
                     _burstChatContext
                         .Channels
                         .Remove(channel);
-
                     _burstChatContext.SaveChanges();
 
                     return new Success<Channel, Error>(channel);
