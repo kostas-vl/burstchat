@@ -82,7 +82,9 @@ namespace BurstChat.Api
                     var path = context?.Request?.Path;
                     if (path?.Value?.IndexOf("/api", StringComparison.InvariantCulture) == -1)
                     {
-                        context?.Response?.Redirect("index.html");
+                        var redirect = $"{path.Value}/index.html";
+                        Console.WriteLine(redirect);
+                        context?.Response?.Redirect(redirect);
                         return;
                     }
                     await next();
