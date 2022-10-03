@@ -6,18 +6,18 @@ on:
     pull_request:
         branches: [ master ]
 
-jobs:   
+jobs:
     build:
         runs-on: ubuntu-latest
-        defaults:    
-            run:        
+        defaults:
+            run:
                 working-directory: ./src/BurstChat.Api
-        steps:        
+        steps:
         - uses: actions/checkout@v2
         - name: Setup .NET Core
           uses: actions/setup-dotnet@v1
           with:
-            dotnet-version: 5.0.100
+            dotnet-version: 6.0.109
         - name: Install dependencies
           run: dotnet restore
         - name: Build
@@ -25,4 +25,3 @@ jobs:
         - name: Test
           run: dotnet test --no-restore --verbosity normal
 
-        

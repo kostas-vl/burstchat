@@ -116,7 +116,7 @@ namespace BurstChat.Application.Services.ChannelsService
                     {
                         Name = channel.Name,
                         IsPublic = channel.IsPublic,
-                        DateCreated = DateTime.Now
+                        DateCreated = DateTime.UtcNow
                     };
                     server
                         .Channels
@@ -264,7 +264,7 @@ namespace BurstChat.Application.Services.ChannelsService
                         Links = message.GetLinksFromContent(),
                         Content = message.RemoveLinksFromContent(),
                         Edited = false,
-                        DatePosted = DateTime.Now
+                        DatePosted = DateTime.UtcNow
                     };
                     channel.Messages.Add(newMessage);
                     _burstChatContext.SaveChanges();
