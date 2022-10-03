@@ -31,7 +31,7 @@ namespace BurstChat.IdentityServer.Extensions
         {
             if (context == null) return;
 
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.UtcNow;
             var webClientId = "burstchat.web.client";
             var webClientSecret = identitySecretsOptions
                 .ClientSecrets[webClientId];
@@ -108,7 +108,7 @@ namespace BurstChat.IdentityServer.Extensions
         {
             if (context == null) return;
 
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.UtcNow;
             var apiName = "burstchat.api";
             var apiSecret = identitySecretsOptions
                 .ApiSecrets[apiName];
@@ -154,7 +154,7 @@ namespace BurstChat.IdentityServer.Extensions
         {
             if (context == null) return;
 
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.UtcNow;
             var signalName = "burstchat.signal";
             var signalSecret = identitySecretsOptions
                 .ApiSecrets[signalName];
@@ -218,7 +218,7 @@ namespace BurstChat.IdentityServer.Extensions
         {
             if (context == null) return;
 
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.UtcNow;
             var openIdResource = new IdentityResource
             {
                 Name = "openid",
@@ -258,7 +258,7 @@ namespace BurstChat.IdentityServer.Extensions
                 .GetService<IServiceScopeFactory>();
 
             using var serviceScope = serviceScopeFactory?.CreateScope();
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.UtcNow;
 
             serviceScope?
                 .ServiceProvider
@@ -323,8 +323,16 @@ namespace BurstChat.IdentityServer.Extensions
             var options = new AlphaInvitationCodesOptions();
             alphaInvitationsCallback(options);
 
-            if (options?.AlphaCodes is {})
+            if (options?.AlphaCodes is not null)
             {
+                // Npgsql 6 introduces changes to datetimes with timezones so each datetimes
+                // will be passed as a UTC datetime.
+                foreach (var code in options.AlphaCodes)
+                {
+                    code.DateCreated = code.DateCreated.ToUniversalTime();
+                    code.DateExpired = code.DateExpired.ToUniversalTime();
+                }
+
                 var serviceScopeFactory = application
                     .ApplicationServices
                     .GetService<IServiceScopeFactory>();

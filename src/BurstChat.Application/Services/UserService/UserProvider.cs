@@ -52,7 +52,7 @@ namespace BurstChat.Application.Services.UserService
                 var codeExists = _burstChatContext
                     .AlphaInvitations
                     .Any(a => a.Code == alphaInvitationCode
-                              && a.DateExpired >= DateTime.Now);
+                              && a.DateExpired >= DateTime.UtcNow);
 
                 return codeExists
                     ? new Success<Unit, Error>(new Unit())
@@ -139,7 +139,7 @@ namespace BurstChat.Application.Services.UserService
                         Email = email,
                         Name = name,
                         Password = hashedPassword,
-                        DateCreated = DateTime.Now
+                        DateCreated = DateTime.UtcNow
                     };
 
                     _burstChatContext.Users.Add(user);
@@ -334,7 +334,7 @@ namespace BurstChat.Application.Services.UserService
                 if (user is null)
                     return new Failure<string, Error>(UserErrors.UserNotFound());
 
-                var dateCreated = DateTime.Now;
+                var dateCreated = DateTime.UtcNow;
                 // TODO: Implement a better solution for one time pass generation.
                 var timedOneTimePass = Guid.NewGuid().ToString();
                 var oneTimePassword = new OneTimePassword
@@ -379,7 +379,7 @@ namespace BurstChat.Application.Services.UserService
                         .Where(u => u.Id == user.Id)
                         .Include(u => u.OneTimePasswords)
                         .Select(u => u.OneTimePasswords
-                                      .Where(o => o.ExpirationDate >= DateTime.Now))
+                                      .Where(o => o.ExpirationDate >= DateTime.UtcNow))
                         .AsEnumerable()
                         .SelectMany(_ => _)
                         .FirstOrDefault(o => _bcryptService.VerifyHash(oneTimePass, o.OTP));
@@ -450,7 +450,7 @@ namespace BurstChat.Application.Services.UserService
 
                 storedInvitation.Accepted = data.Accepted;
                 storedInvitation.Declined = !data.Accepted;
-                storedInvitation.DateUpdated = DateTime.Now;
+                storedInvitation.DateUpdated = DateTime.UtcNow;
 
                 if (storedInvitation.Accepted)
                 {
