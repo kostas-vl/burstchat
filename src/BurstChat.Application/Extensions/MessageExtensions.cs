@@ -23,7 +23,7 @@ namespace BurstChat.Application.Extensions
                 .Select(uri => new Link
                 {
                     Url = uri,
-                    DateCreated = DateTime.Now
+                    DateCreated = DateTime.UtcNow
                 })
                 .ToList();
 

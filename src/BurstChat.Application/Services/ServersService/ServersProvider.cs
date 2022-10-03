@@ -294,7 +294,7 @@ namespace BurstChat.Application.Services.ServersService
                         Accepted = false,
                         Declined = false,
                         DateUpdated = null,
-                        DateCreated = DateTime.Now
+                        DateCreated = DateTime.UtcNow
                     };
 
                     _burstChatContext
