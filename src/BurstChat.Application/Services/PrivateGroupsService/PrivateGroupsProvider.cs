@@ -24,7 +24,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
 
         /// <summary>
         /// Executes any neccessary start up code for the service.
-        /// 
+        ///
         /// Exceptions:
         ///     ArgumentNullException: when any of the parameters is null.
         /// </summary>
@@ -89,7 +89,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
                     var newPrivateGroup = new PrivateGroup
                     {
                         Name = groupName,
-                        DateCreated = DateTime.Now,
+                        DateCreated = DateTime.UtcNow,
                     };
 
                     var user = _burstChatContext
@@ -318,7 +318,7 @@ namespace BurstChat.Application.Services.PrivateGroupsService
                             User = user,
                             Content = message.Content,
                             Edited = false,
-                            DatePosted = DateTime.Now
+                            DatePosted = DateTime.UtcNow
                         };
 
                         group.Messages
