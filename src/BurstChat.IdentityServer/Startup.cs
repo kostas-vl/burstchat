@@ -47,7 +47,7 @@ namespace BurstChat.IdentityServer
             if (env.IsDevelopment())
             {
                 application.UseDeveloperExceptionPage();
-                application.UseBurstChatDevelopmentResources(options => Configuration.GetSection("Secrets").Bind(options));
+                application.UseBurstChatDevelopmentResources(options => Configuration.GetSection("DevelopmentResources").Bind(options));
                 application.UseAlphaInvitationCodes(options => Configuration.GetSection("Invitations").Bind(options));
             }
             else
