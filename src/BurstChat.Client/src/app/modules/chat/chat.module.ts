@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { VirtualScrollerModule } from '@iharbeck/ngx-virtual-scroller';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { SharedModule } from 'src/app/modules/shared/shared.module';

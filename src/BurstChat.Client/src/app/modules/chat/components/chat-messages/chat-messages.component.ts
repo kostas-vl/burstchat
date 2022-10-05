@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
-import { Subscription, BehaviorSubject } from 'rxjs';
-import { VirtualScrollerComponent, IPageInfo } from 'ngx-virtual-scroller';
+import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { VirtualScrollerComponent, IPageInfo } from '@iharbeck/ngx-virtual-scroller';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { Payload } from 'src/app/models/signal/payload';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
-import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
-import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
