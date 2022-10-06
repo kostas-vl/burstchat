@@ -166,7 +166,11 @@ namespace BurstChat.Infrastructure
 
                     var domain = $"http://{host}:{port}";
 
-                    options.IssuerUri = domain;
+                    var issuer = Environment
+                        .GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_IDENTITY_ISSUER)
+                        ?? domain;
+
+                    options.IssuerUri = issuer;
                 })
                 .AddBurstChatSigningCredentials(options => configuration.GetSection("X509").Bind(options))
                 .AddConfigurationStore(options =>
