@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Logging;
 
 namespace BurstChat.Api
 {
@@ -59,6 +60,7 @@ namespace BurstChat.Api
         {
             if (env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 application.UseDeveloperExceptionPage();
             }
 
