@@ -10,6 +10,8 @@ namespace BurstChat.Infrastructure
 
         public static readonly string BURST_CHAT_IDENTITY_PORT = "BURST_CHAT_IDENTITY_PORT";
 
+        public static readonly string BURST_CHAT_IDENTITY_ISSUER = "BURST_CHAT_IDENTITY_ISSUER";
+
         public static readonly string BURST_CHAT_SIGNAL_HOST = "BURST_CHAT_SIGNAL_HOST";
 
         public static readonly string BURST_CHAT_SIGNAL_PORT = "BURST_CHAT_SIGNAL_PORT";

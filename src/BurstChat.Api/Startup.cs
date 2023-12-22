@@ -1,10 +1,8 @@
 using System;
-using System.Threading.Tasks;
 using BurstChat.Application;
 using BurstChat.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,11 +37,7 @@ namespace BurstChat.Api
                 .AddInfrastructure(Configuration);
 
             services.AddMvc();
-
-            services
-                .AddControllers()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
+            services.AddControllers();
             services.AddSwaggerGen(config =>
             {
                 config.SwaggerDoc("v1", new OpenApiInfo { Title = "BurstChat API", Version = "v1" });

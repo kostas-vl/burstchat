@@ -27,14 +27,28 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        private static void AddDevelopmentWebClient(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
+        private static void AddDevelopmentWebClient(ConfigurationDbContext? context, IdentityResourcesOptions identityResourcesOptions)
         {
             if (context == null) return;
 
             var creationDate = DateTime.UtcNow;
             var webClientId = "burstchat.web.client";
-            var webClientSecret = identitySecretsOptions
-                .ClientSecrets[webClientId];
+
+            identityResourcesOptions
+                .ClientSecrets
+                .TryGetValue(webClientId, out var webClientSecret);
+
+            identityResourcesOptions
+                .ClientRedirectUris
+                .TryGetValue(webClientId, out var webClientRedirectUris);
+
+            identityResourcesOptions
+                .ClientCorsOrigins
+                .TryGetValue(webClientId, out var webClientCorsOrigins);
+
+            identityResourcesOptions
+                .ClientPostLogoutRedirectUris
+                .TryGetValue(webClientId, out var webClientPostLogoutRedirectUris);
 
             var webClient = new Client
             {
@@ -71,10 +85,12 @@ namespace BurstChat.IdentityServer.Extensions
                 };
 
             webClient
-                .AllowedCorsOrigins = new List<ClientCorsOrigin>
+                .AllowedCorsOrigins = (webClientCorsOrigins ?? Enumerable.Empty<string>())
+                .Select(entry => new ClientCorsOrigin
                 {
-                    new ClientCorsOrigin { Origin = "http://localhost:4200" }
-                };
+                   Origin = entry
+                })
+                .ToList();
 
             webClient
                 .AllowedGrantTypes = new List<ClientGrantType>
@@ -83,16 +99,20 @@ namespace BurstChat.IdentityServer.Extensions
                 };
 
             webClient
-                .RedirectUris = new List<ClientRedirectUri>
+                .RedirectUris = (webClientRedirectUris ?? Enumerable.Empty<string>())
+                .Select(entry => new ClientRedirectUri
                 {
-                    new ClientRedirectUri { RedirectUri = @"http://localhost:4200/core/chat" }
-                };
+                    RedirectUri = entry
+                })
+                .ToList();
 
             webClient
-                .PostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>
+                .PostLogoutRedirectUris = (webClientPostLogoutRedirectUris ?? Enumerable.Empty<string>())
+                .Select(entry => new ClientPostLogoutRedirectUri
                 {
-                    new ClientPostLogoutRedirectUri { PostLogoutRedirectUri = @"http://localhost:4200/session/login" }
-                };
+                    PostLogoutRedirectUri = entry
+                })
+                .ToList();
 
             context
                 .Clients
@@ -104,13 +124,13 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        public static void AddDevelopmentApiResource(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
+        public static void AddDevelopmentApiResource(ConfigurationDbContext? context, IdentityResourcesOptions identityResourcesOptions)
         {
             if (context == null) return;
 
             var creationDate = DateTime.UtcNow;
             var apiName = "burstchat.api";
-            var apiSecret = identitySecretsOptions
+            var apiSecret = identityResourcesOptions
                 .ApiSecrets[apiName];
 
             var apiResource = new ApiResource
@@ -150,13 +170,13 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="context">The configuration database context</param>
         /// <param name="configuration">The application settings configuration</param>
-        public static void AddDevelopmentSignalResource(ConfigurationDbContext? context, IdentitySecretsOptions identitySecretsOptions)
+        public static void AddDevelopmentSignalResource(ConfigurationDbContext? context, IdentityResourcesOptions identityResourcesOptions)
         {
             if (context == null) return;
 
             var creationDate = DateTime.UtcNow;
             var signalName = "burstchat.signal";
-            var signalSecret = identitySecretsOptions
+            var signalSecret = identityResourcesOptions
                 .ApiSecrets[signalName];
 
             var signalResource = new ApiResource
@@ -248,10 +268,10 @@ namespace BurstChat.IdentityServer.Extensions
         /// </summary>
         /// <param name="application">The application builder instance</param>
         /// <param name="secretsCallback">The callback that will populate the identity secrets options</param>
-        public static void UseBurstChatDevelopmentResources(this IApplicationBuilder application, Action<IdentitySecretsOptions> secretsCallback)
+        public static void UseBurstChatDevelopmentResources(this IApplicationBuilder application, Action<IdentityResourcesOptions> secretsCallback)
         {
-            var identitySecretsOptions = new IdentitySecretsOptions();
-            secretsCallback(identitySecretsOptions);
+            var identityResourcesOptions = new IdentityResourcesOptions();
+            secretsCallback(identityResourcesOptions);
 
             var serviceScopeFactory = application
                 .ApplicationServices
@@ -304,9 +324,9 @@ namespace BurstChat.IdentityServer.Extensions
             foreach (var identity in identities)
                 context?.IdentityResources.Remove(identity);
 
-            AddDevelopmentWebClient(context, identitySecretsOptions);
-            AddDevelopmentApiResource(context, identitySecretsOptions);
-            AddDevelopmentSignalResource(context, identitySecretsOptions);
+            AddDevelopmentWebClient(context, identityResourcesOptions);
+            AddDevelopmentApiResource(context, identityResourcesOptions);
+            AddDevelopmentSignalResource(context, identityResourcesOptions);
             AddDevelopmeApiScopes(context);
             AddDevelopmentIdentityResources(context);
 
