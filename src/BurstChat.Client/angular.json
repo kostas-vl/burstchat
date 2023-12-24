@@ -72,18 +72,18 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "burst-chat-client:build"
+                      "buildTarget": "burst-chat-client:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "burst-chat-client:build:production"
+                          "buildTarget": "burst-chat-client:build:production"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "burst-chat-client:build"
+                      "buildTarget": "burst-chat-client:build"
                     }
                 },
                 "test": {
