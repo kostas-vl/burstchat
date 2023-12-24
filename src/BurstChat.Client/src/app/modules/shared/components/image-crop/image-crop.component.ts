@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Dimensions, ImageCroppedEvent, ImageTransform, base64ToFile } from 'ngx-image-cropper';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { ImageCroppedEvent } from 'ngx-image-cropper';
 
 @Component({
     selector: 'burst-image-crop',
