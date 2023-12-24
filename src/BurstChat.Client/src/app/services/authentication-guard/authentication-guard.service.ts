@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { TokenInfo } from 'src/app/models/identity/token-info';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
@@ -9,7 +9,7 @@ import { StorageService } from 'src/app/services/storage/storage.service';
  * @class AuthenticationGuardService
  */
 @Injectable()
-export class AuthenticationGuardService implements CanActivate {
+export class AuthenticationGuardService  {
 
     private tokenInfo?: TokenInfo;
 
