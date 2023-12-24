@@ -25,7 +25,7 @@
     <div class="column column-60">
 
         <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1 / 1" [resizeToWidth]="256"
-            [cropperMinWidth]="128" [onlyScaleDown]="true" [alignImage]="'left'" [style.display]="null" format="png"
+            [cropperMinWidth]="128" [onlyScaleDown]="true" [alignImage]="'left'" [style.display]="null" format="png" output="base64"
             (imageCropped)="onImageCropped($event)"></image-cropper>
 
     </div>
