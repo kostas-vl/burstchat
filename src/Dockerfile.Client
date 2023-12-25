@@ -1,0 +1,5 @@
+FROM node:20
+COPY . /burstchat
+WORKDIR /burstchat/BurstChat.Client
+RUN [ "npm", "ci" ]
+ENTRYPOINT [ "npm", "start" ]
