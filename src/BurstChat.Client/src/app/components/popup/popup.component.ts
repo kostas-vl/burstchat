@@ -1,4 +1,6 @@
+import { NgClass } from '@angular/common';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PopupMessage } from 'src/app/models/notify/popup-message';
 
@@ -11,10 +13,14 @@ import { PopupMessage } from 'src/app/models/notify/popup-message';
 @Component({
     selector: 'burst-popup',
     templateUrl: './popup.component.html',
-    styleUrls: ['./popup.component.scss']
+    styleUrl: './popup.component.scss',
+    standalone: true,
+    imports: [
+        NgClass,
+        FontAwesomeModule
+    ]
 })
 export class PopupComponent implements OnInit {
-
     public closeIcon = faTimes;
 
     @Input()
@@ -42,5 +48,4 @@ export class PopupComponent implements OnInit {
     public close() {
         this.onClose.emit();
     }
-
 }

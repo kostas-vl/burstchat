@@ -1,9 +1,7 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { environment } from 'src/environments/environment';
+import { Routes } from '@angular/router';
 import { AuthenticationGuardService } from 'src/app/services/authentication-guard/authentication-guard.service';
 
-const routes: Routes = [
+export const routes: Routes = [
     {
         path: 'core',
         loadChildren: () => import('src/app/modules/burst/burst.module').then(m => m.BurstModule),
@@ -23,13 +21,3 @@ const routes: Routes = [
       redirectTo: '/session/login'
     }
 ];
-
-@NgModule({
-    imports: [
-        RouterModule.forRoot(routes, { useHash: !environment.production })
-    ],
-    exports: [
-        RouterModule
-    ]
-})
-export class AppRoutingModule { }
