@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { AuthenticationGuardService } from 'src/app/services/authentication-guard/authentication-guard.service';
+import { authenticationGuardFn } from 'src/app/services/authentication-guard/authentication-guard.service';
 
 export const routes: Routes = [
     {
         path: 'core',
         loadChildren: () => import('src/app/modules/burst/burst.module').then(m => m.BurstModule),
-        canActivate: [AuthenticationGuardService]
+        canActivate: [authenticationGuardFn]
     },
     {
         path: 'session',
