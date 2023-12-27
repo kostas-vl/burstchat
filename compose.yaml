@@ -8,8 +8,8 @@ services:
       - database
       - asterisk-database
     environment:
-      BURSTCHAT_API_HOST: 0.0.0.0
-      BURSTCHAT_API_PORT: 5000
+      BURST_CHAT_API_HOST: 0.0.0.0
+      BURST_CHAT_API_PORT: 5000
     networks:
       - shared
     ports:
@@ -24,8 +24,8 @@ services:
       context: ./src
       dockerfile: Dockerfile.Signal
     environment:
-      BURSTCHAT_API_HOST: 0.0.0.0
-      BURSTCHAT_API_PORT: 5001
+      BURST_CHAT_SIGNAL_HOST: 0.0.0.0
+      BURST_CHAT_SIGNAL_PORT: 5001
     networks:
       - shared
     ports:
@@ -43,8 +43,9 @@ services:
       - database
       - identity-database
     environment:
-      BURSTCHAT_API_HOST: 0.0.0.0
-      BURSTCHAT_API_PORT: 5002
+      BURST_CHAT_IDENTITY_HOST: 0.0.0.0
+      BURST_CHAT_IDENTITY_PORT: 5002
+      BURST_CHAT_IDENTITY_ISSUER: http://burstchat-identity:5002
     networks:
       - shared
     ports:
@@ -58,6 +59,9 @@ services:
     build:
       context: ./src
       dockerfile: Dockerfile.Client
+    environment:
+      BURSTCHAT_CLIENT_HOST_DEV: 0.0.0.0
+      BURSTCHAT_CLIENT_PORT_DEV: 4200
     networks:
       - shared
     ports:
