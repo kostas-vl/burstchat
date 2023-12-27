@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-host": "ng serve --host $BURSTCHAT_CLIENT_HOST_DEV --port $BURSTCHAT_CLIENT_PORT_DEV --disable-host-check",
     "start-electron": "ng build --base-href && electron .",
     "watch": "ng build --watch --configuration development",
     "build": "ng build",

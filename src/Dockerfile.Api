@@ -1,0 +1,6 @@
+FROM mcr.microsoft.com/dotnet/sdk
+ENV PATH="$PATH:/root/.dotnet/tools"
+COPY . /burstchat
+WORKDIR /burstchat/BurstChat.Api
+RUN dotnet tool install --global dotnet-ef
+ENTRYPOINT dotnet ef database update && dotnet run

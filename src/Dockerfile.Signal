@@ -1,0 +1,4 @@
+FROM mcr.microsoft.com/dotnet/sdk
+COPY . /burstchat
+WORKDIR /burstchat/BurstChat.Signal
+ENTRYPOINT dotnet run

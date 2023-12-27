@@ -1,0 +1,155 @@
+services:
+  api:
+    container_name: burstchat-api
+    build:
+      context: ./src
+      dockerfile: Dockerfile.Api
+    depends_on:
+      - database
+      - asterisk-database
+    environment:
+      BURST_CHAT_API_HOST: 0.0.0.0
+      BURST_CHAT_API_PORT: 5000
+    networks:
+      - shared
+    ports:
+      - 5000:5000
+    profiles:
+      - backend
+      - debug
+      - debug-signal
+      - debug-identity
+
+  signal:
+    container_name: burstchat-signal
+    build:
+      context: ./src
+      dockerfile: Dockerfile.Signal
+    environment:
+      BURST_CHAT_SIGNAL_HOST: 0.0.0.0
+      BURST_CHAT_SIGNAL_PORT: 5001
+    networks:
+      - shared
+    ports:
+      - 5001:5001
+    profiles:
+      - backend
+      - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
+
+  identity:
+    container_name: burstchat-identity
+    build:
+      context: ./src
+      dockerfile: Dockerfile.IdentityServer
+    depends_on:
+      - database
+      - identity-database
+    environment:
+      BURST_CHAT_IDENTITY_HOST: 0.0.0.0
+      BURST_CHAT_IDENTITY_PORT: 5002
+      BURST_CHAT_IDENTITY_ISSUER: http://burstchat-identity:5002
+    networks:
+      - shared
+    ports:
+      - 5002:5002
+    profiles:
+      - backend
+      - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
+
+  client:
+    container_name: burstchat-client
+    build:
+      context: ./src
+      dockerfile: Dockerfile.Client
+    environment:
+      BURSTCHAT_CLIENT_HOST_DEV: 0.0.0.0
+      BURSTCHAT_CLIENT_PORT_DEV: 4200
+    networks:
+      - shared
+    ports:
+      - 4200:4200
+    profiles:
+      - frontend
+      - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
+
+  database:
+    container_name: burstchat-database
+    image: postgres:16-bullseye
+    restart: always
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: burstchat
+    networks:
+      - shared
+    ports:
+      - 5433:5432
+    volumes:
+      - db:/var/lib/postgres/data
+    profiles:
+      - backend
+      - db
+      - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
+
+  identity-database:
+    container_name: burstchat-identity-database
+    image: postgres:16-bullseye
+    restart: always
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: burstchat_identity
+    networks:
+      - shared
+    ports:
+      - 5434:5432
+    volumes:
+      - db:/var/lib/postgres/data
+    profiles:
+      - backend
+      - db
+      - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
+
+  asterisk-database:
+    container_name: burstchat-asterisk-database
+    image: postgres:16-bullseye
+    restart: always
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: burstchat_asterisk
+    networks:
+      - shared
+    ports:
+      - 5435:5432
+    volumes:
+      - db:/var/lib/postgres/data
+    profiles:
+      - backend
+      - db
+      - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
+
+networks:
+  shared:
+
+volumes:
+  db:
+    driver: local
