@@ -17,6 +17,8 @@ services:
     profiles:
       - backend
       - debug
+      - debug-signal
+      - debug-identity
 
   signal:
     container_name: burstchat-signal
@@ -33,6 +35,9 @@ services:
     profiles:
       - backend
       - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
 
   identity:
     container_name: burstchat-identity
@@ -53,6 +58,9 @@ services:
     profiles:
       - backend
       - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
 
   client:
     container_name: burstchat-client
@@ -69,6 +77,9 @@ services:
     profiles:
       - frontend
       - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
 
   database:
     container_name: burstchat-database
@@ -86,8 +97,11 @@ services:
       - db:/var/lib/postgres/data
     profiles:
       - backend
-      - database
+      - db
       - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
 
   identity-database:
     container_name: burstchat-identity-database
@@ -105,8 +119,11 @@ services:
       - db:/var/lib/postgres/data
     profiles:
       - backend
-      - database
+      - db
       - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
 
   asterisk-database:
     container_name: burstchat-asterisk-database
@@ -124,8 +141,11 @@ services:
       - db:/var/lib/postgres/data
     profiles:
       - backend
-      - database
+      - db
       - debug
+      - debug-api
+      - debug-signal
+      - debug-identity
 
 networks:
   shared:
