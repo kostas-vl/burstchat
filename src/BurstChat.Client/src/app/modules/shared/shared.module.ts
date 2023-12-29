@@ -19,10 +19,10 @@ import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
     imports: [
         CommonModule,
         ImageCropperModule,
-        FontAwesomeModule
+        FontAwesomeModule,
+        CardComponent,
     ],
     declarations: [
-        CardComponent,
         CardHeaderComponent,
         CardBodyComponent,
         CardFooterComponent,
