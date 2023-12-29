@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
-import { AuthHttpInterceptor } from 'src/app/services/auth-http-interceptor/auth-http-interceptor.service';
+import { AuthHttpInterceptor } from 'src/app/modules/burst/services/auth-http-interceptor/auth-http-interceptor.service';
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, filter, take, switchMap, tap } from 'rxjs/operators';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, throwError } from 'rxjs';
+import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { TokenInfo } from 'src/app/models/identity/token-info';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -87,7 +87,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
      * header.
      * @private
      * @memberof AuthHttpInterceptor
-     * @param {HttpRequest(any)} request The request to be extended.
+     * @param request {HttpRequest(any)} request The request to be extended.
      * @returns The modified HttpRequest.
      */
     private requestWithAccessToken(request: HttpRequest<any>) {
@@ -107,8 +107,8 @@ export class AuthHttpInterceptor implements HttpInterceptor {
     /**
      * This method will assign a new header to an http request that will assign a bearer token.
      * @memberof AuthHttpInterceptor
-     * @param {HttpRequest(any)} request The request instance.
-     * @param {HttpHandler} next The http handler instance.
+     * @param request {HttpRequest(any)} request The request instance.
+     * @param next {HttpHandler} next The http handler instance.
      * @return An observable that will conclude the request.
      */
     public intercept(request: HttpRequest<any>, next: HttpHandler) {
