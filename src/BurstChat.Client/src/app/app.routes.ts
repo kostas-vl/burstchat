@@ -11,10 +11,6 @@ export const routes: Routes = [
         canActivate: [authenticationGuard],
         providers: [provideHttpClient(withInterceptors([endpointInterceptor, authInterceptor]))]
     },
-    // {
-    //     path: 'session',
-    //     loadChildren: () => import('src/app/modules/session/session.module').then(m => m.SessionModule)
-    // },
     {
         path: 'session',
         loadChildren: () => import('src/app/components/session/session.routes').then(c => c.routes),
