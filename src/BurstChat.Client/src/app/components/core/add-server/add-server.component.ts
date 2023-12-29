@@ -1,10 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
+import { DialogComponent } from '../../shared/dialog/dialog.component';
+import { CardComponent } from '../../shared/card/card.component';
+import { CardHeaderComponent } from '../../shared/card-header/card-header.component';
+import { CardBodyComponent } from '../../shared/card-body/card-body.component';
+import { CardFooterComponent } from '../../shared/card-footer/card-footer.component';
 
 /**
  * This class represents an angular component that displays a form for creating a new BurstChat server.
@@ -13,7 +19,16 @@ import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.s
 @Component({
     selector: 'burst-add-server',
     templateUrl: './add-server.component.html',
-    styleUrls: ['./add-server.component.scss']
+    styleUrl: './add-server.component.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        DialogComponent,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent
+    ]
 })
 export class AddServerComponent implements OnInit, OnDestroy {
 
