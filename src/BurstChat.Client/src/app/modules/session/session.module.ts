@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
-import { SharedModule } from 'src/app/modules/shared/shared.module';
 import { SessionRoutingModule } from 'src/app/modules/session/session.routing';
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
@@ -14,6 +13,10 @@ import { LogoutComponent } from 'src/app/modules/session/components/logout/logou
 import { ResetPasswordComponent } from 'src/app/modules/session/components/reset-password/reset-password.component';
 import { ChangePasswordComponent } from 'src/app/modules/session/components/change-password/change-password.component';
 import { RegisterComponent } from 'src/app/modules/session/components/register/register.component';
+import { CardComponent } from 'src/app/components/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/card-footer/card-footer.component';
 
 @NgModule({
     imports: [
@@ -21,8 +24,11 @@ import { RegisterComponent } from 'src/app/modules/session/components/register/r
         HttpClientModule,
         FormsModule,
         FontAwesomeModule,
-        SharedModule,
-        SessionRoutingModule
+        SessionRoutingModule,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent,
     ],
     declarations: [
         LoginComponent,
