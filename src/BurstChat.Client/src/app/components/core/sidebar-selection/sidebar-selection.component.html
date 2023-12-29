@@ -1,27 +1,16 @@
 <div class="selection-list-container">
-
     <div class="selection-entry">
-
         <div class="button-icon-interactive button-icon-lg" (click)="onNew()">
-
             <fa-icon [icon]="dragon"></fa-icon>
-
         </div>
-
     </div>
-
     <hr>
-
     <div class="selection-entry">
-
-        <burst-direct-messaging></burst-direct-messaging>
-
+        <burst-direct-messaging/>
     </div>
-
-    <div class="selection-entry" *ngFor="let server of servers; trackBy trackServerBy">
-
-        <burst-server [server]="server"></burst-server>
-
-    </div>
-
+    @for(server of servers; track server.id) {
+        <div class="selection-entry">
+            <burst-server [server]="server"></burst-server>
+        </div>
+    }
 </div>

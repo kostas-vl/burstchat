@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
@@ -12,6 +12,8 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
+import { DirectMessagingComponent } from 'src/app/components/core/direct-messaging/direct-messaging.component';
+import { ServerComponent } from 'src/app/components/core/server/server.component';
 
 /**
  * This class represents an angular component that displays on screen a list of subscribed servers.
@@ -22,7 +24,9 @@ import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.s
 @Component({
     selector: 'burst-sidebar-selection',
     templateUrl: './sidebar-selection.component.html',
-    styleUrls: ['./sidebar-selection.component.scss']
+    styleUrl: './sidebar-selection.component.scss',
+    standalone: true,
+    imports: [FontAwesomeModule, DirectMessagingComponent, ServerComponent]
 })
 export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
@@ -43,7 +47,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @memberof SidebarSelectionComponent
      */
     constructor(
-        private router: Router,
         private userService: UserService,
         private serversService: ServersService,
         private chatService: ChatService,
