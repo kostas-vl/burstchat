@@ -8,11 +8,9 @@ import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sideb
 import { SidebarSelectionComponent } from 'src/app/modules/burst/components/sidebar-selection/sidebar-selection.component';
 import { DirectMessagingComponent } from 'src/app/modules/burst/components/direct-messaging/direct-messaging.component';
 import { DirectMessagingListComponent } from './components/direct-messaging-list/direct-messaging-list.component';
-import { ServerComponent } from 'src/app/modules/burst/components/server/server.component';
 import { ChannelListComponent } from 'src/app/modules/burst/components/channel-list/channel-list.component';
 import { ChannelComponent } from 'src/app/modules/burst/components/channel/channel.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
-import { IncomingCallComponent } from 'src/app/modules/burst/components/incoming-call/incoming-call.component';
 import { OngoingCallComponent } from 'src/app/modules/burst/components/ongoing-call/ongoing-call.component';
 import { AddServerComponent } from 'src/app/modules/burst/components/add-server/add-server.component';
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
@@ -25,6 +23,8 @@ import { ExpanderComponent } from 'src/app/components/shared/expander/expander.c
 import { ServerInfoComponent } from 'src/app/components/core/server-info/server-info.component';
 import { UserComponent } from 'src/app/components/core/user/user.component';
 import { UserListComponent } from 'src/app/components/core/user-list/user-list.component';
+import { ServerComponent } from 'src/app/components/core/server/server.component';
+import { IncomingCallComponent } from 'src/app/components/core/incoming-call/incoming-call.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -63,6 +63,8 @@ import {
         ServerInfoComponent,
         UserComponent,
         UserListComponent,
+        ServerComponent,
+        IncomingCallComponent
     ],
     declarations: [
         LayoutComponent,
@@ -71,10 +73,8 @@ import {
         SidebarSelectionComponent,
         DirectMessagingComponent,
         DirectMessagingListComponent,
-        ServerComponent,
         ChannelListComponent,
         ChannelComponent,
-        IncomingCallComponent,
         OngoingCallComponent,
         AddServerComponent
     ]

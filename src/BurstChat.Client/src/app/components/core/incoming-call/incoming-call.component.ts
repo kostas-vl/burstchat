@@ -1,11 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**
  * This class represents an angular component that displays a dialog to the user about an incoming call.
@@ -15,7 +22,17 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
 @Component({
     selector: 'burst-incoming-call',
     templateUrl: './incoming-call.component.html',
-    styleUrls: ['./incoming-call.component.scss']
+    styleUrl: './incoming-call.component.scss',
+    standalone: true,
+    imports: [
+        FontAwesomeModule,
+        DialogComponent,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent,
+        AvatarComponent
+    ]
 })
 export class IncomingCallComponent implements OnInit, OnDestroy {
 

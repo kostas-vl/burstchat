@@ -15,7 +15,8 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
 @Component({
     selector: 'burst-server',
     templateUrl: './server.component.html',
-    styleUrls: ['./server.component.scss']
+    styleUrl: './server.component.scss',
+    standalone: true
 })
 export class ServerComponent implements OnInit, OnDestroy {
 

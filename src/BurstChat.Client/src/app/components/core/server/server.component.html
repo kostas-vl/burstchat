@@ -1,0 +1,8 @@
+<div class="button-icon-interactive button-icon-lg" [class.button-icon-interactive-static]="isActive"
+    (click)="onSelect()">
+    @if(avatarExists) {
+        <img class="server-avatar" [attr.src]="server.avatar" />
+    } @else {
+        {{serverInitials}}
+    }
+</div>
