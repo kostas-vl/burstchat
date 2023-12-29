@@ -7,7 +7,7 @@ import { CardHeaderComponent } from 'src/app/components/card-header/card-header.
 import { CardBodyComponent } from 'src/app/components/card-body/card-body.component';
 import { CardFooterComponent } from 'src/app/components/card-footer/card-footer.component';
 import { DialogComponent } from 'src/app/modules/shared/components/dialog/dialog.component';
-import { AvatarComponent } from 'src/app/modules/shared/components/avatar/avatar.component';
+import { AvatarComponent } from 'src/app/components/avatar/avatar.component';
 import { ImageCropComponent } from 'src/app/modules/shared/components/image-crop/image-crop.component';
 import { ShimmerListComponent } from 'src/app/modules/shared/components/shimmer-list/shimmer-list.component';
 import { ExpanderComponent } from 'src/app/modules/shared/components/expander/expander.component';
@@ -24,10 +24,10 @@ import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
         CardHeaderComponent,
         CardBodyComponent,
         CardFooterComponent,
+        AvatarComponent,
     ],
     declarations: [
         DialogComponent,
-        AvatarComponent,
         ImageCropComponent,
         ShimmerListComponent,
         ExpanderComponent

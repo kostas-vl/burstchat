@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, Input } from '@angular/core';
 
 /**
@@ -9,7 +10,9 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
     selector: 'burst-avatar',
     templateUrl: './avatar.component.html',
-    styleUrls: ['./avatar.component.scss']
+    styleUrl: './avatar.component.scss',
+    standalone: true,
+    imports: [CommonModule]
 })
 export class AvatarComponent implements OnInit {
 
