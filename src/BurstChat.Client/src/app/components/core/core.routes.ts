@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from 'src/app/components/core/home/home.component';
+import { Routes } from '@angular/router';
 import { LayoutComponent } from 'src/app/components/core/layout/layout.component';
+import { HomeComponent } from 'src/app/components/core/home/home.component';
 
-const routes: Routes = [
+export const routes: Routes = [
     {
         path: '',
         component: LayoutComponent,
@@ -28,14 +27,3 @@ const routes: Routes = [
         ]
     }
 ];
-
-@NgModule({
-    imports: [
-        RouterModule.forChild(routes)
-    ],
-    exports: [
-        RouterModule
-    ]
-})
-export class BurstRoutingModule { }
-

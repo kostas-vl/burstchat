@@ -7,7 +7,7 @@ import { endpointInterceptor } from 'src/app/interceptors/endpoint/endpoint.inte
 export const routes: Routes = [
     {
         path: 'core',
-        loadChildren: () => import('src/app/modules/burst/burst.module').then(m => m.BurstModule),
+        loadChildren: () => import('src/app/components/core/core.routes').then(c => c.routes),
         canActivate: [authenticationGuard],
         providers: [provideHttpClient(withInterceptors([endpointInterceptor, authInterceptor]))]
     },
