@@ -2,11 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
-import { DisplayServer } from 'src/app/models/sidebar/display-server';
-import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
+import { UserComponent } from 'src/app/components/core/user/user.component';
 
 /**
  * This class represents an angular component that displays the list of users that are subscribed to a server.
@@ -17,7 +17,12 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 @Component({
     selector: 'burst-user-list',
     templateUrl: './user-list.component.html',
-    styleUrls: ['./user-list.component.scss']
+    styleUrl: './user-list.component.scss',
+    standalone: true,
+    imports: [
+        ExpanderComponent,
+        UserComponent
+    ]
 })
 export class UserListComponent implements OnInit, OnDestroy {
 
