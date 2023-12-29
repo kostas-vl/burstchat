@@ -21,9 +21,9 @@ import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
         ImageCropperModule,
         FontAwesomeModule,
         CardComponent,
+        CardHeaderComponent,
     ],
     declarations: [
-        CardHeaderComponent,
         CardBodyComponent,
         CardFooterComponent,
         DialogComponent,
