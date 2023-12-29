@@ -9,7 +9,8 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
     selector: 'burst-shimmer-list',
     templateUrl: './shimmer-list.component.html',
-    styleUrls: ['./shimmer-list.component.scss']
+    styleUrl: './shimmer-list.component.scss',
+    standalone: true,
 })
 export class ShimmerListComponent implements OnInit {
 

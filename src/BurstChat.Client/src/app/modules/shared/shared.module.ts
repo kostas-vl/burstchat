@@ -8,9 +8,9 @@ import { CardBodyComponent } from 'src/app/components/card-body/card-body.compon
 import { CardFooterComponent } from 'src/app/components/card-footer/card-footer.component';
 import { DialogComponent } from 'src/app//components/dialog/dialog.component';
 import { AvatarComponent } from 'src/app/components/avatar/avatar.component';
+import { ExpanderComponent } from 'src/app/components/expander/expander.component';
+import { ShimmerListComponent } from 'src/app/components/shimmer-list/shimmer-list.component';
 import { ImageCropComponent } from 'src/app/modules/shared/components/image-crop/image-crop.component';
-import { ShimmerListComponent } from 'src/app/modules/shared/components/shimmer-list/shimmer-list.component';
-import { ExpanderComponent } from 'src/app/modules/shared/components/expander/expander.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
@@ -26,11 +26,11 @@ import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
         CardFooterComponent,
         AvatarComponent,
         DialogComponent,
+        ShimmerListComponent,
+        ExpanderComponent
     ],
     declarations: [
         ImageCropComponent,
-        ShimmerListComponent,
-        ExpanderComponent
     ],
     exports: [
         CardComponent,
