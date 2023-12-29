@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { LogoutComponent } from 'src/app/modules/session/components/logout/logout.component';
 import { ResetPasswordComponent } from 'src/app/modules/session/components/reset-password/reset-password.component';
 import { ChangePasswordComponent } from 'src/app/modules/session/components/change-password/change-password.component';
-import { RegisterComponent } from 'src/app/modules/session/components/register/register.component';
 
 const routes: Routes = [
     {
@@ -21,11 +20,6 @@ const routes: Routes = [
         component: ChangePasswordComponent,
         pathMatch: 'full'
     },
-    {
-        path: 'register',
-        component: RegisterComponent,
-        pathMatch: 'full'
-    }
 ];
 
 @NgModule({

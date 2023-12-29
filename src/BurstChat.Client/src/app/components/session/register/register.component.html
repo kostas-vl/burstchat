@@ -1,117 +1,62 @@
 <div class="register-container h-100">
-
   <burst-card class="register-card">
-
     <burst-card-header>
-
       <div class="register-card-header">
-
-        <fa-icon [icon]="dragon" *ngIf="!loading"></fa-icon>
-
-        <div class="loader" *ngIf="loading"></div>
-
+          @if(loading) {
+            <div class="loader"></div>
+        } @else {
+            <fa-icon [icon]="dragon"></fa-icon>
+        }
       </div>
-
     </burst-card-header>
-
     <burst-card-body>
-
       <div class="register-card-body">
-
         <div class="row">
-
           <div class="column column-80 text-muted">
-
             <small>Provide the information below to register an account with BurstChat.</small>
-
           </div>
-
         </div>
-
         <br>
-
         <div class="row">
-
           <div class="column column-100">
-
             <input type="text" placeholder="NAME" [disabled]="loading" [(ngModel)]="registration.name">
-
           </div>
-
         </div>
-
         <div class="row">
-
           <div class="column column-100">
-
             <input type="email" placeholder="EMAIL" [disabled]="loading" [(ngModel)]="registration.email">
-
           </div>
-
         </div>
-
         <div class="row">
-
           <div class="column column-100">
-
             <input type="password" placeholder="PASSWORD" [disabled]="loading" [(ngModel)]="registration.password">
-
           </div>
-
         </div>
-
         <div class="row">
-
           <div class="column column-100">
-
             <input type="password" placeholder="CONFIRM PASSWORD" [disabled]="loading" [(ngModel)]="registration.confirmPassword">
-
           </div>
-
         </div>
-
         <div class="row">
-
           <div class="column column-100">
-
             <input type="password" placeholder="INVITATION CODE" [disabled]="loading" [(ngModel)]="registration.alphaInvitationCode">
-
           </div>
-
         </div>
-
       </div>
-
     </burst-card-body>
-
     <burst-card-footer class="text-center">
-
       <div class="row">
-
         <div class="column column-100">
-
           <button class="button w-100" [disabled]="loading" (click)="onRegister()">REGISTER</button>
-
         </div>
-
       </div>
-
       <div class="row">
-
         <div class="column column-100">
-
           <small>
-
             <a routerLink="/session/login">Cancel</a>
-
           </small>
-
         </div>
-
       </div>
-
     </burst-card-footer>
-
   </burst-card>
-
 </div>
