@@ -22,9 +22,9 @@ import { faAngleRight, faAngleDown } from '@fortawesome/free-solid-svg-icons';
         FontAwesomeModule,
         CardComponent,
         CardHeaderComponent,
+        CardBodyComponent,
     ],
     declarations: [
-        CardBodyComponent,
         CardFooterComponent,
         DialogComponent,
         AvatarComponent,

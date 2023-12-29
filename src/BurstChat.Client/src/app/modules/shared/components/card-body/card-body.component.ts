@@ -8,7 +8,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
     selector: 'burst-card-body',
     templateUrl: './card-body.component.html',
-    styleUrls: ['./card-body.component.scss']
+    styleUrl: './card-body.component.scss',
+    standalone: true
 })
 export class CardBodyComponent implements OnInit {
 
