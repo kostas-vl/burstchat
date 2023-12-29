@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { Channel } from 'src/app/models/servers/channel';
 
@@ -9,9 +10,11 @@ import { Channel } from 'src/app/models/servers/channel';
  * @class ChannelComponent
  */
 @Component({
-  selector: 'burst-channel',
-  templateUrl: './channel.component.html',
-  styleUrls: ['./channel.component.scss']
+    selector: 'burst-channel',
+    templateUrl: './channel.component.html',
+    styleUrl: './channel.component.scss',
+    standalone: true,
+    imports: [FontAwesomeModule]
 })
 export class ChannelComponent implements OnInit {
 
