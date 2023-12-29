@@ -13,7 +13,6 @@ import { ChannelListComponent } from 'src/app/modules/burst/components/channel-l
 import { ChannelComponent } from 'src/app/modules/burst/components/channel/channel.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
 import { UserListComponent } from 'src/app/modules/burst/components/user-list/user-list.component';
-import { UserComponent } from 'src/app/modules/burst/components/user/user.component';
 import { IncomingCallComponent } from 'src/app/modules/burst/components/incoming-call/incoming-call.component';
 import { OngoingCallComponent } from 'src/app/modules/burst/components/ongoing-call/ongoing-call.component';
 import { AddServerComponent } from 'src/app/modules/burst/components/add-server/add-server.component';
@@ -25,6 +24,7 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 import { ServerInfoComponent } from 'src/app/components/core/server-info/server-info.component';
+import { UserComponent } from 'src/app/components/core/user/user.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -61,6 +61,7 @@ import {
         AvatarComponent,
         ExpanderComponent,
         ServerInfoComponent,
+        UserComponent,
     ],
     declarations: [
         LayoutComponent,
@@ -73,7 +74,6 @@ import {
         ChannelListComponent,
         ChannelComponent,
         UserListComponent,
-        UserComponent,
         IncomingCallComponent,
         OngoingCallComponent,
         AddServerComponent

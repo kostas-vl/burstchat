@@ -1,10 +1,12 @@
+import { NgClass } from '@angular/common';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**
  * This class represents an angular component that displays information about a subscribed user
@@ -16,7 +18,9 @@ import { DirectMessagingService } from 'src/app/modules/burst/services/direct-me
 @Component({
     selector: 'burst-user',
     templateUrl: './user.component.html',
-    styleUrls: ['./user.component.scss']
+    styleUrl: './user.component.scss',
+    standalone: true,
+    imports: [NgClass, FontAwesomeModule, AvatarComponent]
 })
 export class UserComponent implements OnInit, OnDestroy {
 
@@ -48,8 +52,7 @@ export class UserComponent implements OnInit, OnDestroy {
      */
     constructor(
         private router: Router,
-        private userService: UserService,
-        private directMessagingService: DirectMessagingService
+        private userService: UserService
     ) { }
 
     /**
