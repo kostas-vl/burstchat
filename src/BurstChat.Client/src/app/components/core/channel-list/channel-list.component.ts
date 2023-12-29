@@ -3,6 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/models/servers/channel';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
+import { ChannelComponent } from 'src/app/components/core/channel/channel.component';
 
 /**
  * This class represents an angular component that displays the list of channel that exist in a BurstChat
@@ -12,7 +14,9 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
 @Component({
     selector: 'burst-channel-list',
     templateUrl: './channel-list.component.html',
-    styleUrls: ['./channel-list.component.scss']
+    styleUrl: './channel-list.component.scss',
+    standalone: true,
+    imports: [ExpanderComponent, ChannelComponent]
 })
 export class ChannelListComponent implements OnInit, OnDestroy {
 

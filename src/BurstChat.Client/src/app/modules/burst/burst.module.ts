@@ -8,7 +8,6 @@ import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sideb
 import { SidebarSelectionComponent } from 'src/app/modules/burst/components/sidebar-selection/sidebar-selection.component';
 import { DirectMessagingComponent } from 'src/app/modules/burst/components/direct-messaging/direct-messaging.component';
 import { DirectMessagingListComponent } from './components/direct-messaging-list/direct-messaging-list.component';
-import { ChannelListComponent } from 'src/app/modules/burst/components/channel-list/channel-list.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
@@ -46,6 +45,7 @@ import {
     faVolumeMute,
     faExternalLinkAlt
 } from '@fortawesome/free-solid-svg-icons';
+import { ChannelListComponent } from 'src/app/components/core/channel-list/channel-list.component';
 
 @NgModule({
     imports: [
@@ -67,7 +67,8 @@ import {
         IncomingCallComponent,
         AddServerComponent,
         OngoingCallComponent,
-        ChannelComponent
+        ChannelComponent,
+        ChannelListComponent
     ],
     declarations: [
         LayoutComponent,
@@ -76,7 +77,6 @@ import {
         SidebarSelectionComponent,
         DirectMessagingComponent,
         DirectMessagingListComponent,
-        ChannelListComponent,
     ]
 })
 export class BurstModule {
