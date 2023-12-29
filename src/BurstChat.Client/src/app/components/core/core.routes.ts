@@ -22,7 +22,7 @@ export const routes: Routes = [
             },
             {
                 path: 'user',
-                loadChildren: () => import('src/app/modules/user/user.module').then(m => m.UserModule)
+                loadChildren: () => import('src/app/components/user/user.routes').then(c => c.routes)
             }
         ]
     }
