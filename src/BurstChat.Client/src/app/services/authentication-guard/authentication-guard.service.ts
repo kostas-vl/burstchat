@@ -1,16 +1,22 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
+import {  map } from 'rxjs/operators';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
-export const authenticationGuardFn: CanActivateFn = async (_next: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+export const authenticationGuardFn: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
     const router = inject(Router);
     const storageService = inject(StorageService);
-    const tokenInfo = await storageService.tokenInfo.toPromise();
-    const isAllowed = tokenInfo && tokenInfo.accessToken !== null;
+    return storageService
+        .tokenInfo
+        .pipe(
+            map(info => {
+                const isAllowed = info && info.accessToken !== null;
 
-    if (!isAllowed) {
-        router.navigateByUrl('/session/login');
-    }
+                if (!isAllowed) {
+                    router.navigateByUrl('/session/login');
+                }
 
-    return isAllowed;
+                return isAllowed;
+            })
+        );
 };

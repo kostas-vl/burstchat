@@ -9,7 +9,9 @@ import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection
  * storage.
  * @class StorageService
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class StorageService {
 
     private tokenInfoSource: BehaviorSubject<TokenInfo | null>;

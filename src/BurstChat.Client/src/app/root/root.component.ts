@@ -18,9 +18,6 @@ import { PopupListComponent } from 'src/app/components/popup-list/popup-list.com
         RouterOutlet,
         FontAwesomeModule,
         PopupListComponent
-    ],
-    providers: [
-        NotifyService,
     ]
 })
 export class RootComponent implements OnInit {
