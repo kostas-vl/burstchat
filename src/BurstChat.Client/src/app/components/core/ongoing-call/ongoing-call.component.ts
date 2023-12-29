@@ -5,16 +5,7 @@ import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
-
-import {
-    faVolumeUp,
-    faMicrophone,
-    faPhoneSlash,
-    faMicrophoneSlash,
-    faVolumeOff,
-    faVolumeMute,
-    faExternalLinkAlt
-} from '@fortawesome/free-solid-svg-icons';
+import { faPhoneSlash, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This class represents an angular component that displays info and actions to the user for an ongoing
@@ -24,9 +15,10 @@ import {
  * @implements {OnInit}
  */
 @Component({
-  selector: 'burst-ongoing-call',
-  templateUrl: './ongoing-call.component.html',
-  styleUrls: ['./ongoing-call.component.scss']
+    selector: 'burst-ongoing-call',
+    templateUrl: './ongoing-call.component.html',
+    styleUrl: './ongoing-call.component.scss',
+    standalone: true
 })
 export class OngoingCallComponent implements OnInit, OnDestroy {
 
