@@ -13,7 +13,8 @@ import { ChatService } from 'src/app/services/chat/chat.service';
 @Component({
     selector: 'burst-edit-user-invitations',
     templateUrl: './edit-user-invitations.component.html',
-    styleUrls: ['./edit-user-invitations.component.scss']
+    styleUrl: './edit-user-invitations.component.scss',
+    standalone: true
 })
 export class EditUserInvitationsComponent implements OnInit, OnDestroy {
 
