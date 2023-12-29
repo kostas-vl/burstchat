@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, OnInit, Input } from '@angular/core';
 
 /**
@@ -12,7 +12,7 @@ import { Component, OnInit, Input } from '@angular/core';
     templateUrl: './avatar.component.html',
     styleUrl: './avatar.component.scss',
     standalone: true,
-    imports: [CommonModule]
+    imports: [NgClass]
 })
 export class AvatarComponent implements OnInit {
 
