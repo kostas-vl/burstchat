@@ -1,11 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { ChangePassword } from 'src/app/models/user/change-password';
 import { tryParseError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SessionService } from 'src/app/services/session/session.service';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
 
 /**
  * This class represents an angular component that enables the user to change his password.
@@ -15,7 +22,19 @@ import { SessionService } from 'src/app/services/session/session.service';
 @Component({
     selector: 'burst-change-password',
     templateUrl: './change-password.component.html',
-    styleUrls: ['./change-password.component.scss']
+    styleUrl: './change-password.component.scss',
+    standalone: true,
+    imports: [
+        HttpClientModule,
+        FormsModule,
+        RouterLink,
+        FontAwesomeModule,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent,
+    ],
+    providers: [SessionService]
 })
 export class ChangePasswordComponent implements OnInit, OnDestroy {
 

@@ -37,9 +37,7 @@ import { StorageService } from 'src/app/services/storage/storage.service';
         CardBodyComponent,
         CardFooterComponent,
     ],
-    providers: [
-        SessionService
-    ]
+    providers: [SessionService]
 })
 export class LoginComponent implements OnInit {
 

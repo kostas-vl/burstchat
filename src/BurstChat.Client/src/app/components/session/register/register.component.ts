@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { tryParseError } from 'src/app/models/errors/error';
@@ -27,6 +27,7 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
         HttpClientModule,
         FormsModule,
         FontAwesomeModule,
+        RouterLink,
         CardComponent,
         CardHeaderComponent,
         CardBodyComponent,
