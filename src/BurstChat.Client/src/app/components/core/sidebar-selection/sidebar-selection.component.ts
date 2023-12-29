@@ -8,10 +8,10 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { Channel } from 'src/app/models/servers/channel';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { Subscription as BurstSubscription } from 'src/app/models/servers/subscription';
-import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
+import { UserService } from 'src/app/services/user/user.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
+import { ServersService } from 'src/app/services/servers/servers.service';
+import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
 import { DirectMessagingComponent } from 'src/app/components/core/direct-messaging/direct-messaging.component';
 import { ServerComponent } from 'src/app/components/core/server/server.component';
 

@@ -4,13 +4,13 @@ import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
-import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
-import { DialogComponent } from '../../shared/dialog/dialog.component';
-import { CardComponent } from '../../shared/card/card.component';
-import { CardHeaderComponent } from '../../shared/card-header/card-header.component';
-import { CardBodyComponent } from '../../shared/card-body/card-body.component';
-import { CardFooterComponent } from '../../shared/card-footer/card-footer.component';
+import { ChatService } from 'src/app/services/chat/chat.service';
+import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
 
 /**
  * This class represents an angular component that displays a form for creating a new BurstChat server.

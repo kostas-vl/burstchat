@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
-import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { UserService } from 'src/app/services/user/user.service';
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**

@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
-import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
+import { ServersService } from 'src/app/services/servers/servers.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
 /**

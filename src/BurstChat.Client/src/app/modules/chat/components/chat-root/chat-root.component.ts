@@ -1,12 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Message } from 'src/app/models/chat/message';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displauys a series of messages between users.

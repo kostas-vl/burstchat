@@ -4,9 +4,8 @@ import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
-import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
-import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
+import { DirectMessagingService } from 'src/app/services/direct-messaging/direct-messaging.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
 /**

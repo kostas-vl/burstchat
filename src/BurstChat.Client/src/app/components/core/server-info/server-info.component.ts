@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { Server } from 'src/app/models/servers/server';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { ServersService } from 'src/app/services/servers/servers.service';
 
 /**
  * This class represents an angular component that displays to the users information about

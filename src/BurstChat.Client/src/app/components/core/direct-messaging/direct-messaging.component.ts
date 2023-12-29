@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { DisplayDirectMessages } from 'src/app/models/sidebar/display-direct-messages';
-import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
+import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
 
 /**
  * This class represents an angular component that displays the list direct messagin of a user.

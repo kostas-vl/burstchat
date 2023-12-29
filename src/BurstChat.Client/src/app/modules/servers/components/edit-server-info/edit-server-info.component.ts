@@ -1,8 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Server } from 'src/app/models/servers/server';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ServersService } from 'src/app/services/servers/servers.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 /**
  * This class represents an angular component that display to the user

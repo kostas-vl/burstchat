@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
-import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { UserService } from 'src/app/services/user/user.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays to the user his current info for editing.

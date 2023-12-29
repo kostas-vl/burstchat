@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
+import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { SidebarSelectionComponent } from 'src/app/components/core/sidebar-selection/sidebar-selection.component';
 import { DirectMessagingListComponent } from 'src/app/components/core/direct-messaging-list/direct-messaging-list.component';

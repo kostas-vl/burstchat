@@ -5,7 +5,7 @@ import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { Payload } from 'src/app/models/signal/payload';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 

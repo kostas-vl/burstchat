@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
 
 /**

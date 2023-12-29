@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/models/servers/channel';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
+import { ServersService } from 'src/app/services/servers/servers.service';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 import { ChannelComponent } from 'src/app/components/core/channel/channel.component';
 

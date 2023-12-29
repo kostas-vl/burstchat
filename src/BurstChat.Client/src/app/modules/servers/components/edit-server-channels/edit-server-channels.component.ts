@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/models/servers/channel';
 import { Server } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 /**
  * This class represents an angular component that enables functionality for creating and modiyfing

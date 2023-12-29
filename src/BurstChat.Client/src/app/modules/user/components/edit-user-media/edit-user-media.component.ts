@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { InputDevice } from 'src/app/models/media/input-device';
 import { OutputDevice } from 'src/app/models/media/output-device';
-import { MediaService } from 'src/app/modules/burst/services/media/media.service';
+import { MediaService } from 'src/app/services/media/media.service';
 
 /**
  * This class represents an angular component that displays to the user the available media

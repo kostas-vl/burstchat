@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
-import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
-import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ServersService } from 'src/app/services/servers/servers.service';
+import { UserService } from 'src/app/services/user/user.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 import { UserComponent } from 'src/app/components/core/user/user.component';
 

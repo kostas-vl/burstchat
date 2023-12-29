@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
-import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { DirectMessagingService } from 'src/app/services/direct-messaging/direct-messaging.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 import { UserComponent } from 'src/app/components/core/user/user.component';
 

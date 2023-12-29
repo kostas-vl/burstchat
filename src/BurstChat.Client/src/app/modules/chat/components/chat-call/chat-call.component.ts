@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
-import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
+import { RtcSessionService } from 'src/app/services/rtc-session/rtc-session.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Invitation } from 'src/app/models/servers/invitation';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays to the user a list of server invitations

@@ -3,8 +3,8 @@ import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
-import { UserService } from 'src/app/modules/burst/services/user/user.service';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { UserService } from 'src/app/services/user/user.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 /**
  * This class represents an angular component that displays an input to which a user that send

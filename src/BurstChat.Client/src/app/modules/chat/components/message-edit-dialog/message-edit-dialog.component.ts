@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { Message } from 'src/app/models/chat/message';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
-import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
 
 @Component({
     selector: 'burst-message-edit-dialog',
