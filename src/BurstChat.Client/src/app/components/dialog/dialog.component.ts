@@ -8,7 +8,8 @@ import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@a
 @Component({
     selector: 'burst-dialog',
     templateUrl: './dialog.component.html',
-    styleUrls: ['./dialog.component.scss']
+    styleUrl: './dialog.component.scss',
+    standalone: true,
 })
 export class DialogComponent implements OnInit {
 
