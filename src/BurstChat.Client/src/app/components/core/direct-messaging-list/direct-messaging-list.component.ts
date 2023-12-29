@@ -3,6 +3,8 @@ import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { DirectMessagingService } from 'src/app/modules/burst/services/direct-messaging/direct-messaging.service';
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
+import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
+import { UserComponent } from 'src/app/components/core/user/user.component';
 
 /**
  * This class represents an angular component that displays the list of all direct messaging chats of the user.
@@ -13,7 +15,9 @@ import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 @Component({
     selector: 'burst-direct-messaging-list',
     templateUrl: './direct-messaging-list.component.html',
-    styleUrls: ['./direct-messaging-list.component.scss']
+    styleUrl: './direct-messaging-list.component.scss',
+    standalone: true,
+    imports: [ExpanderComponent, UserComponent]
 })
 export class DirectMessagingListComponent implements OnInit, OnDestroy {
 

@@ -1,0 +1,14 @@
+<div class="w-100">
+    <burst-expander title="Direct Messages">
+        <div>
+            @for(user of users; track user.id) {
+                <burst-user [user]="user"></burst-user>
+            }
+        </div>
+        @if(users?.length === 0) {
+            <div class="pl-35 text-muted">
+                No direct messages sent yet.
+            </div>
+        }
+    </burst-expander>
+</div>
