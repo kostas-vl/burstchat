@@ -7,13 +7,13 @@ import { EditServerComponent } from 'src/app/modules/servers/components/edit-ser
 import { EditServerInfoComponent } from 'src/app/modules/servers/components/edit-server-info/edit-server-info.component';
 import { EditServerChannelsComponent } from 'src/app/modules/servers/components/edit-server-channels/edit-server-channels.component';
 import { EditServerUsersComponent } from 'src/app/modules/servers/components/edit-server-users/edit-server-users.component';
-import { CardComponent } from 'src/app/components/card/card.component';
-import { CardHeaderComponent } from 'src/app/components/card-header/card-header.component';
-import { CardBodyComponent } from 'src/app/components/card-body/card-body.component';
-import { CardFooterComponent } from 'src/app/components/card-footer/card-footer.component';
-import { ImageCropComponent } from 'src/app/components/image-crop/image-crop.component';
-import { DialogComponent } from 'src/app/components/dialog/dialog.component';
-import { AvatarComponent } from 'src/app/components/avatar/avatar.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
+import { ImageCropComponent } from 'src/app/components/shared/image-crop/image-crop.component';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 @NgModule({
     imports: [

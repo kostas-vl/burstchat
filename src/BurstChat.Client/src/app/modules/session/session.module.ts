@@ -13,10 +13,10 @@ import { LogoutComponent } from 'src/app/modules/session/components/logout/logou
 import { ResetPasswordComponent } from 'src/app/modules/session/components/reset-password/reset-password.component';
 import { ChangePasswordComponent } from 'src/app/modules/session/components/change-password/change-password.component';
 import { RegisterComponent } from 'src/app/modules/session/components/register/register.component';
-import { CardComponent } from 'src/app/components/card/card.component';
-import { CardHeaderComponent } from 'src/app/components/card-header/card-header.component';
-import { CardBodyComponent } from 'src/app/components/card-body/card-body.component';
-import { CardFooterComponent } from 'src/app/components/card-footer/card-footer.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
 
 @NgModule({
     imports: [

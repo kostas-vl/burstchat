@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PopupMessage } from 'src/app/models/notify/popup-message';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { PopupComponent } from 'src/app/components/popup/popup.component';
+import { PopupComponent } from 'src/app/components/shared/popup/popup.component';
 
 /**
  * This class represents an angular component that displays a list of popup messages

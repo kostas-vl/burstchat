@@ -16,13 +16,13 @@ import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-messa
 import { ChatCallComponent } from 'src/app/modules/chat/components/chat-call/chat-call.component';
 import { MessageEditDialogComponent } from 'src/app/modules/chat/components/message-edit-dialog/message-edit-dialog.component';
 import { MessageDeleteDialogComponent } from 'src/app/modules/chat/components/message-delete-dialog/message-delete-dialog.component';
-import { CardComponent } from 'src/app/components/card/card.component';
-import { CardHeaderComponent } from 'src/app/components/card-header/card-header.component';
-import { CardBodyComponent } from 'src/app/components/card-body/card-body.component';
-import { CardFooterComponent } from 'src/app/components/card-footer/card-footer.component';
-import { DialogComponent } from 'src/app/components/dialog/dialog.component';
-import { AvatarComponent } from 'src/app/components/avatar/avatar.component';
-import { ExpanderComponent } from 'src/app/components/expander/expander.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
+import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 
 import {
     faPaperPlane,
