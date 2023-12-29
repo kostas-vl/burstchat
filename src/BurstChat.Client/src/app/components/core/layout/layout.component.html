@@ -1,0 +1,14 @@
+@if(loading) {
+    <div class="layout-loader">
+        <div class="loader"></div>
+    </div>
+} @else {
+    <div class="layout">
+        <burst-sidebar />
+        <main>
+          <router-outlet />
+        </main>
+        <burst-incoming-call />
+        <burst-add-server />
+    </div>
+}

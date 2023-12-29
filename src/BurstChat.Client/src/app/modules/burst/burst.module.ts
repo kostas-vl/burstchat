@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
-import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
@@ -25,6 +24,7 @@ import { ChannelListComponent } from 'src/app/components/core/channel-list/chann
 import { SidebarUserInfoComponent } from 'src/app/components/core/sidebar-user-info/sidebar-user-info.component';
 import { SidebarSelectionComponent } from 'src/app/components/core/sidebar-selection/sidebar-selection.component';
 import { SidebarComponent } from 'src/app/components/core/sidebar/sidebar.component';
+import { LayoutComponent } from 'src/app/components/core/layout/layout.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -73,10 +73,8 @@ import {
         DirectMessagingListComponent,
         SidebarUserInfoComponent,
         SidebarSelectionComponent,
-        SidebarComponent
-    ],
-    declarations: [
-        LayoutComponent,
+        SidebarComponent,
+        LayoutComponent
     ]
 })
 export class BurstModule {

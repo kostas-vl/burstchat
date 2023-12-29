@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -10,6 +11,9 @@ import { DirectMessagingService } from 'src/app/modules/burst/services/direct-me
 import { ChatService } from 'src/app/modules/burst/services/chat/chat.service';
 import { MediaService } from 'src/app/modules/burst/services/media/media.service';
 import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rtc-session.service';
+import { SidebarComponent } from 'src/app/components/core/sidebar/sidebar.component';
+import { IncomingCallComponent } from 'src/app/components/core/incoming-call/incoming-call.component';
+import { AddServerComponent } from 'src/app/components/core/add-server/add-server.component';
 
 /**
  * This class represents an angular component that displays on screen all components of
@@ -20,7 +24,14 @@ import { RtcSessionService } from 'src/app/modules/burst/services/rtc-session/rt
 @Component({
     selector: 'burst-layout',
     templateUrl: './layout.component.html',
-    styleUrls: ['./layout.component.scss'],
+    styleUrl: './layout.component.scss',
+    standalone: true,
+    imports: [
+        RouterOutlet,
+        SidebarComponent,
+        IncomingCallComponent,
+        AddServerComponent
+    ],
     providers: [
         SidebarService,
         UserService,
