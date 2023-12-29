@@ -7,7 +7,6 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { UserRoutingModule } from 'src/app/modules/user/user.routing';
 import { EditUserComponent } from 'src/app/modules/user/components/edit-user/edit-user.component';
-import { EditUserInfoComponent } from 'src/app/modules/user/components/edit-user-info/edit-user-info.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -18,6 +17,7 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 import { EditUserMediaComponent } from 'src/app/components/user/edit-user-media/edit-user-media.component';
 import { EditUserInvitationsComponent } from 'src/app/components/user/edit-user-invitations/edit-user-invitations.component';
+import { EditUserInfoComponent } from 'src/app/components/user/edit-user-info/edit-user-info.component';
 
 @NgModule({
     imports: [
@@ -35,11 +35,11 @@ import { EditUserInvitationsComponent } from 'src/app/components/user/edit-user-
         AvatarComponent,
         ExpanderComponent,
         EditUserMediaComponent,
-        EditUserInvitationsComponent
+        EditUserInvitationsComponent,
+        EditUserInfoComponent
     ],
     declarations: [
         EditUserComponent,
-        EditUserInfoComponent,
     ],
     providers: []
 })

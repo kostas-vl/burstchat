@@ -1,8 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/services/user/user.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
+import { ImageCropComponent } from 'src/app/components/shared/image-crop/image-crop.component';
 
 /**
  * This class represents an angular component that displays to the user his current info for editing.
@@ -13,7 +21,18 @@ import { ChatService } from 'src/app/services/chat/chat.service';
 @Component({
     selector: 'burst-edit-user-info',
     templateUrl: './edit-user-info.component.html',
-    styleUrls: ['./edit-user-info.component.scss']
+    styleUrl: './edit-user-info.component.scss',
+    standalone: true,
+    imports: [
+        DatePipe,
+        DialogComponent,
+        AvatarComponent,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent,
+        ImageCropComponent
+    ]
 })
 export class EditUserInfoComponent implements OnInit, OnDestroy {
 
