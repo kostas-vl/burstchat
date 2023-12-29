@@ -5,7 +5,7 @@ import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { ChangePassword } from 'src/app/models/user/change-password';
 import { tryParseError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
+import { SessionService } from 'src/app/services/session/session.service';
 
 /**
  * This class represents an angular component that enables the user to change his password.

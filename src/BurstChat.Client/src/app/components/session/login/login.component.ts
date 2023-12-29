@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TokenInfo } from 'src/app/models/identity/token-info';
 import { Credentials } from 'src/app/models/user/credentials';
 import { tryParseError, BurstChatError } from 'src/app/models/errors/error';
-import { TokenInfo } from 'src/app/models/identity/token-info';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { SessionService } from 'src/app/services/session/session.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
-import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
 
 /**
  * This class represents an angular component that displays the login page to the user.
@@ -14,9 +22,24 @@ import { SessionService } from 'src/app/modules/session/services/session-service
  * @memberof {OnInit}
  */
 @Component({
-  selector: 'burst-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'burst-login',
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss',
+    standalone: true,
+    imports: [
+        CommonModule,
+        HttpClientModule,
+        FormsModule,
+        RouterLink,
+        FontAwesomeModule,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent,
+    ],
+    providers: [
+        SessionService
+    ]
 })
 export class LoginComponent implements OnInit {
 

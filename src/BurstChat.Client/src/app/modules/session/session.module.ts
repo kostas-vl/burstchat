@@ -7,8 +7,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { SessionRoutingModule } from 'src/app/modules/session/session.routing';
 import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
-import { SessionService } from 'src/app/modules/session/services/session-service/session.service';
-import { LoginComponent } from 'src/app/modules/session/components/login/login.component';
+import { SessionService } from 'src/app/services/session/session.service';
 import { LogoutComponent } from 'src/app/modules/session/components/logout/logout.component';
 import { ResetPasswordComponent } from 'src/app/modules/session/components/reset-password/reset-password.component';
 import { ChangePasswordComponent } from 'src/app/modules/session/components/change-password/change-password.component';
@@ -31,7 +30,6 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
         CardFooterComponent,
     ],
     declarations: [
-        LoginComponent,
         LogoutComponent,
         ResetPasswordComponent,
         ChangePasswordComponent,
