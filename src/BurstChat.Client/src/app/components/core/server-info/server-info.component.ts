@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/modules/burst/services/servers/servers.service';
@@ -15,7 +16,9 @@ import { ServersService } from 'src/app/modules/burst/services/servers/servers.s
 @Component({
     selector: 'burst-server-info',
     templateUrl: './server-info.component.html',
-    styleUrls: ['./server-info.component.scss']
+    styleUrl: './server-info.component.scss',
+    standalone: true,
+    imports: [FontAwesomeModule]
 })
 export class ServerInfoComponent implements OnInit, OnDestroy {
 

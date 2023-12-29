@@ -9,7 +9,6 @@ import { SidebarSelectionComponent } from 'src/app/modules/burst/components/side
 import { DirectMessagingComponent } from 'src/app/modules/burst/components/direct-messaging/direct-messaging.component';
 import { DirectMessagingListComponent } from './components/direct-messaging-list/direct-messaging-list.component';
 import { ServerComponent } from 'src/app/modules/burst/components/server/server.component';
-import { ServerInfoComponent } from 'src/app/modules/burst/components/server-info/server-info.component';
 import { ChannelListComponent } from 'src/app/modules/burst/components/channel-list/channel-list.component';
 import { ChannelComponent } from 'src/app/modules/burst/components/channel/channel.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
@@ -25,6 +24,7 @@ import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body
 import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
+import { ServerInfoComponent } from 'src/app/components/core/server-info/server-info.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -59,7 +59,8 @@ import {
         CardFooterComponent,
         DialogComponent,
         AvatarComponent,
-        ExpanderComponent
+        ExpanderComponent,
+        ServerInfoComponent,
     ],
     declarations: [
         LayoutComponent,
@@ -69,7 +70,6 @@ import {
         DirectMessagingComponent,
         DirectMessagingListComponent,
         ServerComponent,
-        ServerInfoComponent,
         ChannelListComponent,
         ChannelComponent,
         UserListComponent,
