@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { DisplayDirectMessages } from 'src/app/models/sidebar/display-direct-messages';
 import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.service';
@@ -13,7 +14,9 @@ import { SidebarService } from 'src/app/modules/burst/services/sidebar/sidebar.s
 @Component({
     selector: 'burst-direct-messaging',
     templateUrl: './direct-messaging.component.html',
-    styleUrls: ['./direct-messaging.component.scss']
+    styleUrl: './direct-messaging.component.scss',
+    standalone: true,
+    imports: [FontAwesomeModule]
 })
 export class DirectMessagingComponent implements OnInit, OnDestroy {
 

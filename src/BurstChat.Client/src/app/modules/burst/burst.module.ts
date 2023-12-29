@@ -6,7 +6,6 @@ import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
 import { SidebarSelectionComponent } from 'src/app/modules/burst/components/sidebar-selection/sidebar-selection.component';
-import { DirectMessagingComponent } from 'src/app/modules/burst/components/direct-messaging/direct-messaging.component';
 import { DirectMessagingListComponent } from './components/direct-messaging-list/direct-messaging-list.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
@@ -24,6 +23,7 @@ import { IncomingCallComponent } from 'src/app/components/core/incoming-call/inc
 import { AddServerComponent } from 'src/app/components/core/add-server/add-server.component';
 import { OngoingCallComponent } from 'src/app/components/core/ongoing-call/ongoing-call.component';
 import { ChannelComponent } from 'src/app/components/core/channel/channel.component';
+import { DirectMessagingComponent } from 'src/app/components/core/direct-messaging/direct-messaging.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -68,14 +68,14 @@ import { ChannelListComponent } from 'src/app/components/core/channel-list/chann
         AddServerComponent,
         OngoingCallComponent,
         ChannelComponent,
-        ChannelListComponent
+        ChannelListComponent,
+        DirectMessagingComponent
     ],
     declarations: [
         LayoutComponent,
         SidebarComponent,
         SidebarUserInfoComponent,
         SidebarSelectionComponent,
-        DirectMessagingComponent,
         DirectMessagingListComponent,
     ]
 })
