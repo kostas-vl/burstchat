@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { HomeComponent } from 'src/app/components/core/home/home.component';
 import { LayoutComponent } from 'src/app/components/core/layout/layout.component';
 
 const routes: Routes = [
@@ -9,7 +10,8 @@ const routes: Routes = [
         children: [
             {
                 path: 'home',
-                loadChildren: () => import('src/app/modules/home/home.module').then(m => m.HomeModule)
+                component: HomeComponent,
+                pathMatch: 'full'
             },
             {
                 path: 'servers',

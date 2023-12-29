@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 
 /**
@@ -10,7 +11,9 @@ import { faDragon } from '@fortawesome/free-solid-svg-icons';
 @Component({
     selector: 'burst-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    styleUrl: './home.component.scss',
+    standalone: true,
+    imports: [FontAwesomeModule]
 })
 export class HomeComponent implements OnInit {
 
