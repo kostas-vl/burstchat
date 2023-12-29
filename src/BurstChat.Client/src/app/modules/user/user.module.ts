@@ -9,7 +9,6 @@ import { UserRoutingModule } from 'src/app/modules/user/user.routing';
 import { EditUserComponent } from 'src/app/modules/user/components/edit-user/edit-user.component';
 import { EditUserInfoComponent } from 'src/app/modules/user/components/edit-user-info/edit-user-info.component';
 import { EditUserInvitationsComponent } from 'src/app/modules/user/components/edit-user-invitations/edit-user-invitations.component';
-import { EditUserMediaComponent } from 'src/app/modules/user/components/edit-user-media/edit-user-media.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -18,6 +17,7 @@ import { ImageCropComponent } from 'src/app/components/shared/image-crop/image-c
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
+import { EditUserMediaComponent } from 'src/app/components/user/edit-user-media/edit-user-media.component';
 
 @NgModule({
     imports: [
@@ -33,13 +33,13 @@ import { ExpanderComponent } from 'src/app/components/shared/expander/expander.c
         ImageCropComponent,
         DialogComponent,
         AvatarComponent,
-        ExpanderComponent
+        ExpanderComponent,
+        EditUserMediaComponent
     ],
     declarations: [
         EditUserComponent,
         EditUserInfoComponent,
         EditUserInvitationsComponent,
-        EditUserMediaComponent
     ],
     providers: []
 })

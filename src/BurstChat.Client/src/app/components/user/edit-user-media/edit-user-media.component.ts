@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { InputDevice } from 'src/app/models/media/input-device';
 import { OutputDevice } from 'src/app/models/media/output-device';
@@ -14,7 +15,9 @@ import { MediaService } from 'src/app/services/media/media.service';
 @Component({
     selector: 'burst-edit-user-media',
     templateUrl: './edit-user-media.component.html',
-    styleUrls: ['./edit-user-media.component.scss']
+    styleUrl: './edit-user-media.component.scss',
+    standalone: true,
+    imports: [FormsModule]
 })
 export class EditUserMediaComponent implements OnInit, OnDestroy {
 
