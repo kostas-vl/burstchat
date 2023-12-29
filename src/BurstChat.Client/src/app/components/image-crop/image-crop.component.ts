@@ -1,10 +1,12 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
 
 @Component({
     selector: 'burst-image-crop',
     templateUrl: './image-crop.component.html',
-    styleUrls: ['./image-crop.component.scss']
+    styleUrl: './image-crop.component.scss',
+    standalone: true,
+    imports: [ImageCropperModule]
 })
 export class ImageCropComponent implements OnInit {
 
