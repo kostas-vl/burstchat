@@ -7,8 +7,8 @@
             <span>{{message.title}}</span>
             @if (message.content) {
                 <br/>
+                <small class="text-muted">{{message.content}}</small>
             }
-            <small class="text-muted" *ngIf="message.content">{{message.content}}</small>
         </div>
         <div class="ml-auto">
             <div class="button-icon" (click)="close()">

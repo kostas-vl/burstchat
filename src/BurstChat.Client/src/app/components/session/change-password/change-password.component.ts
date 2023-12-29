@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -25,7 +24,6 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
     styleUrl: './change-password.component.scss',
     standalone: true,
     imports: [
-        HttpClientModule,
         FormsModule,
         RouterLink,
         FontAwesomeModule,

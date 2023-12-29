@@ -1,11 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
-import { AuthHttpInterceptor } from 'src/app/modules/burst/services/auth-http-interceptor/auth-http-interceptor.service';
-import { UrlInterceptorService } from 'src/app/services/url-interceptor/url-interceptor.service';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
 import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
 import { SidebarSelectionComponent } from 'src/app/modules/burst/components/sidebar-selection/sidebar-selection.component';
@@ -53,7 +50,6 @@ import {
 @NgModule({
     imports: [
         CommonModule,
-        HttpClientModule,
         FormsModule,
         FontAwesomeModule,
         BurstRoutingModule,
@@ -81,18 +77,6 @@ import {
         IncomingCallComponent,
         OngoingCallComponent,
         AddServerComponent
-    ],
-    providers: [
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthHttpInterceptor,
-            multi: true
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: UrlInterceptorService,
-            multi: true
-        }
     ]
 })
 export class BurstModule {

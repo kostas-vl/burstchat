@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TokenInfo } from 'src/app/models/identity/token-info';
@@ -28,7 +27,6 @@ import { StorageService } from 'src/app/services/storage/storage.service';
     standalone: true,
     imports: [
         CommonModule,
-        HttpClientModule,
         FormsModule,
         RouterLink,
         FontAwesomeModule,

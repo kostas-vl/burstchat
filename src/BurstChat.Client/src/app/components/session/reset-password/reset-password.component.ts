@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon } from '@fortawesome/free-solid-svg-icons';
 import { tryParseError } from 'src/app/models/errors/error';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SessionService } from 'src/app/services/session/session.service';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
 
 /**
  * This class represents an angular component that helps the user to reset his password.
@@ -11,9 +17,20 @@ import { SessionService } from 'src/app/services/session/session.service';
  * @implements {OnInit}
  */
 @Component({
-  selector: 'burst-reset-password',
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss']
+    selector: 'burst-reset-password',
+    templateUrl: './reset-password.component.html',
+    styleUrl: './reset-password.component.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        FontAwesomeModule,
+        RouterLink,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        CardFooterComponent,
+    ],
+    providers: [SessionService]
 })
 export class ResetPasswordComponent implements OnInit {
 

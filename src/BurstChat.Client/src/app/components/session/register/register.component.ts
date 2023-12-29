@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -19,12 +18,11 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
  * @implements {OnInit}
  */
 @Component({
-  selector: 'burst-register',
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
-  standalone: true,
-  imports: [
-        HttpClientModule,
+    selector: 'burst-register',
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.scss',
+    standalone: true,
+    imports: [
         FormsModule,
         FontAwesomeModule,
         RouterLink,
@@ -32,8 +30,8 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
         CardHeaderComponent,
         CardBodyComponent,
         CardFooterComponent,
-  ],
-  providers: [SessionService]
+    ],
+    providers: [SessionService]
 })
 export class RegisterComponent implements OnInit {
 
