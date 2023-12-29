@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/modules/burst/services/user/user.service';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**
  * This class represents an angular component that displays minor information about the user with
@@ -12,9 +14,11 @@ import { UserService } from 'src/app/modules/burst/services/user/user.service';
  * @class SidebarUserInfoComponent
  */
 @Component({
-  selector: 'burst-sidebar-user-info',
-  templateUrl: './sidebar-user-info.component.html',
-  styleUrls: ['./sidebar-user-info.component.scss']
+    selector: 'burst-sidebar-user-info',
+    templateUrl: './sidebar-user-info.component.html',
+    styleUrl: './sidebar-user-info.component.scss',
+    standalone: true,
+    imports: [FontAwesomeModule, AvatarComponent]
 })
 export class SidebarUserInfoComponent implements OnInit, OnDestroy {
 

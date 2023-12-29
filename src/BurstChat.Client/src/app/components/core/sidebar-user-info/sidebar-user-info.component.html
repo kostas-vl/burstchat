@@ -1,29 +1,19 @@
 <div class="user-info">
-
     <div class="user-logo pl-10 pr-5">
-
         <burst-avatar [name]="name" [avatar]="avatar"></burst-avatar>
-
     </div>
-
-    <div class="user-name" *ngIf="user">{{user.name}}</div>
-
-    <div class="user-id" *ngIf="user">#{{user.id}}</div>
-
+    @if(user.name) {
+        <div class="user-name">{{user.name}}</div>
+    }
+    @if(user.id) {
+        <div class="user-id">#{{user.id}}</div>
+    }
     <div class="user-actions">
-
         <div class="button-icon text" (click)="onEditUser()">
-
             <fa-icon [icon]="cog"></fa-icon>
-
         </div>
-
         <div class="button-icon text" (click)="onLogout()">
-
             <fa-icon [icon]="signOut"></fa-icon>
-
         </div>
-
     </div>
-
 </div>

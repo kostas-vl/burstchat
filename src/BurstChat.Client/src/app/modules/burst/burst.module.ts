@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BurstRoutingModule } from 'src/app/modules/burst/burst.routing';
 import { SidebarComponent } from 'src/app/modules/burst/components/sidebar/sidebar.component';
-import { SidebarUserInfoComponent } from 'src/app/modules/burst/components/sidebar-user-info/sidebar-user-info.component';
 import { SidebarSelectionComponent } from 'src/app/modules/burst/components/sidebar-selection/sidebar-selection.component';
 import { LayoutComponent } from 'src/app/modules/burst/components/layout/layout.component';
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
@@ -24,6 +23,7 @@ import { OngoingCallComponent } from 'src/app/components/core/ongoing-call/ongoi
 import { ChannelComponent } from 'src/app/components/core/channel/channel.component';
 import { DirectMessagingComponent } from 'src/app/components/core/direct-messaging/direct-messaging.component';
 import { DirectMessagingListComponent } from 'src/app/components/core/direct-messaging-list/direct-messaging-list.component';
+import { SidebarUserInfoComponent } from 'src/app/components/core/sidebar-user-info/sidebar-user-info.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -70,12 +70,12 @@ import { ChannelListComponent } from 'src/app/components/core/channel-list/chann
         ChannelComponent,
         ChannelListComponent,
         DirectMessagingComponent,
-        DirectMessagingListComponent
+        DirectMessagingListComponent,
+        SidebarUserInfoComponent
     ],
     declarations: [
         LayoutComponent,
         SidebarComponent,
-        SidebarUserInfoComponent,
         SidebarSelectionComponent,
     ]
 })
