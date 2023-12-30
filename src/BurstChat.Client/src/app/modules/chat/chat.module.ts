@@ -5,7 +5,6 @@ import { VirtualScrollerModule } from '@iharbeck/ngx-virtual-scroller';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
-import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -64,10 +63,7 @@ import {
         ChatCallComponent,
         ChatInputComponent,
         ChatChannelComponent,
-        ChatDirectComponent
-    ],
-    declarations: [
-        ChatRootComponent,
+        ChatDirectComponent,
     ]
 })
 export class ChatModule {
