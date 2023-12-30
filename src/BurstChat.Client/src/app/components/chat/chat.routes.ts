@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { ChatChannelComponent } from 'src/app/components/chat/chat-channel/chat-channel.component';
 import { ChatDirectComponent } from 'src/app/components/chat/chat-direct/chat-direct.component';
 
-const routes: Routes = [
+export const routes: Routes = [
     {
         path: 'channel',
         component: ChatChannelComponent
@@ -18,13 +17,3 @@ const routes: Routes = [
         pathMatch: 'full'
     },
 ];
-
-@NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-    ],
-    exports: [
-        RouterModule
-    ]
-})
-export class ChatRoutingModule { }
