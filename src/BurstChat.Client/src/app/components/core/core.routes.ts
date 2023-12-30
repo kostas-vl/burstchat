@@ -14,7 +14,7 @@ export const routes: Routes = [
             },
             {
                 path: 'servers',
-                loadChildren: () => import('src/app/modules/servers/servers.module').then(m => m.ServersModule)
+                loadChildren: () => import('src/app/components/server/server.routes').then(c => c.routes)
             },
             {
                 path: 'chat',
