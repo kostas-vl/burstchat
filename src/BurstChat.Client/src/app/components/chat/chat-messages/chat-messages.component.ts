@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { VirtualScrollerComponent, IPageInfo } from '@iharbeck/ngx-virtual-scroller';
+import { VirtualScrollerComponent, IPageInfo, VirtualScrollerModule } from '@iharbeck/ngx-virtual-scroller';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
 import { Payload } from 'src/app/models/signal/payload';
@@ -8,6 +8,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { ChatService } from 'src/app/services/chat/chat.service';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { ChatMessageComponent } from 'src/app/components/chat/chat-message/chat-message.component';
 
 /**
  * This class represents an angular component that displays on screen the messages of the chat.
@@ -18,7 +19,12 @@ import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.
 @Component({
     selector: 'burst-chat-messages',
     templateUrl: './chat-messages.component.html',
-    styleUrls: ['./chat-messages.component.scss']
+    styleUrl: './chat-messages.component.scss',
+    standalone: true,
+    imports: [
+        VirtualScrollerModule,
+        ChatMessageComponent
+    ]
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
 

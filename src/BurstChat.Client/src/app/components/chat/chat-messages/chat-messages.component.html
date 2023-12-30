@@ -1,0 +1,14 @@
+@if(searchTerm) {
+    <blockquote>You are viewing search results of: {{searchTerm}}</blockquote>
+}
+@if(chatIsEmpty) {
+    <span class="text-muted pt-30 pl-20">No messages posted yet!</span>
+}
+<virtual-scroller #scroller class="viewport" [class.height.px]="150"
+    [items]="messages" [enableUnequalChildrenSizes]="true" (vsChange)="onVirtualScrollerChange($event)">
+    @for(entry of scroller.viewPortItems; track entry.id) {
+        <div>
+            <burst-chat-message [message]="entry"></burst-chat-message>
+        </div>
+    }
+</virtual-scroller>
