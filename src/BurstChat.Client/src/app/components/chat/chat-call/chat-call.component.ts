@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { RtcSessionService } from 'src/app/services/rtc-session/rtc-session.service';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
@@ -7,6 +8,10 @@ import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-mes
 import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**
  * This class represents an angular component that displays to the user information about a
@@ -17,7 +22,15 @@ import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.
 @Component({
     selector: 'burst-chat-call',
     templateUrl: './chat-call.component.html',
-    styleUrls: ['./chat-call.component.scss']
+    styleUrl: './chat-call.component.scss',
+    standalone: true,
+    imports: [
+        FontAwesomeModule,
+        CardComponent,
+        CardHeaderComponent,
+        CardBodyComponent,
+        AvatarComponent
+    ]
 })
 export class ChatCallComponent implements OnInit, OnDestroy {
 

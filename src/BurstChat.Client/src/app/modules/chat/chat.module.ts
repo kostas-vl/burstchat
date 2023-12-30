@@ -10,7 +10,6 @@ import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-chann
 import { ChatGroupComponent } from 'src/app/modules/chat/components/chat-group/chat-group.component';
 import { ChatDirectComponent } from 'src/app/modules/chat/components/chat-direct/chat-direct.component';
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
-import { ChatCallComponent } from 'src/app/modules/chat/components/chat-call/chat-call.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -23,6 +22,7 @@ import { MessageDeleteDialogComponent } from 'src/app/components/chat/message-de
 import { ChatMessageComponent } from 'src/app/components/chat/chat-message/chat-message.component';
 import { ChatMessagesComponent } from 'src/app/components/chat/chat-messages/chat-messages.component';
 import { ChatInfoComponent } from 'src/app/components/chat/chat-info/chat-info.component';
+import { ChatCallComponent } from 'src/app/components/chat/chat-call/chat-call.component';
 
 import {
     faPaperPlane,
@@ -61,7 +61,8 @@ import {
         MessageDeleteDialogComponent,
         ChatMessageComponent,
         ChatMessagesComponent,
-        ChatInfoComponent
+        ChatInfoComponent,
+        ChatCallComponent
     ],
     declarations: [
         ChatRootComponent,
@@ -69,7 +70,6 @@ import {
         ChatGroupComponent,
         ChatDirectComponent,
         ChatInputComponent,
-        ChatCallComponent,
     ]
 })
 export class ChatModule {

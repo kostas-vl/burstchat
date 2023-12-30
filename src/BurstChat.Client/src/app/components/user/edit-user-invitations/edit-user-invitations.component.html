@@ -12,7 +12,7 @@
                 </span>
             }
             @for(invite of invitations; track invite.id) {
-                <div class="entity" *ngFor="let invite of invitations">
+                <div class="entity">
                     <div>
                         {{invite.server.name}} <span class="text-muted">#{{invite.serverId}}</span>
                     </div>
