@@ -2,8 +2,11 @@
     <burst-card class="login-card">
         <burst-card-header>
             <div class="login-card-header">
-                <fa-icon [icon]="dragon" *ngIf="!loading"></fa-icon>
-                <div class="loader" *ngIf="loading"></div>
+                @if(loading) {
+                    <div class="loader"></div>
+                } @else {
+                    <fa-icon [icon]="dragon"></fa-icon>
+                }
             </div>
         </burst-card-header>
         <burst-card-body>

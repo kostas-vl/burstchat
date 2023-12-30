@@ -14,9 +14,6 @@
 <div class="row">
     <div class="column column-100">
         <div class="entity-list">
-            <span class="text-muted" *ngIf="server.channels.length === 0">
-                There are no channels on this server. Why dont you make one?
-            </span>
             @for(channel of server.channels; track channel.id; let i = $index) {
                 <div class="entity">
                     <div>
@@ -27,6 +24,10 @@
                         <button class="button button-clear" (click)="onDeleteChannel(channel)">DELETE</button>
                     </div>
                 </div>
+            } @empty {
+                <span class="text-muted">
+                    There are no channels on this server. Why dont you make one?
+                </span>
             }
         </div>
     </div>
