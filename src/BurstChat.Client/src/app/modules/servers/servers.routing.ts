@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { EditServerComponent } from 'src/app/modules/servers/components/edit-server/edit-server.component';
+import { EditServerComponent } from 'src/app/components/server/edit-server/edit-server.component';
 
 const routes: Routes = [
     {

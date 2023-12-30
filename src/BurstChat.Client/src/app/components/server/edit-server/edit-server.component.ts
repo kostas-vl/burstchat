@@ -5,6 +5,11 @@ import { Server } from 'src/app/models/servers/server';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { ServersService } from 'src/app/services/servers/servers.service';
 import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { EditServerInfoComponent } from 'src/app/components/server/edit-server-info/edit-server-info.component';
+import { EditServerChannelsComponent } from 'src/app/components/server/edit-server-channels/edit-server-channels.component';
+import { EditServerUsersComponent } from 'src/app/components/server/edit-server-users/edit-server-users.component';
 
 /**
  * This class represents an angular component that presents information about the active server and enables
@@ -14,7 +19,15 @@ import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
 @Component({
     selector: 'burst-edit-server',
     templateUrl: './edit-server.component.html',
-    styleUrls: ['./edit-server.component.scss']
+    styleUrl: './edit-server.component.scss',
+    standalone: true,
+    imports: [
+        CardComponent,
+        CardBodyComponent,
+        EditServerInfoComponent,
+        EditServerChannelsComponent,
+        EditServerUsersComponent
+    ]
 })
 export class EditServerComponent implements OnInit, OnDestroy {
 
