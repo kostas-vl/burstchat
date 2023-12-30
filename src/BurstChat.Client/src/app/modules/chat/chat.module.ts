@@ -7,7 +7,6 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
-import { ChatGroupComponent } from 'src/app/modules/chat/components/chat-group/chat-group.component';
 import { ChatDirectComponent } from 'src/app/modules/chat/components/chat-direct/chat-direct.component';
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
@@ -67,7 +66,6 @@ import {
     declarations: [
         ChatRootComponent,
         ChatChannelComponent,
-        ChatGroupComponent,
         ChatDirectComponent,
         ChatInputComponent,
     ]

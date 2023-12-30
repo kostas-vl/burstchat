@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
-import { ChatGroupComponent } from 'src/app/modules/chat/components/chat-group/chat-group.component';
 import { ChatDirectComponent } from 'src/app/modules/chat/components/chat-direct/chat-direct.component';
 
 const routes: Routes = [
@@ -13,10 +12,6 @@ const routes: Routes = [
     {
         path: 'channel',
         component: ChatChannelComponent
-    },
-    {
-        path: 'private',
-        component: ChatGroupComponent
     },
     {
         path: 'direct',
