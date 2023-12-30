@@ -7,6 +7,12 @@ import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
 import { DirectMessagingService } from 'src/app/services/direct-messaging/direct-messaging.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { ChatMessagesComponent } from 'src/app/components/chat/chat-messages/chat-messages.component';
+import { ChatInfoComponent } from 'src/app/components/chat/chat-info/chat-info.component';
+import { ChatInputComponent } from 'src/app/components/chat/chat-input/chat-input.component';
+import { ChatCallComponent } from 'src/app/components/chat/chat-call/chat-call.component';
+import { MessageEditDialogComponent } from 'src/app/components/chat/message-edit-dialog/message-edit-dialog.component';
+import { MessageDeleteDialogComponent } from 'src/app/components/chat/message-delete-dialog/message-delete-dialog.component';
 
 /**
  * This class represents an angular component that represents the root of the chat for
@@ -18,7 +24,16 @@ import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.
 @Component({
     selector: 'burst-chat-direct',
     templateUrl: './chat-direct.component.html',
-    styleUrls: ['./chat-direct.component.scss'],
+    styleUrl: './chat-direct.component.scss',
+    standalone: true,
+    imports: [
+        ChatMessagesComponent,
+        ChatInfoComponent,
+        ChatInputComponent,
+        ChatCallComponent,
+        MessageEditDialogComponent,
+        MessageDeleteDialogComponent
+    ],
     providers: [UiLayerService]
 })
 export class ChatDirectComponent implements OnInit, OnDestroy {
@@ -27,7 +42,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
 
     private internalOptions?: DirectMessagingConnectionOptions;
 
-    public noChatFound = false;
+    public chatFound = true;
 
     public layoutState: 'chat' | 'call' = 'chat';
 
@@ -70,7 +85,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                             this.uiLayerService.toggleChatView(state);
                         }
                     } else {
-                        this.noChatFound = true;
+                        this.chatFound = false;
                         const title = 'No active chat found';
                         const content = 'Consider joining a channel or start a new private chat!';
                         this.notifyService.notify(title, content);
