@@ -1,12 +1,29 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Message } from 'src/app/models/chat/message';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChatService } from 'src/app/services/chat/chat.service';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
 
+/**
+ * This class represents an angular component that presents a dialog about changing a chat message.
+ * @class MessageEditDialogComponent
+ */
 @Component({
     selector: 'burst-message-edit-dialog',
     templateUrl: './message-edit-dialog.component.html',
-    styleUrls: ['./message-edit-dialog.component.scss']
+    styleUrl: './message-edit-dialog.component.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        DialogComponent,
+        CardComponent,
+        CardBodyComponent,
+        CardFooterComponent
+    ]
 })
 export class MessageEditDialogComponent implements OnInit {
 
