@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="column column-60">
+        <label>
+            <input type="file" display="none" (change)="onFileChangeEvent($event)">
+            <div class="button">Browse for file...</div>
+        </label>
+    </div>
+    <div class="column column-40 text-center">
+        Preview
+    </div>
+</div>
+
+<div class="row">
+    <div class="column column-60">
+        <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1 / 1" [resizeToWidth]="256"
+            [cropperMinWidth]="128" [onlyScaleDown]="true" [alignImage]="'left'" [style.display]="null" format="png" output="base64"
+            (imageCropped)="onImageCropped($event)"></image-cropper>
+    </div>
+    <div class="column column-40 my-auto">
+        <div class="image-preview mx-auto">
+            <img [attr.src]="preview">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+@import '../../../../scss/theme';
+
+.server-info {
+    position: fixed;
+    top: 0;
+    border-bottom: 1px solid $dark-color;
+    height: $minor-height;
+    width: ($sidebar-width - $minor-width);
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

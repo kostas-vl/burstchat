@@ -9,7 +9,9 @@ import { PopupMessage } from 'src/app/models/notify/popup-message';
  * about new notifications that need to be displayed.
  * @class NotifyService
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class NotifyService {
 
     private onPopupSource = new Subject<PopupMessage>();

@@ -1,0 +1,101 @@
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { Server } from 'src/app/models/servers/server';
+import { User } from 'src/app/models/user/user';
+import { NotifyService } from 'src/app/services/notify/notify.service';
+import { ChatService } from 'src/app/services/chat/chat.service';
+import { UserService } from 'src/app/services/user/user.service';
+
+/**
+ * This class represents an angular component that enables invitings and editing server users.
+ * @export
+ * @class EditServerUsersComponent
+ * @implements {OnInit}
+ */
+@Component({
+    selector: 'burst-edit-server-users',
+    templateUrl: './edit-server-users.component.html',
+    styleUrl: './edit-server-users.component.scss',
+    standalone: true,
+    imports: [FormsModule]
+})
+export class EditServerUsersComponent implements OnInit, OnDestroy {
+
+    private userCacheSub?: Subscription;
+
+    public newUserName = '';
+
+    public users: User[] = [];
+
+    @Input()
+    public server?: Server;
+
+    /**
+     * Creates an instance of EditServerUsersComponent.
+     * @memberof EditServerUsersComponent
+     */
+    constructor(
+        private notifyService: NotifyService,
+        private chatService: ChatService,
+        private userService: UserService
+    ) { }
+
+    /**
+     * Executes any neccessary start up code for the component.
+     * @memberof EditServerUsersComponent
+     */
+    public ngOnInit() {
+        this.userCacheSub = this
+            .userService
+            .usersCache
+            .subscribe(cache => {
+                const id = this.server.id.toString();
+                this.users = cache[id] || [];
+            });
+    }
+
+    /**
+     * Executes any neccessary code for the destruction of the component.
+     * @memberof EditServerUsersComponent
+     */
+    public ngOnDestroy() {
+        if (this.userCacheSub) {
+            this.userCacheSub.unsubscribe();
+        }
+    }
+
+    /**
+     * Handles the send invite button click event.
+     * @memberof EditServerComponent
+     */
+    public onInvite() {
+        if (!this.newUserName) {
+            const title = 'Could not send invitation';
+            const content = 'Please provide a user name for the invitation!';
+            this.notifyService.notify(title, content);
+            return;
+        }
+
+        this.chatService.sendInvitation(this.server.id, this.newUserName);
+        this.newUserName = '';
+    }
+
+    /**
+     * Handles the delete user button click event.
+     * @param {User} user The user instance to be deleted.
+     * @memberof EditServerUsersComponent
+     */
+    public onDeleteUser(user: User) {
+        if (user) {
+            const subscription = this
+                .server
+                .subscriptions
+                .find(s => s.userId === user.id);
+            if (subscription) {
+                this.chatService.deleteSubscription(this.server.id, subscription);
+            }
+        }
+    }
+
+}

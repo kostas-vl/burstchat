@@ -1,8 +1,0 @@
-<div class="button-icon-interactive button-icon-lg" [class.button-icon-interactive-static]="isActive"
-    (click)="onSelect()">
-
-    <img class="server-avatar" [attr.src]="server.avatar" *ngIf="avatarExists">
-
-    <span *ngIf="!avatarExists">{{serverInitials}}</span>
-
-</div>

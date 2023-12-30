@@ -1,0 +1,15 @@
+@if(server) {
+    <div class="burst-container-fluid bg-secondary">
+        <burst-card>
+            <burst-card-body>
+                <burst-edit-server-info [server]="server"/>
+            </burst-card-body>
+            <burst-card-body>
+                <burst-edit-server-channels [server]="server"/>
+            </burst-card-body>
+            <burst-card-body>
+                <burst-edit-server-users [server]="server"/>
+            </burst-card-body>
+        </burst-card>
+    </div>
+}

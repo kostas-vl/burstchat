@@ -1,0 +1,9 @@
+@if (visible) {
+    <img class="avatar" [class.avatar-lg]="size === 'lg'" [class.avatar-xlg]="size === 'xlg'"
+         [class.avatar-planet-size]="size === 'planetSize'" [attr.src]="avatar">
+} @else {
+    <div class="avatar text-center" [ngClass]="'bg-' + color" [class.avatar-lg]="size === 'lg'" [class.avatar-xlg]="size === 'xlg'"
+         [class.avatar-planet-size]="size === 'planetSize'">
+        {{initials}}
+    </div>
+}

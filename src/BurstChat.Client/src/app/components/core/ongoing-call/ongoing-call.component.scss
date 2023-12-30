@@ -1,0 +1,21 @@
+@import '../../../../scss/theme';
+
+.ongoing-call-container {
+    height: $minor-height;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.ongoing-call-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.ongoing-call-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

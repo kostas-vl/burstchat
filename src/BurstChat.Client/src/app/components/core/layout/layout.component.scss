@@ -1,0 +1,53 @@
+@import '../../../../scss/theme';
+@import '../../../../scss/loader';
+@import '../../../../scss/sizing';
+
+@-webkit-keyframes layout-fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes layout-fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+main {
+    position: relative;
+    height: 100%;
+    max-width: 100%;
+    margin-left: $sidebar-width;
+    color: white;
+    /* Safari */
+    -webkit-transition: margin-left $layout-animation-speed;
+    transition: margin-left $layout-animation-speed;
+}
+
+.layout {
+    @extend .h-100;
+    @extend .w-100;
+    /* Safari 4.0 - 8.0 */
+    -webkit-animation-name: layout-fade-in;
+    /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: .3s;
+    animation-name: layout-fade-in;
+    animation-duration: .3s;
+}
+
+.layout-loader {
+    @extend .h-100;
+    @extend .w-100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

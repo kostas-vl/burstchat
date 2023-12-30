@@ -1,0 +1,36 @@
+@if(options) {
+    <div class="chat-info">
+        <div class="fs-10 pl-20 pr-10">
+            <fa-icon [icon]="icon"></fa-icon>
+        </div>
+        <div class="fs-18">
+            {{options.name}}
+        </div>
+        <div class="chat-info-actions ml-auto">
+            @if(canCall) {
+                <div class="button-icon text mr-10" (click)="onCallClick()">
+                    <fa-icon [icon]="callIcon"></fa-icon>
+                </div>
+                <div class="button-icon text mr-10" (click)="onCallClick()">
+                    <fa-icon [icon]="videoIcon"></fa-icon>
+                </div>
+            }
+            @if(displayGoToCall) {
+                <div class="button-icon text mr-10" (click)="onToggleLayout('call')">
+                    <fa-icon [icon]="switchIcon"></fa-icon>
+                </div>
+            }
+            @if(displayGoToChat) {
+                <div class="button-icon text mr-10" (click)="onToggleLayout('chat')">
+                    <fa-icon [icon]="switchIcon"></fa-icon>
+                </div>
+            }
+            <div class="mr-10">
+                <input type="text" placeholder="Search" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" />
+            </div>
+            <div class="button-icon text mr-10">
+                <fa-icon [icon]="helpIcon"></fa-icon>
+            </div>
+        </div>
+    </div>
+}

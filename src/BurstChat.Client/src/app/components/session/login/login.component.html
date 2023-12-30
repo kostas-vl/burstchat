@@ -1,0 +1,56 @@
+<div class="login-card-container h-100">
+    <burst-card class="login-card">
+        <burst-card-header>
+            <div class="login-card-header">
+                @if(loading) {
+                    <div class="loader"></div>
+                } @else {
+                    <fa-icon [icon]="dragon"></fa-icon>
+                }
+            </div>
+        </burst-card-header>
+        <burst-card-body>
+            <div class="login-card-body">
+                <div class="row">
+                    <div class="column column-75 text-muted">
+                        <small>Provide your email and password to login in BurstChat.</small>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="column column-100">
+                        <input class="w-100" type="text" placeholder="EMAIL" [disabled]="loading"
+                            [(ngModel)]="credentials.email" (keydown)="onKeyDown($event)">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-100">
+                        <input class="w-100" type="password" placeholder="PASSWORD" [disabled]="loading"
+                            [(ngModel)]="credentials.password" (keydown)="onKeyDown($event)">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column column-100">
+                        <small>
+                            <a routerLink="/session/reset">Forgot your password?</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </burst-card-body>
+        <burst-card-footer>
+            <div class="row">
+                <div class="column column-100">
+                    <button class="button w-100" [disabled]="loading" (click)="onLogin()">LOGIN</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column column-100 text-center">
+                    <small>
+                        <a routerLink="/session/register">Dont have an account? Register now!</a>
+                    </small>
+                </div>
+            </div>
+        </burst-card-footer>
+    </burst-card>
+</div>

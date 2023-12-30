@@ -9,10 +9,18 @@ import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection
  * storage.
  * @class StorageService
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class StorageService {
 
+    private refreshTokenSource = new BehaviorSubject<any>(null);
+
     private tokenInfoSource: BehaviorSubject<TokenInfo | null>;
+
+    public refreshToken$ = this.refreshTokenSource.asObservable();
+
+    public refreshTokenLock = false;
 
     public tokenInfo: Observable<TokenInfo | null>;
 
@@ -62,7 +70,7 @@ export class StorageService {
     /**
      * Stores the provided token info to the appropriate platform storage.
      * @memberof StorageService
-     * @param { TokenInfo } tokenInfo The information about the current tokens
+     * @param tokenInfo { TokenInfo } The information about the current tokens
      */
     public setTokenInfo(info: TokenInfo) {
         if (info) {
@@ -70,6 +78,14 @@ export class StorageService {
             localStorage.setItem('tokenInfo', rawTokenInfo);
             this.tokenInfoSource.next(info);
         }
+    }
+
+    /**
+     * Updates the value of the refresh token subject.
+     * @param value {any} The value of the refresh token.
+     */
+    public setRefreshToken(value: any) {
+        this.refreshTokenSource.next(value);
     }
 
     /**

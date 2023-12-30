@@ -1,0 +1,14 @@
+@import '../../../../scss/theme';
+@import '../../../../scss/sizing';
+
+blockquote {
+    @extend .w-100;
+    margin: 0 0 0 0;
+    background-color: $warning-color;
+    color: $dark-color;
+    border: 0;
+}
+
+.viewport {
+    height: calc(100vh - #{$chat-input-height} - 65px);
+}

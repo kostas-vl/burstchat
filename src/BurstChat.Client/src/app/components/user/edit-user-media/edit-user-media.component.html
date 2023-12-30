@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="column column-100">
+        <h4>Media</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="column">
+        Input Device:
+        <select [ngModel]="selectedInputDevice" (ngModelChange)="onSelectedInputDeviceChange($event)">
+            @for(device of inputDevices; track device.deviceId) {
+                <option [attr.value]="device.deviceId">
+                    {{device.label}}
+                </option>
+            }
+        </select>
+    </div>
+    <div class="column">
+        Output Device:
+        <select [ngModel]="selectedOutputDevice" (ngModelChange)="onSelectedOutputDeviceChange($event)">
+            @for(device of outputDevices; track device.deviceId) {
+                <option [attr.value]="device.deviceId">
+                    {{device.label}}
+                </option>
+            }
+        </select>
+        <span class="text-muted">
+            * The output device cannot be changed in the browser.
+            Use the desktop application for better control of these devices.
+        </span>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="column column-25">
+        <button class="button w-100" (click)="onTestInput()">
+            {{testingAudio ? 'Stop Testing' : 'Test Input'}}
+        </button>
+    </div>
+    <div class="column">
+        <progress class="w-100" max="100" value="70"></progress>
+    </div>
+</div>
+<div class="row">
+    <div class="column column-100">
+        <span class="text-danger">* Remember to give permission for the microphone in your browser's settings</span>
+    </div>
+</div>

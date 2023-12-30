@@ -1,0 +1,11 @@
+<div class="popup-list-container">
+    <div class="popup-list">
+        @for (message of popupMessages; track message.content; let i = $index) {
+            <div class="row">
+                <div class="column column-100">
+                    <burst-popup [message]="message" (onClose)="onDismissPopup(i)"></burst-popup>
+                </div>
+            </div>
+        }
+    </div>
+</div>

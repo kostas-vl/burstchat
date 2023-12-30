@@ -1,0 +1,14 @@
+<div class="w-100">
+    <burst-expander title="Channels" [loading]="loading">
+        <div>
+            @for(channel of channels; track channel.id) {
+                <burst-channel [channel]="channel" [isActive]="channel.id === activeChannelId"/>
+            }
+        </div>
+        @if(channels?.length === 0) {
+            <div class="pl-35 text-muted">
+                No channels on this server yet.
+            </div>
+        }
+    </burst-expander>
+</div>

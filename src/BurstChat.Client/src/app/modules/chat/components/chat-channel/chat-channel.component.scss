@@ -1,8 +1,0 @@
-@import '../../../../../scss/theme';
-@import '../../../../../scss/sizing';
-
-.channel-chat-content {
-    @extend .h-100;
-    padding-top: $minor-height;
-    padding-bottom: $minor-height + 25px;
-}
