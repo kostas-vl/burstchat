@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 import { NotifyService } from 'src/app/services/notify/notify.service';
-import { ServersService } from 'src/app/services/servers/servers.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
 import { UserService } from 'src/app/services/user/user.service';
 
@@ -16,7 +16,9 @@ import { UserService } from 'src/app/services/user/user.service';
 @Component({
     selector: 'burst-edit-server-users',
     templateUrl: './edit-server-users.component.html',
-    styleUrls: ['./edit-server-users.component.scss']
+    styleUrl: './edit-server-users.component.scss',
+    standalone: true,
+    imports: [FormsModule]
 })
 export class EditServerUsersComponent implements OnInit, OnDestroy {
 
@@ -35,7 +37,6 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
      */
     constructor(
         private notifyService: NotifyService,
-        private serversService: ServersService,
         private chatService: ChatService,
         private userService: UserService
     ) { }

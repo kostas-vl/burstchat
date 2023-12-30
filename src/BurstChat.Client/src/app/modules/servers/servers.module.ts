@@ -6,7 +6,6 @@ import { ServersRoutingModule } from 'src/app/modules/servers/servers.routing';
 import { EditServerComponent } from 'src/app/modules/servers/components/edit-server/edit-server.component';
 import { EditServerInfoComponent } from 'src/app/modules/servers/components/edit-server-info/edit-server-info.component';
 import { EditServerChannelsComponent } from 'src/app/modules/servers/components/edit-server-channels/edit-server-channels.component';
-import { EditServerUsersComponent } from 'src/app/modules/servers/components/edit-server-users/edit-server-users.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -14,6 +13,7 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
 import { ImageCropComponent } from 'src/app/components/shared/image-crop/image-crop.component';
 import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
+import { EditServerUsersComponent } from 'src/app/components/server/edit-server-users/edit-server-users.component';
 
 @NgModule({
     imports: [
@@ -27,13 +27,13 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
         CardFooterComponent,
         ImageCropComponent,
         DialogComponent,
-        AvatarComponent
+        AvatarComponent,
+        EditServerUsersComponent
     ],
     declarations: [
         EditServerComponent,
         EditServerInfoComponent,
         EditServerChannelsComponent,
-        EditServerUsersComponent
     ],
     providers: []
 })
