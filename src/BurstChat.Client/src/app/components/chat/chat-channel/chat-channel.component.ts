@@ -6,6 +6,11 @@ import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { ChatMessagesComponent } from 'src/app/components/chat/chat-messages/chat-messages.component';
+import { ChatInfoComponent } from 'src/app/components/chat/chat-info/chat-info.component';
+import { ChatInputComponent } from 'src/app/components/chat/chat-input/chat-input.component';
+import { MessageEditDialogComponent } from 'src/app/components/chat/message-edit-dialog/message-edit-dialog.component';
+import { MessageDeleteDialogComponent } from 'src/app/components/chat/message-delete-dialog/message-delete-dialog.component';
 
 /**
  * This class represents an angular component that is the root component that contains a server channel chat.
@@ -16,7 +21,15 @@ import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.
 @Component({
     selector: 'burst-chat-channel',
     templateUrl: './chat-channel.component.html',
-    styleUrls: ['./chat-channel.component.scss'],
+    styleUrl: './chat-channel.component.scss',
+    standalone: true,
+    imports: [
+        ChatMessagesComponent,
+        ChatInfoComponent,
+        ChatInputComponent,
+        MessageEditDialogComponent,
+        MessageDeleteDialogComponent
+    ],
     providers: [UiLayerService]
 })
 export class ChatChannelComponent implements OnInit, OnDestroy {
@@ -25,7 +38,7 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
 
     private internalOptions?: ChannelConnectionOptions;
 
-    public noChatFound = false;
+    public chatFound = true;
 
     public layoutState: 'chat' | 'call' = 'chat';
 
@@ -65,7 +78,7 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         this.internalOptions.name = name;
                         this.internalOptions.id = id;
                     } else {
-                        this.noChatFound = true;
+                        this.chatFound = false;
                         const title = 'No active chat found';
                         const content = 'Consider joining a channel or start a new private chat!';
                         this.notifyService.notify(title, content);

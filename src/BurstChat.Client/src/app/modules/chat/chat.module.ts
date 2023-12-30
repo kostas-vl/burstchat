@@ -6,7 +6,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
-import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
 import { ChatDirectComponent } from 'src/app/modules/chat/components/chat-direct/chat-direct.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
@@ -22,6 +21,7 @@ import { ChatMessagesComponent } from 'src/app/components/chat/chat-messages/cha
 import { ChatInfoComponent } from 'src/app/components/chat/chat-info/chat-info.component';
 import { ChatCallComponent } from 'src/app/components/chat/chat-call/chat-call.component';
 import { ChatInputComponent } from 'src/app/components/chat/chat-input/chat-input.component';
+import { ChatChannelComponent } from 'src/app/components/chat/chat-channel/chat-channel.component';
 
 import {
     faPaperPlane,
@@ -62,11 +62,11 @@ import {
         ChatMessagesComponent,
         ChatInfoComponent,
         ChatCallComponent,
-        ChatInputComponent
+        ChatInputComponent,
+        ChatChannelComponent
     ],
     declarations: [
         ChatRootComponent,
-        ChatChannelComponent,
         ChatDirectComponent,
     ]
 })
