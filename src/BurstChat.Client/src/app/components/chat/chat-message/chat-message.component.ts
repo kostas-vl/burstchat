@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPaperPlane, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Message } from 'src/app/models/chat/message';
-import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { UiLayerService } from 'src/app/services/ui-layer/ui-layer.service';
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**

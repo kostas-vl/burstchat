@@ -7,7 +7,7 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
 import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
-import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { UiLayerService } from 'src/app/services/ui-layer/ui-layer.service';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';

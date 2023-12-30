@@ -6,7 +6,7 @@ import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-mes
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
 import { DirectMessagingService } from 'src/app/services/direct-messaging/direct-messaging.service';
-import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { UiLayerService } from 'src/app/services/ui-layer/ui-layer.service';
 import { ChatMessagesComponent } from 'src/app/components/chat/chat-messages/chat-messages.component';
 import { ChatInfoComponent } from 'src/app/components/chat/chat-info/chat-info.component';
 import { ChatInputComponent } from 'src/app/components/chat/chat-input/chat-input.component';
