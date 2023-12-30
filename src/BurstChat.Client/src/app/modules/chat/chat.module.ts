@@ -14,7 +14,6 @@ import { ChatMessagesComponent } from 'src/app/modules/chat/components/chat-mess
 import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
 import { ChatMessageComponent } from 'src/app/modules/chat/components/chat-message/chat-message.component';
 import { ChatCallComponent } from 'src/app/modules/chat/components/chat-call/chat-call.component';
-import { MessageDeleteDialogComponent } from 'src/app/modules/chat/components/message-delete-dialog/message-delete-dialog.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -23,6 +22,7 @@ import { DialogComponent } from 'src/app/components/shared/dialog/dialog.compone
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 import { ExpanderComponent } from 'src/app/components/shared/expander/expander.component';
 import { MessageEditDialogComponent } from 'src/app/components/chat/message-edit-dialog/message-edit-dialog.component';
+import { MessageDeleteDialogComponent } from 'src/app/components/chat/message-delete-dialog/message-delete-dialog.component';
 
 import {
     faPaperPlane,
@@ -57,7 +57,8 @@ import {
         DialogComponent,
         AvatarComponent,
         ExpanderComponent,
-        MessageEditDialogComponent
+        MessageEditDialogComponent,
+        MessageDeleteDialogComponent
     ],
     declarations: [
         ChatRootComponent,
@@ -69,7 +70,6 @@ import {
         ChatMessageComponent,
         ChatInputComponent,
         ChatCallComponent,
-        MessageDeleteDialogComponent
     ]
 })
 export class ChatModule {
