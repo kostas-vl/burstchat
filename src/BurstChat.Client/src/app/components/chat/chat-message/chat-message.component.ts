@@ -1,7 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPaperPlane, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Message } from 'src/app/models/chat/message';
 import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.service';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**
  * This class represents an angular component that displays on screen a message from a user.
@@ -12,7 +15,13 @@ import { UiLayerService } from 'src/app/modules/chat/services/ui-layer/ui-layer.
 @Component({
     selector: 'burst-chat-message',
     templateUrl: './chat-message.component.html',
-    styleUrls: ['./chat-message.component.scss']
+    styleUrl: './chat-message.component.scss',
+    standalone: true,
+    imports: [
+        DatePipe,
+        FontAwesomeModule,
+        AvatarComponent
+    ]
 })
 export class ChatMessageComponent implements OnInit {
 
