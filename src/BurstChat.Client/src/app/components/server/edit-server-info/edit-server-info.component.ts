@@ -1,7 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/services/servers/servers.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
+import { ImageCropComponent } from 'src/app/components/shared/image-crop/image-crop.component';
+import { DialogComponent } from 'src/app/components/shared/dialog/dialog.component';
+import { CardComponent } from 'src/app/components/shared/card/card.component';
+import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
+import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-footer.component';
+import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
 /**
  * This class represents an angular component that display to the user
@@ -12,7 +19,17 @@ import { ChatService } from 'src/app/services/chat/chat.service';
 @Component({
     selector: 'burst-edit-server-info',
     templateUrl: './edit-server-info.component.html',
-    styleUrls: ['./edit-server-info.component.scss']
+    styleUrl: './edit-server-info.component.scss',
+    standalone: true,
+    imports: [
+        DatePipe,
+        DialogComponent,
+        ImageCropComponent,
+        AvatarComponent,
+        CardComponent,
+        CardBodyComponent,
+        CardFooterComponent
+    ]
 })
 export class EditServerInfoComponent implements OnInit {
 

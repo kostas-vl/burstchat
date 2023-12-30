@@ -1,64 +1,33 @@
 <div class="server-info">
-
     <div>
-
         <burst-avatar [name]="server.name" [avatar]="server.avatar" size="lg"></burst-avatar>
-
     </div>
-
     <div class="pl-10">
-
         <div class="row">
-
             <div class="column column-100">
-
                 {{server.name}} <span class="text-muted">#{{server.id}} <small class="text-muted">Created at
                         {{server.dateCreated | date}}</small></span>
-
             </div>
-
         </div>
-
         <div class="row">
-
             <div class="column column-100 fs-12">
-
                 <a href="javascript:void(0)" (click)="onChangeAvatar()">Change picture</a>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
-
 <burst-dialog [(visible)]="changeAvatarVisible">
-
     <burst-card>
-
         <burst-card-body>
-
             <div class="image-crop">
-
-                <burst-image-crop (imageCropped)="onImageCropped($event)"></burst-image-crop>
-
+                <burst-image-crop (imageCropped)="onImageCropped($event)"/>
             </div>
-
         </burst-card-body>
-
         <burst-card-footer>
-
             <div class="image-crop-actions">
-
                 <button class="button-clear" (click)="onCancelNewAvatar()">CANCEL</button>
-
                 <button class="button" (click)="onSaveNewAvatar()">SAVE</button>
-
             </div>
-
         </burst-card-footer>
-
     </burst-card>
-
 </burst-dialog>
