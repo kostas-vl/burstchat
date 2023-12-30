@@ -8,7 +8,6 @@ import { ChatRoutingModule } from 'src/app/modules/chat/chat.routing';
 import { ChatRootComponent } from 'src/app/modules/chat/components/chat-root/chat-root.component';
 import { ChatChannelComponent } from 'src/app/modules/chat/components/chat-channel/chat-channel.component';
 import { ChatDirectComponent } from 'src/app/modules/chat/components/chat-direct/chat-direct.component';
-import { ChatInputComponent } from 'src/app/modules/chat/components/chat-input/chat-input.component';
 import { CardComponent } from 'src/app/components/shared/card/card.component';
 import { CardHeaderComponent } from 'src/app/components/shared/card-header/card-header.component';
 import { CardBodyComponent } from 'src/app/components/shared/card-body/card-body.component';
@@ -22,6 +21,7 @@ import { ChatMessageComponent } from 'src/app/components/chat/chat-message/chat-
 import { ChatMessagesComponent } from 'src/app/components/chat/chat-messages/chat-messages.component';
 import { ChatInfoComponent } from 'src/app/components/chat/chat-info/chat-info.component';
 import { ChatCallComponent } from 'src/app/components/chat/chat-call/chat-call.component';
+import { ChatInputComponent } from 'src/app/components/chat/chat-input/chat-input.component';
 
 import {
     faPaperPlane,
@@ -61,13 +61,13 @@ import {
         ChatMessageComponent,
         ChatMessagesComponent,
         ChatInfoComponent,
-        ChatCallComponent
+        ChatCallComponent,
+        ChatInputComponent
     ],
     declarations: [
         ChatRootComponent,
         ChatChannelComponent,
         ChatDirectComponent,
-        ChatInputComponent,
     ]
 })
 export class ChatModule {

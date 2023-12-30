@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
@@ -16,7 +17,9 @@ import { ChatService } from 'src/app/services/chat/chat.service';
 @Component({
     selector: 'burst-chat-input',
     templateUrl: './chat-input.component.html',
-    styleUrls: ['./chat-input.component.scss']
+    styleUrl: './chat-input.component.scss',
+    standalone: true,
+    imports: [FormsModule]
 })
 export class ChatInputComponent implements OnInit, OnDestroy {
 
