@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Subscription } from 'rxjs';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
@@ -30,7 +32,12 @@ import {
 @Component({
     selector: 'burst-chat-info',
     templateUrl: './chat-info.component.html',
-    styleUrls: ['./chat-info.component.scss']
+    styleUrl: './chat-info.component.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        FontAwesomeModule
+    ]
 })
 export class ChatInfoComponent implements OnInit, OnDestroy {
 
