@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/models/servers/channel';
 import { Server } from 'src/app/models/servers/server';
@@ -15,7 +17,12 @@ import { ChatService } from 'src/app/services/chat/chat.service';
 @Component({
     selector: 'burst-edit-server-channels',
     templateUrl: './edit-server-channels.component.html',
-    styleUrls: ['./edit-server-channels.component.scss']
+    styleUrl: './edit-server-channels.component.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        DatePipe
+    ]
 })
 export class EditServerChannelsComponent implements OnInit, OnDestroy {
 
