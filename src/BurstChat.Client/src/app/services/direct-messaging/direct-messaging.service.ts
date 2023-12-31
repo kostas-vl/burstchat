@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { DirectMessaging } from 'src/app/models/user/direct-messaging';
 import { User } from 'src/app/models/user/user';
-import { BehaviorSubject } from 'rxjs';
 
 /**
  * This class represents an angular service that exposes methods for fetching and transforming direct messaging data.
@@ -12,9 +11,9 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable()
 export class DirectMessagingService {
 
-    private usersSource = new BehaviorSubject<User[]>([]);
+    private usersSource: WritableSignal<User[]> = signal([]);
 
-    public users = this.usersSource.asObservable();
+    public users = this.usersSource.asReadonly();
 
     /**
      * Creates an instance of DirectMessagingService.
@@ -47,7 +46,7 @@ export class DirectMessagingService {
             .get<User[]>('/api/direct/users')
             .subscribe(data => {
                 if (data && data.length > 0) {
-                    this.usersSource.next(data);
+                    this.usersSource.set(data);
                 }
             });
     }

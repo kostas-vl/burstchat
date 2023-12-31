@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { DirectMessagingService } from 'src/app/services/direct-messaging/direct-messaging.service';
@@ -32,7 +32,9 @@ export class DirectMessagingListComponent implements OnInit, OnDestroy {
     constructor(
         private directMessagingService: DirectMessagingService,
         private chatService: ChatService
-    ) { }
+    ) {
+        effect(() => this.users = this.directMessagingService.users());
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -40,9 +42,6 @@ export class DirectMessagingListComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.directMessagingService
-                .users
-                .subscribe(users => this.users = users),
             this.chatService
                 .userUpdated$
                 .subscribe(user => {
