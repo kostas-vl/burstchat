@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Invitation } from 'src/app/models/servers/invitation';
@@ -58,7 +58,16 @@ export class LayoutComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private directMessagingService: DirectMessagingService,
         private chatService: ChatService,
-    ) { }
+    ) {
+        effect(() => {
+            if (this.chatService.onConnected$()) {
+                setTimeout(() => {
+                    this.chatService.getInvitations();
+                    this.loading = false;
+                }, 300);
+            }
+        });
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -66,14 +75,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.chatService
-                .onConnected$
-                .subscribe(() => {
-                    setTimeout(() => {
-                        this.chatService.getInvitations();
-                        this.loading = false;
-                    }, 300);
-                }),
             this.chatService
                 .onReconnected$
                 .subscribe(() => {

@@ -1,4 +1,4 @@
-import { effect, Injectable } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import { Subject, BehaviorSubject } from 'rxjs';
@@ -29,7 +29,7 @@ export class ChatService {
 
     private connection?: HubConnection;
 
-    private onConnectedSource$ = new Subject();
+    private onConnectedSource$ = signal(false);
 
     private onReconnectedSource$ = new Subject();
 
@@ -67,7 +67,7 @@ export class ChatService {
 
     private errorSource$ = new Subject<BurstChatError>();
 
-    public onConnected$ = this.onConnectedSource$.asObservable();
+    public onConnected$ = this.onConnectedSource$.asReadonly();
 
     public onReconnected$ = this.onReconnectedSource$.asObservable();
 
@@ -245,7 +245,7 @@ export class ChatService {
 
         this.connection
             .start()
-            .then(() => this.onConnectedSource$.next())
+            .then(() => this.onConnectedSource$.set(true))
             .catch(error => console.warn(error));
     }
 
