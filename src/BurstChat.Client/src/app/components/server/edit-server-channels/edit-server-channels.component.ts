@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/models/servers/channel';
 import { Server } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -24,9 +23,7 @@ import { ChatService } from 'src/app/services/chat/chat.service';
         DatePipe
     ]
 })
-export class EditServerChannelsComponent implements OnInit, OnDestroy {
-
-    private channelCreatedSub?: Subscription;
+export class EditServerChannelsComponent {
 
     public newChannelName = '';
 
@@ -40,30 +37,13 @@ export class EditServerChannelsComponent implements OnInit, OnDestroy {
     constructor(
         private notifyService: NotifyService,
         private chatService: ChatService
-    ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof EditServerChannelsComponent
-     */
-    public ngOnInit() {
-        this.channelCreatedSub = this
-            .chatService
-            .channelCreated$
-            .subscribe(data => {
-                const channel = data[1];
-                if (this.newChannelName === channel.name) {
-                    this.newChannelName = '';
-                }
-            });
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof EditServerChannelsComponent
-     */
-    public ngOnDestroy() {
-        this.channelCreatedSub?.unsubscribe();
+    ) {
+        effect(() => {
+            const channel = this.chatService.channelCreated();
+            if (channel && this.newChannelName === channel[1].name) {
+                this.newChannelName = '';
+            }
+        })
     }
 
     /**

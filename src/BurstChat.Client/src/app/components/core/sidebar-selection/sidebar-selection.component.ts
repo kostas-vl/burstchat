@@ -55,6 +55,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         effect(() => this.serverInfoCallback(this.chatService.addedServer()));
         effect(() => this.updatedServer(this.chatService.updatedServer()));
         effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()));
+        effect(() => this.channelCreatedCallback(this.chatService.channelCreated()));
     }
 
     /**
@@ -78,9 +79,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.serversService
                 .serverInfo
                 .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .channelCreated$
-                .subscribe(data => this.channelCreatedCallback(data)),
             this.chatService
                 .channelUpdated$
                 .subscribe(channel => this.channelUpdatedCallback(channel)),
@@ -175,10 +173,11 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
     /**
      * This method is invoked when a new channel is pushed by the channel created observable.
      * @private
-     * @param {[number, Channel]} data The server id and the channel instance
+     * @param {[number, Channel] | null} data The server id and the channel instance
      * @memberof SidebarSelectionComponent
      */
-    private channelCreatedCallback(data: [number, Channel]) {
+    private channelCreatedCallback(data: [number, Channel] | null) {
+        if (!data) return;
         const serverId = data[0];
         const channel = data[1];
         const server = this.servers.find(s => s.id === serverId);
