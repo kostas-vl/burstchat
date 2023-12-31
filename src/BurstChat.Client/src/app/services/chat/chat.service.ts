@@ -35,7 +35,7 @@ export class ChatService {
 
     private addedServerSource: WritableSignal<Server | null> = signal(null);
 
-    private updatedServerSource$ = new Subject<Server>();
+    private updatedServerSource: WritableSignal<Server | null> = signal(null);
 
     private subscriptionDeletedSource$ = new Subject<[number, Subscription]>();
 
@@ -73,7 +73,7 @@ export class ChatService {
 
     public addedServer = this.addedServerSource.asReadonly();
 
-    public updatedServer$ = this.updatedServerSource$.asObservable();
+    public updatedServer = this.updatedServerSource.asReadonly();
 
     public subscriptionDeleted$ = this.subscriptionDeletedSource$.asObservable();
 
@@ -202,7 +202,7 @@ export class ChatService {
 
         this.connection.on('addedServer', data => this.ProcessRawMessage(data, this.addedServerSource));
 
-        this.connection.on('updatedServer', data => this.ProcessRawSignal(data, this.updatedServerSource$));
+        this.connection.on('updatedServer', data => this.ProcessRawMessage(data, this.updatedServerSource));
 
         this.connection.on('subscriptionDeleted', data => this.ProcessRawSignal(data, this.subscriptionDeletedSource$));
 

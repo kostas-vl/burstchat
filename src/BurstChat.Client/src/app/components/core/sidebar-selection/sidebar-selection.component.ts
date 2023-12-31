@@ -53,6 +53,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         private sidebarService: SidebarService
     ) {
         effect(() => this.serverInfoCallback(this.chatService.addedServer()));
+        effect(() => this.updatedServer(this.chatService.updatedServer()));
     }
 
     /**
@@ -76,9 +77,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.serversService
                 .serverInfo
                 .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .updatedServer$
-                .subscribe(server => this.updatedServer(server)),
             this.chatService
                 .subscriptionDeleted$
                 .subscribe(data => this.subcriptionDeletedCallback(data)),
