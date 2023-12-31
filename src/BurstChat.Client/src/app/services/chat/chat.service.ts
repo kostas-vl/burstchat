@@ -29,9 +29,9 @@ export class ChatService {
 
     private connection?: HubConnection;
 
-    private onConnectedSource$ = signal(false);
+    private onConnectedSource = signal(false);
 
-    private onReconnectedSource$ = new Subject();
+    private onReconnectedSource = signal(false);
 
     private addedServerSource$ = new Subject<Server>();
 
@@ -67,9 +67,9 @@ export class ChatService {
 
     private errorSource$ = new Subject<BurstChatError>();
 
-    public onConnected$ = this.onConnectedSource$.asReadonly();
+    public onConnected = this.onConnectedSource.asReadonly();
 
-    public onReconnected$ = this.onReconnectedSource$.asObservable();
+    public onReconnected = this.onReconnectedSource.asReadonly();
 
     public addedServer$ = this.addedServerSource$.asObservable();
 
@@ -180,7 +180,7 @@ export class ChatService {
             return;
         }
 
-        this.connection.onreconnected(connectionId => this.onReconnectedSource$.next());
+        this.connection.onreconnected(_connectionId => this.onReconnectedSource.set(true));
 
         this.connection.on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource$));
 
@@ -245,7 +245,7 @@ export class ChatService {
 
         this.connection
             .start()
-            .then(() => this.onConnectedSource$.set(true))
+            .then(() => this.onConnectedSource.set(true))
             .catch(error => console.warn(error));
     }
 

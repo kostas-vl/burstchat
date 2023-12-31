@@ -60,13 +60,18 @@ export class LayoutComponent implements OnInit, OnDestroy {
         private chatService: ChatService,
     ) {
         effect(() => {
-            if (this.chatService.onConnected$()) {
+            if (this.chatService.onConnected()) {
                 setTimeout(() => {
                     this.chatService.getInvitations();
                     this.loading = false;
                 }, 300);
             }
         });
+        effect(() => {
+            if (this.chatService.onReconnected()) {
+                this.chatService.getInvitations();
+            }
+        })
     }
 
     /**
@@ -75,11 +80,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.chatService
-                .onReconnected$
-                .subscribe(() => {
-                    this.chatService.getInvitations();
-                }),
             this.chatService
                 .invitations$
                 .subscribe(data => {

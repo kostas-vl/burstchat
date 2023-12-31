@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
@@ -59,7 +59,13 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
         private notifyService: NotifyService,
         private chatService: ChatService,
         private uiLayerService: UiLayerService
-    ) { }
+    ) {
+        effect(() => {
+            if (this.chatService.onReconnected() && this.options) {
+                this.chatService.addSelfToChat(this.options);
+            }
+        });
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -82,13 +88,6 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         const title = 'No active chat found';
                         const content = 'Consider joining a channel or start a new private chat!';
                         this.notifyService.notify(title, content);
-                    }
-                }),
-            this.chatService
-                .onReconnected$
-                .subscribe(() => {
-                    if (this.options) {
-                        this.chatService.addSelfToChat(this.options);
                     }
                 }),
             this.uiLayerService

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
@@ -48,7 +48,13 @@ export class ServerComponent implements OnInit, OnDestroy {
         private sidebarService: SidebarService,
         private serversService: ServersService,
         private chatService: ChatService
-    ) { }
+    ) {
+        effect(() => {
+            if (this.chatService.onReconnected()) {
+                this.chatService.addToServer(this.server.id);
+            }
+        });
+    }
 
     /**
      * Executes any necessary start up code for the component.
@@ -72,9 +78,6 @@ export class ServerComponent implements OnInit, OnDestroy {
                         this.server = server;
                     }
                 }),
-            this.chatService
-                .onReconnected$
-                .subscribe(() => this.chatService.addToServer(this.server.id))
         ];
 
     }
