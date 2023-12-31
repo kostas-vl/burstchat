@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TokenInfo } from 'src/app/models/identity/token-info';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
@@ -14,15 +14,15 @@ import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection
 })
 export class StorageService {
 
-    private refreshTokenSource = new BehaviorSubject<any>(null);
+    private refreshTokenSource = signal(null);
 
-    private tokenInfoSource: BehaviorSubject<TokenInfo | null>;
+    private tokenInfoSource: WritableSignal<TokenInfo | null>;
 
-    public refreshToken$ = this.refreshTokenSource.asObservable();
+    public refreshToken$ = this.refreshTokenSource.asReadonly();
 
     public refreshTokenLock = false;
 
-    public tokenInfo: Observable<TokenInfo | null>;
+    public tokenInfo: Signal<TokenInfo | null>;
 
     /**
      * Fetches the last active chat of the user that is stored in the appropriate platform storage.
@@ -63,8 +63,8 @@ export class StorageService {
     constructor() {
         const rawTokenInfo = localStorage.getItem('tokenInfo');
         const info = JSON.parse(rawTokenInfo) as TokenInfo | null;
-        this.tokenInfoSource = new BehaviorSubject(info);
-        this.tokenInfo = this.tokenInfoSource.asObservable();
+        this.tokenInfoSource = signal(info);
+        this.tokenInfo = this.tokenInfoSource.asReadonly();
     }
 
     /**
@@ -76,7 +76,7 @@ export class StorageService {
         if (info) {
             const rawTokenInfo = JSON.stringify(info);
             localStorage.setItem('tokenInfo', rawTokenInfo);
-            this.tokenInfoSource.next(info);
+            this.tokenInfoSource.set(info);
         }
     }
 
@@ -85,7 +85,7 @@ export class StorageService {
      * @param value {any} The value of the refresh token.
      */
     public setRefreshToken(value: any) {
-        this.refreshTokenSource.next(value);
+        this.refreshTokenSource.set(value);
     }
 
     /**

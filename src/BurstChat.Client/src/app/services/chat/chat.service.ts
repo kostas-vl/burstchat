@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { effect, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import { Subject, BehaviorSubject } from 'rxjs';
@@ -108,18 +108,16 @@ export class ChatService {
      * @memberof ChatService
      */
     constructor(
-        private router: Router,
         private storageService: StorageService,
         private notifyService: NotifyService
     ) {
-        this.storageService
-            .tokenInfo
-            .subscribe(info => {
-                if (info) {
-                    this.disposeConnection();
-                    this.initializeConnection(info);
-                }
-            });
+        effect(() => {
+            let token = this.storageService.tokenInfo();
+            if (token) {
+                this.disposeConnection();
+                this.initializeConnection(token);
+            }
+        });
     }
 
     /**
