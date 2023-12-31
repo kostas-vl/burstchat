@@ -54,6 +54,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
     ) {
         effect(() => this.serverInfoCallback(this.chatService.addedServer()));
         effect(() => this.updatedServer(this.chatService.updatedServer()));
+        effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()));
     }
 
     /**
@@ -77,9 +78,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.serversService
                 .serverInfo
                 .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .subscriptionDeleted$
-                .subscribe(data => this.subcriptionDeletedCallback(data)),
             this.chatService
                 .channelCreated$
                 .subscribe(data => this.channelCreatedCallback(data)),
@@ -152,7 +150,8 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @param {[number, BurstSubscription]} data The server id and the subscription instance.
      * @memberof SidebarSelectionComponent
      */
-    private subcriptionDeletedCallback(data: [number, BurstSubscription]) {
+    private subcriptionDeletedCallback(data: [number, BurstSubscription] | null) {
+        if (!data) return;
         const serverId = data[0];
         const subscription = data[1];
         const server = this.servers.find(s => s.id === serverId);
