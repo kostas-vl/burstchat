@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -51,7 +51,9 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         private serversService: ServersService,
         private chatService: ChatService,
         private sidebarService: SidebarService
-    ) { }
+    ) {
+        effect(() => this.serverInfoCallback(this.chatService.addedServer()));
+    }
 
     /**
      * Executes any necessary start up code for the component.
@@ -73,9 +75,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
                 .subscribe(cache => this.usersCache = cache),
             this.serversService
                 .serverInfo
-                .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .addedServer$
                 .subscribe(server => this.serverInfoCallback(server)),
             this.chatService
                 .updatedServer$

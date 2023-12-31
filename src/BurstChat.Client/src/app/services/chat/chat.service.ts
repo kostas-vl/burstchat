@@ -1,4 +1,4 @@
-import { effect, Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import { Subject, BehaviorSubject } from 'rxjs';
@@ -33,7 +33,7 @@ export class ChatService {
 
     private onReconnectedSource = signal(false);
 
-    private addedServerSource$ = new Subject<Server>();
+    private addedServerSource: WritableSignal<Server | null> = signal(null);
 
     private updatedServerSource$ = new Subject<Server>();
 
@@ -71,7 +71,7 @@ export class ChatService {
 
     public onReconnected = this.onReconnectedSource.asReadonly();
 
-    public addedServer$ = this.addedServerSource$.asObservable();
+    public addedServer = this.addedServerSource.asReadonly();
 
     public updatedServer$ = this.updatedServerSource$.asObservable();
 
@@ -139,6 +139,24 @@ export class ChatService {
     }
 
     /**
+     * This method will process the data sent by a server message and if the data is not of instance
+     * BurstChatError then the next method will be called from the provided signal.
+     * @private
+     * @template T The success type contained within the payload.
+     * @param {T | BurstChatError} data The data sent fron the server message.
+     * @param {Subject<T>} source The subject to be executed.
+     * @memberof ChatService
+     */
+    private ProcessRawMessage<T>(data: T | BurstChatError, source: WritableSignal<T>): void {
+        const error = tryParseError(data);
+        if (!error) {
+            source.set(data as T);
+        } else {
+            this.notifyService.notifyError(error);
+        }
+    }
+
+    /**
      * This method will process the data sent by a server signal and if the data is not of instance
      * BurstChatError then the next method will be called from the provided subject.
      * @private
@@ -182,7 +200,7 @@ export class ChatService {
 
         this.connection.onreconnected(_connectionId => this.onReconnectedSource.set(true));
 
-        this.connection.on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource$));
+        this.connection.on('addedServer', data => this.ProcessRawMessage(data, this.addedServerSource));
 
         this.connection.on('updatedServer', data => this.ProcessRawSignal(data, this.updatedServerSource$));
 

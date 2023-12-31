@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -50,7 +50,19 @@ export class AddServerComponent implements OnInit, OnDestroy {
         private notifyService: NotifyService,
         private chatService: ChatService,
         private sidebarService: SidebarService
-    ) { }
+    ) {
+        effect(() => {
+            let server = this.chatService.addedServer();
+            if (server.name === this.server.name) {
+                const title = 'Success';
+                const content = `The server ${this.server.name} was created successfully`;
+                this.notifyService.notify(title, content);
+                this.server = new BurstChatServer();
+                this.loading = false;
+                this.onClose();
+            }
+        })
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -58,18 +70,6 @@ export class AddServerComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.chatService
-                .addedServer$
-                .subscribe(server => {
-                    if (server.name === this.server.name) {
-                        const title = 'Success';
-                        const content = `The server ${this.server.name} was created successfully`;
-                        this.notifyService.notify(title, content);
-                        this.server = new BurstChatServer();
-                        this.loading = false;
-                        this.onClose();
-                    }
-                }),
             this.sidebarService
                 .addServerDialog
                 .subscribe(visible => this.visible = visible)
