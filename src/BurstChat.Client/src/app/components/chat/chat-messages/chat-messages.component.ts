@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { VirtualScrollerComponent, IPageInfo, VirtualScrollerModule } from '@iharbeck/ngx-virtual-scroller';
 import { Message } from 'src/app/models/chat/message';
@@ -75,9 +75,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatService
                 .messageDeleted$
                 .subscribe(payload => this.onMessageDeleted(payload)),
-            this.chatService
-                .userUpdated$
-                .subscribe(user => this.onUserUpdated(user)),
             this.uiLayerService
                 .search$
                 .subscribe(term => this.onSearch(term)),
@@ -94,7 +91,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         private chatService: ChatService,
         private notifyService: NotifyService,
         private uiLayerService: UiLayerService
-    ) { }
+    ) {
+        effect(() => this.onUserUpdated(this.chatService.userUpdated()));
+    }
 
     /**
      * Executes any necessary start up code for the component.
@@ -326,10 +325,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     /**
      * Checks if the updated user that was sent is in any of the messages.
-     * @param {User} user The updated user instance.
+     * @param {User | null} user The updated user instance.
      * @memberof ChatMessagesComponent
      */
-    public onUserUpdated(user: User) {
+    public onUserUpdated(user: User | null) {
+        if (!this.options && !user) return;
+
         const messages = this.messages.filter(m => m.user.id === user.id);
         for (const message of messages) {
             message.user = { ...user };

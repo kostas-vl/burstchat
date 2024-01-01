@@ -1,7 +1,6 @@
 import { effect, Injectable, signal, WritableSignal } from '@angular/core';
-import { Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { TokenInfo } from 'src/app/models/identity/token-info';
@@ -43,13 +42,13 @@ export class ChatService {
 
     private channelUpdatedSource: WritableSignal<Channel | null> = signal(null);
 
-    private channelDeletedSource$ = new Subject<number>();
+    private channelDeletedSource: WritableSignal<number | null> = signal(null);
 
-    private userUpdatedSource$ = new Subject<User>();
+    private userUpdatedSource: WritableSignal<User | null> = signal(null);
 
-    private invitationsSource$ = new BehaviorSubject<Invitation[]>([]);
+    private invitationsSource: WritableSignal<Invitation[]> = signal([]);
 
-    private newInvitationSource$ = new Subject<Invitation>();
+    private newInvitationSource: WritableSignal<Invitation | null> = signal(null);
 
     private updatedInvitationSource$ = new Subject<Invitation>();
 
@@ -81,13 +80,13 @@ export class ChatService {
 
     public channelUpdated = this.channelUpdatedSource.asReadonly();
 
-    public channelDeleted$ = this.channelDeletedSource$.asObservable();
+    public channelDeleted = this.channelDeletedSource.asReadonly();
 
-    public userUpdated$ = this.userUpdatedSource$.asObservable();
+    public userUpdated = this.userUpdatedSource.asReadonly();
 
-    public invitations$ = this.invitationsSource$.asObservable();
+    public invitations = this.invitationsSource.asReadonly();
 
-    public newInvitation$ = this.newInvitationSource$.asObservable();
+    public newInvitation = this.newInvitationSource.asReadonly();
 
     public updatedInvitation$ = this.updatedInvitationSource$.asObservable();
 
@@ -210,13 +209,13 @@ export class ChatService {
 
         this.connection.on('channelUpdated', data => this.ProcessRawMessage(data, this.channelUpdatedSource));
 
-        this.connection.on('channelDeleted', data => this.ProcessRawSignal(data, this.channelDeletedSource$));
+        this.connection.on('channelDeleted', data => this.ProcessRawMessage(data, this.channelDeletedSource));
 
-        this.connection.on('invitations', data => this.ProcessRawSignal(data, this.invitationsSource$));
+        this.connection.on('invitations', data => this.ProcessRawMessage(data, this.invitationsSource));
 
-        this.connection.on('userUpdated', data => this.ProcessRawSignal(data, this.userUpdatedSource$));
+        this.connection.on('userUpdated', data => this.ProcessRawMessage(data, this.userUpdatedSource));
 
-        this.connection.on('newInvitation', data => this.ProcessRawSignal(data, this.newInvitationSource$));
+        this.connection.on('newInvitation', data => this.ProcessRawMessage(data, this.newInvitationSource));
 
         this.connection.on('updatedInvitation', data => this.ProcessRawSignal(data, this.updatedInvitationSource$));
 

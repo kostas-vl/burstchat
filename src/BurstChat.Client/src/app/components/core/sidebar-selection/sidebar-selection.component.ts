@@ -57,6 +57,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()));
         effect(() => this.channelCreatedCallback(this.chatService.channelCreated()));
         effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()));
+        effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()));
     }
 
     /**
@@ -80,9 +81,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.serversService
                 .serverInfo
                 .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .channelDeleted$
-                .subscribe(channelId => this.channelDeletedCallback(channelId)),
             this.chatService
                 .updatedInvitation$
                 .subscribe(invite => this.updatedInvitationCallback(invite)),
@@ -212,10 +210,10 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * This method is invoked when a channel deletion is pushed by the channel deleted
      * observable.
      * @private
-     * @param {number} channelId The removed channel id.
+     * @param {number | null} channelId The removed channel id.
      * @memberof SidebarSelectionComponent
      */
-    private channelDeletedCallback(channelId: number) {
+    private channelDeletedCallback(channelId: number | null) {
         const server = this
             .servers
             .find(s => s.channels.some(c => c.id === channelId));

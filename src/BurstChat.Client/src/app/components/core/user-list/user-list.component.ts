@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
@@ -42,7 +42,19 @@ export class UserListComponent implements OnInit, OnDestroy {
         private serversService: ServersService,
         private usersService: UserService,
         private chatService: ChatService
-    ) { }
+    ) {
+        effect(() => {
+            const user = this.chatService.userUpdated();
+
+            if (!user) return;
+
+            const entry = this.users.find(u => u.id === user.id);
+            if (entry) {
+                const index = this.users.indexOf(entry);
+                this.users[index] = { ...user };
+            }
+        })
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -71,15 +83,6 @@ export class UserListComponent implements OnInit, OnDestroy {
                         this.users = cache[id] || [];
                     }
                 }),
-            this.chatService
-                .userUpdated$
-                .subscribe(user => {
-                    const entry = this.users.find(u => u.id === user.id);
-                    if (entry) {
-                        const index = this.users.indexOf(entry);
-                        this.users[index] = { ...user };
-                    }
-                })
         ];
     }
 

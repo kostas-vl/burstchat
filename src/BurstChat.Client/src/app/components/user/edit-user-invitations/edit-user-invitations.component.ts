@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { ChatService } from 'src/app/services/chat/chat.service';
@@ -28,7 +28,9 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
      * Creates an instance of EditUserInvitationsComponent.
      * @memberof EditUserInvitationsComponent
      */
-    constructor(private chatService: ChatService) { }
+    constructor(private chatService: ChatService) {
+        effect(() => this.invitations = this.chatService.invitations());
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -36,11 +38,6 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.chatService
-                .invitations$
-                .subscribe(invitations => {
-                    this.invitations = invitations;
-                }),
             this.chatService
                 .updatedInvitation$
                 .subscribe(invite => {
