@@ -54,6 +54,12 @@ export class ServerComponent implements OnInit, OnDestroy {
                 this.chatService.addToServer(this.server.id);
             }
         });
+        effect(() => {
+            const server = this.serversService.serverInfo();
+            if (server?.id === this.server.id) {
+                this.server = server;
+            }
+        })
     }
 
     /**
@@ -69,13 +75,6 @@ export class ServerComponent implements OnInit, OnDestroy {
                         this.isActive = options.serverId === this.server.id;
                     } else {
                         this.isActive = false;
-                    }
-                }),
-            this.serversService
-                .serverInfo
-                .subscribe(server => {
-                    if (server?.id === this.server.id) {
-                        this.server = server;
                     }
                 }),
         ];

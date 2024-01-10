@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/models/servers/channel';
@@ -24,7 +24,11 @@ export class ChannelListComponent implements OnInit, OnDestroy {
 
     public activeChannelId?: number;
 
-    public channels: Channel[] = [];
+    public channels = computed(() => {
+        const channels = this.serversService.serverInfo()?.channels || [];
+        this.loading = false;
+        return channels;
+    });
 
     public loading = true;
 
@@ -56,16 +60,6 @@ export class ChannelListComponent implements OnInit, OnDestroy {
                         ? channelId
                         : undefined;
                 }),
-
-            this.serversService
-                .serverInfo
-                .subscribe(server => {
-                    if (server) {
-                        this.channels = server?.channels || [];
-                    }
-
-                    this.loading = false;
-                })
         ];
     }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
@@ -28,8 +28,8 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
 
     public users: User[] = [];
 
-    @Input()
-    public server?: Server;
+    @Input({ required: true })
+    public server: Signal<Server | null>;
 
     /**
      * Creates an instance of EditServerUsersComponent.
@@ -50,7 +50,7 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
             .userService
             .usersCache
             .subscribe(cache => {
-                const id = this.server.id.toString();
+                const id = this.server().id.toString();
                 this.users = cache[id] || [];
             });
     }
@@ -77,7 +77,7 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.chatService.sendInvitation(this.server.id, this.newUserName);
+        this.chatService.sendInvitation(this.server().id, this.newUserName);
         this.newUserName = '';
     }
 
@@ -89,11 +89,11 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
     public onDeleteUser(user: User) {
         if (user) {
             const subscription = this
-                .server
+                .server()
                 .subscriptions
                 .find(s => s.userId === user.id);
             if (subscription) {
-                this.chatService.deleteSubscription(this.server.id, subscription);
+                this.chatService.deleteSubscription(this.server().id, subscription);
             }
         }
     }

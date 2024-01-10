@@ -52,13 +52,14 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         private chatService: ChatService,
         private sidebarService: SidebarService
     ) {
-        effect(() => this.serverInfoCallback(this.chatService.addedServer()));
-        effect(() => this.updatedServer(this.chatService.updatedServer()));
-        effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()));
-        effect(() => this.channelCreatedCallback(this.chatService.channelCreated()));
-        effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()));
-        effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()));
-        effect(() => this.updatedInvitationCallback(this.chatService.updatedInvitation()));
+        effect(() => this.serverInfoCallback(this.chatService.addedServer()), { allowSignalWrites: true });
+        effect(() => this.updatedServer(this.chatService.updatedServer()), { allowSignalWrites: true });
+        effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()), { allowSignalWrites: true });
+        effect(() => this.channelCreatedCallback(this.chatService.channelCreated()), { allowSignalWrites: true });
+        effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()),{ allowSignalWrites: true } );
+        effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()), { allowSignalWrites: true });
+        effect(() => this.updatedInvitationCallback(this.chatService.updatedInvitation()), { allowSignalWrites: true });
+        effect(() => this.serverInfoCallback(this.serversService.serverInfo()), { allowSignalWrites: true });
     }
 
     /**
@@ -79,9 +80,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.userService
                 .usersCache
                 .subscribe(cache => this.usersCache = cache),
-            this.serversService
-                .serverInfo
-                .subscribe(server => this.serverInfoCallback(server)),
             this.sidebarService
                 .display
                 .subscribe(options => {
@@ -104,10 +102,10 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * This methos is invoked when a server's information is pushed by the server info
      * observable.
      * @private
-     * @param {Server} server The server instance.
+     * @param {Server | null} server The server instance.
      * @memberof SidebarSelectionComponent
      */
-    private serverInfoCallback(server: Server) {
+    private serverInfoCallback(server: Server | null) {
         if (server) {
             const index = this.servers.findIndex(s => s.id === server.id);
             if (index !== -1) {

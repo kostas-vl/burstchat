@@ -14,7 +14,7 @@
 <div class="row">
     <div class="column column-100">
         <div class="entity-list">
-            @for(channel of server.channels; track channel.id; let i = $index) {
+            @for(channel of server().channels; track channel.id; let i = $index) {
                 <div class="entity">
                     <div>
                         {{channel.name}} <span class="text-muted">#{{channel.id}} <small>Created at

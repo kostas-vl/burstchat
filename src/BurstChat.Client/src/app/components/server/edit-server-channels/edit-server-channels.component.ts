@@ -1,4 +1,4 @@
-import { Component, Input, effect } from '@angular/core';
+import { Component, Input, Signal, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Channel } from 'src/app/models/servers/channel';
@@ -27,8 +27,8 @@ export class EditServerChannelsComponent {
 
     public newChannelName = '';
 
-    @Input()
-    public server?: Server;
+    @Input({ required: true })
+    public server: Signal<Server | null>;
 
     /**
      * Creates an instance of EditServerChannelsComponent.
@@ -67,7 +67,7 @@ export class EditServerChannelsComponent {
                 details: null
             };
 
-            this.chatService.postChannel(this.server.id, newChannel);
+            this.chatService.postChannel(this.server().id, newChannel);
         }
     }
 
@@ -78,7 +78,7 @@ export class EditServerChannelsComponent {
      */
     public onUpdateChannel(channel: Channel) {
         if (channel) {
-            this.chatService.putChannel(this.server.id, channel);
+            this.chatService.putChannel(this.server().id, channel);
         }
     }
 
@@ -89,7 +89,7 @@ export class EditServerChannelsComponent {
      */
     public onDeleteChannel(channel: Channel) {
         if (channel) {
-            this.chatService.deleteChannel(this.server.id, channel.id);
+            this.chatService.deleteChannel(this.server().id, channel.id);
         }
     }
 

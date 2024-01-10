@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, untracked } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
@@ -53,7 +53,20 @@ export class UserListComponent implements OnInit, OnDestroy {
                 const index = this.users.indexOf(entry);
                 this.users[index] = { ...user };
             }
-        })
+        });
+
+        effect(() => {
+            const server = this.serversService.serverInfo();
+            if (server) {
+                this.server = server;
+                const users = this.usersService.getFromCache(this.server.id);
+                if (!users) {
+                    untracked(() => this.getSubscribedUsers(this.server.id));
+                } else {
+                    this.users = users;
+                }
+            }
+        });
     }
 
     /**
@@ -62,19 +75,6 @@ export class UserListComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.serversService
-                .serverInfo
-                .subscribe(server => {
-                    if (server) {
-                        this.server = server;
-                        const users = this.usersService.getFromCache(this.server.id);
-                        if (!users) {
-                            this.getSubscribedUsers(this.server.id);
-                        } else {
-                            this.users = users;
-                        }
-                    }
-                }),
             this.usersService
                 .usersCache
                 .subscribe(cache => {
@@ -109,7 +109,7 @@ export class UserListComponent implements OnInit, OnDestroy {
                 this.users = users;
                 this.usersService.pushToCache(this.server.id, this.users);
                 this.loading = false;
-            }, error => {
+            }, _ => {
                 this.loading = false;
             });
     }
