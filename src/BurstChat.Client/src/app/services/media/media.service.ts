@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { InputDevice } from 'src/app/models/media/input-device';
 import { OutputDevice } from 'src/app/models/media/output-device';
@@ -12,17 +12,17 @@ import { OutputDevice } from 'src/app/models/media/output-device';
 @Injectable()
 export class MediaService {
 
-  private inputDevicesSource = new BehaviorSubject<InputDevice[]>([]);
+  private inputDevicesSource: WritableSignal<InputDevice[]> = signal([]);
 
-  private outputDevicesSource = new BehaviorSubject<OutputDevice[]>([]);
+  private outputDevicesSource: WritableSignal<OutputDevice[]> = signal([]);
 
-  private inputStreamSource = new BehaviorSubject<MediaStream | null>(null);
+  private inputStreamSource: WritableSignal<MediaStream | null> = signal(null);
 
-  public inputDevices = this.inputDevicesSource.asObservable();
+  public inputDevices = this.inputDevicesSource.asReadonly();
 
-  public outputDevices = this.outputDevicesSource.asObservable();
+  public outputDevices = this.outputDevicesSource.asReadonly();
 
-  public inputStream = this.inputStreamSource.asObservable();
+  public inputStream = this.inputStreamSource.asReadonly();
 
   /**
    * Creates a new instance of MediaService.
@@ -74,8 +74,8 @@ export class MediaService {
             }
           }
 
-          this.inputDevicesSource.next(inputDevices);
-          this.outputDevicesSource.next(outputDevices);
+          this.inputDevicesSource.set(inputDevices);
+          this.outputDevicesSource.set(outputDevices);
         })
         .catch(error => {
           console.warn(error);
@@ -121,7 +121,7 @@ export class MediaService {
         .mediaDevices
         .getUserMedia(constraints)
         .then(stream => {
-          this.inputStreamSource.next(stream);
+          this.inputStreamSource.set(stream);
         })
         .catch(error => {
           console.warn(error);
