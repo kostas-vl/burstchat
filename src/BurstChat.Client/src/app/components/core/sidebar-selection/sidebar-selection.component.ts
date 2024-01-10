@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, untracked } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -56,10 +56,16 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         effect(() => this.updatedServer(this.chatService.updatedServer()), { allowSignalWrites: true });
         effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()), { allowSignalWrites: true });
         effect(() => this.channelCreatedCallback(this.chatService.channelCreated()), { allowSignalWrites: true });
-        effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()),{ allowSignalWrites: true } );
+        effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()), { allowSignalWrites: true });
         effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()), { allowSignalWrites: true });
         effect(() => this.updatedInvitationCallback(this.chatService.updatedInvitation()), { allowSignalWrites: true });
         effect(() => this.serverInfoCallback(this.serversService.serverInfo()), { allowSignalWrites: true });
+        effect(() => {
+            const options = this.sidebarService.display();
+            if (options instanceof DisplayServer && options.serverId) {
+                untracked(() => this.serversService.set(options.serverId));
+            }
+        });
     }
 
     /**
@@ -80,13 +86,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.userService
                 .usersCache
                 .subscribe(cache => this.usersCache = cache),
-            this.sidebarService
-                .display
-                .subscribe(options => {
-                    if (options instanceof DisplayServer && options.serverId) {
-                        this.serversService.set(options.serverId);
-                    }
-                })
         ];
     }
 

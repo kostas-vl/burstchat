@@ -3,17 +3,20 @@
         <div class="sidebar-selection">
             <burst-sidebar-selection />
         </div>
-        @if(display === 'direct') {
-            <div class="sidebar-dms">
-                <burst-direct-messaging-list />
-            </div>
-        } @else if(display === 'server') {
-            <div class="sidebar-srv">
-                <burst-server-info />
-                <burst-ongoing-call />
-                <burst-channel-list />
-                <burst-user-list />
-            </div>
+        @switch (display()) {
+            @case ('direct') {
+                <div class="sidebar-dms">
+                    <burst-direct-messaging-list />
+                </div>
+            }
+            @case ('server') {
+                <div class="sidebar-srv">
+                    <burst-server-info />
+                    <burst-ongoing-call />
+                    <burst-channel-list />
+                    <burst-user-list />
+                </div>
+            }
         }
         <div class="sidebar-footer">
             <div class="sidebar-user-info">

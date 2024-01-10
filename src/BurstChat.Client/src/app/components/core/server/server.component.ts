@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, effect } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, effect, computed } from '@angular/core';
 import { Server } from 'src/app/models/servers/server';
 import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
 import { ServersService } from 'src/app/services/servers/servers.service';
@@ -18,11 +17,16 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
     styleUrl: './server.component.scss',
     standalone: true
 })
-export class ServerComponent implements OnInit, OnDestroy {
+export class ServerComponent {
 
-    private subscriptions: Subscription[] = [];
-
-    public isActive = false;
+    public isActive = computed(() => {
+        const options = this.sidebarService.display();
+        if (options instanceof DisplayServer) {
+            return options.serverId === this.server.id;
+        } else {
+            return false;
+        }
+    });
 
     @Input()
     public server?: Server;
@@ -59,34 +63,7 @@ export class ServerComponent implements OnInit, OnDestroy {
             if (server?.id === this.server.id) {
                 this.server = server;
             }
-        })
-    }
-
-    /**
-     * Executes any necessary start up code for the component.
-     * @memberof ServerComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.sidebarService
-                .display
-                .subscribe(options => {
-                    if (options instanceof DisplayServer) {
-                        this.isActive = options.serverId === this.server.id;
-                    } else {
-                        this.isActive = false;
-                    }
-                }),
-        ];
-
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof ServerComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        });
     }
 
     /**
@@ -94,7 +71,7 @@ export class ServerComponent implements OnInit, OnDestroy {
      * @memberof ServerComponent
      */
     public onSelect() {
-        if (this.server && !this.isActive) {
+        if (this.server && !this.isActive()) {
             const options = new DisplayServer(this.server.id);
             this.sidebarService.toggleDisplay(options);
             this.chatService.addToServer(this.server.id);
