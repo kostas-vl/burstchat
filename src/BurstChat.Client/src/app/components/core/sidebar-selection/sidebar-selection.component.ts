@@ -58,6 +58,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         effect(() => this.channelCreatedCallback(this.chatService.channelCreated()));
         effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()));
         effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()));
+        effect(() => this.updatedInvitationCallback(this.chatService.updatedInvitation()));
     }
 
     /**
@@ -81,9 +82,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             this.serversService
                 .serverInfo
                 .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .updatedInvitation$
-                .subscribe(invite => this.updatedInvitationCallback(invite)),
             this.sidebarService
                 .display
                 .subscribe(options => {
@@ -230,10 +228,12 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * This method is invoked when an invitation is updated and pushed by the updated invitation
      * observable.
      * @private
-     * @param {Invitation} invite The invitation instance.
+     * @param {Invitation | null} invite The invitation instance.
      * @memberof SidebarSelectionComponent
      */
-    private updatedInvitationCallback(invite: Invitation) {
+    private updatedInvitationCallback(invite: Invitation | null) {
+        if (!invite) return;
+
         const inList = this.servers.some(s => s.id === invite.serverId);
 
         // Handle code for the user the initiated the invitation update.

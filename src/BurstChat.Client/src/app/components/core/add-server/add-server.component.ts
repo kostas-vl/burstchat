@@ -53,7 +53,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
     ) {
         effect(() => {
             let server = this.chatService.addedServer();
-            if (server.name === this.server.name) {
+            if (server?.name === this.server.name) {
                 const title = 'Success';
                 const content = `The server ${this.server.name} was created successfully`;
                 this.notifyService.notify(title, content);

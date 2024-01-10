@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, effect } from '@angular/core';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { ChatService } from 'src/app/services/chat/chat.service';
 
@@ -16,9 +15,7 @@ import { ChatService } from 'src/app/services/chat/chat.service';
     styleUrl: './edit-user-invitations.component.scss',
     standalone: true
 })
-export class EditUserInvitationsComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[];
+export class EditUserInvitationsComponent {
 
     public invitations: Invitation[] = [];
 
@@ -30,37 +27,19 @@ export class EditUserInvitationsComponent implements OnInit, OnDestroy {
      */
     constructor(private chatService: ChatService) {
         effect(() => this.invitations = this.chatService.invitations());
-    }
+        effect(() => {
+            const invite = this.chatService.updatedInvitation();
+            const storedInvite = this.invitations.find(entry => entry.serverId === invite?.serverId);
+            if (storedInvite) {
+                const index = this.invitations.indexOf(storedInvite);
+                this.invitations.splice(index, 1);
+            }
 
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof EditUserInvitationsComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.chatService
-                .updatedInvitation$
-                .subscribe(invite => {
-                    const storedInvite = this.invitations.find(entry => entry.serverId === invite.serverId);
-                    if (storedInvite) {
-                        const index = this.invitations.indexOf(storedInvite);
-                        this.invitations.splice(index, 1);
-                    }
-
-                    const processingEntryIndex = this.processingQueue.indexOf(storedInvite.id);
-                    if (processingEntryIndex !== -1) {
-                        this.processingQueue.splice(processingEntryIndex, 1);
-                    }
-                })
-        ];
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof EditUserInvitationsComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+            const processingEntryIndex = this.processingQueue.indexOf(storedInvite.id);
+            if (processingEntryIndex !== -1) {
+                this.processingQueue.splice(processingEntryIndex, 1);
+            }
+        })
     }
 
     /**

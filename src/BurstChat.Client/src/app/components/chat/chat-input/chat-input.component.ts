@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
@@ -50,7 +50,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     constructor(
         private userService: UserService,
         private chatService: ChatService
-    ) { }
+    ) {
+        effect(() => {
+            if (this.chatService.allMessagesReceived()) {
+                setTimeout(() => this.loading = false, 300);
+            }
+        })
+    }
 
     /**
      * Executes any necessary start up code for the component.
@@ -64,11 +70,6 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     if (user) {
                         this.user = user;
                     }
-                }),
-            this.chatService
-                .allMessagesReceived$
-                .subscribe(_ => {
-                    setTimeout(() => this.loading = false, 300);
                 }),
         ];
     }
