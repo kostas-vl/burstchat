@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPhoneSlash, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/services/user/user.service';
 import { RtcSessionService } from 'src/app/services/rtc-session/rtc-session.service';
@@ -22,13 +20,11 @@ import { RtcSessionService } from 'src/app/services/rtc-session/rtc-session.serv
     standalone: true,
     imports: [FontAwesomeModule]
 })
-export class OngoingCallComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[] = [];
+export class OngoingCallComponent {
 
     private session?: RTCSessionContainer;
 
-    public visible = false;
+    public visible = computed(() => this.rtcSessionService.session() ? true : false);
 
     public chatRedirectIcon = faExternalLinkAlt;
 
@@ -45,51 +41,15 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
     ) { }
 
     /**
-     * Executes any neccessary start up code for the component.
-     * @memberof OngoingCallComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.rtcSessionService
-                .onSession$
-                .subscribe(session => {
-                    if (session) {
-                        this.session = session;
-                        this.visible = true;
-                        return;
-                    }
-                    this.reset();
-                })
-        ];
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof OngoingCallComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
-    }
-
-    /**
-     * Resets the values of specific properties to their intended original value.
-     * @private
-     * @memberof OngoingCallComponent
-     */
-    private reset() {
-        this.session = undefined;
-        this.visible = false;
-    }
-
-    /**
      * Handles the redirect button click event.
      * @memberof OngoingCallComponent
      */
     public onRedirectToChat() {
         const user = this.userService.user();
+        const session = this.rtcSessionService.session();
         if (user && this.session) {
             const first = user.id;
-            const second = +this.session.source.remote_identity.uri.user;
+            const second = +session.source.remote_identity.uri.user;
             this.router.navigate(['/core/chat/direct'], {
                 queryParams: {
                     user: [first, second]

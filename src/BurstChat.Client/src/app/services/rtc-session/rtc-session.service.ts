@@ -41,11 +41,11 @@ export class RtcSessionService {
 
     private incomingSessionSource: WritableSignal<RTCSessionContainer | null> = signal(null);
 
-    private session$ = new BehaviorSubject<RTCSessionContainer | null>(null);
+    private sessionSource: WritableSignal<RTCSessionContainer | null> = signal(null);
 
     public incomingSession = this.incomingSessionSource.asReadonly();
 
-    public onSession$ = this.session$.asObservable();
+    public session = this.sessionSource.asReadonly();
 
     /**
      * Creates a new instance of RtcSessionService.
@@ -198,10 +198,10 @@ export class RtcSessionService {
             return;
         }
 
-        let session = this.session$.getValue();
+        let session = this.sessionSource();
         if (session?.source === source) {
             session = null;
-            this.session$.next(null);
+            this.sessionSource.set(null);
             return;
         }
     }
@@ -222,10 +222,10 @@ export class RtcSessionService {
             return;
         }
 
-        let session = this.session$.getValue();
+        let session = this.sessionSource();
         if (session?.source === source) {
             session = null;
-            this.session$.next(null);
+            this.sessionSource.set(null);
             return;
         }
     }
@@ -252,7 +252,7 @@ export class RtcSessionService {
                 .call(`sip:${sip}@${environment.asteriskUrl}`, this.callConfig);
             const container = new RTCSessionContainer(session);
             this.registerSessionEvents(container);
-            this.session$.next(container);
+            this.sessionSource.set(container);
         }
     }
 
@@ -264,7 +264,7 @@ export class RtcSessionService {
         const session = this.incomingSessionSource();
         if (session) {
             session.source.answer(this.callConfig);
-            this.session$.next(session);
+            this.sessionSource.set(session);
             this.incomingSessionSource.set(null);
         }
     }
@@ -289,13 +289,13 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public hangup() {
-        const session = this.session$.getValue();
+        const session = this.sessionSource();
         if (session) {
             session.source.terminate({
                 status_code: 300,
                 reason_phrase: 'hang up'
             });
-            this.session$.next(null);
+            this.sessionSource.set(null);
         }
     }
 

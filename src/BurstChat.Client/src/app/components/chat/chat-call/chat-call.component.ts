@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input, effect, untracked } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
@@ -32,13 +32,11 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
         AvatarComponent
     ]
 })
-export class ChatCallComponent implements OnInit, OnDestroy {
+export class ChatCallComponent {
 
     private subscriptions: Subscription[] = [];
 
     private session?: RTCSessionContainer;
-
-    private internalOptions?: ChatConnectionOptions;
 
     public icons: any = {
         hangup: faPhoneSlash,
@@ -48,14 +46,8 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     public state: 'waiting' | 'confirmed' = 'waiting';
 
-    public get options() {
-        return this.internalOptions;
-    }
-
     @Input()
-    public set options(value: ChatConnectionOptions) {
-        this.internalOptions = value;
-    }
+    public options?: ChatConnectionOptions;
 
     /**
      * Creates a new instance of ChatCallComponent.
@@ -64,34 +56,16 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     constructor(
         private rtcSessionService: RtcSessionService,
         private uiLayerService: UiLayerService
-    ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof ChatCallComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.rtcSessionService
-                .onSession$
-                .subscribe(session => {
-                    if (session) {
-                        this.onNewSession(session);
-                        return;
-                    }
-                    this.reset();
-                })
-        ];
+    ) {
+        effect(() => {
+            const session = this.rtcSessionService.session();
+            if (session) {
+                this.onNewSession(session);
+                return;
+            }
+            this.reset();
+        });
     }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof ChatCallComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
-    }
-
 
     /**
      * Resets the values of specific properties to their intended original value.
@@ -119,20 +93,22 @@ export class ChatCallComponent implements OnInit, OnDestroy {
             if (sessionUser === first.id || sessionUser === second.id) {
                 this.users = [first, second];
 
-                this.subscriptions[1] = this
-                    .session
-                    .confirmed
-                    .subscribe(_ => this.onSessionConfirmed());
+                untracked(() => {
+                    this.subscriptions[1] = this
+                        .session
+                        .confirmed
+                        .subscribe(_ => this.onSessionConfirmed());
 
-                this.subscriptions[2] = this
-                    .session
-                    .ended
-                    .subscribe(_ => this.onSessionEnded());
+                    this.subscriptions[2] = this
+                        .session
+                        .ended
+                        .subscribe(_ => this.onSessionEnded());
 
-                this.subscriptions[3] = this
-                    .session
-                    .failed
-                    .subscribe(_ => this.onSessionFailed());
+                    this.subscriptions[3] = this
+                        .session
+                        .failed
+                        .subscribe(_ => this.onSessionFailed());
+                })
 
                 if (this.session.source.isEstablished()) {
                     this.state = 'confirmed';
