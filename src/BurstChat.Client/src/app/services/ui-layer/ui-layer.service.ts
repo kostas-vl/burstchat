@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 
@@ -10,7 +10,7 @@ import { Message } from 'src/app/models/chat/message';
 @Injectable()
 export class UiLayerService {
 
-    private toggleChatViewSource$ = new BehaviorSubject<'chat' | 'call'>('chat');
+    private layoutSource: WritableSignal<'chat' | 'call'> = signal('chat');
 
     private editMessageSource$ = new Subject<Message>();
 
@@ -18,7 +18,7 @@ export class UiLayerService {
 
     private searchSource$ = new BehaviorSubject<string | null>(null);
 
-    public toggleChatView$ = this.toggleChatViewSource$.asObservable();
+    public layout = this.layoutSource.asReadonly();
 
     public editMessage$ = this.editMessageSource$.asObservable();
 
@@ -33,12 +33,12 @@ export class UiLayerService {
     constructor() { }
 
     /**
-     * Toggles the view of the chat layout based on the provided value.
+     * Changes the view of the chat layout based on the provided value.
      * @param {'chat' | 'call'} view The view state to be set.
      * @memberof UiLayerService
      */
-    public toggleChatView(view: 'chat' | 'call') {
-        this.toggleChatViewSource$.next(view);
+    public changeLayout(view: 'chat' | 'call') {
+        this.layoutSource.set(view);
     }
 
     /**

@@ -1,7 +1,7 @@
 @if(chatFound) {
     <div class="h-100">
         <burst-chat-info [options]="options"/>
-        @switch(layoutState) {
+        @switch(layout()) {
             @case('chat') {
                 <div class="direct-chat-content">
                     <burst-chat-messages [options]="options"/>

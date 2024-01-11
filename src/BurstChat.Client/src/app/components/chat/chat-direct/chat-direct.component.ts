@@ -44,7 +44,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
 
     public chatFound = true;
 
-    public layoutState: 'chat' | 'call' = 'chat';
+    public layout = this.uiLayerService.layout;
 
     public get options() {
         return this.internalOptions;
@@ -88,7 +88,7 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                         ]);
                         const state = params.get('display');
                         if (state === 'chat' || state === 'call') {
-                            this.uiLayerService.toggleChatView(state);
+                            this.uiLayerService.changeLayout(state);
                         }
                     } else {
                         this.chatFound = false;
@@ -97,9 +97,6 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                         this.notifyService.notify(title, content);
                     }
                 }),
-            this.uiLayerService
-                .toggleChatView$
-                .subscribe(s => this.layoutState = s),
             this.uiLayerService
                 .editMessage$
                 .subscribe(message => this.editMessageData = {

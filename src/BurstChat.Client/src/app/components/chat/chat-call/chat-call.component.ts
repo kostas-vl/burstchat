@@ -158,7 +158,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onSessionEnded() {
-        this.uiLayerService.toggleChatView('chat');
+        this.uiLayerService.changeLayout('chat');
     }
 
     /**
@@ -167,7 +167,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onSessionFailed() {
-        this.uiLayerService.toggleChatView('chat');
+        this.uiLayerService.changeLayout('chat');
     }
 
     /**
@@ -176,7 +176,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     public onHangup() {
         this.rtcSessionService.hangup();
-        this.uiLayerService.toggleChatView('chat');
+        this.uiLayerService.changeLayout('chat');
     }
 
 }

@@ -59,7 +59,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
     public switchIcon = faClone;
 
-    public layoutState: 'chat' | 'call' = 'chat';
+    public layoutState = this.uiLayerService.layout;
 
     public searchTerm: string | null = null;
 
@@ -78,7 +78,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
             const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
             return isRightChat
                 && !this.canCall
-                && this.layoutState === 'chat';
+                && this.layoutState() === 'chat';
         }
         return false;
     }
@@ -91,7 +91,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
             const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
             return isRightChat
                 && !this.canCall
-                && this.layoutState === 'call';
+                && this.layoutState() === 'call';
         }
         return false;
     }
@@ -137,9 +137,6 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
             this.userService
                 .user
                 .subscribe(user => this.user = user),
-            this.uiLayerService
-                .toggleChatView$
-                .subscribe(state => this.layoutState = state)
         ];
 
     }
@@ -161,13 +158,13 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
             const dm = this.options.directMessaging;
             if (dm.firstParticipantUser.id !== this.user.id) {
                 this.rtcSessionService.call(dm.firstParticipantUser.id);
-                this.uiLayerService.toggleChatView('call');
+                this.uiLayerService.changeLayout('call');
                 return;
             }
 
             if (dm.secondParticipantUser.id !== this.user.id) {
                 this.rtcSessionService.call(dm.secondParticipantUser.id);
-                this.uiLayerService.toggleChatView('call');
+                this.uiLayerService.changeLayout('call');
                 return;
             }
         }
@@ -177,8 +174,8 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * Handles the click event of both the 'Go to call' and 'Go to chat' buttons.
      * @memberof ChatInfoComponent
      */
-    public onToggleLayout(state: 'chat' | 'call') {
-        this.uiLayerService.toggleChatView(state);
+    public onChangeLayout(state: 'chat' | 'call') {
+        this.uiLayerService.changeLayout(state);
     }
 
     /**

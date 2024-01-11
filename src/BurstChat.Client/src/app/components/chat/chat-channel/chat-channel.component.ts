@@ -40,8 +40,6 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
 
     public chatFound = true;
 
-    public layoutState: 'chat' | 'call' = 'chat';
-
     public get options() {
         return this.internalOptions;
     }
@@ -90,9 +88,6 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         this.notifyService.notify(title, content);
                     }
                 }),
-            this.uiLayerService
-                .toggleChatView$
-                .subscribe(s => this.layoutState = s),
             this.uiLayerService
                 .editMessage$
                 .subscribe(message => this.editMessageData = {
