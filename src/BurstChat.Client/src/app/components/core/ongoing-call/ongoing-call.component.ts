@@ -26,8 +26,6 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
 
     private subscriptions: Subscription[] = [];
 
-    private user?: User;
-
     private session?: RTCSessionContainer;
 
     public visible = false;
@@ -52,20 +50,16 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.userService
-                .user
-                .subscribe(user => this.user = user),
-
-        this.rtcSessionService
-            .onSession$
-            .subscribe(session => {
-                if (session) {
-                    this.session = session;
-                    this.visible = true;
-                    return;
-                }
-                this.reset();
-            })
+            this.rtcSessionService
+                .onSession$
+                .subscribe(session => {
+                    if (session) {
+                        this.session = session;
+                        this.visible = true;
+                        return;
+                    }
+                    this.reset();
+                })
         ];
     }
 
@@ -92,8 +86,9 @@ export class OngoingCallComponent implements OnInit, OnDestroy {
      * @memberof OngoingCallComponent
      */
     public onRedirectToChat() {
-        if (this.user && this.session) {
-            const first = this.user.id;
+        const user = this.userService.user();
+        if (user && this.session) {
+            const first = user.id;
             const second = +this.session.source.remote_identity.uri.user;
             this.router.navigate(['/core/chat/direct'], {
                 queryParams: {

@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { User } from 'src/app/models/user/user';
 import { UserService } from 'src/app/services/user/user.service';
 import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.component';
 
@@ -20,9 +18,7 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
     standalone: true,
     imports: [FontAwesomeModule, AvatarComponent]
 })
-export class SidebarUserInfoComponent implements OnInit, OnDestroy {
-
-    private userSubscription?: Subscription;
+export class SidebarUserInfoComponent {
 
     public dragon = faDragon;
 
@@ -30,14 +26,14 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
 
     public signOut = faSignOutAlt;
 
-    public user?: User;
+    public user = this.userService.user;
 
     public get name() {
         return this.user?.name ?? '';
     }
 
     public get avatar() {
-        return this.user?.avatar ?? '';
+        return this.user()?.avatar ?? '';
     }
 
     /**
@@ -48,32 +44,6 @@ export class SidebarUserInfoComponent implements OnInit, OnDestroy {
         private router: Router,
         private userService: UserService
     ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof SidebarUserInfoComponent
-     */
-    public ngOnInit() {
-        this.userSubscription = this
-            .userService
-            .user
-            .subscribe(user => {
-                if (user) {
-                    this.user = user;
-                }
-            });
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof SidebarUserInfoComponent
-     */
-    public ngOnDestroy() {
-        if (this.userSubscription) {
-            this.userSubscription
-                .unsubscribe();
-        }
-    }
 
     /**
      * Handles the edit user button click event.

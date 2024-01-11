@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 /**
@@ -11,13 +12,13 @@ import { Server } from 'src/app/models/servers/server';
  */
 export class UserService {
 
-    private userSource = new BehaviorSubject<User | null>(null);
+    private userSource: WritableSignal<User | null> = signal(null);
 
     private subscriptionsSource = new BehaviorSubject<Server[]>([]);
 
     private usersCacheSource = new BehaviorSubject<{ [id: string]: User[] }>({});
 
-    public user = this.userSource.asObservable();
+    public user = this.userSource.asReadonly();
 
     public subscriptions = this.subscriptionsSource.asObservable();
 
@@ -36,7 +37,7 @@ export class UserService {
     public get() {
         this.httpClient
             .get<User>('/api/user')
-            .subscribe(data => this.userSource.next(data));
+            .subscribe(data => this.userSource.set(data));
     }
 
     /**
@@ -45,18 +46,18 @@ export class UserService {
      * @memberof UserService
      */
     public update(user: User) {
-        const observable = this
+        return this
             .httpClient
-            .put<User>('/api/user', user);
-
-        observable.subscribe(user => {
-            const current = this.userSource.getValue();
-            if (user?.id === current?.id) {
-                this.userSource.next(user);
-            }
-        });
-
-        return observable;
+            .put<User>('/api/user', user)
+            .pipe(
+                map(user => {
+                    const current = this.userSource();
+                    if (user?.id === current?.id) {
+                        this.userSource.set(user);
+                    }
+                    return user;
+                })
+            );
     }
 
     /**

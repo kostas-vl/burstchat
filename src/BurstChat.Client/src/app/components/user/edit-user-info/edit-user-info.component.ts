@@ -34,11 +34,9 @@ import { ImageCropComponent } from 'src/app/components/shared/image-crop/image-c
         ImageCropComponent
     ]
 })
-export class EditUserInfoComponent implements OnInit, OnDestroy {
+export class EditUserInfoComponent {
 
-    private userSub?: Subscription;
-
-    public user?: User;
+    public user = this.userService.user;
 
     public changeAvatarVisible = false;
 
@@ -52,25 +50,6 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private chatService: ChatService
     ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof EditUserInfoComponent
-     */
-    public ngOnInit() {
-        this.userSub = this
-            .userService
-            .user
-            .subscribe(user => this.user = user);
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof EditUserInfoComponent
-     */
-    public ngOnDestroy() {
-        this.userSub?.unsubscribe();
-    }
 
     /**
      * Handles the change picture link click event.
@@ -94,7 +73,7 @@ export class EditUserInfoComponent implements OnInit, OnDestroy {
      * @memberof EditUserInfoComponent
      */
     public onSaveNewAvatar() {
-        const user = { ...this.user, avatar: this.newAvatar };
+        const user = { ...this.user(), avatar: this.newAvatar };
         this.userService
             .update(user)
             .subscribe(_ => this.chatService.updateMyInfo());

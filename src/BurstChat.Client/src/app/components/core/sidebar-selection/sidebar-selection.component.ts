@@ -32,8 +32,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
     private subscriptions?: Subscription[] = [];
 
-    private user?: User;
-
     private usersCache: { [id: string]: User[] } = {};
 
     public dragon = faDragon;
@@ -74,9 +72,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.userService
-                .user
-                .subscribe(user => this.user = user),
             this.userService
                 .subscriptions
                 .subscribe(servers => {
@@ -234,7 +229,8 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         const inList = this.servers.some(s => s.id === invite.serverId);
 
         // Handle code for the user the initiated the invitation update.
-        if (invite.userId === this.user.id && invite.accepted && !inList) {
+        const user = this.userService.user();
+        if (invite.userId === user?.id && invite.accepted && !inList) {
             const server = invite.server;
             this.serversService.get(server.id);
             return;
@@ -267,7 +263,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
       * A custom track method for the template loop over the server list.
       * @memberof SidebarSelectionComponent
       */
-    public trackServerBy(index: number, server: Server) {
+    public trackServerBy(server: Server) {
         return server.id;
     }
 

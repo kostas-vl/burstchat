@@ -43,8 +43,6 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
     private subscriptions: Subscription[] = [];
 
-    private user?: User;
-
     private session?: RTCSessionContainer;
 
     private internalOptions?: ChatConnectionOptions;
@@ -134,9 +132,6 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
             this.rtcSessionService
                 .onSession$
                 .subscribe(session => this.session = session),
-            this.userService
-                .user
-                .subscribe(user => this.user = user),
         ];
 
     }
@@ -156,13 +151,14 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
     public onCallClick() {
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const dm = this.options.directMessaging;
-            if (dm.firstParticipantUser.id !== this.user.id) {
+            const user = this.userService.user();
+            if (dm.firstParticipantUser.id !== user?.id) {
                 this.rtcSessionService.call(dm.firstParticipantUser.id);
                 this.uiLayerService.changeLayout('call');
                 return;
             }
 
-            if (dm.secondParticipantUser.id !== this.user.id) {
+            if (dm.secondParticipantUser.id !== user?.id) {
                 this.rtcSessionService.call(dm.secondParticipantUser.id);
                 this.uiLayerService.changeLayout('call');
                 return;
