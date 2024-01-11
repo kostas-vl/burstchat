@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, Signal, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
@@ -44,7 +44,9 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
         return this.internalOptions;
     }
 
-    public editMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
+    public editMessageData: Signal<{ visible: boolean, message?: Message }> = computed(() => {
+        return { visible: true, message: this.uiLayerService.editMessage() };
+    });
 
     public deleteMessageData: { visible: boolean, message?: Message} = { visible: false, message: null};
 
@@ -87,12 +89,6 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         const content = 'Consider joining a channel or start a new private chat!';
                         this.notifyService.notify(title, content);
                     }
-                }),
-            this.uiLayerService
-                .editMessage$
-                .subscribe(message => this.editMessageData = {
-                    visible: true,
-                    message: message,
                 }),
             this.uiLayerService
                 .deleteMessage$

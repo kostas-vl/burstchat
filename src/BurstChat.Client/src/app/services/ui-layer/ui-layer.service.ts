@@ -12,7 +12,7 @@ export class UiLayerService {
 
     private layoutSource: WritableSignal<'chat' | 'call'> = signal('chat');
 
-    private editMessageSource$ = new Subject<Message>();
+    private editedMessageSource: WritableSignal<Message | null> = signal(null);
 
     private deleteMessageSource$ = new Subject<Message>();
 
@@ -20,7 +20,7 @@ export class UiLayerService {
 
     public layout = this.layoutSource.asReadonly();
 
-    public editMessage$ = this.editMessageSource$.asObservable();
+    public editMessage = this.editedMessageSource.asReadonly();
 
     public deleteMessage$ = this.deleteMessageSource$.asObservable();
 
@@ -46,8 +46,8 @@ export class UiLayerService {
      * @param {Message} message The message to be edited.
      * @memberof UiLayerService
      */
-    public editMessage(message: Message) {
-        this.editMessageSource$.next(message);
+    public edit(message: Message) {
+        this.editedMessageSource.set(message);
     }
 
     /**

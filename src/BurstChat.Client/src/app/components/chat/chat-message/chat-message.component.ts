@@ -55,7 +55,7 @@ export class ChatMessageComponent implements OnInit {
      * @memberof ChatMessageComponent
      */
     public onEdit() {
-        this.uiLayerService.editMessage(this.message);
+        this.uiLayerService.edit(this.message);
     }
 
     /**
