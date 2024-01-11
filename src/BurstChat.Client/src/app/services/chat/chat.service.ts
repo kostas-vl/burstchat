@@ -62,7 +62,7 @@ export class ChatService {
 
     private messageDeletedSource: WritableSignal<Payload<Message> | null> = signal(null);
 
-    private newDirectMessagingSource$ = new Subject<Payload<any>>();
+    private newDirectMessagingSource: WritableSignal<Payload<any> | null> = signal(null);
 
     public onConnected = this.onConnectedSource.asReadonly();
 
@@ -244,7 +244,7 @@ export class ChatService {
         });
 
         this.connection.on('newDirectMessaging', data => {
-            this.ProcessSignal(data, this.newDirectMessagingSource$);
+            this.ProcessMessage(data, this.newDirectMessagingSource);
             setTimeout(() => this.selfAddedToChatSource.set(true), 500);
         });
 
