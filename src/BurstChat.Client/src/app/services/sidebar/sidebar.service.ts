@@ -1,5 +1,4 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { DisplayDirectMessages } from 'src/app/models/sidebar/display-direct-messages';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 

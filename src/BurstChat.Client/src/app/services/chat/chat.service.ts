@@ -1,6 +1,5 @@
 import { effect, Injectable, signal, WritableSignal } from '@angular/core';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
-import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { TokenInfo } from 'src/app/models/identity/token-info';
@@ -116,30 +115,12 @@ export class ChatService {
     }
 
     /**
-     * This method will process the data sent by a server signal and if the data is not of instance
-     * BurstChatError then the next method will be called from the provided subject.
-     * @private
-     * @template T The success type contained within the payload.
-     * @param {(Payload<T | BurstChatError>)} payload The payload sent fron the signal server.
-     * @param {Subject<Payload<T>>} source The subject to be executed.
-     * @memberof ChatService
-     */
-    private ProcessSignal<T>(payload: Payload<T | BurstChatError>, source: Subject<Payload<T>>): void {
-        const error = tryParseError(payload.content);
-        if (!error) {
-            source.next(payload as Payload<T>);
-        } else {
-            this.notifyService.notifyError(error);
-        }
-    }
-
-    /**
      * This method will process the data sent by a server message and if the data is not of instance
      * BurstChatError then the next method will be called from the provided subject.
      * @private
      * @template T The success type contained within the payload.
      * @param {(Payload<T | BurstChatError>)} payload The payload sent fron the signal server.
-     * @param {Subject<Payload<T>>} source The subject to be executed.
+     * @param {WritableSignal<Payload<T>>} source The signal to be set.
      * @memberof ChatService
      */
     private ProcessMessage<T>(payload: Payload<T | BurstChatError>, source: WritableSignal<Payload<T>>): void {
@@ -157,7 +138,7 @@ export class ChatService {
      * @private
      * @template T The success type contained within the payload.
      * @param {T | BurstChatError} data The data sent fron the server message.
-     * @param {Subject<T>} source The subject to be executed.
+     * @param {WritableSignal<T>} source The signal to be set.
      * @memberof ChatService
      */
     private ProcessRawMessage<T>(data: T | BurstChatError, source: WritableSignal<T>): void {

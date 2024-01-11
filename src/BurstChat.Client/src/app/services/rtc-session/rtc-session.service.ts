@@ -1,6 +1,5 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
 import { WebSocketInterface, UA, debug, RTCSession } from 'jssip';
 import { environment } from 'src/environments/environment';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
