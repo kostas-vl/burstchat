@@ -6,7 +6,6 @@ import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-optio
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
-import { User } from 'src/app/models/user/user';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/services/user/user.service';
 import { RtcSessionService } from 'src/app/services/rtc-session/rtc-session.service';

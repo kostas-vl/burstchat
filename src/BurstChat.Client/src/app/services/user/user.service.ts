@@ -14,13 +14,13 @@ export class UserService {
 
     private userSource: WritableSignal<User | null> = signal(null);
 
-    private subscriptionsSource = new BehaviorSubject<Server[]>([]);
+    private subscriptionsSource: WritableSignal<Server[]> = signal([]);
 
     private usersCacheSource = new BehaviorSubject<{ [id: string]: User[] }>({});
 
     public user = this.userSource.asReadonly();
 
-    public subscriptions = this.subscriptionsSource.asObservable();
+    public subscriptions = this.subscriptionsSource.asReadonly();
 
     public usersCache = this.usersCacheSource.asObservable();
 
@@ -67,7 +67,18 @@ export class UserService {
     public getSubscriptions() {
         this.httpClient
             .get<Server[]>('/api/user/subscriptions')
-            .subscribe(data => this.subscriptionsSource.next(data));
+            .subscribe(data => this.subscriptionsSource.set(data));
+    }
+
+    public updateSubscriptions(server: Server, index?: number) {
+        this.subscriptionsSource.update(value => {
+            if (index) {
+                value[index] = server;
+            } else {
+                value.push(server);
+            }
+            return value;
+        });
     }
 
     /**

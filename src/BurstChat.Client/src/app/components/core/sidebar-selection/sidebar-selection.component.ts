@@ -38,7 +38,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
 
     public users = faUsers;
 
-    public servers: Server[] = [];
+    public servers = this.userService.subscriptions;
 
     /**
      * Creates an instance of SidebarSelectionComponent.
@@ -58,12 +58,18 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()), { allowSignalWrites: true });
         effect(() => this.updatedInvitationCallback(this.chatService.updatedInvitation()), { allowSignalWrites: true });
         effect(() => this.serverInfoCallback(this.serversService.serverInfo()), { allowSignalWrites: true });
+
         effect(() => {
             const options = this.sidebarService.display();
             if (options instanceof DisplayServer && options.serverId) {
                 untracked(() => this.serversService.set(options.serverId));
             }
         });
+
+        effect(() => {
+            const servers = this.userService.subscriptions();
+            this.serversService.updateCache(servers);
+        }, { allowSignalWrites: true });
     }
 
     /**
@@ -72,12 +78,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      */
     public ngOnInit() {
         this.subscriptions = [
-            this.userService
-                .subscriptions
-                .subscribe(servers => {
-                    this.servers = servers;
-                    this.serversService.updateCache(servers);
-                }),
             this.userService
                 .usersCache
                 .subscribe(cache => this.usersCache = cache),
@@ -101,13 +101,14 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      */
     private serverInfoCallback(server: Server | null) {
         if (server) {
-            const index = this.servers.findIndex(s => s.id === server.id);
+            const servers = this.userService.subscriptions();
+            const index = servers.findIndex(s => s.id === server.id);
             if (index !== -1) {
+                this.userService.updateSubscriptions(server, index);
                 this.servers[index] = server;
             } else {
-                this.servers.push(server);
+                this.userService.updateSubscriptions(server);
             }
-            this.serversService.updateCache(this.servers);
         }
     }
 
@@ -138,14 +139,15 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         if (!data) return;
         const serverId = data[0];
         const subscription = data[1];
-        const server = this.servers.find(s => s.id === serverId);
+        const servers = this.servers();
+        const server = servers.find(s => s.id === serverId);
         if (server && subscription) {
             const index = server
                 .subscriptions
                 .findIndex(s => s.userId === subscription.userId);
             if (index !== -1) {
                 server.subscriptions.splice(index, 1);
-                this.serversService.updateCache(this.servers);
+                this.serversService.updateCache(servers);
             }
             const users = this.usersCache[server.id] || [];
             const usersIndex = users.findIndex(u => u.id === subscription.userId);
@@ -166,10 +168,11 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         if (!data) return;
         const serverId = data[0];
         const channel = data[1];
-        const server = this.servers.find(s => s.id === serverId);
+        const servers = this.servers();
+        const server = servers.find(s => s.id === serverId);
         if (server && server.channels && server.channels.length > 0) {
             server.channels.push(channel);
-            this.serversService.updateCache(this.servers);
+            this.serversService.updateCache(servers);
         }
     }
 
@@ -183,15 +186,13 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
     private channelUpdatedCallback(channel: Channel | null) {
         if (!channel) return;
 
-        const server = this
-            .servers
-            .find(s => s.channels.some(c => c.id === channel.id));
-
+        const servers = this.servers();
+        const server = servers.find(s => s.channels.some(c => c.id === channel.id));
         if (server) {
             const index = server.channels.findIndex(c => c.id === channel.id);
             if (index !== -1) {
                 server.channels[index] = channel;
-                this.serversService.updateCache(this.servers);
+                this.serversService.updateCache(servers);
             }
         }
     }
@@ -204,14 +205,13 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @memberof SidebarSelectionComponent
      */
     private channelDeletedCallback(channelId: number | null) {
-        const server = this
-            .servers
-            .find(s => s.channels.some(c => c.id === channelId));
+        const servers = this.userService.subscriptions();
+        const server = servers?.find(s => s.channels.some(c => c.id === channelId));
         if (server) {
             const index = server.channels.findIndex(c => c.id === channelId);
             if (index !== -1) {
                 server.channels.splice(index, 1);
-                this.serversService.updateCache(this.servers);
+                this.serversService.updateCache(servers);
             }
         }
     }
@@ -226,7 +226,8 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
     private updatedInvitationCallback(invite: Invitation | null) {
         if (!invite) return;
 
-        const inList = this.servers.some(s => s.id === invite.serverId);
+        const servers = this.userService.subscriptions();
+        const inList = servers.some(s => s.id === invite.serverId);
 
         // Handle code for the user the initiated the invitation update.
         const user = this.userService.user();
@@ -239,13 +240,13 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         // Handle code for all users of the server if the invitation was accepted.
         if (inList && invite.accepted) {
             const serverId = invite.serverId.toString();
-            const server = this.servers.find(s => s.id === invite.serverId);
+            const server = servers.find(s => s.id === invite.serverId);
             const users = this.usersCache[serverId];
 
             users.push(invite.user);
             server.subscriptions.push({ userId: invite.userId, serverId: invite.serverId });
 
-            this.serversService.updateCache(this.servers);
+            this.serversService.updateCache(servers);
             this.userService.pushToCache(server.id, users);
             return;
         }
