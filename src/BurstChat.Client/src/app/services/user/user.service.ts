@@ -1,6 +1,5 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
 import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
 import { map } from 'rxjs/operators';
@@ -16,13 +15,13 @@ export class UserService {
 
     private subscriptionsSource: WritableSignal<Server[]> = signal([]);
 
-    private usersCacheSource = new BehaviorSubject<{ [id: string]: User[] }>({});
+    private usersCacheSource: WritableSignal<{ [id: string]: User[] }> = signal({});
 
     public user = this.userSource.asReadonly();
 
     public subscriptions = this.subscriptionsSource.asReadonly();
 
-    public usersCache = this.usersCacheSource.asObservable();
+    public usersCache = this.usersCacheSource.asReadonly();
 
     /**
      * Creates a new instance of UserService.
@@ -100,9 +99,9 @@ export class UserService {
      * @memberof UserService
      */
     public pushToCache(serverId: number, users: User[]) {
-        const cache = this.usersCacheSource.getValue();
+        const cache = this.usersCacheSource();
         cache[serverId.toString()] = users;
-        this.usersCacheSource.next(cache);
+        this.usersCacheSource.set(cache);
     }
 
     /**
@@ -111,7 +110,7 @@ export class UserService {
      * @memberof UserService
      */
     public getFromCache(serverId: number) {
-        const cache = this.usersCacheSource.getValue();
+        const cache = this.usersCacheSource();
         return cache[serverId.toString()];
     }
 

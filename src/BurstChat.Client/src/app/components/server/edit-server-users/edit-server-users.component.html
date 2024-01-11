@@ -14,12 +14,7 @@
 <div class="row">
     <div class="column column-100">
         <div class="entity-list">
-            @if(users.length === 0) {
-                <div class="text-muted">
-                    <span class="text-muted">Could not load users of server.</span>
-                </div>
-            }
-            @for(user of users; track user.id) {
+            @for(user of users(); track user.id) {
                 <div class="entity">
                     <div>
                         {{user.name}} <span class="text-muted">#{{user.id}}</span>
@@ -27,6 +22,10 @@
                     <div class="ml-auto">
                         <button class="button button-clear" (click)="onDeleteUser(user)">DELETE</button>
                     </div>
+                </div>
+            } @empty {
+                <div class="text-muted">
+                    <span class="text-muted">Could not load users of server.</span>
                 </div>
             }
         </div>

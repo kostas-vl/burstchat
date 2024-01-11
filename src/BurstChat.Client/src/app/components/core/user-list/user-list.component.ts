@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy, effect, untracked } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, effect, untracked } from '@angular/core';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 import { ServersService } from 'src/app/services/servers/servers.service';
@@ -24,9 +23,7 @@ import { UserComponent } from 'src/app/components/core/user/user.component';
         UserComponent
     ]
 })
-export class UserListComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[] = [];
+export class UserListComponent {
 
     public server?: Server;
 
@@ -67,31 +64,14 @@ export class UserListComponent implements OnInit, OnDestroy {
                 }
             }
         });
-    }
 
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof UserListComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.usersService
-                .usersCache
-                .subscribe(cache => {
-                    if (this.server) {
-                        const id = this.server.id.toString();
-                        this.users = cache[id] || [];
-                    }
-                }),
-        ];
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof UserListComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        effect(() => {
+            const cache = this.usersService.usersCache();
+            if (this.server) {
+                const id = this.server.id.toString();
+                this.users = cache[id] || [];
+            }
+        });
     }
 
     /**

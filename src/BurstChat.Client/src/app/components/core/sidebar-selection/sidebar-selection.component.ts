@@ -1,8 +1,6 @@
-import { Component, OnInit, OnDestroy, effect, untracked } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, effect, untracked } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { Channel } from 'src/app/models/servers/channel';
@@ -28,11 +26,7 @@ import { ServerComponent } from 'src/app/components/core/server/server.component
     standalone: true,
     imports: [FontAwesomeModule, DirectMessagingComponent, ServerComponent]
 })
-export class SidebarSelectionComponent implements OnInit, OnDestroy {
-
-    private subscriptions?: Subscription[] = [];
-
-    private usersCache: { [id: string]: User[] } = {};
+export class SidebarSelectionComponent {
 
     public dragon = faDragon;
 
@@ -70,26 +64,6 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
             const servers = this.userService.subscriptions();
             this.serversService.updateCache(servers);
         }, { allowSignalWrites: true });
-    }
-
-    /**
-     * Executes any necessary start up code for the component.
-     * @memberof SidebarSelectionComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.userService
-                .usersCache
-                .subscribe(cache => this.usersCache = cache),
-        ];
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof SidebarSelectionComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions?.forEach(s => s.unsubscribe());
     }
 
     /**
@@ -149,7 +123,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
                 server.subscriptions.splice(index, 1);
                 this.serversService.updateCache(servers);
             }
-            const users = this.usersCache[server.id] || [];
+            const users = this.userService.usersCache()[server.id] || [];
             const usersIndex = users.findIndex(u => u.id === subscription.userId);
             if (usersIndex !== -1) {
                 users.splice(usersIndex, 1);
@@ -241,7 +215,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         if (inList && invite.accepted) {
             const serverId = invite.serverId.toString();
             const server = servers.find(s => s.id === invite.serverId);
-            const users = this.usersCache[serverId];
+            const users = this.userService.usersCache()[serverId];
 
             users.push(invite.user);
             server.subscriptions.push({ userId: invite.userId, serverId: invite.serverId });

@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, Input, Signal } from '@angular/core';
+import { Component, Input, Signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -20,13 +19,14 @@ import { UserService } from 'src/app/services/user/user.service';
     standalone: true,
     imports: [FormsModule]
 })
-export class EditServerUsersComponent implements OnInit, OnDestroy {
-
-    private userCacheSub?: Subscription;
+export class EditServerUsersComponent {
 
     public newUserName = '';
 
-    public users: User[] = [];
+    public users = computed(() => {
+        const id = this.server().id.toString();
+        return this.userService.usersCache[id] || [];
+    });
 
     @Input({ required: true })
     public server: Signal<Server | null>;
@@ -40,30 +40,6 @@ export class EditServerUsersComponent implements OnInit, OnDestroy {
         private chatService: ChatService,
         private userService: UserService
     ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof EditServerUsersComponent
-     */
-    public ngOnInit() {
-        this.userCacheSub = this
-            .userService
-            .usersCache
-            .subscribe(cache => {
-                const id = this.server().id.toString();
-                this.users = cache[id] || [];
-            });
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof EditServerUsersComponent
-     */
-    public ngOnDestroy() {
-        if (this.userCacheSub) {
-            this.userCacheSub.unsubscribe();
-        }
-    }
 
     /**
      * Handles the send invite button click event.
