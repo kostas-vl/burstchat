@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { WebSocketInterface, UA, debug, RTCSession } from 'jssip';
@@ -39,11 +39,11 @@ export class RtcSessionService {
         }
     };
 
-    private incomingSession$ = new BehaviorSubject<RTCSessionContainer | null>(null);
+    private incomingSessionSource: WritableSignal<RTCSessionContainer | null> = signal(null);
 
     private session$ = new BehaviorSubject<RTCSessionContainer | null>(null);
 
-    public onIncomingSession$ = this.incomingSession$.asObservable();
+    public incomingSession = this.incomingSessionSource.asReadonly();
 
     public onSession$ = this.session$.asObservable();
 
@@ -110,7 +110,7 @@ export class RtcSessionService {
 
         if (event.originator !== 'local') {
             this.registerSessionEvents(session);
-            this.incomingSession$.next(session);
+            this.incomingSessionSource.set(session);
         }
     }
 
@@ -191,10 +191,10 @@ export class RtcSessionService {
         console.warn(event);
         this.notifyService.popupWarning('Call failed');
 
-        let incomingSession = this.incomingSession$.getValue();
+        let incomingSession = this.incomingSessionSource();
         if (incomingSession?.source === source) {
             incomingSession = null;
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
             return;
         }
 
@@ -215,10 +215,10 @@ export class RtcSessionService {
     private sessionEnded(source: RTCSession, event: any) {
         this.notifyService.popupInfo('Call ended');
 
-        let incomingSession = this.incomingSession$.getValue();
+        let incomingSession = this.incomingSessionSource();
         if (incomingSession?.source === source) {
             incomingSession = null;
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
             return;
         }
 
@@ -261,11 +261,11 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public answer() {
-        const session = this.incomingSession$.getValue();
+        const session = this.incomingSessionSource();
         if (session) {
             session.source.answer(this.callConfig);
             this.session$.next(session);
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
         }
     }
 
@@ -274,13 +274,13 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public reject() {
-        const session = this.incomingSession$.getValue();
+        const session = this.incomingSessionSource();
         if (session) {
             session.source.terminate({
                 status_code: 300,
                 reason_phrase: 'reject'
             });
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
         }
     }
 

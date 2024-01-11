@@ -1,5 +1,4 @@
 import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { TokenInfo } from 'src/app/models/identity/token-info';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';

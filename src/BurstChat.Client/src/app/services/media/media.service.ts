@@ -1,5 +1,4 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { InputDevice } from 'src/app/models/media/input-device';
 import { OutputDevice } from 'src/app/models/media/output-device';
 
