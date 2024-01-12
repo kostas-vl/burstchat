@@ -11,9 +11,9 @@ export class RTCSessionContainer {
 
     private connectingSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private connectedSource: WritableSignal<[RTCSession, any]> = signal(null);
+    private connectedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private progressSource = new Subject<[RTCSession, any]>();
+    private progressSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
     private confirmedSource = new Subject<[RTCSession, any]>();
 
@@ -25,7 +25,7 @@ export class RTCSessionContainer {
 
     public connected = this.connectedSource.asReadonly();
 
-    public progress = this.progressSource.asObservable();
+    public progress = this.progressSource.asReadonly();
 
     public confirmed = this.confirmedSource.asObservable();
 
@@ -70,7 +70,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onProgress(event) {
-        this.progressSource.next([this.source, event]);
+        this.progressSource.set([this.source, event]);
     }
 
     /**

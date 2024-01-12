@@ -73,7 +73,15 @@ export class RtcSessionService {
                     .connection
                     .ontrack = (event: any) => this.sessionAddStream(event);
             }
-        })
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionProgress = session.progress();
+            if (sessionProgress) {
+                this.sessionProgress(sessionProgress[0], sessionProgress[1]);
+            }
+        });
 
         this.httpClient
             .get<SipCredentials>('/api/user/sip')
@@ -139,9 +147,6 @@ export class RtcSessionService {
      */
     private registerSessionEvents(session: RTCSessionContainer) {
 
-        session
-            .progress
-            .subscribe(args => this.sessionProgress(args[0], args[1]));
 
         session
             .confirmed
