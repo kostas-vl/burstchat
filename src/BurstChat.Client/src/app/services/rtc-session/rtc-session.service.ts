@@ -57,12 +57,23 @@ export class RtcSessionService {
         debug.enable('JsSIP:*');
 
         effect(() => {
-            const session = this.incomingSessionSource();
+            const session = this.incomingSession();
             const sessionConnecting = session?.connecting();
             if (sessionConnecting) {
                 this.sessionConnecting(sessionConnecting[0], sessionConnecting[1]);
             }
         });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionConnected = session.connected();
+            if (sessionConnected) {
+                session
+                    .source
+                    .connection
+                    .ontrack = (event: any) => this.sessionAddStream(event);
+            }
+        })
 
         this.httpClient
             .get<SipCredentials>('/api/user/sip')
@@ -127,14 +138,6 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     private registerSessionEvents(session: RTCSessionContainer) {
-        session
-            .connected
-            .subscribe(args => {
-                session
-                    .source
-                    .connection
-                    .ontrack = event => this.sessionAddStream(event);
-            });
 
         session
             .progress
@@ -238,7 +241,7 @@ export class RtcSessionService {
      * @param event The add stream event args.
      * @memberof RtcSessionService
      */
-    private sessionAddStream(event) {
+    private sessionAddStream(event: any) {
         this.audio.srcObject = event.stream;
         this.audio.play();
     }
