@@ -60,7 +60,8 @@ export class RtcSessionService {
             const session = this.incomingSession();
             const sessionConnecting = session?.connecting();
             if (sessionConnecting) {
-                this.sessionConnecting(sessionConnecting[0], sessionConnecting[1]);
+                const [source, event] = sessionConnecting;
+                this.sessionConnecting(source, event);
             }
         });
 
@@ -79,7 +80,26 @@ export class RtcSessionService {
             const session = this.incomingSession();
             const sessionProgress = session.progress();
             if (sessionProgress) {
-                this.sessionProgress(sessionProgress[0], sessionProgress[1]);
+                const [source, event] = sessionProgress;
+                this.sessionProgress(source, event);
+            }
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionConfirmed = session.confirmed();
+            if (sessionConfirmed) {
+                const [source, event] = sessionConfirmed;
+                this.sessionConfirmed(source, event);
+            }
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionFailed = session.failed();
+            if (sessionFailed) {
+                const [source, event] = sessionFailed;
+                this.sessionFailed(source, event);
             }
         });
 
@@ -146,16 +166,6 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     private registerSessionEvents(session: RTCSessionContainer) {
-
-
-        session
-            .confirmed
-            .subscribe(args => this.sessionConfirmed(args[0], args[1]));
-
-        session
-            .failed
-            .subscribe(args => this.sessionFailed(args[0], args[1]));
-
         session
             .ended
             .subscribe(args => this.sessionEnded(args[0], args[1]));

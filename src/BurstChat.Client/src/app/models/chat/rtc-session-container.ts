@@ -15,9 +15,9 @@ export class RTCSessionContainer {
 
     private progressSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private confirmedSource = new Subject<[RTCSession, any]>();
+    private confirmedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private failedSource = new Subject<[RTCSession, any]>();
+    private failedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
     private endedSource = new Subject<[RTCSession, any]>();
 
@@ -27,9 +27,9 @@ export class RTCSessionContainer {
 
     public progress = this.progressSource.asReadonly();
 
-    public confirmed = this.confirmedSource.asObservable();
+    public confirmed = this.confirmedSource.asReadonly();
 
-    public failed = this.failedSource.asObservable();
+    public failed = this.failedSource.asReadonly();
 
     public ended = this.endedSource.asObservable();
 
@@ -79,7 +79,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onConfirmed(event) {
-        this.confirmedSource.next([this.source, event]);
+        this.confirmedSource.set([this.source, event]);
     }
 
     /**
@@ -88,7 +88,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onFailed(event) {
-        this.failedSource.next([this.source, event]);
+        this.failedSource.set([this.source, event]);
     }
 
     /**

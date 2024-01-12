@@ -1,4 +1,4 @@
-import { Component, Input, effect, untracked } from '@angular/core';
+import { Component, Input, WritableSignal, effect, signal, untracked } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
@@ -36,7 +36,7 @@ export class ChatCallComponent {
 
     private subscriptions: Subscription[] = [];
 
-    private session?: RTCSessionContainer;
+    private session: WritableSignal<RTCSessionContainer | null> = signal(null);
 
     public icons: any = {
         hangup: faPhoneSlash,
@@ -65,6 +65,22 @@ export class ChatCallComponent {
             }
             this.reset();
         });
+
+        effect(() => {
+            const session = this.session();
+            const sessionConfirmed = session.confirmed();
+            if (sessionConfirmed && this.validSession(session)) {
+                this.onSessionConfirmed();
+            }
+        });
+
+        effect(() => {
+            const session = this.session();
+            const sessionFailed = session.failed();
+            if (sessionFailed && this.validSession(session)) {
+                this.onSessionFailed();
+            }
+        });
     }
 
     /**
@@ -78,39 +94,46 @@ export class ChatCallComponent {
     }
 
     /**
+     * Checks whether the provided session instance is targeted towards the two users associated with the call.
+     * @param {RTCSessionContainer} session The target rtc session instance.
+     * @returns A boolean value indicating if the session user is either of the 2 users associated with the call.
+     * @memberof ChatCallComponent
+     */
+    private validSession(session: RTCSessionContainer): boolean {
+        if (session && this.options instanceof DirectMessagingConnectionOptions) {
+            const first = this.options.directMessaging.firstParticipantUser;
+            const second = this.options.directMessaging.secondParticipantUser;
+            const sessionUser = +session.source.remote_identity.uri.user;
+            return sessionUser === first.id || sessionUser === second.id;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Executes any neccessary code for a new call session.
      * @private
      * @param {RTCSessionContainer} session The session call instance.
      * @memberof ChatCallComponent
      */
     private onNewSession(session: RTCSessionContainer) {
-        this.session = session;
+        this.session.set(session);
 
-        if (this.session && this.options instanceof DirectMessagingConnectionOptions) {
+        if (session && this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUser = +this.session.source.remote_identity.uri.user;
+            const sessionUser = +this.session().source.remote_identity.uri.user;
             if (sessionUser === first.id || sessionUser === second.id) {
                 this.users = [first, second];
 
                 untracked(() => {
-                    this.subscriptions[1] = this
-                        .session
-                        .confirmed
-                        .subscribe(_ => this.onSessionConfirmed());
-
                     this.subscriptions[2] = this
-                        .session
+                        .session()
                         .ended
                         .subscribe(_ => this.onSessionEnded());
-
-                    this.subscriptions[3] = this
-                        .session
-                        .failed
-                        .subscribe(_ => this.onSessionFailed());
                 })
 
-                if (this.session.source.isEstablished()) {
+                if (session.source.isEstablished()) {
                     this.state = 'confirmed';
                 }
 
