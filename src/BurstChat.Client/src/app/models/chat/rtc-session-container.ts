@@ -19,7 +19,7 @@ export class RTCSessionContainer {
 
     private failedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private endedSource = new Subject<[RTCSession, any]>();
+    private endedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
     public connecting = this.connectingSource.asReadonly();
 
@@ -31,7 +31,7 @@ export class RTCSessionContainer {
 
     public failed = this.failedSource.asReadonly();
 
-    public ended = this.endedSource.asObservable();
+    public ended = this.endedSource.asReadonly();
 
     /**
      * Creates a new instance of RTCSessionContainer.
@@ -97,7 +97,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onEnded(event) {
-        this.endedSource.next([this.source, event]);
+        this.endedSource.set([this.source, event]);
     }
 
 }

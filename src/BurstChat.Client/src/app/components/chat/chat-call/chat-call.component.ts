@@ -68,7 +68,7 @@ export class ChatCallComponent {
 
         effect(() => {
             const session = this.session();
-            const sessionConfirmed = session.confirmed();
+            const sessionConfirmed = session?.confirmed();
             if (sessionConfirmed && this.validSession(session)) {
                 this.onSessionConfirmed();
             }
@@ -76,9 +76,17 @@ export class ChatCallComponent {
 
         effect(() => {
             const session = this.session();
-            const sessionFailed = session.failed();
+            const sessionFailed = session?.failed();
             if (sessionFailed && this.validSession(session)) {
                 this.onSessionFailed();
+            }
+        });
+
+        effect(() => {
+            const session = this.session();
+            const sessionEnded = session?.ended();
+            if (sessionEnded && this.validSession(session)) {
+                this.onSessionEnded();
             }
         });
     }
@@ -127,10 +135,6 @@ export class ChatCallComponent {
                 this.users = [first, second];
 
                 untracked(() => {
-                    this.subscriptions[2] = this
-                        .session()
-                        .ended
-                        .subscribe(_ => this.onSessionEnded());
                 })
 
                 if (session.source.isEstablished()) {
