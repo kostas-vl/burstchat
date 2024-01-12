@@ -1,5 +1,6 @@
 import { Subject, Observable } from 'rxjs';
 import { RTCSession }from 'jssip';
+import { WritableSignal, signal } from '@angular/core';
 
 /**
  * This class encapsulates a jssip real time communication session.
@@ -8,7 +9,7 @@ import { RTCSession }from 'jssip';
  */
 export class RTCSessionContainer {
 
-    private connectingSource = new Subject<[RTCSession, any]>();
+    private connectingSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
     private connectedSource = new Subject<[RTCSession, any]>();
 
@@ -20,7 +21,7 @@ export class RTCSessionContainer {
 
     private endedSource = new Subject<[RTCSession, any]>();
 
-    public connecting = this.connectingSource.asObservable();
+    public connecting = this.connectingSource.asReadonly();
 
     public connected = this.connectedSource.asObservable();
 

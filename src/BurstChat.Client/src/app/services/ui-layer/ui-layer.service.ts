@@ -1,5 +1,4 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
 
 /**

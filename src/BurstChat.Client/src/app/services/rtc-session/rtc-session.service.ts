@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Injectable, WritableSignal, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { WebSocketInterface, UA, debug, RTCSession } from 'jssip';
 import { environment } from 'src/environments/environment';
@@ -55,6 +55,14 @@ export class RtcSessionService {
         private notifyService: NotifyService
     ) {
         debug.enable('JsSIP:*');
+
+        effect(() => {
+            const session = this.incomingSessionSource();
+            const sessionConnecting = session?.connecting();
+            if (sessionConnecting) {
+                this.sessionConnecting(sessionConnecting[0], sessionConnecting[1]);
+            }
+        });
 
         this.httpClient
             .get<SipCredentials>('/api/user/sip')
@@ -119,10 +127,6 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     private registerSessionEvents(session: RTCSessionContainer) {
-        session
-            .connecting
-            .subscribe(args => this.sessionConnecting(args[0], args[1]));
-
         session
             .connected
             .subscribe(args => {
