@@ -16,7 +16,7 @@ export class UiLayerService {
 
     private deleteMessageSource: WritableSignal<Message | null> = signal(null);
 
-    private searchSource$ = new BehaviorSubject<string | null>(null);
+    private searchSource: WritableSignal<string | null> = signal(null);
 
     public layout = this.layoutSource.asReadonly();
 
@@ -24,7 +24,7 @@ export class UiLayerService {
 
     public deleteMessage = this.deleteMessageSource.asReadonly();
 
-    public search$ = this.searchSource$.asObservable();
+    public search = this.searchSource.asReadonly();
 
     /**
      * Creates a new instance of UiLayerService.
@@ -64,7 +64,7 @@ export class UiLayerService {
      * @param {string | null} term The search term to be searched.
      * @memberof UiLayerService
      */
-    public search(term: string | null)  {
-        this.searchSource$.next(term);
+    public searchTerm(term: string | null)  {
+        this.searchSource.set(term);
     }
 }

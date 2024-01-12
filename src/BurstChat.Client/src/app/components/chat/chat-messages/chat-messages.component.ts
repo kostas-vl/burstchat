@@ -1,5 +1,4 @@
-import { Component, OnDestroy, Input, ViewChild, effect } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, ViewChild, effect } from '@angular/core';
 import { VirtualScrollerComponent, IPageInfo, VirtualScrollerModule } from '@iharbeck/ngx-virtual-scroller';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
@@ -26,9 +25,7 @@ import { ChatMessageComponent } from 'src/app/components/chat/chat-message/chat-
         ChatMessageComponent
     ]
 })
-export class ChatMessagesComponent implements OnDestroy {
-
-    private subscriptions?: Subscription[] = [];
+export class ChatMessagesComponent {
 
     private internalOptions?: ChatConnectionOptions;
 
@@ -57,14 +54,6 @@ export class ChatMessagesComponent implements OnDestroy {
         this.chatIsEmpty = false;
         this.loadingMessages = true;
         this.internalOptions = value;
-        this.unsubscribeAll();
-
-        this.subscriptions = [
-            this.uiLayerService
-                .search$
-                .subscribe(term => this.onSearch(term)),
-        ];
-
         this.chatService.addSelfToChat(this.options);
     }
 
@@ -83,23 +72,7 @@ export class ChatMessagesComponent implements OnDestroy {
         effect(() => this.onMessageReceived(this.chatService.messageReceived()));
         effect(() => this.onMessageEdited(this.chatService.messageEdited()));
         effect(() => this.onMessageDeleted(this.chatService.messageDeleted()));
-    }
-
-    /**
-     * Executes any necessary code for the destruction of the component.
-     * @memberof ChatMessagesComponent
-     */
-    public ngOnDestroy() {
-        this.unsubscribeAll();
-    }
-
-    /**
-     * Unsubscribes all instanciated subscriptions of the component.
-     * @private
-     * @memberof ChatMessagesComponent
-     */
-    private unsubscribeAll() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        effect(() => this.onSearch(this.uiLayerService.search()));
     }
 
     /**

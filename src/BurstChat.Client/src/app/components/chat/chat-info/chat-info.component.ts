@@ -151,7 +151,7 @@ export class ChatInfoComponent {
      * @memberof ChatInfoComponent
      */
     public onSearch() {
-        this.uiLayerService.search(this.searchTerm);
+        this.uiLayerService.searchTerm(this.searchTerm);
     }
 
 }
