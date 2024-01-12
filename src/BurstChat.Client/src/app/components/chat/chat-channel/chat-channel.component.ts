@@ -44,11 +44,9 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
         return this.internalOptions;
     }
 
-    public editMessageData: Signal<{ visible: boolean, message?: Message }> = computed(() => {
-        return { visible: true, message: this.uiLayerService.editMessage() };
-    });
+    public editMessageData: { visible: boolean, message?: Message } = { visible: false };
 
-    public deleteMessageData: { visible: boolean, message?: Message} = { visible: false, message: null};
+    public deleteMessageData: { visible: boolean, message?: Message } = { visible: false };
 
     /**
      * Creates an instance of ChatChannelComponent.
@@ -63,6 +61,26 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
         effect(() => {
             if (this.chatService.onReconnected() && this.options) {
                 this.chatService.addSelfToChat(this.options);
+            }
+        });
+
+        effect(() => {
+            const message = this.uiLayerService.editMessage();
+            if (message) {
+                this.editMessageData = {
+                    message: message,
+                    visible: true
+                };
+            }
+        });
+
+        effect(() => {
+            const message = this.uiLayerService.deleteMessage();
+            if (message) {
+                this.deleteMessageData = {
+                    message: message,
+                    visible: true
+                }
             }
         });
     }
@@ -90,12 +108,6 @@ export class ChatChannelComponent implements OnInit, OnDestroy {
                         this.notifyService.notify(title, content);
                     }
                 }),
-            this.uiLayerService
-                .deleteMessage$
-                .subscribe(message => this.deleteMessageData = {
-                    visible: true,
-                    message: message,
-                })
         ];
 
     }

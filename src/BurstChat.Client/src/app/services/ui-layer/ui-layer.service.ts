@@ -14,7 +14,7 @@ export class UiLayerService {
 
     private editedMessageSource: WritableSignal<Message | null> = signal(null);
 
-    private deleteMessageSource$ = new Subject<Message>();
+    private deleteMessageSource: WritableSignal<Message | null> = signal(null);
 
     private searchSource$ = new BehaviorSubject<string | null>(null);
 
@@ -22,7 +22,7 @@ export class UiLayerService {
 
     public editMessage = this.editedMessageSource.asReadonly();
 
-    public deleteMessage$ = this.deleteMessageSource$.asObservable();
+    public deleteMessage = this.deleteMessageSource.asReadonly();
 
     public search$ = this.searchSource$.asObservable();
 
@@ -55,8 +55,8 @@ export class UiLayerService {
      * @param {Message} message The message to be deleted.
      * @memberof UiLayerService
      */
-    public deleteMessage(message: Message) {
-        this.deleteMessageSource$.next(message);
+    public delete(message: Message) {
+        this.deleteMessageSource.set(message);
     }
 
     /**

@@ -63,7 +63,7 @@ export class ChatMessageComponent implements OnInit {
      * @memberof ChatMessageComponent
      */
     public onDelete() {
-        this.uiLayerService.deleteMessage(this.message);
+        this.uiLayerService.delete(this.message);
     }
 
 }
