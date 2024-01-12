@@ -1,4 +1,3 @@
-import { Subject, Observable } from 'rxjs';
 import { RTCSession }from 'jssip';
 import { WritableSignal, signal } from '@angular/core';
 
