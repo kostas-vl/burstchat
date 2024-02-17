@@ -1,4 +1,6 @@
-using System;
+using BurstChat.Application.Monads;
+using Level = BurstChat.Application.Monads.ErrorLevel;
+using Type = BurstChat.Application.Monads.ErrorType;
 
 namespace BurstChat.Application.Errors
 {
@@ -11,8 +13,7 @@ namespace BurstChat.Application.Errors
         /// <summary>
         /// This error can inform that an operation was not completed due to an unexpected exception.
         /// </summary>
-        public static Error Exception() => new(ErrorLevel.Critical,
-                                               ErrorType.System,
-                                               "One or more actions could not be completed");
+        public static MonadException Exception =>
+            new MonadException(Level.Critical, Type.System, "One or more actions could not be completed");
     }
 }

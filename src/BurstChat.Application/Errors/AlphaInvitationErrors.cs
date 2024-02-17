@@ -1,15 +1,11 @@
-using System;
+using BurstChat.Application.Monads;
+using Level = BurstChat.Application.Monads.ErrorLevel;
+using Type = BurstChat.Application.Monads.ErrorType;
 
-namespace BurstChat.Application.Errors
+namespace BurstChat.Application.Errors;
+
+public static class AlphaInvitationErrors
 {
-    /// <summary>
-    /// This class contains static methods that represent errors associated with alpha invitations errors
-    /// when the application tries to either fetch or transform data.
-    /// </summary>
-    public static class AlphaInvitationErrors
-    {
-        public static Error AlphaInvitationCodeIsNotValid() => new(ErrorLevel.Critical,
-                                                                   ErrorType.Validation,
-                                                                   "The alpha invitation code is not valid");
-    }
+    public static MonadException AlphaInvitationCodeIsNotValid =>
+        new(Level.Critical, Type.Validation, "The alpha invitation code is not valid");
 }

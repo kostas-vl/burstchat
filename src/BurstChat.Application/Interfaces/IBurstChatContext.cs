@@ -1,4 +1,3 @@
-using System;
 using BurstChat.Domain.Schema.Alpha;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;

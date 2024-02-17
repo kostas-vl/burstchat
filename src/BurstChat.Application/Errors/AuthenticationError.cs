@@ -1,5 +1,3 @@
-using System;
-
 namespace BurstChat.Application.Errors
 {
     public record AuthenticationError : Error

@@ -1,19 +1,14 @@
-using System;
+using BurstChat.Application.Monads;
+using Level = BurstChat.Application.Monads.ErrorLevel;
+using Type = BurstChat.Application.Monads.ErrorType;
 
-namespace BurstChat.Application.Errors
+namespace BurstChat.Application.Errors;
+
+public static class PrivateGroupErrors
 {
-    /// <summary>
-    /// This class exposes static methods that return errors associated with execution errors of the
-    /// application about private group message data.
-    /// </summary>
-    public static class PrivateGroupErrors
-    {
-        public static Error GroupNotFound() => new(ErrorLevel.Critical,
-                                                   ErrorType.DataProcess,
-                                                   "The group does not exist");
+    public static MonadException GroupNotFound =>
+        new(Level.Critical, Type.DataProcess, "The group does not exist");
 
-        public static Error GroupMessageNotFound() => new(ErrorLevel.Critical,
-                                                          ErrorType.DataProcess,
-                                                          "The group message does not exist");
-    }
+    public static MonadException GroupMessageNotFound =>
+        new(Level.Critical, Type.DataProcess, "The group message does not exist");
 }

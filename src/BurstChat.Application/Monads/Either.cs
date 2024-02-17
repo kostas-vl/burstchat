@@ -10,6 +10,7 @@ namespace BurstChat.Application.Monads
     /// </summary>
     /// <typeparam name="TSuccess">The type encapsulated by the success instance of the monad</typeparam>
     /// <typeparam name="TFailure">The type encapsulated by the failure instance of the monad</typeparam>
+    [Obsolete("This class is obsolete please use the Result class")]
     public abstract class Either<TSuccess, TFailure>
     {
         /// <summary>

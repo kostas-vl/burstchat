@@ -9,308 +9,164 @@ using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace BurstChat.Application.Services.ServersService
+namespace BurstChat.Application.Services.ServersService;
+
+public class ServersProvider : IServersService
 {
-    /// <summary>
-    /// This class represents the base implementation of the IServersService.
-    /// </summary>
-    public class ServersProvider : IServersService
+    private readonly ILogger<ServersProvider> _logger;
+    private readonly IBurstChatContext _burstChatContext;
+
+    public ServersProvider(
+        ILogger<ServersProvider> logger,
+        IBurstChatContext burstChatContext
+    )
     {
-        private readonly ILogger<ServersProvider> _logger;
-        private readonly IBurstChatContext _burstChatContext;
-
-        /// <summary>
-        /// Executes any necessary start up code for the service.
-        ///
-        /// Exceptions:
-        ///     ArgumentNullException: When any of the parameters is null.
-        /// </summary>
-        public ServersProvider(
-            ILogger<ServersProvider> logger,
-            IBurstChatContext burstChatContext
-        )
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
-        }
-
-        /// <summary>
-        /// This method will fetch information available for a server based on the provided
-        /// server id.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="serverId">The id of the target server</param>
-        /// <returns>An either monad</returns>
-        public Either<Server, Error> Get(long userId, int serverId)
-        {
-            try
-            {
-                var server = _burstChatContext
-                    .Servers
-                    .Include(s => s.Channels)
-                    .Include(s => s.Subscriptions)
-                    .FirstOrDefault(s => s.Id == serverId);
-
-                return server is { } && server.Subscriptions.Any(s => s.UserId == userId)
-                    ? new Success<Server, Error>(server!)
-                    : new Failure<Server, Error>(ServerErrors.ServerNotFound());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Server, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will delete any information available for a server based on the provided
-        /// server id.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="serverId">The id of the server to be removed</param>
-        /// <returns>An either monad</returns>
-        public Either<Unit, Error> Delete(long userId, int serverId)
-        {
-            try
-            {
-                return Get(userId, serverId).Bind(server =>
-                {
-                    _burstChatContext
-                        .Servers
-                        .Remove(server);
-
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<Unit, Error>(new());
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method store information about a new server based on the provided Server instance.
-        /// </summary>
-        /// <param name="userId">The id of the user that creates the server</param>
-        /// <param name="server">The server instance of which the information will be stored in the database</param>
-        /// <returns>An either monad</returns>
-        public Either<Server, Error> Insert(long userId, Server server)
-        {
-            try
-            {
-                var existingServer = _burstChatContext
-                    .Servers
-                    .FirstOrDefault(s => s.Name == server.Name);
-
-                if (existingServer is null)
-                {
-                    var serverEntry = new Server
-                    {
-                        Name = server.Name,
-                        DateCreated = server.DateCreated,
-                        Subscriptions = new List<Subscription>
-                        {
-                            new() { UserId = userId }
-                        }
-                    };
-
-                    _burstChatContext
-                        .Servers
-                        .Add(serverEntry);
-
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<Server, Error>(serverEntry);
-                }
-                else
-                    return new Failure<Server, Error>(ServerErrors.ServerAlreadyExists());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Server, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will update information about an existing server based on the provided server
-        /// instance.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="server">The server instance from which the information update will be based upon</param>
-        /// <returns>An either monad</returns>
-        public Either<Server, Error> Update(long userId, Server server)
-        {
-            try
-            {
-                return Get(userId, server.Id).Bind(serverEntry =>
-                {
-                    serverEntry.Name = server.Name;
-                    serverEntry.Avatar = server.Avatar;
-
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<Server, Error>(serverEntry);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Server, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// Fetches all users subscribed to the server based on the server id provided.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="serverId">The id of the target server</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<User>, Error> GetSubscribedUsers(long userId, int serverId)
-        {
-            try
-            {
-                return Get(userId, serverId).Bind(server =>
-                {
-                    var users = _burstChatContext
-                        .Users
-                        .AsEnumerable()
-                        .Where(u => server.Subscriptions
-                                          .Any(s => s.UserId == u.Id))
-                        .ToList();
-
-                    return new Success<IEnumerable<User>, Error>(users);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<IEnumerable<User>, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// Removes a user from an existing server.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="serverId">The id of the server</param>
-        /// <param name="subscription">The subscription instance to be removed</param>
-        /// <returns>An either monad</returns>
-        public Either<Subscription, Error> DeleteSubscription(long userId, int serverId, Subscription subscription)
-        {
-            try
-            {
-                return Get(userId, serverId).Bind<Subscription>(server =>
-                {
-                    var targetSubscription = server
-                        .Subscriptions
-                        .FirstOrDefault(s => s.Id == subscription.Id);
-
-                    if (targetSubscription is null)
-                        return new Failure<Subscription, Error>(UserErrors.UserNotFound());
-
-                    server
-                        .Subscriptions
-                        .Remove(targetSubscription);
-
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<Subscription, Error>(targetSubscription);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Subscription, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// Fetches all invitations sent for a server based on the provided id.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="serverId">The id of the server</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<Invitation>, Error> GetInvitations(long userId, int serverId)
-        {
-            try
-            {
-                return Get(userId, serverId).Bind(server =>
-                {
-                    var invitations = _burstChatContext
-                        .Invitations
-                        .Where(i => i.ServerId == serverId)
-                        .ToList();
-
-                    return new Success<IEnumerable<Invitation>, Error>(invitations);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<IEnumerable<Invitation>, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will create a new server invitation entry based on the provided parameters.
-        /// </summary>
-        /// <param name="userId">The id of the requesting user</param>
-        /// <param name="serverId">The id of the server</param>
-        /// <param name="username">The name of the target user</param>
-        /// <returns>An either monad</returns>
-        public Either<Invitation, Error> InsertInvitation(long userId, int serverId, string username)
-        {
-            try
-            {
-                return Get(userId, serverId).Bind<Invitation>(server =>
-                {
-                    var userExists = server
-                        .Subscriptions
-                        .Any(s => s.UserId == userId);
-
-                    var targetUser = _burstChatContext
-                        .Users
-                        .First(u => u.Name == username);
-
-                    var targetAlreadyMember = server
-                        .Subscriptions
-                        .Any(u => targetUser is { }
-                                  && u.UserId == targetUser.Id);
-
-                    if (!userExists)
-                        return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
-
-                    if (targetAlreadyMember)
-                        return new Failure<Invitation, Error>(ServerErrors.UserAlreadyMember());
-
-                    var invitation = new Invitation
-                    {
-                        ServerId = serverId,
-                        UserId = targetUser.Id,
-                        Accepted = false,
-                        Declined = false,
-                        DateUpdated = null,
-                        DateCreated = DateTime.UtcNow
-                    };
-
-                    _burstChatContext
-                        .Invitations
-                        .Add(invitation);
-
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<Invitation, Error>(invitation);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Invitation, Error>(SystemErrors.Exception());
-            }
-        }
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
     }
+
+
+    public Result<Server> Get(long userId, int serverId) => _burstChatContext
+        .Map(bc => bc
+            .Servers
+            .Include(s => s.Channels)
+            .Include(s => s.Subscriptions)
+            .FirstOrDefault(s => s.Id == serverId)
+        )
+        .And(srv => srv is not null && srv.Subscriptions.Any(s => s.UserId == userId)
+            ? srv.Ok()
+            : ServerErrors.ServerNotFound
+        )
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<Unit> Delete(long userId, int serverId) => Get(userId, serverId)
+        .Map(server =>
+        {
+            _burstChatContext.Servers.Remove(server);
+            _burstChatContext.SaveChanges();
+            return new Unit();
+        })
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<Server> Insert(long userId, Server server) => _burstChatContext
+        .And(bc =>
+        {
+            return bc.Servers.FirstOrDefault(s => s.Name == server.Name) is null
+                ? Unit.Ok
+                : ServerErrors.ServerAlreadyExists;
+        })
+        .And(_ =>
+        {
+            var serverEntry = new Server
+            {
+                Name = server.Name,
+                DateCreated = server.DateCreated,
+                Subscriptions = new List<Subscription>
+                {
+                    new() { UserId = userId }
+                }
+            };
+
+            _burstChatContext.Servers.Add(serverEntry);
+            _burstChatContext.SaveChanges();
+            return serverEntry.Ok();
+        })
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<Server> Update(long userId, Server server) => Get(userId, server.Id)
+        .Map(serverEntry =>
+        {
+            serverEntry.Name = server.Name;
+            serverEntry.Avatar = server.Avatar;
+            _burstChatContext.SaveChanges();
+            return serverEntry;
+        })
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<IEnumerable<User>> GetSubscribedUsers(long userId, int serverId) => Get(userId, serverId)
+        .Map(server => _burstChatContext
+            .Users
+            .AsEnumerable()
+            .Where(u => server.Subscriptions
+                              .Any(s => s.UserId == u.Id))
+            .ToList()
+            .AsEnumerable()
+        )
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<Subscription> DeleteSubscription(long userId, int serverId, Subscription subscription) => Get(userId, serverId)
+        .And(server =>
+        {
+            var targetSubscription = server
+                .Subscriptions
+                .FirstOrDefault(s => s.Id == subscription.Id);
+
+            if (targetSubscription is null)
+                return UserErrors.UserNotFound;
+
+            server
+                .Subscriptions
+                .Remove(targetSubscription);
+
+            _burstChatContext.SaveChanges();
+
+            return targetSubscription.Ok();
+
+        })
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<IEnumerable<Invitation>> GetInvitations(long userId, int serverId) => Get(userId, serverId)
+        .Map(server => _burstChatContext
+            .Invitations
+            .Where(i => i.ServerId == serverId)
+            .ToList()
+            .AsEnumerable()
+        )
+        .InspectErr(e => _logger.LogError(e.Message));
+
+
+    public Result<Invitation> InsertInvitation(long userId, int serverId, string username) => Get(userId, serverId)
+        .And(server =>
+        {
+            var userExists = server
+                .Subscriptions
+                .Any(s => s.UserId == userId);
+
+            var targetUser = _burstChatContext
+                .Users
+                .First(u => u.Name == username);
+
+            var targetAlreadyMember = server
+                .Subscriptions
+                .Any(u => targetUser is { }
+                          && u.UserId == targetUser.Id);
+
+            if (!userExists)
+                return ServerErrors.UserAlreadyMember;
+
+            if (targetAlreadyMember)
+                return ServerErrors.UserAlreadyMember;
+
+            var invitation = new Invitation
+            {
+                ServerId = serverId,
+                UserId = targetUser.Id,
+                Accepted = false,
+                Declined = false,
+                DateUpdated = null,
+                DateCreated = DateTime.UtcNow
+            };
+
+            _burstChatContext.Invitations.Add(invitation);
+            _burstChatContext.SaveChanges();
+            return invitation.Ok();
+
+        })
+        .InspectErr(e => _logger.LogError(e.Message));
 }

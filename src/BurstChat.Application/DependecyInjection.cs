@@ -1,4 +1,3 @@
-using System;
 using BurstChat.Application.Services.BCryptService;
 using BurstChat.Application.Services.ChannelsService;
 using BurstChat.Application.Services.PrivateGroupsService;

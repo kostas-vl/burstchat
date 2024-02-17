@@ -1,43 +1,32 @@
-using System;
+using BurstChat.Application.Monads;
+using Level = BurstChat.Application.Monads.ErrorLevel;
+using Type = BurstChat.Application.Monads.ErrorType;
 
-namespace BurstChat.Application.Errors
+namespace BurstChat.Application.Errors;
+
+public static class ModelErrors
 {
-    /// <summary>
-    /// This class contains static methods that represent errors associated with api model errors when the
-    /// application tries to either fetch or transform data.
-    /// </summary>
-    public static class ModelErrors
-    {
-        public static Error NameInvalid() => new(ErrorLevel.Critical,
-                                                 ErrorType.Validation,
-                                                 "The user name is not valid");
+    public static MonadException NameInvalid =>
+        new(Level.Critical, Type.Validation, "The user name is not valid");
 
-        public static Error EmailInvalid() => new(ErrorLevel.Critical,
-                                                  ErrorType.Validation,
-                                                  "The email is not a valid format");
+    public static MonadException EmailInvalid =>
+        new(Level.Critical, Type.Validation, "The email is not a valid format");
 
-        public static Error PasswordInvalid() => new(ErrorLevel.Critical,
-                                                     ErrorType.Validation,
-                                                     "The password needs to be atleast 12 characters long and contain one character, number and symbol");
+    public static MonadException PasswordInvalid =>
+        new(Level.Critical, Type.Validation, "The password needs to be atleast 12 characters long and contain one character, number and symbol");
 
-        public static Error ConfirmPasswordInvalid() => new(ErrorLevel.Critical,
-                                                            ErrorType.Validation,
-                                                            "Both password and confirm password need to be the same");
+    public static MonadException ConfirmPasswordInvalid =>
+        new(Level.Critical, Type.Validation, "Both password and confirm password need to be the same");
 
-        public static Error OneTimePasswordNotProvided() => new(ErrorLevel.Critical,
-                                                                ErrorType.Validation,
-                                                                "One time password was not provided");
+    public static MonadException OneTimePasswordNotProvided =>
+        new(Level.Critical, Type.Validation, "One time password was not provided");
 
-        public static Error CredentialsNotProvided() => new(ErrorLevel.Critical,
-                                                            ErrorType.Validation,
-                                                            "Credentials were not provided");
+    public static MonadException CredentialsNotProvided =>
+        new(Level.Critical, Type.Validation, "Credentials were not provided");
 
-        public static Error RegistrationNotProvided() => new(ErrorLevel.Critical,
-                                                             ErrorType.Validation,
-                                                             "Registration information was not provided");
+    public static MonadException RegistrationNotProvided =>
+        new(Level.Critical, Type.Validation, "Registration information was not provided");
 
-        public static Error ChangePasswordNotProvided() => new(ErrorLevel.Critical,
-                                                               ErrorType.Validation,
-                                                               "Password change information was not provided");
-    }
+    public static MonadException ChangePasswordNotProvided =>
+        new(Level.Critical, Type.Validation, "Password change information was not provided");
 }
