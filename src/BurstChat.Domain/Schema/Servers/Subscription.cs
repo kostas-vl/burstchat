@@ -1,6 +1,3 @@
-using System;
-using BurstChat.Domain.Schema.Users;
-
 namespace BurstChat.Domain.Schema.Servers
 {
     /// <summary>

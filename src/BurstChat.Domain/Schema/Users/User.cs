@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 
 namespace BurstChat.Domain.Schema.Users

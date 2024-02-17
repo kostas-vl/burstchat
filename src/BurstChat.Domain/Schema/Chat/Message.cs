@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using BurstChat.Domain.Schema.Users;
 
 namespace BurstChat.Domain.Schema.Chat

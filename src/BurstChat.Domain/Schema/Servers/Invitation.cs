@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using BurstChat.Domain.Schema.Users;
 
 namespace BurstChat.Domain.Schema.Servers
