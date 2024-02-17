@@ -10,7 +10,6 @@ namespace BurstChat.Application.Services.DirectMessagingService
     /// </summary>
     public interface IDirectMessagingService
     {
-
         /// <summary>
         /// This method will fetch all information about direct messaging entry.
         /// </summary>
@@ -42,7 +41,11 @@ namespace BurstChat.Application.Services.DirectMessagingService
         /// <param name="firstParticipantId">The user id of the first participant</param>
         /// <param name="secondParticipantId">The user id of the second participant</param>
         /// <returns>An either monad</returns>
-        Result<DirectMessaging> Insert(long userId, long firstParticipantId, long secondParticipantId);
+        Result<DirectMessaging> Insert(
+            long userId,
+            long firstParticipantId,
+            long secondParticipantId
+        );
 
         /// <summary>
         /// This method will delete a direct messaging entry.
@@ -61,10 +64,12 @@ namespace BurstChat.Application.Services.DirectMessagingService
         /// <param name="searchTerm">A term that needs to be present in all returned messages</param>
         /// <param name="lastMessageId">The message id from which all prior messages will be fetched</param>
         /// <returns>An either monad</returns>
-        Result<IEnumerable<Message>> GetMessages(long userId,
-                                                        long directMessagingId,
-                                                        string? searchTerm = null,
-                                                        long? lastMessageId = null);
+        Result<IEnumerable<Message>> GetMessages(
+            long userId,
+            long directMessagingId,
+            string? searchTerm = null,
+            long? lastMessageId = null
+        );
 
         /// <summary>
         /// This method will add a new message to a direct messaging entry.

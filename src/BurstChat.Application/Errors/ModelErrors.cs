@@ -13,10 +13,18 @@ public static class ModelErrors
         new(Level.Critical, Type.Validation, "The email is not a valid format");
 
     public static MonadException PasswordInvalid =>
-        new(Level.Critical, Type.Validation, "The password needs to be atleast 12 characters long and contain one character, number and symbol");
+        new(
+            Level.Critical,
+            Type.Validation,
+            "The password needs to be atleast 12 characters long and contain one character, number and symbol"
+        );
 
     public static MonadException ConfirmPasswordInvalid =>
-        new(Level.Critical, Type.Validation, "Both password and confirm password need to be the same");
+        new(
+            Level.Critical,
+            Type.Validation,
+            "Both password and confirm password need to be the same"
+        );
 
     public static MonadException OneTimePasswordNotProvided =>
         new(Level.Critical, Type.Validation, "One time password was not provided");

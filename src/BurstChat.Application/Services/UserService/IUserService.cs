@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
+using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 

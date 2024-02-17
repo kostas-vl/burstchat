@@ -14,6 +14,10 @@ namespace BurstChat.Application.Errors
         /// This error can inform that an operation was not completed due to an unexpected exception.
         /// </summary>
         public static MonadException Exception =>
-            new MonadException(Level.Critical, Type.System, "One or more actions could not be completed");
+            new MonadException(
+                Level.Critical,
+                Type.System,
+                "One or more actions could not be completed"
+            );
     }
 }

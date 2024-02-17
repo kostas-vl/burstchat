@@ -51,10 +51,12 @@ public interface IChannelsService
     /// <param name="searchTerm">A specific term that needs to exist in all returned messages</param>
     /// <param name="lastMessageId">The message id to be the interval of the message list</param>
     /// <returns>An either monad</returns>
-    Result<IEnumerable<Message>> GetMessages(long userId,
-                                                    int channelId,
-                                                    string? searchTerm = null,
-                                                    long? lastMessageId = null);
+    Result<IEnumerable<Message>> GetMessages(
+        long userId,
+        int channelId,
+        string? searchTerm = null,
+        long? lastMessageId = null
+    );
 
     /// <summary>
     /// This method will insert a new message sent to the channel provided.

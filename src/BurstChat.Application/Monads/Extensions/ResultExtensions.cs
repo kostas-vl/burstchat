@@ -59,7 +59,11 @@ public static class ResultExtensions
         {
             callback(instance);
             return new MonadException(
-                ErrorLevel.Critical, ErrorType.DataProcess, "Wrapper exception see inner exception for more detauls", instance);
+                ErrorLevel.Critical,
+                ErrorType.DataProcess,
+                "Wrapper exception see inner exception for more detauls",
+                instance
+            );
         }
         catch (Exception ex)
         {

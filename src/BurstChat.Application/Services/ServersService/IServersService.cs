@@ -60,7 +60,11 @@ namespace BurstChat.Application.Services.ServersService
         /// <param name="serverId">The id of the server</param>
         /// <param name="subscription">The subscription instance to be removed</param>
         /// <returns>An either monad</returns>
-        Result<Subscription> DeleteSubscription(long userId, int serverId, Subscription subscription);
+        Result<Subscription> DeleteSubscription(
+            long userId,
+            int serverId,
+            Subscription subscription
+        );
 
         /// <summary>
         /// Fetches all invitations sent for a server based on the provided id.

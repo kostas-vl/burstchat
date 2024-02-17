@@ -18,9 +18,8 @@ public static class UserErrors
     public static MonadException UserOneTimePasswordInvalid =>
         new(Level.Critical, Type.Validation, "The one time password is invalid");
 
-    public static Error UserOneTimePasswordExpired() => new(ErrorLevel.Critical,
-                                                            ErrorType.Validation,
-                                                            "The one time password has expired");
+    public static Error UserOneTimePasswordExpired() =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The one time password has expired");
 
     public static MonadException CouldNotUpdateInvitation =>
         new(Level.Critical, Type.DataProcess, "Could not update invitation");

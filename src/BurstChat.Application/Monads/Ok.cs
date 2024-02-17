@@ -73,8 +73,9 @@ public record Ok<T>(T Value) : Result<T>
 
     public override Result<T> MapErr(Func<MonadException, MonadException> callback) => this;
 
-    public override Task<Result<T>> MapErrAsync(Func<MonadException, Task<MonadException>> callback) =>
-        Task.FromResult((Result<T>)this);
+    public override Task<Result<T>> MapErrAsync(
+        Func<MonadException, Task<MonadException>> callback
+    ) => Task.FromResult((Result<T>)this);
 
     public override Result<T> Inspect(Action<T> callback)
     {

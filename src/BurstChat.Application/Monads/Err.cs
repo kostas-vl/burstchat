@@ -9,14 +9,12 @@ public record Err<T>(MonadException Value) : Result<T>
 
     public override bool IsErr { get; } = true;
 
-    public override Result<V> And<V>(Result<V> res) =>
-        new Err<V>(Value);
+    public override Result<V> And<V>(Result<V> res) => new Err<V>(Value);
 
     public override Task<Result<V>> AndAsync<V>(Task<Result<V>> res) =>
         Task.FromResult((Result<V>)new Err<V>(Value));
 
-    public override Result<V> And<V>(Func<T, Result<V>> callback) =>
-        new Err<V>(Value);
+    public override Result<V> And<V>(Func<T, Result<V>> callback) => new Err<V>(Value);
 
     public override Task<Result<V>> AndAsync<V>(Func<T, Task<Result<V>>> callback) =>
         Task.FromResult((Result<V>)new Err<V>(Value));
@@ -66,7 +64,9 @@ public record Err<T>(MonadException Value) : Result<T>
         }
     }
 
-    public override async Task<Result<T>> MapErrAsync(Func<MonadException, Task<MonadException>> callback)
+    public override async Task<Result<T>> MapErrAsync(
+        Func<MonadException, Task<MonadException>> callback
+    )
     {
         try
         {
@@ -109,7 +109,8 @@ public record Err<T>(MonadException Value) : Result<T>
         }
     }
 
-    public override T Expect(string message) => throw new MonadException(ErrorLevel.Critical, ErrorType.DataProcess, message);
+    public override T Expect(string message) =>
+        throw new MonadException(ErrorLevel.Critical, ErrorType.DataProcess, message);
 
     public override T Unwrap() => throw Value;
 

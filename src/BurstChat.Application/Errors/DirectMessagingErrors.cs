@@ -14,12 +14,24 @@ namespace BurstChat.Application.Errors
             new MonadException(Level.Critical, Type.DataProcess, "The direct messages dont exist");
 
         public static MonadException DirectMessagingAlreadyExists =>
-            new MonadException(Level.Critical, Type.DataProcess, "The direct messages have already been associated");
+            new MonadException(
+                Level.Critical,
+                Type.DataProcess,
+                "The direct messages have already been associated"
+            );
 
         public static MonadException DirectMessagesNotFound =>
-            new MonadException(Level.Critical, Type.DataProcess, "The direct messages were not found");
+            new MonadException(
+                Level.Critical,
+                Type.DataProcess,
+                "The direct messages were not found"
+            );
 
         public static MonadException DirectMessageNotFound =>
-            new MonadException(Level.Critical, Type.DataProcess, "The direct message was not found");
+            new MonadException(
+                Level.Critical,
+                Type.DataProcess,
+                "The direct message was not found"
+            );
     }
 }

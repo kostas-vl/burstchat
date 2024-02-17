@@ -34,7 +34,9 @@ public abstract record Result<T>
 
     public abstract Result<T> MapErr(Func<MonadException, MonadException> callback);
 
-    public abstract Task<Result<T>> MapErrAsync(Func<MonadException, Task<MonadException>> callback);
+    public abstract Task<Result<T>> MapErrAsync(
+        Func<MonadException, Task<MonadException>> callback
+    );
 
     public abstract Result<T> Inspect(Action<T> callback);
 

@@ -21,15 +21,13 @@ public class ModelValidationProvider : IModelValidationService
             : AlphaInvitationErrors.AlphaInvitationCodeIsNotValid;
 
     private Result<Registration> NameIsValid(Registration registration) =>
-        !String.IsNullOrEmpty(registration.Name)
-        && !String.IsNullOrWhiteSpace(registration.Name)
+        !String.IsNullOrEmpty(registration.Name) && !String.IsNullOrWhiteSpace(registration.Name)
             ? registration.Ok()
             : ModelErrors.NameInvalid;
 
     private bool EmailIsValid(string email)
     {
-        var notEmpty = !String.IsNullOrEmpty(email)
-                       && !String.IsNullOrWhiteSpace(email);
+        var notEmpty = !String.IsNullOrEmpty(email) && !String.IsNullOrWhiteSpace(email);
 
         if (notEmpty)
         {
@@ -94,9 +92,7 @@ public class ModelValidationProvider : IModelValidationService
             : ModelErrors.ConfirmPasswordInvalid;
 
     public Result<Credentials> ValidateCredentials(Credentials credentials) =>
-        CredentialsHasValue(credentials)
-            .And(EmailIsValid)
-            .And(PasswordIsValid);
+        CredentialsHasValue(credentials).And(EmailIsValid).And(PasswordIsValid);
 
     public Result<Registration> ValidateRegistration(Registration registration) =>
         RegistrationHasValue(registration)
