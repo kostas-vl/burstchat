@@ -4,66 +4,52 @@ using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Http;
 
-namespace BurstChat.Api.Extensions
+namespace BurstChat.Api.Extensions;
+
+public static class HttpContextExtensions
 {
-    /// <summary>
-    /// This class contains extensions methods for an HttpContext instance.
-    /// </summary>
-    public static class HttpContextExtensions
+    public static Either<long, Error> GetUserId(this HttpContext context)
     {
-        /// <summary>
-        /// This method will get the user id for the current HttpContext instance based on the subject id
-        /// of the authenticated user's claims.
-        /// </summary>
-        /// <param name="context">The http context instance</param>
-        /// <returns>An either monad</returns>
-        public static Either<long, Error> GetUserId(this HttpContext context)
+        try
         {
-            try
-            {
-                var subjectClaim = context
-                    .User
-                    .FindFirst("sub");
+            var subjectClaim = context
+                .User
+                .FindFirst("sub");
 
-                if (subjectClaim is { })
-                {
-                    var userId = Convert.ToInt64(subjectClaim.Value);
-                    return new Success<long, Error>(userId);
-                }
-                else
-                    return new Failure<long, Error>(new AuthenticationError());
-            }
-            catch
+            if (subjectClaim is { })
             {
+                var userId = Convert.ToInt64(subjectClaim.Value);
+                return new Success<long, Error>(userId);
+            }
+            else
                 return new Failure<long, Error>(new AuthenticationError());
-            }
         }
-
-        /// <summary>
-        /// This method will fetch the value of a Bearer access token based on the instance of the HttpContext.
-        /// </summary>
-        /// <param name="context">The http context instance</param>
-        public static string GetAccessToken(this HttpContext context)
+        catch
         {
-            try
-            {
-                var authorizationFound = context
-                    .Request
-                    .Headers
-                    .TryGetValue("Authorization", out var bearerValue);
+            return new Failure<long, Error>(new AuthenticationError());
+        }
+    }
 
-                if (authorizationFound)
-                {
-                    var plainValue = bearerValue.ToString();
-                    return plainValue.Split("Bearer ").Last();
-                }
+    public static string GetAccessToken(this HttpContext context)
+    {
+        try
+        {
+            var authorizationFound = context
+                .Request
+                .Headers
+                .TryGetValue("Authorization", out var bearerValue);
 
-                return string.Empty;
-            }
-            catch
+            if (authorizationFound)
             {
-                return string.Empty;
+                var plainValue = bearerValue.ToString();
+                return plainValue.Split("Bearer ").Last();
             }
+
+            return string.Empty;
+        }
+        catch
+        {
+            return string.Empty;
         }
     }
 }
