@@ -3,7 +3,7 @@ using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BurstChat.Application.Extensions;
+namespace BurstChat.Infrastructure.Extensions;
 
 public static class ResultExtensions
 {
