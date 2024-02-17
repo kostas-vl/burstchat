@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Services.ChannelsService;
@@ -33,58 +32,75 @@ public class ChannelsController : ControllerBase
     [HttpGet("{channelId:int}")]
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Channel, Error> Get(int channelId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.Get(userId, channelId));
+    public IActionResult Get(int channelId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.Get(userId, channelId))
+            .Into();
 
     [HttpPost]
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Channel, Error> Post([FromBody] Channel channel, [FromQuery] int serverId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.Insert(userId, serverId, channel));
+    public IActionResult Post([FromBody] Channel channel, [FromQuery] int serverId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.Insert(userId, serverId, channel))
+            .Into();
 
     [HttpPut]
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Channel, Error> Put([FromBody] Channel channel) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.Update(userId, channel));
+    public IActionResult Put([FromBody] Channel channel) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.Update(userId, channel))
+            .Into();
 
     [HttpDelete("{channelId:int}")]
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Channel, Error> Delete(int channelId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.Delete(userId, channelId));
+    public IActionResult Delete(int channelId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.Delete(userId, channelId))
+            .Into();
 
     [HttpGet("{channelId:int}/messages")]
     [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<IEnumerable<Message>, Error> GetMessages(int channelId,
-                                                                      [FromQuery] string? searchTerm,
-                                                                      [FromQuery] long? lastMessageId = null) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId));
+    public IActionResult GetMessages(
+        int channelId,
+        [FromQuery] string? searchTerm,
+        [FromQuery] long? lastMessageId = null) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId))
+            .Into();
 
     [HttpPost("{channelId:int}/messages")]
     [ProducesResponseType(typeof(Message), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Message, Error> PostMessage(int channelId, [FromBody] Message message) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.InsertMessage(userId, channelId, message));
+    public IActionResult PostMessage(int channelId, [FromBody] Message message) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.InsertMessage(userId, channelId, message))
+            .Into();
 
     [HttpPut("{channelId:int}/messages")]
     [ProducesResponseType(typeof(Message), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Message, Error> PutMessage(int channelId, [FromBody] Message message) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.UpdateMessage(userId, channelId, message));
+    public IActionResult PutMessage(int channelId, [FromBody] Message message) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.UpdateMessage(userId, channelId, message))
+            .Into();
 
     [HttpDelete("{channelId:int}/messages")]
     [ProducesResponseType(typeof(Message), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Message, Error> DeleteMessage(int channelId, [FromBody] long messageId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _channelsService.DeleteMessage(userId, channelId, messageId));
+    public IActionResult DeleteMessage(int channelId, [FromBody] long messageId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _channelsService.DeleteMessage(userId, channelId, messageId))
+            .Into();
 }

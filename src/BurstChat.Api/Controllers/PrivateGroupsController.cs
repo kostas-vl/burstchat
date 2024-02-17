@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
@@ -29,72 +28,92 @@ public class PrivateGroupsController : ControllerBase
     [HttpGet("{groupId:long}")]
     [ProducesResponseType(typeof(PrivateGroup), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<PrivateGroup, Error> Get(long groupId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.Get(userId, groupId));
+    public IActionResult Get(long groupId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.Get(userId, groupId))
+            .Into();
 
     [HttpPost]
     [ProducesResponseType(typeof(PrivateGroup), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<PrivateGroup, Error> Post([FromBody] string groupName) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.Insert(userId, groupName));
+    public IActionResult Post([FromBody] string groupName) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.Insert(userId, groupName))
+            .Into();
 
     [HttpPost("{groupName}")]
     [ProducesResponseType(typeof(PrivateGroup), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<PrivateGroup, Error> Post(string groupName, [FromBody] IEnumerable<long> userIds) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.Insert(userId, groupName))
-                   .Bind(privateGroup => HttpContext.GetUserId()
-                                                    .Bind(userId => _privateGroupMessagingService.InsertUsers(userId, privateGroup.Id, userIds)));
+    public IActionResult Post(string groupName, [FromBody] IEnumerable<long> userIds) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService
+                .Insert(userId, groupName)
+                .And(privateGroup => _privateGroupMessagingService.InsertUsers(userId, privateGroup.Id, userIds)))
+            .Into();
 
     [HttpDelete("{groupId:long}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Unit, Error> Delete(long groupId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.Delete(userId, groupId));
+    public IActionResult Delete(long groupId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.Delete(userId, groupId))
+            .Into();
 
     [HttpPost("{groupId:long}/user")]
     [ProducesResponseType(typeof(PrivateGroup), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<PrivateGroup, Error> PostUser(long groupId, [FromBody] long newUserId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.InsertUser(userId, groupId, newUserId));
+    public IActionResult PostUser(long groupId, [FromBody] long newUserId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.InsertUser(userId, groupId, newUserId))
+            .Into();
 
     [HttpDelete("{groupId:long}/user")]
     [ProducesResponseType(typeof(PrivateGroup), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<PrivateGroup, Error> DeleteUser(long groupId, [FromBody] long targetUserId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.DeleteUser(userId, groupId, targetUserId));
+    public IActionResult DeleteUser(long groupId, [FromBody] long targetUserId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.DeleteUser(userId, groupId, targetUserId))
+            .Into();
 
     [HttpGet("{groupId:long}/messages")]
     [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<IEnumerable<Message>, Error> GetMessages(long groupId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.GetMessages(userId, groupId));
+    public IActionResult GetMessages(long groupId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.GetMessages(userId, groupId))
+            .Into();
 
     [HttpPost("{groupId:long}/messages")]
     [ProducesResponseType(typeof(Message), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Message, Error> PostMessage(long groupId, [FromBody] Message message) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.InsertMessage(userId, groupId, message));
+    public IActionResult PostMessage(long groupId, [FromBody] Message message) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.InsertMessage(userId, groupId, message))
+            .Into();
 
     [HttpPut("{groupId:long}/messages")]
     [ProducesResponseType(typeof(Message), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Message, Error> PutMessage(long groupId, [FromBody] Message message) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.UpdateMessage(userId, groupId, message));
+    public IActionResult PutMessage(long groupId, [FromBody] Message message) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.UpdateMessage(userId, groupId, message))
+            .Into();
 
     [HttpDelete("{groupId:long}/messages")]
     [ProducesResponseType(200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Unit, Error> DeleteMessage(long groupId, [FromBody] long messageId) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _privateGroupMessagingService.DeleteMessage(userId, groupId, messageId));
+    public IActionResult DeleteMessage(long groupId, [FromBody] long messageId) =>
+        HttpContext
+            .GetUserId()
+            .And(userId => _privateGroupMessagingService.DeleteMessage(userId, groupId, messageId))
+            .Into();
 }

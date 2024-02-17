@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Api.ActionResults;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Models;
@@ -40,69 +39,64 @@ public class UserController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(User), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<User, Error> Get() =>
-        HttpContext.GetUserId()
-                   .Bind(_userService.Get);
+    public IActionResult Get() =>
+        HttpContext.GetUserId().And(_userService.Get).Into();
 
     [HttpGet("{userId:long}")]
     [ProducesResponseType(typeof(User), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<User, Error> Get(long userId) =>
-        HttpContext.GetUserId()
-                   .Bind(_ => _userService.Get(userId));
+    public IActionResult Get(long userId) =>
+        HttpContext.GetUserId().And(_ => _userService.Get(userId)).Into();
 
     [HttpPut]
     [ProducesResponseType(typeof(User), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<User, Error> Put([FromBody] User user) =>
-        _userService.Update(user);
+    public IActionResult Put([FromBody] User user) =>
+        _userService.Update(user).Into();
 
     [HttpDelete("{id:long}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Unit, Error> Delete(long id) =>
-        HttpContext.GetUserId()
-                   .Bind(_userService.Delete);
+    public IActionResult Delete(long id) =>
+        HttpContext.GetUserId().And(_userService.Delete).Into();
 
     [HttpGet("subscriptions")]
     [ProducesResponseType(typeof(IEnumerable<Server>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<IEnumerable<Server>, Error> GetSubscriptions() =>
-        HttpContext.GetUserId()
-                   .Bind(_userService.GetSubscriptions);
+    public IActionResult GetSubscriptions() =>
+        HttpContext.GetUserId().And(_userService.GetSubscriptions).Into();
 
     [HttpGet("groups")]
     [ProducesResponseType(typeof(IEnumerable<PrivateGroup>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<IEnumerable<PrivateGroup>, Error> GetPrivateGroups() =>
-        HttpContext.GetUserId()
-                   .Bind(_userService.GetPrivateGroups);
+    public IActionResult GetPrivateGroups() =>
+        HttpContext.GetUserId().And(_userService.GetPrivateGroups).Into();
 
     [HttpGet("direct")]
     [ProducesResponseType(typeof(IEnumerable<DirectMessaging>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<IEnumerable<DirectMessaging>, Error> GetDirectMessaging() =>
-        HttpContext.GetUserId()
-                   .Bind(_userService.GetDirectMessaging);
+    public IActionResult GetDirectMessaging() =>
+        HttpContext.GetUserId().And(_userService.GetDirectMessaging).Into();
 
     [HttpGet("invitations")]
     [ProducesResponseType(typeof(IEnumerable<Invitation>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<IEnumerable<Invitation>, Error> GetInvitations() =>
-        HttpContext.GetUserId()
-                   .Bind(_userService.GetInvitations);
+    public IActionResult GetInvitations() =>
+        HttpContext.GetUserId().And(_userService.GetInvitations).Into();
 
     [HttpPut("invitation")]
     [ProducesResponseType(typeof(Invitation), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public MonadActionResult<Invitation, Error> UpdateInvitation([FromBody] UpdateInvitation invitation) =>
-        HttpContext.GetUserId()
-                   .Bind(userId => _userService.UpdateInvitation(userId, invitation));
+    public IActionResult UpdateInvitation([FromBody] UpdateInvitation invitation) =>
+        HttpContext.GetUserId().And(userId => _userService.UpdateInvitation(userId, invitation)).Into();
 
     [HttpGet("sip")]
     [ProducesResponseType(typeof(AsteriskEndpoint), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public async Task<MonadActionResult<AsteriskEndpoint, Error>> GetSipEndpoint() =>
-        await HttpContext.GetUserId()
-                         .BindAsync(async userId => await _asteriskService.GetAsync(userId.ToString()));
+    public async Task<IActionResult> GetSipEndpoint() =>
+        await HttpContext
+            .GetUserId()
+            .Map(userId => userId.ToString())
+            .AndAsync(_asteriskService.GetAsync)
+            .IntoAsync();
 }

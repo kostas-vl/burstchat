@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Http;
 
@@ -8,27 +7,10 @@ namespace BurstChat.Api.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static Either<long, Error> GetUserId(this HttpContext context)
-    {
-        try
-        {
-            var subjectClaim = context
-                .User
-                .FindFirst("sub");
-
-            if (subjectClaim is { })
-            {
-                var userId = Convert.ToInt64(subjectClaim.Value);
-                return new Success<long, Error>(userId);
-            }
-            else
-                return new Failure<long, Error>(new AuthenticationError());
-        }
-        catch
-        {
-            return new Failure<long, Error>(new AuthenticationError());
-        }
-    }
+    public static Result<long> GetUserId(this HttpContext context) => context
+        .Map(c => c.User.FindFirst("sub"))
+        .Map(claim => Convert.ToInt64(claim?.Value))
+        .MapErr(_ => AuthenticationException.Instance);
 
     public static string GetAccessToken(this HttpContext context)
     {
