@@ -5,6 +5,10 @@ namespace BurstChat.Application.Monads;
 
 public record Err<T>(MonadException Value) : Result<T>
 {
+    public override bool IsOk { get; } = false;
+
+    public override bool IsErr { get; } = true;
+
     public override Result<V> And<V>(Result<V> res) =>
         new Err<V>(Value);
 

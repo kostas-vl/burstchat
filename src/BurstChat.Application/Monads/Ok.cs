@@ -5,6 +5,10 @@ namespace BurstChat.Application.Monads;
 
 public record Ok<T>(T Value) : Result<T>
 {
+    public override bool IsOk { get; } = true;
+
+    public override bool IsErr { get; } = false;
+
     public override Result<V> And<V>(Result<V> res) => res;
 
     public override Task<Result<V>> AndAsync<V>(Task<Result<V>> res) => res;

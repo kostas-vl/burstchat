@@ -29,6 +29,12 @@ public static class TaskResultExtensions
         return await res.AndAsync<V>(callback);
     }
 
+    public static Task<Result<V>> AndAsync<T, V>(this Exception instance, Task<Result<V>> res) =>
+        Task.FromResult(new ResultCallbackException(instance).Err<V>());
+
+    public static Task<Result<V>> AndAsync<T, V>(this Exception instance, Func<T, Task<Result<V>>> callback) =>
+        Task.FromResult(new ResultCallbackException(instance).Err<V>());
+
     public static async Task<Result<T>> OrAsync<T>(this Task<Result<T>> source, Result<T> target)
     {
         var res = await source;
@@ -65,16 +71,65 @@ public static class TaskResultExtensions
         return await res.MapAsync(callback);
     }
 
+    public static async Task<Result<V>> MapAsync<T, V>(this T instance, Func<T, Task<V>> callback)
+    {
+        try
+        {
+            return (await callback(instance)).Ok();
+        }
+        catch (Exception ex)
+        {
+            return new ResultCallbackException(ex);
+        }
+    }
+
+    public static Task<Result<V>> MapAsync<T, V>(this Exception instance, Func<T, Task<V>> callback) =>
+        Task.FromResult(new ResultCallbackException(instance).Err<V>());
+
+
     public static async Task<Result<T>> InspectAsync<T>(this Task<Result<T>> source, Func<T, Task> callback)
     {
         var res = await source;
         return await res.InspectAsync(callback);
     }
 
-    public static async Task<Result<T>> InspectErr<T>(this Task<Result<T>> source, Func<MonadException, Task> callback)
+    public static async Task<Result<T>> InspectAsync<T>(this T instance, Func<T, Task> callback)
+    {
+        try
+        {
+            await callback(instance);
+            return instance.Ok();
+        }
+        catch (Exception ex)
+        {
+            return new ResultCallbackException(ex);
+        }
+    }
+
+    public static async Task<Result<T>> InspectErrAsync<T>(this Task<Result<T>> source, Func<MonadException, Task> callback)
     {
         var res = await source;
         return await res.InspectErrAsync(callback);
+    }
+
+    public static async Task<Result<T>> InspectErrAsync<T>(this Task<Result<T>> source, Action<MonadException> callback)
+    {
+        var res = await source;
+        return res.InspectErr(callback);
+    }
+
+    public static async Task<Result<T>> InspectErrAsync<T>(this Exception instance, Func<Exception, Task> callback)
+    {
+        try
+        {
+            await callback(instance);
+            return new MonadException(
+                ErrorLevel.Critical, ErrorType.DataProcess, "Wrapper exception see inner exception for more detauls", instance);
+        }
+        catch (Exception ex)
+        {
+            return new ResultCallbackException(ex);
+        }
     }
 
     public static async Task<T> ExpectAsync<T>(this Task<Result<T>> source, string message)

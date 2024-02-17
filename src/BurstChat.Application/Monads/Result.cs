@@ -8,6 +8,10 @@ namespace BurstChat.Application.Monads;
 /// </summary>
 public abstract record Result<T>
 {
+    public abstract bool IsOk { get; }
+
+    public abstract bool IsErr { get; }
+
     public abstract Result<V> And<V>(Result<V> res);
 
     public abstract Result<V> And<V>(Func<T, Result<V>> callback);
