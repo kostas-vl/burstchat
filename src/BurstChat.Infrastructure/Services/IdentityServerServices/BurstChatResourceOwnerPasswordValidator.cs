@@ -4,7 +4,6 @@ using System.Security.Claims;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Services.UserService;
-using BurstChat.Domain.Schema.Users;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
@@ -32,30 +31,23 @@ public class BurstChatResourceOwnerPasswordValidator : IResourceOwnerPasswordVal
 
     public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
     {
-        var validationMonad = _userService
-            .Validate(context.UserName, context.Password);
+        var validationResult = _userService.Validate(context.UserName, context.Password);
+        var claimsResult = validationResult.And(_userService.GetClaims);
 
-        var claimsMonad = validationMonad
-            .Bind(_userService.GetClaims);
-
-        switch (claimsMonad)
+        if (claimsResult.IsOk)
         {
-            case Success<IEnumerable<Claim>, Error> claims:
-                var user = (validationMonad as Success<User, Error>)!.Value;
-                context.Result = new GrantValidationResult(user.Id.ToString(),
-                                                           OidcConstants.AuthenticationMethods.Password,
-                                                           _clock.UtcNow.UtcDateTime,
-                                                           claims: claims.Value);
-                break;
-
-            case Failure<IEnumerable<Claim>, Error> _:
-                var error = UserErrors.UserPasswordDidNotMatch();
-                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, error.Message);
-                break;
-
-            default:
-                break;
-
+            var user = validationResult.Unwrap();
+            var claims = claimsResult.Unwrap();
+            context.Result = new GrantValidationResult(
+                user.Id.ToString(),
+                OidcConstants.AuthenticationMethods.Password,
+                _clock.UtcNow.UtcDateTime,
+                claims);
+        }
+        else
+        {
+            var error = UserErrors.UserPasswordDidNotMatch;
+            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, error.Message);
         }
 
         return Task.CompletedTask;

@@ -34,15 +34,11 @@ public class BurstChatProfileService : IProfileService
 
         if (context.RequestedClaimTypes.Any())
         {
-            var subjectId = context
-                .Subject
-                .GetSubjectId();
+            var subjectId = context.Subject.GetSubjectId();
             var userId = Convert.ToInt64(subjectId);
-            var userMonad = _userService.Get(userId);
-            var claimsMonad = userMonad.Bind(_userService.GetClaims);
+            var result = _userService.Get(userId).And(_userService.GetClaims);
 
-            if (claimsMonad is Success<IEnumerable<Claim>, Error> claims)
-                context.AddRequestedClaims(new Claim[0]);
+            if (result.IsOk) context.AddRequestedClaims(new Claim[0]);
         }
 
         context.LogIssuedClaims(_logger);
@@ -54,13 +50,9 @@ public class BurstChatProfileService : IProfileService
     {
         _logger.LogDebug("IsActive called from: {caller}", context.Caller);
 
-        var subjectId = context
-            .Subject
-            .GetSubjectId();
+        var subjectId = context.Subject.GetSubjectId();
         var userId = Convert.ToInt64(subjectId);
-        var userMonad = _userService.Get(userId);
-
-        context.IsActive = userMonad is Success<User, Error>;
+        context.IsActive = _userService.Get(userId).IsOk;
 
         return Task.CompletedTask;
     }

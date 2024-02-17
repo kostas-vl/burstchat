@@ -34,7 +34,7 @@ public class EmailProvider : IEmailService, IDisposable
         };
     }
 
-    public async Task<Either<Unit, Error>> SendOneTimePasswordAsync(string recipient, string oneTimePassword)
+    public async Task<Result<Unit>> SendOneTimePasswordAsync(string recipient, string oneTimePassword)
     {
         try
         {
@@ -42,18 +42,18 @@ public class EmailProvider : IEmailService, IDisposable
             var subject = "BurstChat reset password";
             var body = $"BurstChat account one time password: {oneTimePassword}";
             await _smtpClient.SendMailAsync(sender, recipient, subject, body);
-            return new Success<Unit, Error>(new Unit());
+            return Unit.Ok;
         }
         catch (Exception e)
         {
             if (_webHostEnvironment.IsDevelopment())
             {
                 _logger.LogInformation($"[email: {recipient}] one time pass {oneTimePassword}");
-                return new Success<Unit, Error>(new Unit());
+                return Unit.Ok;
             }
 
             _logger.LogError(e.Message);
-            return new Failure<Unit, Error>(SystemErrors.Exception());
+            return SystemErrors.Exception;
         }
     }
 

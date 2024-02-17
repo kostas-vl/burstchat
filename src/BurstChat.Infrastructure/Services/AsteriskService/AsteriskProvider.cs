@@ -59,9 +59,8 @@ public class AsteriskProvider : IAsteriskService, IDisposable
         _connection = new NpgsqlConnection(_options.ConnectionString);
     }
 
-    private async Task<Either<Unit, Error>> PostAorAsync(string endpoint)
-    {
-        try
+    private Task<Result<Unit>> PostAorAsync(string endpoint) => _connection
+        .MapAsync(async conn =>
         {
             var parameters = new
             {
@@ -70,20 +69,14 @@ public class AsteriskProvider : IAsteriskService, IDisposable
                 removeExisting = true,
                 supportPath = true
             };
+            await conn.ExecuteAsync(InsertAor, parameters);
+            return Unit.Instance;
+        })
+        .InspectErrAsync(e => _logger.LogError(e.Message));
 
-            await _connection.ExecuteAsync(InsertAor, parameters);
 
-            return new Success<Unit, Error>(Unit.New());
-        } catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return new Failure<Unit, Error>(SystemErrors.Exception());
-        }
-    }
-
-    private async Task<Either<Unit, Error>> PostAuthAsync(string endpoint, Guid password)
-    {
-        try
+    private Task<Result<Unit>> PostAuthAsync(string endpoint, Guid password) => _connection
+        .MapAsync(async conn =>
         {
             var parameters = new
             {
@@ -92,21 +85,14 @@ public class AsteriskProvider : IAsteriskService, IDisposable
                 username = endpoint,
                 password = password.ToString()
             };
+            await conn.ExecuteAsync(InsertAuth, parameters);
+            return Unit.Instance;
+        })
+        .InspectErrAsync(e => _logger.LogError(e.Message));
 
-            await _connection.ExecuteAsync(InsertAuth, parameters);
 
-            return new Success<Unit, Error>(Unit.New());
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return new Failure<Unit, Error>(SystemErrors.Exception());
-        }
-    }
-
-    private async Task<Either<Unit, Error>> PostEndpointAsync(string endpoint)
-    {
-        try
+    private Task<Result<Unit>> PostEndpointAsync(string endpoint) => _connection
+        .MapAsync(async conn =>
         {
             var parameters = new
             {
@@ -120,46 +106,25 @@ public class AsteriskProvider : IAsteriskService, IDisposable
                 dtlsAutoGenerateCert = true,
                 webrtc = true
             };
-
             await _connection.ExecuteAsync(InsertEndpoint, parameters);
+            return Unit.Instance;
+        })
+        .InspectErrAsync(e => _logger.LogError(e.Message));
 
-            return new Success<Unit, Error>(Unit.New());
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return new Failure<Unit, Error>(SystemErrors.Exception());
-        }
-    }
 
-    public async Task<Either<AsteriskEndpoint, Error>> GetAsync(string endpoint)
-    {
-        try
-        {
-            var info = await _connection
-                .QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint });
+    public Task<Result<AsteriskEndpoint>> GetAsync(string endpoint) => _connection
+        .MapAsync(conn => conn.QueryFirstAsync<AsteriskEndpoint>(GetEndpointCredentials, new { endpoint }))
+        .InspectErrAsync(e => _logger.LogError(e.Message));
 
-            return new Success<AsteriskEndpoint, Error>(info);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return new Failure<AsteriskEndpoint, Error>(SystemErrors.Exception());
-        }
-    }
 
-    public async Task<Either<AsteriskEndpoint, Error>> PostAsync(string endpoint, Guid password)
-    {
-        var authMonad = await PostAuthAsync(endpoint, password);
-        var aorMonad = await authMonad.BindAsync(_ => PostAorAsync(endpoint));
-        var endpointMonad = await authMonad.BindAsync(_ => PostEndpointAsync(endpoint));
-
-        return endpointMonad.Attach(_ => new AsteriskEndpoint
+    public Task<Result<AsteriskEndpoint>> PostAsync(string endpoint, Guid password) => PostAuthAsync(endpoint, password)
+        .AndAsync(_ => PostAorAsync(endpoint))
+        .AndAsync(_ => PostEndpointAsync(endpoint))
+        .MapAsync(_ => new AsteriskEndpoint
         {
             Username = endpoint,
             Password = password.ToString()
         });
-    }
 
     public void Dispose()
     {
