@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
+using BurstChat.Application.Extensions;
 using BurstChat.Application.Services.ServersService;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
+using BurstChat.Application.Extensions;
 using BurstChat.Application.Services.ChannelsService;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
