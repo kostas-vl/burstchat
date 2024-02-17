@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using BurstChat.Application.Monads;
 using BurstChat.Application.Errors;
+using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BurstChat.Api.Extensions;

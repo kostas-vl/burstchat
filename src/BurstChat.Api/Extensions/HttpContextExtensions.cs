@@ -7,19 +7,20 @@ namespace BurstChat.Api.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static Result<long> GetUserId(this HttpContext context) => context
-        .Map(c => c.User.FindFirst("sub"))
-        .Map(claim => Convert.ToInt64(claim?.Value))
-        .MapErr(_ => AuthenticationException.Instance);
+    public static Result<long> GetUserId(this HttpContext context) =>
+        context
+            .Map(c => c.User.FindFirst("sub"))
+            .Map(claim => Convert.ToInt64(claim?.Value))
+            .MapErr(_ => AuthenticationException.Instance);
 
     public static string GetAccessToken(this HttpContext context)
     {
         try
         {
-            var authorizationFound = context
-                .Request
-                .Headers
-                .TryGetValue("Authorization", out var bearerValue);
+            var authorizationFound = context.Request.Headers.TryGetValue(
+                "Authorization",
+                out var bearerValue
+            );
 
             if (authorizationFound)
             {

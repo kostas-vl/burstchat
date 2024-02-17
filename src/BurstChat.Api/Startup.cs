@@ -13,7 +13,9 @@ namespace BurstChat.Api;
 
 public class Startup
 {
-    private readonly static ILoggerFactory BurstChatContextLogger = LoggerFactory.Create(builder => builder.AddConsole());
+    private static readonly ILoggerFactory BurstChatContextLogger = LoggerFactory.Create(builder =>
+        builder.AddConsole()
+    );
 
     public IConfiguration Configuration { get; }
 
@@ -24,9 +26,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services
-            .AddApplication()
-            .AddInfrastructure(Configuration);
+        services.AddApplication().AddInfrastructure(Configuration);
 
         services.AddMvc();
         services.AddControllers();
@@ -58,15 +58,17 @@ public class Startup
             {
                 endpoints.MapControllers();
             })
-            .Use(async (context, next) =>
-            {
-                var path = context?.Request?.Path;
-                if (path?.Value?.IndexOf("/api", StringComparison.InvariantCulture) == -1)
+            .Use(
+                async (context, next) =>
                 {
-                    context?.Response?.Redirect("index.html");
-                    return;
+                    var path = context?.Request?.Path;
+                    if (path?.Value?.IndexOf("/api", StringComparison.InvariantCulture) == -1)
+                    {
+                        context?.Response?.Redirect("index.html");
+                        return;
+                    }
+                    await next();
                 }
-                await next();
-            });
+            );
     }
 }

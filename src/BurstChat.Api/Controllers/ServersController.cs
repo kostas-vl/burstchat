@@ -20,10 +20,7 @@ public class ServersController : ControllerBase
     private readonly ILogger<ServersController> _logger;
     private readonly IServersService _serversService;
 
-    public ServersController(
-        ILogger<ServersController> logger,
-        IServersService serversService
-    )
+    public ServersController(ILogger<ServersController> logger, IServersService serversService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _serversService = serversService ?? throw new ArgumentNullException(nameof(serversService));
@@ -57,13 +54,19 @@ public class ServersController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<User>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
     public IActionResult GetSubscribedUsers(int serverId) =>
-        HttpContext.GetUserId().And(userId => _serversService.GetSubscribedUsers(userId, serverId)).Into();
+        HttpContext
+            .GetUserId()
+            .And(userId => _serversService.GetSubscribedUsers(userId, serverId))
+            .Into();
 
     [HttpDelete("{serverId:int}/subscriptions")]
     [ProducesResponseType(typeof(Subscription), 200)]
     [ProducesResponseType(typeof(Error), 400)]
     public IActionResult DeleteSubscription(int serverId, [FromBody] Subscription subscription) =>
-        HttpContext.GetUserId().And(userId => _serversService.DeleteSubscription(userId, serverId, subscription)).Into();
+        HttpContext
+            .GetUserId()
+            .And(userId => _serversService.DeleteSubscription(userId, serverId, subscription))
+            .Into();
 
     [HttpGet("{serverId:int}/invitations")]
     [ProducesResponseType(typeof(IEnumerable<Invitation>), 200)]

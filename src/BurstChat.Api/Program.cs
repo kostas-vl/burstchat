@@ -11,9 +11,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        CreateWebHostBuilder(args)
-            .Build()
-            .Run();
+        CreateWebHostBuilder(args).Build().Run();
     }
 
     public static IHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -21,26 +19,48 @@ public class Program
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder
-                    .ConfigureAppConfiguration((context, config) =>
-                    {
-                        config.AddJsonFile("appsettings.Database.json", optional: false, reloadOnChange: false);
-                        config.AddJsonFile("appsettings.Domains.json", optional: false, reloadOnChange: false);
-                        config.AddJsonFile("appsettings.AccessTokenValidation.json", optional: false, reloadOnChange: false);
-                    })
+                    .ConfigureAppConfiguration(
+                        (context, config) =>
+                        {
+                            config.AddJsonFile(
+                                "appsettings.Database.json",
+                                optional: false,
+                                reloadOnChange: false
+                            );
+                            config.AddJsonFile(
+                                "appsettings.Domains.json",
+                                optional: false,
+                                reloadOnChange: false
+                            );
+                            config.AddJsonFile(
+                                "appsettings.AccessTokenValidation.json",
+                                optional: false,
+                                reloadOnChange: false
+                            );
+                        }
+                    )
                     .UseKestrel(options =>
                     {
-                        var envHost = Environment.GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_API_HOST);
-                        var envPort = Environment.GetEnvironmentVariable(EnvironmentVariables.BURST_CHAT_API_PORT);
+                        var envHost = Environment.GetEnvironmentVariable(
+                            EnvironmentVariables.BURST_CHAT_API_HOST
+                        );
+                        var envPort = Environment.GetEnvironmentVariable(
+                            EnvironmentVariables.BURST_CHAT_API_PORT
+                        );
 
                         if (envHost != null && envPort != null)
                         {
                             var canParseHost = IPAddress.TryParse(envHost, out var host);
                             if (!canParseHost)
-                                throw new Exception($"{EnvironmentVariables.BURST_CHAT_API_HOST} invalid value");
+                                throw new Exception(
+                                    $"{EnvironmentVariables.BURST_CHAT_API_HOST} invalid value"
+                                );
 
                             var canParsePort = Int32.TryParse(envPort, out var port);
                             if (!canParsePort)
-                                throw new Exception($"{EnvironmentVariables.BURST_CHAT_API_PORT} invalid value");
+                                throw new Exception(
+                                    $"{EnvironmentVariables.BURST_CHAT_API_PORT} invalid value"
+                                );
 
                             options.Listen(host, port);
                         }

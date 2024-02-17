@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
-using BurstChat.Application.Monads;
 using BurstChat.Application.Services.PrivateGroupsService;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
@@ -21,8 +20,8 @@ public class PrivateGroupsController : ControllerBase
 
     public PrivateGroupsController(IPrivateGroupsService privateGroupsService)
     {
-        _privateGroupMessagingService = privateGroupsService
-            ?? throw new ArgumentNullException(nameof(privateGroupsService));
+        _privateGroupMessagingService =
+            privateGroupsService ?? throw new ArgumentNullException(nameof(privateGroupsService));
     }
 
     [HttpGet("{groupId:long}")]
@@ -49,9 +48,13 @@ public class PrivateGroupsController : ControllerBase
     public IActionResult Post(string groupName, [FromBody] IEnumerable<long> userIds) =>
         HttpContext
             .GetUserId()
-            .And(userId => _privateGroupMessagingService
-                .Insert(userId, groupName)
-                .And(privateGroup => _privateGroupMessagingService.InsertUsers(userId, privateGroup.Id, userIds)))
+            .And(userId =>
+                _privateGroupMessagingService
+                    .Insert(userId, groupName)
+                    .And(privateGroup =>
+                        _privateGroupMessagingService.InsertUsers(userId, privateGroup.Id, userIds)
+                    )
+            )
             .Into();
 
     [HttpDelete("{groupId:long}")]

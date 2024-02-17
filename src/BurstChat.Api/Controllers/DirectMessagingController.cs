@@ -20,7 +20,8 @@ public class DirectMessagingController : ControllerBase
 
     public DirectMessagingController(IDirectMessagingService directMessagingService)
     {
-        _directMessagingService = directMessagingService
+        _directMessagingService =
+            directMessagingService
             ?? throw new ArgumentNullException(nameof(directMessagingService));
     }
 
@@ -36,11 +37,16 @@ public class DirectMessagingController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(DirectMessaging), 200)]
     [ProducesResponseType(typeof(Error), 400)]
-    public IActionResult Get([FromQuery] long firstParticipantId, [FromQuery] long secondParticipantId)
+    public IActionResult Get(
+        [FromQuery] long firstParticipantId,
+        [FromQuery] long secondParticipantId
+    )
     {
         var res = HttpContext
             .GetUserId()
-            .And(userId => _directMessagingService.Get(userId, firstParticipantId, secondParticipantId));
+            .And(userId =>
+                _directMessagingService.Get(userId, firstParticipantId, secondParticipantId)
+            );
 
         if (res.IsErr)
         {
@@ -59,10 +65,7 @@ public class DirectMessagingController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<User>), 200)]
     [ProducesResponseType(typeof(Error), 400)]
     public IActionResult GetUsers() =>
-        HttpContext
-            .GetUserId()
-            .And(_directMessagingService.GetUsers)
-            .Into();
+        HttpContext.GetUserId().And(_directMessagingService.GetUsers).Into();
 
     [HttpPost]
     [ProducesResponseType(typeof(DirectMessaging), 200)]
@@ -70,8 +73,13 @@ public class DirectMessagingController : ControllerBase
     public IActionResult Post([FromBody] DirectMessaging directMessaging) =>
         HttpContext
             .GetUserId()
-            .And(userId => _directMessagingService
-                .Insert(userId, directMessaging.FirstParticipantUserId, directMessaging.SecondParticipantUserId))
+            .And(userId =>
+                _directMessagingService.Insert(
+                    userId,
+                    directMessaging.FirstParticipantUserId,
+                    directMessaging.SecondParticipantUserId
+                )
+            )
             .Into();
 
     [HttpDelete("{directMessagingId:long}")]
@@ -89,11 +97,18 @@ public class DirectMessagingController : ControllerBase
     public IActionResult GetMessages(
         long directMessagingId,
         [FromQuery] string? searchTerm,
-        [FromQuery] long? lastMessageId) =>
+        [FromQuery] long? lastMessageId
+    ) =>
         HttpContext
             .GetUserId()
-            .And(userId => _directMessagingService
-                .GetMessages(userId, directMessagingId, searchTerm, lastMessageId))
+            .And(userId =>
+                _directMessagingService.GetMessages(
+                    userId,
+                    directMessagingId,
+                    searchTerm,
+                    lastMessageId
+                )
+            )
             .Into();
 
     [HttpPost("{directMessagingId:long}/messages")]
@@ -102,7 +117,9 @@ public class DirectMessagingController : ControllerBase
     public IActionResult PostMessage(long directMessagingId, [FromBody] Message message) =>
         HttpContext
             .GetUserId()
-            .And(userId => _directMessagingService.InsertMessage(userId, directMessagingId, message))
+            .And(userId =>
+                _directMessagingService.InsertMessage(userId, directMessagingId, message)
+            )
             .Into();
 
     [HttpPut("{directMessagingId:long}/messages")]
@@ -111,7 +128,9 @@ public class DirectMessagingController : ControllerBase
     public IActionResult PutMessage(long directMessagingId, [FromBody] Message message) =>
         HttpContext
             .GetUserId()
-            .And(userId => _directMessagingService.UpdateMessage(userId, directMessagingId, message))
+            .And(userId =>
+                _directMessagingService.UpdateMessage(userId, directMessagingId, message)
+            )
             .Into();
 
     [HttpDelete("{directMessagingId:long}/messages")]
@@ -120,6 +139,8 @@ public class DirectMessagingController : ControllerBase
     public IActionResult DeleteMessage(long directMessagingId, [FromBody] long messageId) =>
         HttpContext
             .GetUserId()
-            .And(userId => _directMessagingService.DeleteMessage(userId, directMessagingId, messageId))
+            .And(userId =>
+                _directMessagingService.DeleteMessage(userId, directMessagingId, messageId)
+            )
             .Into();
 }

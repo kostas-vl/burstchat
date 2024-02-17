@@ -9,17 +9,11 @@ public static class MessageExtensions
 {
     public static List<Link> GetLinksFromContent(this Message message)
     {
-        var words = message
-            .Content
-            .Split(" ");
+        var words = message.Content.Split(" ");
 
         var links = words
             .Where(word => Uri.TryCreate(word, UriKind.Absolute, out _))
-            .Select(uri => new Link
-            {
-                Url = uri,
-                DateCreated = DateTime.UtcNow
-            })
+            .Select(uri => new Link { Url = uri, DateCreated = DateTime.UtcNow })
             .ToList();
 
         return links;
@@ -27,9 +21,7 @@ public static class MessageExtensions
 
     public static string RemoveLinksFromContent(this Message message)
     {
-        var words = message
-            .Content
-            .Split(" ");
+        var words = message.Content.Split(" ");
 
         var normilizedContent = words
             .Where(word => !Uri.TryCreate(word, UriKind.Absolute, out _))

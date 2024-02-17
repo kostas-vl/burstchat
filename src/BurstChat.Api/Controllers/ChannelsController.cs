@@ -20,23 +20,18 @@ public class ChannelsController : ControllerBase
     private readonly ILogger<ChannelsController> _logger;
     private readonly IChannelsService _channelsService;
 
-    public ChannelsController(
-        ILogger<ChannelsController> logger,
-        IChannelsService channelsService
-    )
+    public ChannelsController(ILogger<ChannelsController> logger, IChannelsService channelsService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _channelsService = channelsService ?? throw new ArgumentNullException(nameof(channelsService));
+        _channelsService =
+            channelsService ?? throw new ArgumentNullException(nameof(channelsService));
     }
 
     [HttpGet("{channelId:int}")]
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
     public IActionResult Get(int channelId) =>
-        HttpContext
-            .GetUserId()
-            .And(userId => _channelsService.Get(userId, channelId))
-            .Into();
+        HttpContext.GetUserId().And(userId => _channelsService.Get(userId, channelId)).Into();
 
     [HttpPost]
     [ProducesResponseType(typeof(Channel), 200)]
@@ -51,19 +46,13 @@ public class ChannelsController : ControllerBase
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
     public IActionResult Put([FromBody] Channel channel) =>
-        HttpContext
-            .GetUserId()
-            .And(userId => _channelsService.Update(userId, channel))
-            .Into();
+        HttpContext.GetUserId().And(userId => _channelsService.Update(userId, channel)).Into();
 
     [HttpDelete("{channelId:int}")]
     [ProducesResponseType(typeof(Channel), 200)]
     [ProducesResponseType(typeof(Error), 400)]
     public IActionResult Delete(int channelId) =>
-        HttpContext
-            .GetUserId()
-            .And(userId => _channelsService.Delete(userId, channelId))
-            .Into();
+        HttpContext.GetUserId().And(userId => _channelsService.Delete(userId, channelId)).Into();
 
     [HttpGet("{channelId:int}/messages")]
     [ProducesResponseType(typeof(IEnumerable<Message>), 200)]
@@ -71,10 +60,13 @@ public class ChannelsController : ControllerBase
     public IActionResult GetMessages(
         int channelId,
         [FromQuery] string? searchTerm,
-        [FromQuery] long? lastMessageId = null) =>
+        [FromQuery] long? lastMessageId = null
+    ) =>
         HttpContext
             .GetUserId()
-            .And(userId => _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId))
+            .And(userId =>
+                _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId)
+            )
             .Into();
 
     [HttpPost("{channelId:int}/messages")]
