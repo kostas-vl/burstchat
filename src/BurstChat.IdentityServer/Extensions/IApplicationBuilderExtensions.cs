@@ -1,48 +1,52 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using BurstChat.Domain.Schema.Alpha;
+using BurstChat.IdentityServer.Options;
 using BurstChat.Infrastructure.Options;
 using BurstChat.Infrastructure.Persistence;
-using BurstChat.IdentityServer.Options;
 using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.Models;
-
-using Client = IdentityServer4.EntityFramework.Entities.Client;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ApiResource = IdentityServer4.EntityFramework.Entities.ApiResource;
 using ApiScope = IdentityServer4.EntityFramework.Entities.ApiScope;
+using Client = IdentityServer4.EntityFramework.Entities.Client;
 using IdentityResource = IdentityServer4.EntityFramework.Entities.IdentityResource;
-using BurstChat.Domain.Schema.Alpha;
 
 namespace BurstChat.IdentityServer.Extensions;
 
 public static class IApplicationBuilderExtensions
 {
-    private static void AddDevelopmentWebClient(ConfigurationDbContext? context, IdentityResourcesOptions identityResourcesOptions)
+    private static void AddDevelopmentWebClient(
+        ConfigurationDbContext? context,
+        IdentityResourcesOptions identityResourcesOptions
+    )
     {
-        if (context == null) return;
+        if (context == null)
+            return;
 
         var creationDate = DateTime.UtcNow;
         var webClientId = "burstchat.web.client";
 
-        identityResourcesOptions
-            .ClientSecrets
-            .TryGetValue(webClientId, out var webClientSecret);
+        identityResourcesOptions.ClientSecrets.TryGetValue(webClientId, out var webClientSecret);
 
-        identityResourcesOptions
-            .ClientRedirectUris
-            .TryGetValue(webClientId, out var webClientRedirectUris);
+        identityResourcesOptions.ClientRedirectUris.TryGetValue(
+            webClientId,
+            out var webClientRedirectUris
+        );
 
-        identityResourcesOptions
-            .ClientCorsOrigins
-            .TryGetValue(webClientId, out var webClientCorsOrigins);
+        identityResourcesOptions.ClientCorsOrigins.TryGetValue(
+            webClientId,
+            out var webClientCorsOrigins
+        );
 
-        identityResourcesOptions
-            .ClientPostLogoutRedirectUris
-            .TryGetValue(webClientId, out var webClientPostLogoutRedirectUris);
+        identityResourcesOptions.ClientPostLogoutRedirectUris.TryGetValue(
+            webClientId,
+            out var webClientPostLogoutRedirectUris
+        );
 
         var webClient = new Client
         {
@@ -57,70 +61,58 @@ public static class IApplicationBuilderExtensions
             Created = creationDate
         };
 
-        webClient
-            .ClientSecrets = new List<ClientSecret>
+        webClient.ClientSecrets = new List<ClientSecret>
+        {
+            new()
             {
-                new()
-                {
-                    Value = webClientSecret.Sha256(),
-                    Description = "The secret of the BurstChat Web Client",
-                    Created = creationDate
-                }
-            };
+                Value = webClientSecret.Sha256(),
+                Description = "The secret of the BurstChat Web Client",
+                Created = creationDate
+            }
+        };
 
-        webClient
-            .AllowedScopes = new List<ClientScope>
-            {
-                new() { Scope = "openid" },
-                new() { Scope = "profile" },
-                new() { Scope = "burstchat.api" },
-                new() { Scope = "burstchat.signal" },
-                new() { Scope = "offline_access" }
-            };
+        webClient.AllowedScopes = new List<ClientScope>
+        {
+            new() { Scope = "openid" },
+            new() { Scope = "profile" },
+            new() { Scope = "burstchat.api" },
+            new() { Scope = "burstchat.signal" },
+            new() { Scope = "offline_access" }
+        };
 
-        webClient
-            .AllowedCorsOrigins = (webClientCorsOrigins ?? Enumerable.Empty<string>())
-            .Select(entry => new ClientCorsOrigin
-            {
-               Origin = entry
-            })
+        webClient.AllowedCorsOrigins = (webClientCorsOrigins ?? Enumerable.Empty<string>())
+            .Select(entry => new ClientCorsOrigin { Origin = entry })
             .ToList();
 
-        webClient
-            .AllowedGrantTypes = new List<ClientGrantType>
-            {
-                new ClientGrantType { GrantType = "password" }
-            };
+        webClient.AllowedGrantTypes = new List<ClientGrantType>
+        {
+            new ClientGrantType { GrantType = "password" }
+        };
 
-        webClient
-            .RedirectUris = (webClientRedirectUris ?? Enumerable.Empty<string>())
-            .Select(entry => new ClientRedirectUri
-            {
-                RedirectUri = entry
-            })
+        webClient.RedirectUris = (webClientRedirectUris ?? Enumerable.Empty<string>())
+            .Select(entry => new ClientRedirectUri { RedirectUri = entry })
             .ToList();
 
-        webClient
-            .PostLogoutRedirectUris = (webClientPostLogoutRedirectUris ?? Enumerable.Empty<string>())
-            .Select(entry => new ClientPostLogoutRedirectUri
-            {
-                PostLogoutRedirectUri = entry
-            })
+        webClient.PostLogoutRedirectUris = (
+            webClientPostLogoutRedirectUris ?? Enumerable.Empty<string>()
+        )
+            .Select(entry => new ClientPostLogoutRedirectUri { PostLogoutRedirectUri = entry })
             .ToList();
 
-        context
-            .Clients
-            .Add(webClient);
+        context.Clients.Add(webClient);
     }
 
-    public static void AddDevelopmentApiResource(ConfigurationDbContext? context, IdentityResourcesOptions identityResourcesOptions)
+    public static void AddDevelopmentApiResource(
+        ConfigurationDbContext? context,
+        IdentityResourcesOptions identityResourcesOptions
+    )
     {
-        if (context == null) return;
+        if (context == null)
+            return;
 
         var creationDate = DateTime.UtcNow;
         var apiName = "burstchat.api";
-        var apiSecret = identityResourcesOptions
-            .ApiSecrets[apiName];
+        var apiSecret = identityResourcesOptions.ApiSecrets[apiName];
 
         var apiResource = new ApiResource
         {
@@ -130,38 +122,27 @@ public static class IApplicationBuilderExtensions
             Enabled = true,
         };
 
-        apiResource
-            .Secrets = new List<ApiResourceSecret>
-            {
-                new()
-                {
-                    Value = apiSecret.Sha256(),
-                    Created = creationDate,
-                }
-            };
+        apiResource.Secrets = new List<ApiResourceSecret>
+        {
+            new() { Value = apiSecret.Sha256(), Created = creationDate, }
+        };
 
-        apiResource
-            .Scopes = new List<ApiResourceScope>
-            {
-                new()
-                {
-                    Scope = apiName,
-                }
-            };
+        apiResource.Scopes = new List<ApiResourceScope> { new() { Scope = apiName, } };
 
-        context
-            .ApiResources
-            .Add(apiResource);
+        context.ApiResources.Add(apiResource);
     }
 
-    public static void AddDevelopmentSignalResource(ConfigurationDbContext? context, IdentityResourcesOptions identityResourcesOptions)
+    public static void AddDevelopmentSignalResource(
+        ConfigurationDbContext? context,
+        IdentityResourcesOptions identityResourcesOptions
+    )
     {
-        if (context == null) return;
+        if (context == null)
+            return;
 
         var creationDate = DateTime.UtcNow;
         var signalName = "burstchat.signal";
-        var signalSecret = identityResourcesOptions
-            .ApiSecrets[signalName];
+        var signalSecret = identityResourcesOptions.ApiSecrets[signalName];
 
         var signalResource = new ApiResource
         {
@@ -171,33 +152,20 @@ public static class IApplicationBuilderExtensions
             Enabled = true
         };
 
-        signalResource
-            .Secrets = new List<ApiResourceSecret>
-            {
-                new()
-                {
-                    Value = signalSecret.Sha256(),
-                    Created = creationDate,
-                }
-            };
+        signalResource.Secrets = new List<ApiResourceSecret>
+        {
+            new() { Value = signalSecret.Sha256(), Created = creationDate, }
+        };
 
-        signalResource
-            .Scopes = new List<ApiResourceScope>
-            {
-                new()
-                {
-                    Scope = signalName,
-                }
-            };
+        signalResource.Scopes = new List<ApiResourceScope> { new() { Scope = signalName, } };
 
-        context
-            .ApiResources
-            .Add(signalResource);
+        context.ApiResources.Add(signalResource);
     }
 
     private static void AddDevelopmeApiScopes(ConfigurationDbContext? context)
     {
-        if (context == null) return;
+        if (context == null)
+            return;
 
         var scopes = new List<ApiScope>
         {
@@ -205,14 +173,13 @@ public static class IApplicationBuilderExtensions
             new() { Name = "burstchat.signal", DisplayName = "The BurstChat Signal scope" }
         };
 
-        context
-            .ApiScopes
-            .AddRange(scopes);
+        context.ApiScopes.AddRange(scopes);
     }
 
     private static void AddDevelopmentIdentityResources(ConfigurationDbContext? context)
     {
-        if (context == null) return;
+        if (context == null)
+            return;
 
         var creationDate = DateTime.UtcNow;
         var openIdResource = new IdentityResource
@@ -233,54 +200,39 @@ public static class IApplicationBuilderExtensions
             Created = creationDate
         };
 
-        context
-            .IdentityResources
-            .AddRange(new [] { openIdResource, profileResource });
+        context.IdentityResources.AddRange(new[] { openIdResource, profileResource });
     }
 
-    public static void UseBurstChatDevelopmentResources(this IApplicationBuilder application, Action<IdentityResourcesOptions> secretsCallback)
+    public static void UseBurstChatDevelopmentResources(
+        this IApplicationBuilder application,
+        Action<IdentityResourcesOptions> secretsCallback
+    )
     {
         var identityResourcesOptions = new IdentityResourcesOptions();
         secretsCallback(identityResourcesOptions);
 
-        var serviceScopeFactory = application
-            .ApplicationServices
-            .GetService<IServiceScopeFactory>();
+        var serviceScopeFactory =
+            application.ApplicationServices.GetService<IServiceScopeFactory>();
 
         using var serviceScope = serviceScopeFactory?.CreateScope();
         var creationDate = DateTime.UtcNow;
 
-        serviceScope?
-            .ServiceProvider
-            .GetRequiredService<PersistedGrantDbContext>()
-            .Database
-            .Migrate();
+        serviceScope
+            ?.ServiceProvider.GetRequiredService<PersistedGrantDbContext>()
+            .Database.Migrate();
 
-        var context = serviceScope?
-            .ServiceProvider
-            .GetRequiredService<ConfigurationDbContext>();
+        var context = serviceScope?.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
 
         context?.Database.Migrate();
 
-        var clients = context?
-            .Clients
-            .ToList()
-            ?? Enumerable.Empty<Client>();
+        var clients = context?.Clients.ToList() ?? Enumerable.Empty<Client>();
 
-        var apis = context?
-            .ApiResources
-            .ToList()
-            ?? Enumerable.Empty<ApiResource>();
+        var apis = context?.ApiResources.ToList() ?? Enumerable.Empty<ApiResource>();
 
-        var scopes = context?
-            .ApiScopes
-            .ToList()
-            ?? Enumerable.Empty<ApiScope>();
+        var scopes = context?.ApiScopes.ToList() ?? Enumerable.Empty<ApiScope>();
 
-        var identities = context?
-            .IdentityResources
-            .ToList()
-            ?? Enumerable.Empty<IdentityResource>();
+        var identities =
+            context?.IdentityResources.ToList() ?? Enumerable.Empty<IdentityResource>();
 
         foreach (var client in clients)
             context?.Clients.Remove(client);
@@ -303,7 +255,10 @@ public static class IApplicationBuilderExtensions
         context?.SaveChanges();
     }
 
-    public static void UseAlphaInvitationCodes(this IApplicationBuilder application, Action<AlphaInvitationCodesOptions> alphaInvitationsCallback)
+    public static void UseAlphaInvitationCodes(
+        this IApplicationBuilder application,
+        Action<AlphaInvitationCodesOptions> alphaInvitationsCallback
+    )
     {
         var options = new AlphaInvitationCodesOptions();
         alphaInvitationsCallback(options);
@@ -318,19 +273,14 @@ public static class IApplicationBuilderExtensions
                 code.DateExpired = code.DateExpired.ToUniversalTime();
             }
 
-            var serviceScopeFactory = application
-                .ApplicationServices
-                .GetService<IServiceScopeFactory>();
+            var serviceScopeFactory =
+                application.ApplicationServices.GetService<IServiceScopeFactory>();
 
             using var serviceScope = serviceScopeFactory?.CreateScope();
 
-            var context = serviceScope?
-                .ServiceProvider
-                .GetRequiredService<BurstChatContext>();
+            var context = serviceScope?.ServiceProvider.GetRequiredService<BurstChatContext>();
 
-            var alphaInvitationCodes = context?
-                .AlphaInvitations
-                .ToList();
+            var alphaInvitationCodes = context?.AlphaInvitations.ToList();
 
             foreach (var code in alphaInvitationCodes ?? Enumerable.Empty<AlphaInvitation>())
                 context?.AlphaInvitations.Remove(code);

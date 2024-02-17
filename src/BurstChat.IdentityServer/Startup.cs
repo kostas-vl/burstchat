@@ -1,6 +1,6 @@
 using BurstChat.Application;
-using BurstChat.Infrastructure;
 using BurstChat.IdentityServer.Extensions;
+using BurstChat.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +21,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services
-            .AddApplication()
-            .AddIdentityServerInfrastructure(Configuration);
+        services.AddApplication().AddIdentityServerInfrastructure(Configuration);
 
-        services
-            .AddControllers()
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+        services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
     }
 
     public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
@@ -35,8 +31,12 @@ public class Startup
         if (env.IsDevelopment())
         {
             application.UseDeveloperExceptionPage();
-            application.UseBurstChatDevelopmentResources(options => Configuration.GetSection("DevelopmentResources").Bind(options));
-            application.UseAlphaInvitationCodes(options => Configuration.GetSection("Invitations").Bind(options));
+            application.UseBurstChatDevelopmentResources(options =>
+                Configuration.GetSection("DevelopmentResources").Bind(options)
+            );
+            application.UseAlphaInvitationCodes(options =>
+                Configuration.GetSection("Invitations").Bind(options)
+            );
         }
         else
         {
