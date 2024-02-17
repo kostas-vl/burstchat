@@ -3,7 +3,7 @@ using System.Linq;
 using BurstChat.Application.Monads;
 using Microsoft.AspNetCore.Http;
 
-namespace BurstChat.Api.Extensions;
+namespace BurstChat.Infrastructure.Extensions;
 
 public static class HttpContextExtensions
 {
