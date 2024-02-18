@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BurstChat.Signal.Services.ApiInteropService;
-using BurstChat.Signal.Services.UserService;
 using BurstChat.Signal.Services.ServerService;
 using Microsoft.Extensions.Hosting;
 
@@ -49,13 +48,6 @@ namespace BurstChat.Signal
 
             services
                 .AddSignalR();
-
-            services
-                .AddScoped<IUserService, UserProvider>()
-                .AddScoped<IServerService, ServerProvider>()
-                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
-                .AddScoped<IChannelsService, ChannelsProvider>()
-                .AddScoped<IDirectMessagingService, DirectMessagingProvider>();
 
             services
                 .AddHttpContextAccessor();
