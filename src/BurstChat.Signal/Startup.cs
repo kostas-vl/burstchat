@@ -2,16 +2,11 @@ using BurstChat.Application;
 using BurstChat.Infrastructure;
 using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
-using BurstChat.Signal.Services.ChannelsService;
-using BurstChat.Signal.Services.DirectMessagingService;
-using BurstChat.Signal.Services.PrivateGroupMessaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BurstChat.Signal.Services.ApiInteropService;
-using BurstChat.Signal.Services.ServerService;
 using Microsoft.Extensions.Hosting;
 
 using DependencyInjection = BurstChat.Infrastructure.DependencyInjection;
@@ -51,9 +46,6 @@ namespace BurstChat.Signal
 
             services
                 .AddHttpContextAccessor();
-
-            services
-                .AddHttpClient<BurstChatApiInteropService>();
        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
