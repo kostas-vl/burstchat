@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Monads;
+using BurstChat.Infrastructure.Errors;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
@@ -23,7 +24,7 @@ public partial class ChatHub
                 var signalGroup = ServerSignalName(serverId);
                 await Clients.Group(signalGroup).ChannelCreated(new dynamic[] { serverId, channel });
             })
-            .InspectErrAsync(err => Clients.Caller.ChannelCreated(err));
+            .InspectErrAsync(err => Clients.Caller.ChannelCreated(err.Into()));
 
     public Task PutChannel(int serverId, Channel channel) =>
         Context
@@ -35,7 +36,7 @@ public partial class ChatHub
                 var signalGroup = ServerSignalName(serverId);
                 await Clients.Group(signalGroup).ChannelUpdated(channel);
             })
-            .InspectErrAsync(err => Clients.Caller.ChannelUpdated(err));
+            .InspectErrAsync(err => Clients.Caller.ChannelUpdated(err.Into()));
 
     public Task DeleteChannel(int serverId, int channelId) =>
         Context
@@ -47,7 +48,7 @@ public partial class ChatHub
                 var signalGroup = ServerSignalName(serverId);
                 await Clients.Group(signalGroup).ChannelDeleted(channelId);
             })
-            .InspectErrAsync(err => Clients.Caller.ChannelDeleted(err));
+            .InspectErrAsync(err => Clients.Caller.ChannelDeleted(err.Into()));
 
     public Task AddToChannelConnection(int channelId) =>
         Context
@@ -76,7 +77,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.AllChannelMessagesReceived(errorPayload);
             });
     }
@@ -96,7 +97,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.ChannelMessageReceived(errorPayload);
             });
     }
@@ -116,7 +117,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.ChannelMessageEdited(errorPayload);
             });
     }
@@ -136,7 +137,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.ChannelMessageDeleted(errorPayload);
             });
     }

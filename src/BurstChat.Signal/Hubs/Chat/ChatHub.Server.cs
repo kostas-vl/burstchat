@@ -16,7 +16,7 @@ public partial class ChatHub
             .GetUserId()
             .And(userId => _serverService.Insert(userId, server))
             .InspectAsync(server => Clients.Caller.AddedServer(server))
-            .InspectErrAsync(err => Clients.Caller.AddedServer(err));
+            .InspectErrAsync(err => Clients.Caller.AddedServer(err.Into()));
 
     public Task AddToServer(int serverId) =>
         Context
@@ -39,7 +39,7 @@ public partial class ChatHub
                 var signalGroup = ServerSignalName(server.Id);
                 await Clients.Group(signalGroup).UpdatedServer(server);
             })
-            .InspectErrAsync(err => Clients.Caller.UpdatedServer(err));
+            .InspectErrAsync(err => Clients.Caller.UpdatedServer(err.Into()));
 
     public Task DeleteSubscription(int serverId, Subscription subscription) =>
         Context
@@ -52,5 +52,5 @@ public partial class ChatHub
                 var data = new dynamic[] { serverId, sub };
                 await Clients.Group(signalGroup).SubscriptionDeleted(data);
             })
-            .InspectErrAsync(err => Clients.Caller.SubscriptionDeleted(err));
+            .InspectErrAsync(err => Clients.Caller.SubscriptionDeleted(err.Into()));
 }

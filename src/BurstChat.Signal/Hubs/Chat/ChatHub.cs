@@ -70,7 +70,7 @@ public partial class ChatHub : Hub<IChatClient>
                 await Clients.Groups(Context.ConnectionId).UserUpdated(user);
                 await Clients.Caller.UserUpdated(user);
             })
-            .InspectErrAsync(err => Clients.Caller.UserUpdated(err));
+            .InspectErrAsync(err => Clients.Caller.UserUpdated(err.Into()));
 
     public Task GetInvitations() =>
         Context
@@ -78,7 +78,7 @@ public partial class ChatHub : Hub<IChatClient>
             .GetUserId()
             .And(userId => _userService.GetInvitations(userId))
             .InspectAsync(invitations => Clients.Caller.Invitations(invitations))
-            .InspectErrAsync(err => Clients.Caller.Invitations(err));
+            .InspectErrAsync(err => Clients.Caller.Invitations(err.Into()));
 
     public Task SendInvitation(int serverId, string username) =>
         Context
@@ -88,7 +88,7 @@ public partial class ChatHub : Hub<IChatClient>
                 .InsertInvitation(userId, serverId, username)
                 .InspectAsync(inv => Clients.Groups(userId.ToString()).NewInvitation(inv))
             )
-            .InspectErrAsync(err => Clients.Caller.NewInvitation(err));
+            .InspectErrAsync(err => Clients.Caller.NewInvitation(err.Into()));
 
     public Task UpdateInvitation(long id, bool accepted) =>
         Context
@@ -110,5 +110,5 @@ public partial class ChatHub : Hub<IChatClient>
                     await Clients.Group(signalGroup).UpdatedInvitation(inv);
                 await Clients.Caller.UpdatedInvitation(inv);
             })
-            .InspectErrAsync(err => Clients.Caller.UpdatedInvitation(err));
+            .InspectErrAsync(err => Clients.Caller.UpdatedInvitation(err.Into()));
 }

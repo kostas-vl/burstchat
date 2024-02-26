@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
+using BurstChat.Infrastructure.Errors;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Signal.Models;
@@ -40,7 +40,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var failurePayload = new Payload<MonadException>(signalGroup, err);
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.AllPrivateGroupMessages(failurePayload);
             });
     }
@@ -60,7 +60,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var failurePayload = new Payload<MonadException>(signalGroup, err);
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.PrivateGroupMessageReceived(failurePayload);
             });
     }
@@ -80,7 +80,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var failurePayload = new Payload<MonadException>(signalGroup, err);
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.PrivateGroupMessageEdited(failurePayload);
             });
     }
@@ -100,7 +100,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var failurePayload = new Payload<MonadException>(signalGroup, err);
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.PrivateGroupMessageDeleted(failurePayload);
             });
     }

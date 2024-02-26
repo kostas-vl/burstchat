@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Monads;
+using BurstChat.Infrastructure.Errors;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
@@ -41,7 +42,7 @@ public partial class ChatHub
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
                 await Clients.Caller.NewDirectMessaging(payload);
             })
-            .InspectErrAsync(err => Clients.Caller.NewDirectMessaging(err));
+            .InspectErrAsync(err => Clients.Caller.NewDirectMessaging(err.Into()));
 
     public async Task GetAllDirectMessages(long directMessagingId, string? searchTerm, long? lastMessageId)
     {
@@ -58,7 +59,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.AllDirectMessagesReceived(errorPayload);
             });
     }
@@ -78,7 +79,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Groups(signalGroup).DirectMessageReceived(errorPayload);
             });
     }
@@ -98,7 +99,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.DirectMessageEdited(errorPayload);
             });
     }
@@ -118,7 +119,7 @@ public partial class ChatHub
             })
             .InspectErrAsync(async err =>
             {
-                var errorPayload = new Payload<MonadException>(signalGroup, err);
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
                 await Clients.Caller.DirectMessageDeleted(errorPayload);
             });
     }
