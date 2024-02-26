@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using BurstChat.Api.Extensions;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Services.DirectMessagingService;
-using BurstChat.Infrastructure.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
+using BurstChat.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
