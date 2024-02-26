@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Monads;
-using BurstChat.Infrastructure.Errors;
-using BurstChat.Infrastructure.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
+using BurstChat.Infrastructure.Errors;
+using BurstChat.Infrastructure.Extensions;
 using BurstChat.Signal.Models;
 using Microsoft.AspNetCore.SignalR;
 
@@ -33,7 +33,14 @@ public partial class ChatHub
             .And(userId =>
                 _directMessagingService
                     .Get(userId, firstParticipantId, secondParticipantId)
-                    .Or(() => _directMessagingService.Insert(userId, firstParticipantId, secondParticipantId))
+                    .Or(
+                        () =>
+                            _directMessagingService.Insert(
+                                userId,
+                                firstParticipantId,
+                                secondParticipantId
+                            )
+                    )
             )
             .InspectAsync(async dm =>
             {
@@ -44,14 +51,25 @@ public partial class ChatHub
             })
             .InspectErrAsync(err => Clients.Caller.NewDirectMessaging(err.Into()));
 
-    public async Task GetAllDirectMessages(long directMessagingId, string? searchTerm, long? lastMessageId)
+    public async Task GetAllDirectMessages(
+        long directMessagingId,
+        string? searchTerm,
+        long? lastMessageId
+    )
     {
         var signalGroup = DirectMessagingName(directMessagingId);
 
         await Context
             .GetHttpContext()
             .GetUserId()
-            .And(userId => _directMessagingService.GetMessages(userId, directMessagingId, searchTerm, lastMessageId))
+            .And(userId =>
+                _directMessagingService.GetMessages(
+                    userId,
+                    directMessagingId,
+                    searchTerm,
+                    lastMessageId
+                )
+            )
             .InspectAsync(async dm =>
             {
                 var payload = new Payload<IEnumerable<Message>>(signalGroup, dm);
@@ -71,7 +89,9 @@ public partial class ChatHub
         await Context
             .GetHttpContext()
             .GetUserId()
-            .And(userId => _directMessagingService.InsertMessage(userId, directMessagingId, message))
+            .And(userId =>
+                _directMessagingService.InsertMessage(userId, directMessagingId, message)
+            )
             .InspectAsync(async dm =>
             {
                 var payload = new Payload<Message>(signalGroup, dm);
@@ -111,7 +131,9 @@ public partial class ChatHub
         await Context
             .GetHttpContext()
             .GetUserId()
-            .And(userId => _directMessagingService.DeleteMessage(userId, directMessageId, message.Id))
+            .And(userId =>
+                _directMessagingService.DeleteMessage(userId, directMessageId, message.Id)
+            )
             .InspectAsync(async dm =>
             {
                 var payload = new Payload<Message>(signalGroup, dm);

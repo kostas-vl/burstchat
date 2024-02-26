@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Monads;
+using BurstChat.Domain.Schema.Chat;
 using BurstChat.Infrastructure.Errors;
 using BurstChat.Infrastructure.Extensions;
-using BurstChat.Domain.Schema.Chat;
 using BurstChat.Signal.Models;
 using Microsoft.AspNetCore.SignalR;
 

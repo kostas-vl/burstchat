@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurstChat.Application.Monads;
-using BurstChat.Infrastructure.Errors;
-using BurstChat.Infrastructure.Extensions;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
+using BurstChat.Infrastructure.Errors;
+using BurstChat.Infrastructure.Extensions;
 using BurstChat.Signal.Models;
 using Microsoft.AspNetCore.SignalR;
 
@@ -22,7 +22,9 @@ public partial class ChatHub
             .InspectAsync(async channel =>
             {
                 var signalGroup = ServerSignalName(serverId);
-                await Clients.Group(signalGroup).ChannelCreated(new dynamic[] { serverId, channel });
+                await Clients
+                    .Group(signalGroup)
+                    .ChannelCreated(new dynamic[] { serverId, channel });
             })
             .InspectErrAsync(err => Clients.Caller.ChannelCreated(err.Into()));
 
@@ -62,14 +64,20 @@ public partial class ChatHub
                 await Clients.Caller.SelfAddedToChannel();
             });
 
-    public Task GetAllChannelMessages(int channelId, string? searchTerm = null, long? lastMessageId = null)
+    public Task GetAllChannelMessages(
+        int channelId,
+        string? searchTerm = null,
+        long? lastMessageId = null
+    )
     {
         var signalGroup = ChannelSignalName(channelId);
 
         return Context
             .GetHttpContext()
             .GetUserId()
-            .And(userId => _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId))
+            .And(userId =>
+                _channelsService.GetMessages(userId, channelId, searchTerm, lastMessageId)
+            )
             .InspectAsync(async messages =>
             {
                 var payload = new Payload<IEnumerable<Message>>(signalGroup, messages);

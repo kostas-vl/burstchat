@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using BurstChat.Infrastructure.Extensions;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Servers;
+using BurstChat.Infrastructure.Extensions;
 using Microsoft.AspNetCore.SignalR;
 
 namespace BurstChat.Signal.Hubs.Chat;

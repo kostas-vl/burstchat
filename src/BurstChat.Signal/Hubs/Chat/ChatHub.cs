@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
-using BurstChat.Application.Services.DirectMessagingService;
+using BurstChat.Application.Monads;
 using BurstChat.Application.Services.ChannelsService;
-using BurstChat.Application.Services.UserService;
-using BurstChat.Application.Services.ServersService;
+using BurstChat.Application.Services.DirectMessagingService;
 using BurstChat.Application.Services.PrivateGroupsService;
+using BurstChat.Application.Services.ServersService;
+using BurstChat.Application.Services.UserService;
 using BurstChat.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -36,11 +36,14 @@ public partial class ChatHub : Hub<IChatClient>
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _serverService = serverService ?? throw new ArgumentNullException(nameof(serverService));
-        _privateGroupService = privateGroupService ?? throw new ArgumentNullException(nameof(privateGroupService));
-        _channelsService = channelsService ?? throw new ArgumentNullException(nameof(channelsService));
-        _directMessagingService = directMessagingService ?? throw new ArgumentNullException(nameof(directMessagingService));
+        _privateGroupService =
+            privateGroupService ?? throw new ArgumentNullException(nameof(privateGroupService));
+        _channelsService =
+            channelsService ?? throw new ArgumentNullException(nameof(channelsService));
+        _directMessagingService =
+            directMessagingService
+            ?? throw new ArgumentNullException(nameof(directMessagingService));
     }
-
 
     public override Task OnConnectedAsync() =>
         Context
@@ -84,9 +87,10 @@ public partial class ChatHub : Hub<IChatClient>
         Context
             .GetHttpContext()
             .GetUserId()
-            .AndAsync(userId => _serverService
-                .InsertInvitation(userId, serverId, username)
-                .InspectAsync(inv => Clients.Groups(userId.ToString()).NewInvitation(inv))
+            .AndAsync(userId =>
+                _serverService
+                    .InsertInvitation(userId, serverId, username)
+                    .InspectAsync(inv => Clients.Groups(userId.ToString()).NewInvitation(inv))
             )
             .InspectErrAsync(err => Clients.Caller.NewInvitation(err.Into()));
 
@@ -96,11 +100,7 @@ public partial class ChatHub : Hub<IChatClient>
             .GetUserId()
             .And(userId =>
             {
-                var data = new UpdateInvitation
-                {
-                    InvitationId = id,
-                    Accepted = accepted
-                };
+                var data = new UpdateInvitation { InvitationId = id, Accepted = accepted };
                 return _userService.UpdateInvitation(userId, data);
             })
             .InspectAsync(async inv =>

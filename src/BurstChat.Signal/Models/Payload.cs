@@ -1,6 +1,7 @@
 namespace BurstChat.Signal.Models;
 
-public class Payload<T> where T : notnull
+public class Payload<T>
+    where T : notnull
 {
     public string SignalGroup { get; set; }
 

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Infrastructure.Errors;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
+using BurstChat.Infrastructure.Errors;
 using BurstChat.Signal.Models;
 
 namespace BurstChat.Signal.Hubs.Chat;

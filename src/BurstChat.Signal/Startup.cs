@@ -1,13 +1,12 @@
 using BurstChat.Application;
 using BurstChat.Infrastructure;
-using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
+using BurstChat.Signal.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
 using DependencyInjection = BurstChat.Infrastructure.DependencyInjection;
 
 namespace BurstChat.Signal
@@ -27,9 +26,7 @@ namespace BurstChat.Signal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddApplication()
-                .AddInfrastructure(Configuration);
+            services.AddApplication().AddInfrastructure(Configuration);
 
             services.Configure<ApiDomainOptions>(options =>
             {
@@ -39,7 +36,7 @@ namespace BurstChat.Signal
             services.AddControllers();
             services.AddSignalR();
             services.AddHttpContextAccessor();
-       }
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
