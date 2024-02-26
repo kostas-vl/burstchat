@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BurstChat.Domain.Schema.Chat;
-using BurstChat.Domain.Schema.Users;
 
 namespace BurstChat.Domain.Schema.Users
 {

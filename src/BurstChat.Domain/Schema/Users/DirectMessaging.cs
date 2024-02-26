@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using BurstChat.Domain.Schema.Chat;
 

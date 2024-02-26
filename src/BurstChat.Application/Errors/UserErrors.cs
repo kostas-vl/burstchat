@@ -1,35 +1,24 @@
-using System;
+using BurstChat.Application.Monads;
 
-namespace BurstChat.Application.Errors
+namespace BurstChat.Application.Errors;
+
+public static class UserErrors
 {
-    /// <summary>
-    /// This class contains static methods that represent errors associated with user errors when the
-    /// application tries to either fetch or transform data.
-    /// </summary>
-    public static class UserErrors
-    {
-        public static Error UserNotFound() => new(ErrorLevel.Critical,
-                                                  ErrorType.Validation,
-                                                  "The user was not found");
+    public static MonadException UserNotFound =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The user was not found");
 
-        public static Error UserAlreadyExists() => new(ErrorLevel.Critical,
-                                                       ErrorType.Validation,
-                                                       "The email is already registered");
+    public static MonadException UserAlreadyExists =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The email is already registered");
 
-        public static Error UserPasswordDidNotMatch() => new(ErrorLevel.Critical,
-                                                             ErrorType.Validation,
-                                                             "The email or password is incorrect");
+    public static MonadException UserPasswordDidNotMatch =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The email or password is incorrect");
 
-        public static Error UserOneTimePasswordInvalid() => new(ErrorLevel.Critical,
-                                                                ErrorType.Validation,
-                                                                "The one time password is invalid");
+    public static MonadException UserOneTimePasswordInvalid =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The one time password is invalid");
 
-        public static Error UserOneTimePasswordExpired() => new(ErrorLevel.Critical,
-                                                                ErrorType.Validation,
-                                                                "The one time password has expired");
+    public static MonadException UserOneTimePasswordExpired() =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The one time password has expired");
 
-        public static Error CouldNotUpdateInvitation() => new(ErrorLevel.Critical,
-                                                              ErrorType.DataProcess,
-                                                              "Could not update invitation");
-    }
+    public static MonadException CouldNotUpdateInvitation =>
+        new(ErrorLevel.Critical, ErrorType.DataProcess, "Could not update invitation");
 }

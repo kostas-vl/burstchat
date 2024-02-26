@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { Message } from 'src/app/models/chat/message';
 
 /**
@@ -10,21 +9,21 @@ import { Message } from 'src/app/models/chat/message';
 @Injectable()
 export class UiLayerService {
 
-    private toggleChatViewSource$ = new BehaviorSubject<'chat' | 'call'>('chat');
+    private layoutSource: WritableSignal<'chat' | 'call'> = signal('chat');
 
-    private editMessageSource$ = new Subject<Message>();
+    private editedMessageSource: WritableSignal<Message | null> = signal(null);
 
-    private deleteMessageSource$ = new Subject<Message>();
+    private deleteMessageSource: WritableSignal<Message | null> = signal(null);
 
-    private searchSource$ = new BehaviorSubject<string | null>(null);
+    private searchSource: WritableSignal<string | null> = signal(null);
 
-    public toggleChatView$ = this.toggleChatViewSource$.asObservable();
+    public layout = this.layoutSource.asReadonly();
 
-    public editMessage$ = this.editMessageSource$.asObservable();
+    public editMessage = this.editedMessageSource.asReadonly();
 
-    public deleteMessage$ = this.deleteMessageSource$.asObservable();
+    public deleteMessage = this.deleteMessageSource.asReadonly();
 
-    public search$ = this.searchSource$.asObservable();
+    public search = this.searchSource.asReadonly();
 
     /**
      * Creates a new instance of UiLayerService.
@@ -33,12 +32,12 @@ export class UiLayerService {
     constructor() { }
 
     /**
-     * Toggles the view of the chat layout based on the provided value.
+     * Changes the view of the chat layout based on the provided value.
      * @param {'chat' | 'call'} view The view state to be set.
      * @memberof UiLayerService
      */
-    public toggleChatView(view: 'chat' | 'call') {
-        this.toggleChatViewSource$.next(view);
+    public changeLayout(view: 'chat' | 'call') {
+        this.layoutSource.set(view);
     }
 
     /**
@@ -46,8 +45,8 @@ export class UiLayerService {
      * @param {Message} message The message to be edited.
      * @memberof UiLayerService
      */
-    public editMessage(message: Message) {
-        this.editMessageSource$.next(message);
+    public edit(message: Message) {
+        this.editedMessageSource.set(message);
     }
 
     /**
@@ -55,8 +54,8 @@ export class UiLayerService {
      * @param {Message} message The message to be deleted.
      * @memberof UiLayerService
      */
-    public deleteMessage(message: Message) {
-        this.deleteMessageSource$.next(message);
+    public delete(message: Message) {
+        this.deleteMessageSource.set(message);
     }
 
     /**
@@ -64,7 +63,7 @@ export class UiLayerService {
      * @param {string | null} term The search term to be searched.
      * @memberof UiLayerService
      */
-    public search(term: string | null)  {
-        this.searchSource$.next(term);
+    public searchTerm(term: string | null)  {
+        this.searchSource.set(term);
     }
 }

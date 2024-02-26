@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, effect } from '@angular/core';
 import { User } from 'src/app/models/user/user';
 import { DirectMessagingService } from 'src/app/services/direct-messaging/direct-messaging.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
@@ -19,9 +18,7 @@ import { UserComponent } from 'src/app/components/core/user/user.component';
     standalone: true,
     imports: [ExpanderComponent, UserComponent]
 })
-export class DirectMessagingListComponent implements OnInit, OnDestroy {
-
-    private subscriptions?: Subscription[];
+export class DirectMessagingListComponent {
 
     public users: User[] = [];
 
@@ -32,35 +29,19 @@ export class DirectMessagingListComponent implements OnInit, OnDestroy {
     constructor(
         private directMessagingService: DirectMessagingService,
         private chatService: ChatService
-    ) { }
+    ) {
+        effect(() => this.users = this.directMessagingService.users());
+        effect(() => {
+            const user = this.chatService.userUpdated();
 
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof DirectMessagingListComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.directMessagingService
-                .users
-                .subscribe(users => this.users = users),
-            this.chatService
-                .userUpdated$
-                .subscribe(user => {
-                    const entry = this.users.find(u => u.id === user.id);
-                    if (entry) {
-                        const index = this.users.indexOf(entry);
-                        this.users[index] = { ...user };
-                    }
-                }),
-        ];
-    }
+            if (!user) return;
 
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof DirectMessagingListComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+            const entry = this.users.find(u => u.id === user.id);
+            if (entry) {
+                const index = this.users.indexOf(entry);
+                this.users[index] = { ...user };
+            }
+        });
     }
 
 }

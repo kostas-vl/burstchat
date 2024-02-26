@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
@@ -35,7 +35,14 @@ export class EditServerComponent implements OnInit, OnDestroy {
 
     private routeServerId: number;
 
-    public server?: Server;
+    public server = computed(() => {
+        const server = this.serversService.serverInfo();
+        if (server?.id === this.routeServerId) {
+            return server;
+        } else {
+            return null;
+        }
+    });
 
     /**
      * Creates a new instance of EditServerComponent.
@@ -60,13 +67,6 @@ export class EditServerComponent implements OnInit, OnDestroy {
                     const displayServer = new DisplayServer(this.routeServerId);
                     this.sidebarService.toggleDisplay(displayServer);
                 }),
-            this.serversService
-                .serverInfo
-                .subscribe(server => {
-                    if (server && server.id === this.routeServerId) {
-                        this.server = server;
-                    }
-                })
         ];
     }
 

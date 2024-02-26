@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
 import { WebSocketInterface, UA, debug, RTCSession } from 'jssip';
 import { environment } from 'src/environments/environment';
 import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
@@ -39,13 +38,13 @@ export class RtcSessionService {
         }
     };
 
-    private incomingSession$ = new BehaviorSubject<RTCSessionContainer | null>(null);
+    private incomingSessionSource: WritableSignal<RTCSessionContainer | null> = signal(null);
 
-    private session$ = new BehaviorSubject<RTCSessionContainer | null>(null);
+    private sessionSource: WritableSignal<RTCSessionContainer | null> = signal(null);
 
-    public onIncomingSession$ = this.incomingSession$.asObservable();
+    public incomingSession = this.incomingSessionSource.asReadonly();
 
-    public onSession$ = this.session$.asObservable();
+    public session = this.sessionSource.asReadonly();
 
     /**
      * Creates a new instance of RtcSessionService.
@@ -56,6 +55,62 @@ export class RtcSessionService {
         private notifyService: NotifyService
     ) {
         debug.enable('JsSIP:*');
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionConnecting = session?.connecting();
+            if (sessionConnecting) {
+                const [source, event] = sessionConnecting;
+                this.sessionConnecting(source, event);
+            }
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionConnected = session?.connected();
+            if (sessionConnected) {
+                session
+                    .source
+                    .connection
+                    .ontrack = (event: any) => this.sessionAddStream(event);
+            }
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionProgress = session?.progress();
+            if (sessionProgress) {
+                const [source, event] = sessionProgress;
+                this.sessionProgress(source, event);
+            }
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionConfirmed = session?.confirmed();
+            if (sessionConfirmed) {
+                const [source, event] = sessionConfirmed;
+                this.sessionConfirmed(source, event);
+            }
+        });
+
+        effect(() => {
+            const session = this.incomingSession();
+            const sessionFailed = session?.failed();
+            if (sessionFailed) {
+                const [source, event] = sessionFailed;
+                this.sessionFailed(source, event);
+            }
+        });
+
+        effect(() => {
+            const session = this.session();
+            const sessionEnded = session?.ended();
+            if (sessionEnded) {
+                const [source, event] = sessionEnded;
+                this.sessionEnded(source, event);
+            }
+        });
 
         this.httpClient
             .get<SipCredentials>('/api/user/sip')
@@ -79,8 +134,8 @@ export class RtcSessionService {
      */
     private registerUserAgentEvent() {
         this.userAgent.on('connected', () => this.userAgentConnected());
-        this.userAgent.on('registrationFailed', cause => this.userAgentRegistrationFailed(cause));
-        this.userAgent.on('newRTCSession', event => this.userAgentNewSession(event));
+        this.userAgent.on('registrationFailed', (cause: any) => this.userAgentRegistrationFailed(cause));
+        this.userAgent.on('newRTCSession', (event: any) => this.userAgentNewSession(event));
     }
 
     /**
@@ -95,7 +150,7 @@ export class RtcSessionService {
      * Handles the user anget registration failed event.
      * @memberof RtcSessionService
      */
-    private userAgentRegistrationFailed(cause) {
+    private userAgentRegistrationFailed(cause: any) {
         console.warn('Registration failed with: ');
         console.warn(cause);
     }
@@ -104,79 +159,42 @@ export class RtcSessionService {
      * Handles the user agent new rtc session event.
      * @memberof RtcSessionService
      */
-    private userAgentNewSession(event) {
+    private userAgentNewSession(event: any) {
         console.log('New incoming RTC session');
         const session = new RTCSessionContainer(event.session);
 
         if (event.originator !== 'local') {
-            this.registerSessionEvents(session);
-            this.incomingSession$.next(session);
+            this.incomingSessionSource.set(session);
         }
     }
 
     /**
-     * Binds all neccessary events for the provided session, to the appropriate callbacks.
-     * @param {RTCSessionContainer} session The session container instance.
-     * @memberof RtcSessionService
-     */
-    private registerSessionEvents(session: RTCSessionContainer) {
-        session
-            .connecting
-            .subscribe(args => this.sessionConnecting(args[0], args[1]));
-
-        session
-            .connected
-            .subscribe(args => {
-                session
-                    .source
-                    .connection
-                    .ontrack = event => this.sessionAddStream(event);
-            });
-
-        session
-            .progress
-            .subscribe(args => this.sessionProgress(args[0], args[1]));
-
-        session
-            .confirmed
-            .subscribe(args => this.sessionConfirmed(args[0], args[1]));
-
-        session
-            .failed
-            .subscribe(args => this.sessionFailed(args[0], args[1]));
-
-        session
-            .ended
-            .subscribe(args => this.sessionEnded(args[0], args[1]));
-    }
-
-    /**
      * Handles the session connecting event.
-     * @param {RTCSession} source The session source instance.
+     * @param {RTCSession} _source The session source instance.
      * @param {any} event The event args.
      * @memberof RtcSessionService
      */
-    private sessionConnecting(source: RTCSession, event: any) {
+    private sessionConnecting(_source: RTCSession, event: any) {
         console.log(event);
     }
 
     /**
      * Handles the session progress event.
-     * @param {RTCSession} source The session source instance.
+     * @param {RTCSession} _source The session source instance.
      * @param {any} event The event arguments.
      * @memberof RtcSessionService
      */
-    private sessionProgress(source: RTCSession, event: any) {
+    private sessionProgress(_source: RTCSession, event: any) {
         console.log(event);
     }
 
     /**
      * Handles the session confirmed event.
-     * @param {RTCSession} source The session source instance.
+     * @param {RTCSession} _source The session source instance.
      * @param {any} event The event arguments.
      * @memberof RtcSessionService
      */
-    private sessionConfirmed(source: RTCSession, event: any) {
+    private sessionConfirmed(_source: RTCSession, event: any) {
         console.log(event);
     }
 
@@ -191,17 +209,17 @@ export class RtcSessionService {
         console.warn(event);
         this.notifyService.popupWarning('Call failed');
 
-        let incomingSession = this.incomingSession$.getValue();
+        let incomingSession = this.incomingSessionSource();
         if (incomingSession?.source === source) {
             incomingSession = null;
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
             return;
         }
 
-        let session = this.session$.getValue();
+        let session = this.sessionSource();
         if (session?.source === source) {
             session = null;
-            this.session$.next(null);
+            this.sessionSource.set(null);
             return;
         }
     }
@@ -209,23 +227,23 @@ export class RtcSessionService {
     /**
      * Handles the session ended event.
      * @param {RTCSession} source The session source instance.
-     * @param {any} event The event arguments.
+     * @param {any} _event The event arguments.
      * @memberof RtcSessionService
      */
-    private sessionEnded(source: RTCSession, event: any) {
+    private sessionEnded(source: RTCSession, _event: any) {
         this.notifyService.popupInfo('Call ended');
 
-        let incomingSession = this.incomingSession$.getValue();
+        let incomingSession = this.incomingSessionSource();
         if (incomingSession?.source === source) {
             incomingSession = null;
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
             return;
         }
 
-        let session = this.session$.getValue();
+        let session = this.sessionSource();
         if (session?.source === source) {
             session = null;
-            this.session$.next(null);
+            this.sessionSource.set(null);
             return;
         }
     }
@@ -235,7 +253,7 @@ export class RtcSessionService {
      * @param event The add stream event args.
      * @memberof RtcSessionService
      */
-    private sessionAddStream(event) {
+    private sessionAddStream(event: any) {
         this.audio.srcObject = event.stream;
         this.audio.play();
     }
@@ -251,8 +269,7 @@ export class RtcSessionService {
                 .userAgent
                 .call(`sip:${sip}@${environment.asteriskUrl}`, this.callConfig);
             const container = new RTCSessionContainer(session);
-            this.registerSessionEvents(container);
-            this.session$.next(container);
+            this.sessionSource.set(container);
         }
     }
 
@@ -261,11 +278,11 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public answer() {
-        const session = this.incomingSession$.getValue();
+        const session = this.incomingSessionSource();
         if (session) {
             session.source.answer(this.callConfig);
-            this.session$.next(session);
-            this.incomingSession$.next(null);
+            this.sessionSource.set(session);
+            this.incomingSessionSource.set(null);
         }
     }
 
@@ -274,13 +291,13 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public reject() {
-        const session = this.incomingSession$.getValue();
+        const session = this.incomingSessionSource();
         if (session) {
             session.source.terminate({
                 status_code: 300,
                 reason_phrase: 'reject'
             });
-            this.incomingSession$.next(null);
+            this.incomingSessionSource.set(null);
         }
     }
 
@@ -289,13 +306,13 @@ export class RtcSessionService {
      * @memberof RtcSessionService
      */
     public hangup() {
-        const session = this.session$.getValue();
+        const session = this.sessionSource();
         if (session) {
             session.source.terminate({
                 status_code: 300,
                 reason_phrase: 'hang up'
             });
-            this.session$.next(null);
+            this.sessionSource.set(null);
         }
     }
 

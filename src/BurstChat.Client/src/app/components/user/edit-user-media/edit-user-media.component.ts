@@ -1,8 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { InputDevice } from 'src/app/models/media/input-device';
-import { OutputDevice } from 'src/app/models/media/output-device';
 import { MediaService } from 'src/app/services/media/media.service';
 
 /**
@@ -19,23 +16,17 @@ import { MediaService } from 'src/app/services/media/media.service';
     standalone: true,
     imports: [FormsModule]
 })
-export class EditUserMediaComponent implements OnInit, OnDestroy {
-
-    private inputDevicesSub?: Subscription;
-
-    private outputDevicesSub?: Subscription;
-
-    private inputStreamSub?: Subscription;
+export class EditUserMediaComponent {
 
     private audio = new Audio();
 
     public testingAudio = false;
 
-    public inputDevices: InputDevice[] = [];
+    public inputDevices = this.mediaService.inputDevices;
 
     public selectedInputDevice?: string;
 
-    public outputDevices: OutputDevice[] = [];
+    public outputDevices = this.mediaService.outputDevices;
 
     public selectedOutputDevice?: string;
 
@@ -43,41 +34,13 @@ export class EditUserMediaComponent implements OnInit, OnDestroy {
      * Creates a new instance of EditUserMediaComponent.
      * @memberof EditUserMediaComponent
      */
-    constructor(private mediaService: MediaService) { }
-
-    /**
-     * Executes any necessary start up code for the component.
-     * @memberof EditUserMediaComponent
-     */
-    public ngOnInit() {
-        this.inputDevicesSub = this
-            .mediaService
-            .inputDevices
-            .subscribe(devices => this.inputDevices = devices);
-
-        this.outputDevicesSub = this
-            .mediaService
-            .outputDevices
-            .subscribe(devices => this.outputDevices = devices);
-
-        this.inputStreamSub = this
-            .mediaService
-            .inputStream
-            .subscribe(stream => {
-                if (stream) {
-                    this.startTestAudio(stream);
-                }
-            });
-    }
-
-    /**
-     * Executes any necessary code for the destruction of the component.
-     * @memberof EditUserMediaComponent
-     */
-    public ngOnDestroy() {
-        this.inputDevicesSub?.unsubscribe();
-        this.outputDevicesSub?.unsubscribe();
-        this.inputStreamSub?.unsubscribe();
+    constructor(private mediaService: MediaService) {
+        effect(() => {
+            const stream = this.mediaService.inputStream();
+            if (stream) {
+                this.startTestAudio(stream);
+            }
+        })
     }
 
     /**

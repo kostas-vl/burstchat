@@ -1,160 +1,107 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Chat;
-using BurstChat.Domain.Schema.Users;
+using BurstChat.Infrastructure.Errors;
+using BurstChat.Infrastructure.Extensions;
 using BurstChat.Signal.Models;
 using Microsoft.AspNetCore.SignalR;
 
-namespace BurstChat.Signal.Hubs.Chat
+namespace BurstChat.Signal.Hubs.Chat;
+
+public partial class ChatHub
 {
-    public partial class ChatHub
-    {
-        /// <summary>
-        /// Constructs the appropriate signal group name for a private group chat.
-        /// </summary>
-        /// <param name="id">The id of the private group</param>
-        /// <returns>The string signal group name</returns>
-        private string PrivateGroupSignalName(long id) => $"privateGroup:{id}";
+    private string PrivateGroupSignalName(long id) => $"privateGroup:{id}";
 
-        /// <summary>
-        /// Adds a new connection to a signalr group that is based on the id of a private BurstChat group.
-        /// </summary>
-        /// <param name="groupId">The id of the target group</param>
-        /// <returns>A Task instance</returns>
-        public async Task AddToPrivateGroupConnection(long groupId)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _privateGroupMessagingService.GetPrivateGroupAsync(httpContext, groupId);
-
-            if (monad is Success<PrivateGroup, Error>)
+    public Task AddToPrivateGroupConnection(long groupId) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _privateGroupService.Get(userId, groupId))
+            .InspectAsync(async group =>
             {
                 var signalGroup = PrivateGroupSignalName(groupId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
                 await Clients.Caller.SelfAddedToPrivateGroup();
-            }
-        }
+            });
 
-        /// <summary>
-        /// Sends a new message to the caller that contains either all the messages posted to a
-        /// group or an error explaining why the operation wasn't completed properly.
-        /// </summary>
-        /// <param name="groupId">The id of the target group</param>
-        /// <returns>A task instance</returns>
-        public async Task GetAllPrivateGroupMessages(long groupId)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _privateGroupMessagingService.GetAllAsync(httpContext, groupId);
-            var signalGroup = PrivateGroupSignalName(groupId);
+    public Task GetAllPrivateGroupMessages(long groupId)
+    {
+        var signalGroup = PrivateGroupSignalName(groupId);
 
-            switch (monad)
+        return Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _privateGroupService.GetMessages(userId, groupId))
+            .InspectAsync(async messages =>
             {
-                case Success<IEnumerable<Message>, Error> success:
-                    var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
-                    await Clients.Caller.AllPrivateGroupMessages(payload);
-                    break;
-
-                case Failure<IEnumerable<Message>, Error> failure:
-                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.AllPrivateGroupMessages(failurePayload);
-                    break;
-
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.AllPrivateGroupMessages(exceptionPayload);
-                    break;
-            }
-        }
-
-        /// <summary>
-        ///   Sends a new message to all users from the parameters provided.
-        /// </summary>
-        /// <param name="message">The message to be sent to connected users</param>
-        /// <returns>A task instance</returns>
-        public async Task PostPrivateGroupMessage(long groupId, Message message)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _privateGroupMessagingService.PostAsync(httpContext, groupId, message);
-            var signalGroup = PrivateGroupSignalName(groupId);
-
-            switch (monad)
+                var payload = new Payload<IEnumerable<Message>>(signalGroup, messages);
+                await Clients.Caller.AllPrivateGroupMessages(payload);
+            })
+            .InspectErrAsync(async err =>
             {
-                case Success<Unit, Error> _:
-                    var payload = new Payload<Message>(signalGroup, message);
-                    await Clients.Group(signalGroup).PrivateGroupMessageReceived(payload);
-                    break;
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.AllPrivateGroupMessages(failurePayload);
+            });
+    }
 
-                case Failure<Unit, Error> failure:
-                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.PrivateGroupMessageReceived(failurePayload);
-                    break;
+    public Task PostPrivateGroupMessage(long groupId, Message message)
+    {
+        var signalGroup = PrivateGroupSignalName(groupId);
 
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.PrivateGroupMessageReceived(exceptionPayload);
-                    break;
-            }
-        }
-
-        /// <summary>
-        ///   Sends an edited message to all users based on the parameters provided.
-        /// </summary>
-        /// <param name="message">The message that was edited and will be sent to connected users</param>
-        /// <returns>A task instance</returns>
-        public async Task PutPrivateGroupMessage(long groupId, Message message)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _privateGroupMessagingService.PostAsync(httpContext, groupId, message);
-            var signalGroup = PrivateGroupSignalName(groupId);
-
-            switch (monad)
+        return Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _privateGroupService.InsertMessage(userId, groupId, message))
+            .InspectAsync(async message =>
             {
-                case Success<Unit, Error> _:
-                    var payload = new Payload<Message>(signalGroup, message);
-                    await Clients.Groups(signalGroup).PrivateGroupMessageEdited(payload);
-                    break;
-
-                case Failure<Unit, Error> failure:
-                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.PrivateGroupMessageEdited(failurePayload);
-                    break;
-
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.PrivateGroupMessageEdited(exceptionPayload);
-                    break;
-            }
-        }
-
-        /// <summary>
-        ///   Informs all users that a message of a group was deleted based on the provided parameters.
-        /// </summary>
-        /// <param name="message">The message to be deleted and sent to connected users</param>
-        /// <returns>A task instance</returns>
-        public async Task DeletePrivateGroupMessage(long groupId, Message message)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _privateGroupMessagingService.DeleteAsync(httpContext, groupId, message);
-            var signalGroup = PrivateGroupSignalName(groupId);
-
-            switch (monad)
+                var payload = new Payload<Message>(signalGroup, message);
+                await Clients.Group(signalGroup).PrivateGroupMessageReceived(payload);
+            })
+            .InspectErrAsync(async err =>
             {
-                case Success<Unit, Error> _:
-                    var payload = new Payload<Message>(signalGroup, message);
-                    await Clients.Groups(signalGroup).PrivateGroupMessageDeleted(payload);
-                    break;
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.PrivateGroupMessageReceived(failurePayload);
+            });
+    }
 
-                case Failure<Unit, Error> failure:
-                    var failurePayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.PrivateGroupMessageDeleted(failurePayload);
-                    break;
+    public Task PutPrivateGroupMessage(long groupId, Message message)
+    {
+        var signalGroup = PrivateGroupSignalName(groupId);
 
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.PrivateGroupMessageDeleted(exceptionPayload);
-                    break;
-            }
-        }
+        return Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _privateGroupService.UpdateMessage(userId, groupId, message))
+            .InspectAsync(async message =>
+            {
+                var payload = new Payload<Message>(signalGroup, message);
+                await Clients.Groups(signalGroup).PrivateGroupMessageEdited(payload);
+            })
+            .InspectErrAsync(async err =>
+            {
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.PrivateGroupMessageEdited(failurePayload);
+            });
+    }
+
+    public Task DeletePrivateGroupMessage(long groupId, Message message)
+    {
+        var signalGroup = PrivateGroupSignalName(groupId);
+
+        return Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _privateGroupService.DeleteMessage(userId, groupId, message.Id))
+            .InspectAsync(async _ =>
+            {
+                var payload = new Payload<Message>(signalGroup, message);
+                await Clients.Groups(signalGroup).PrivateGroupMessageDeleted(payload);
+            })
+            .InspectErrAsync(async err =>
+            {
+                var failurePayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.PrivateGroupMessageDeleted(failurePayload);
+            });
     }
 }

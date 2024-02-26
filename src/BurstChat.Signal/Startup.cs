@@ -1,20 +1,12 @@
 using BurstChat.Application;
 using BurstChat.Infrastructure;
-using BurstChat.Signal.Options;
 using BurstChat.Signal.Hubs.Chat;
-using BurstChat.Signal.Services.ChannelsService;
-using BurstChat.Signal.Services.DirectMessagingService;
-using BurstChat.Signal.Services.PrivateGroupMessaging;
+using BurstChat.Signal.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BurstChat.Signal.Services.ApiInteropService;
-using BurstChat.Signal.Services.UserService;
-using BurstChat.Signal.Services.ServerService;
 using Microsoft.Extensions.Hosting;
-
 using DependencyInjection = BurstChat.Infrastructure.DependencyInjection;
 
 namespace BurstChat.Signal
@@ -34,35 +26,17 @@ namespace BurstChat.Signal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddApplication()
-                .AddInfrastructure(Configuration);
+            services.AddApplication().AddInfrastructure(Configuration);
 
             services.Configure<ApiDomainOptions>(options =>
             {
                 options.BurstChatApiDomain = Configuration.GetValue<string>("BurstChatApiDomain");
             });
 
-            services
-                .AddControllers()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            services
-                .AddSignalR();
-
-            services
-                .AddScoped<IUserService, UserProvider>()
-                .AddScoped<IServerService, ServerProvider>()
-                .AddScoped<IPrivateGroupMessagingService, PrivateGroupMessagingProvider>()
-                .AddScoped<IChannelsService, ChannelsProvider>()
-                .AddScoped<IDirectMessagingService, DirectMessagingProvider>();
-
-            services
-                .AddHttpContextAccessor();
-
-            services
-                .AddHttpClient<BurstChatApiInteropService>();
-       }
+            services.AddControllers();
+            services.AddSignalR();
+            services.AddHttpContextAccessor();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder application, IWebHostEnvironment env)

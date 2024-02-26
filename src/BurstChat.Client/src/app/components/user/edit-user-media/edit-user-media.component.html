@@ -7,7 +7,7 @@
     <div class="column">
         Input Device:
         <select [ngModel]="selectedInputDevice" (ngModelChange)="onSelectedInputDeviceChange($event)">
-            @for(device of inputDevices; track device.deviceId) {
+            @for(device of inputDevices(); track device.deviceId) {
                 <option [attr.value]="device.deviceId">
                     {{device.label}}
                 </option>
@@ -17,7 +17,7 @@
     <div class="column">
         Output Device:
         <select [ngModel]="selectedOutputDevice" (ngModelChange)="onSelectedOutputDeviceChange($event)">
-            @for(device of outputDevices; track device.deviceId) {
+            @for(device of outputDevices(); track device.deviceId) {
                 <option [attr.value]="device.deviceId">
                     {{device.label}}
                 </option>

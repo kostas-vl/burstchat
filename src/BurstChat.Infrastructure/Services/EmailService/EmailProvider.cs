@@ -10,71 +10,58 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace BurstChat.Infrastructure.Services.EmailService
+namespace BurstChat.Infrastructure.Services.EmailService;
+
+public class EmailProvider : IEmailService, IDisposable
 {
-    /// <summary>
-    /// This class is the base implementation of the IEmailService.
-    /// </summary>
-    public class EmailProvider : IEmailService, IDisposable
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly ILogger<EmailProvider> _logger;
+    private readonly SmtpOptions _smtpOptions;
+    private readonly SmtpClient _smtpClient;
+
+    public EmailProvider(
+        IWebHostEnvironment webHostEnvironment,
+        ILogger<EmailProvider> logger,
+        IOptions<SmtpOptions> smtpOptions
+    )
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly ILogger<EmailProvider> _logger;
-        private readonly SmtpOptions _smtpOptions;
-        private readonly SmtpClient _smtpClient;
-
-        /// <summary>
-        /// Creates a new instance of EmailProvider.
-        /// </summary>
-        public EmailProvider(
-            IWebHostEnvironment webHostEnvironment,
-            ILogger<EmailProvider> logger,
-            IOptions<SmtpOptions> smtpOptions
-        )
+        _webHostEnvironment = webHostEnvironment;
+        _logger = logger;
+        _smtpOptions = smtpOptions?.Value ?? throw new Exception("SmtpOptions are required");
+        _smtpClient = new SmtpClient(_smtpOptions.Host, _smtpOptions.Port)
         {
-            _webHostEnvironment = webHostEnvironment;
-            _logger = logger;
-            _smtpOptions = smtpOptions?.Value ?? throw new Exception("SmtpOptions are required");
-            _smtpClient = new SmtpClient(_smtpOptions.Host, _smtpOptions.Port)
-            {
-                Credentials = new NetworkCredential(_smtpOptions.Username, _smtpOptions.Password)
-            };
+            Credentials = new NetworkCredential(_smtpOptions.Username, _smtpOptions.Password)
+        };
+    }
+
+    public async Task<Result<Unit>> SendOneTimePasswordAsync(
+        string recipient,
+        string oneTimePassword
+    )
+    {
+        try
+        {
+            var sender = _smtpOptions.Sender;
+            var subject = "BurstChat reset password";
+            var body = $"BurstChat account one time password: {oneTimePassword}";
+            await _smtpClient.SendMailAsync(sender, recipient, subject, body);
+            return Unit.Ok;
         }
-
-        /// <summary>
-        /// Sends an email to the provided recipient that contains an one time password
-        /// </summary>
-        /// <param name="recipient">The recipient email address</param>
-        /// <param name="oneTimePassword">The one time password to be sent</param>
-        /// <returns>A task of an either monad</returns>
-        public async Task<Either<Unit, Error>> SendOneTimePasswordAsync(string recipient, string oneTimePassword)
+        catch (Exception e)
         {
-            try
+            if (_webHostEnvironment.IsDevelopment())
             {
-                var sender = _smtpOptions.Sender;
-                var subject = "BurstChat reset password";
-                var body = $"BurstChat account one time password: {oneTimePassword}";
-                await _smtpClient.SendMailAsync(sender, recipient, subject, body);
-                return new Success<Unit, Error>(new Unit());
+                _logger.LogInformation($"[email: {recipient}] one time pass {oneTimePassword}");
+                return Unit.Ok;
             }
-            catch (Exception e)
-            {
-                if (_webHostEnvironment.IsDevelopment())
-                {
-                    _logger.LogInformation($"[email: {recipient}] one time pass {oneTimePassword}");
-                    return new Success<Unit, Error>(new Unit());
-                }
 
-                _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
-            }
+            _logger.LogError(e.Message);
+            return SystemErrors.Exception;
         }
+    }
 
-        /// <summary>
-        /// Executes any necessary code for the disposal of the service.
-        /// </summary>
-        public void Dispose()
-        {
-            _smtpClient?.Dispose();
-        }
+    public void Dispose()
+    {
+        _smtpClient?.Dispose();
     }
 }

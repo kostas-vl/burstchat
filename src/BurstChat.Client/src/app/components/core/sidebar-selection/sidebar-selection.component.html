@@ -8,7 +8,7 @@
     <div class="selection-entry">
         <burst-direct-messaging/>
     </div>
-    @for(server of servers; track server.id) {
+    @for(server of servers(); track server.id) {
         <div class="selection-entry">
             <burst-server [server]="server"></burst-server>
         </div>

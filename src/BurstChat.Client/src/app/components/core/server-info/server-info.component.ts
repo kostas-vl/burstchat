@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons';
-import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/services/servers/servers.service';
 
 /**
@@ -20,13 +18,11 @@ import { ServersService } from 'src/app/services/servers/servers.service';
     standalone: true,
     imports: [FontAwesomeModule]
 })
-export class ServerInfoComponent implements OnInit, OnDestroy {
-
-    private serverInfoSub?: Subscription;
+export class ServerInfoComponent {
 
     public database = faDatabase;
 
-    public server?: Server;
+    public server = computed(() => this.serversService.serverInfo() || null);
 
     /**
      * Creates an instance of ServerInfoComponent.
@@ -38,34 +34,11 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
     ) { }
 
     /**
-     * Executest any neccessary start up code for the component.
-     * @memberof ServerInfoComponent
-     */
-    public ngOnInit() {
-        this.serverInfoSub = this
-            .serversService
-            .serverInfo
-            .subscribe(server => {
-                if (server) {
-                    this.server = server;
-                }
-            });
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof ServerInfoComponent
-     */
-    public ngOnDestroy() {
-        this.serverInfoSub?.unsubscribe();
-    }
-
-    /**
      * Handles the edit server button click event.
      * @memberof ChannelListComponent
      */
     public onEditServer(): void {
-        this.router.navigateByUrl(`/core/servers/edit/${this.server.id}`);
+        this.router.navigateByUrl(`/core/servers/edit/${this.server().id}`);
     }
 
 }

@@ -1,5 +1,5 @@
-import { Subject, Observable } from 'rxjs';
 import { RTCSession }from 'jssip';
+import { WritableSignal, signal } from '@angular/core';
 
 /**
  * This class encapsulates a jssip real time communication session.
@@ -8,29 +8,29 @@ import { RTCSession }from 'jssip';
  */
 export class RTCSessionContainer {
 
-    private connectingSource = new Subject<[RTCSession, any]>();
+    private connectingSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private connectedSource = new Subject<[RTCSession, any]>();
+    private connectedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private progressSource = new Subject<[RTCSession, any]>();
+    private progressSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private confirmedSource = new Subject<[RTCSession, any]>();
+    private confirmedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private failedSource = new Subject<[RTCSession, any]>();
+    private failedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    private endedSource = new Subject<[RTCSession, any]>();
+    private endedSource: WritableSignal<[RTCSession, any] | null> = signal(null);
 
-    public connecting = this.connectingSource.asObservable();
+    public connecting = this.connectingSource.asReadonly();
 
-    public connected = this.connectedSource.asObservable();
+    public connected = this.connectedSource.asReadonly();
 
-    public progress = this.progressSource.asObservable();
+    public progress = this.progressSource.asReadonly();
 
-    public confirmed = this.confirmedSource.asObservable();
+    public confirmed = this.confirmedSource.asReadonly();
 
-    public failed = this.failedSource.asObservable();
+    public failed = this.failedSource.asReadonly();
 
-    public ended = this.endedSource.asObservable();
+    public ended = this.endedSource.asReadonly();
 
     /**
      * Creates a new instance of RTCSessionContainer.
@@ -51,7 +51,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onConnecting(event) {
-        this.connectedSource.next([this.source, event]);
+        this.connectingSource.set([this.source, event]);
     }
 
     /**
@@ -60,7 +60,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onConnected(event) {
-        this.connectedSource.next([this.source, event]);
+        this.connectedSource.set([this.source, event]);
     }
 
     /**
@@ -69,7 +69,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onProgress(event) {
-        this.progressSource.next([this.source, event]);
+        this.progressSource.set([this.source, event]);
     }
 
     /**
@@ -78,7 +78,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onConfirmed(event) {
-        this.confirmedSource.next([this.source, event]);
+        this.confirmedSource.set([this.source, event]);
     }
 
     /**
@@ -87,7 +87,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onFailed(event) {
-        this.failedSource.next([this.source, event]);
+        this.failedSource.set([this.source, event]);
     }
 
     /**
@@ -96,7 +96,7 @@ export class RTCSessionContainer {
      * @memberof RTCSessionContainer
      */
     private onEnded(event) {
-        this.endedSource.next([this.source, event]);
+        this.endedSource.set([this.source, event]);
     }
 
 }

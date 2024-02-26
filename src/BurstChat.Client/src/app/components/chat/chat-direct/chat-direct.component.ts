@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, computed, Signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
@@ -44,15 +44,15 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
 
     public chatFound = true;
 
-    public layoutState: 'chat' | 'call' = 'chat';
+    public layout = this.uiLayerService.layout;
 
     public get options() {
         return this.internalOptions;
     }
 
-    public editMessageData: { visible: boolean, message?: Message } = { visible: false, message: null };
+    public editMessageData: { visible: boolean, message?: Message } = { visible: false };
 
-    public deleteMessageData: { visible: boolean, message?: Message} = { visible: false, message: null};
+    public deleteMessageData: { visible: boolean, message?: Message } = { visible: false };
 
     /**
      * Creates an instance of ChatDirectComponent.
@@ -64,7 +64,33 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
         private chatService: ChatService,
         private directMessagingService: DirectMessagingService,
         private uiLayerService: UiLayerService,
-    ) { }
+    ) {
+        effect(() => {
+            if (this.chatService.onReconnected() && this.options) {
+                this.chatService.addSelfToChat(this.options);
+            }
+        });
+
+        effect(() => {
+            const message = this.uiLayerService.editMessage();
+            if (message) {
+                this.editMessageData = {
+                    message: message,
+                    visible: true
+                }
+            }
+        });
+
+        effect(() => {
+            const message = this.uiLayerService.deleteMessage();
+            if (message) {
+                this.deleteMessageData = {
+                    message: message,
+                    visible: true
+                }
+            }
+        });
+    }
 
     /**
      * Executes any neccessary start up code for the component.
@@ -81,8 +107,8 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                             +users[0], +users[1]
                         ]);
                         const state = params.get('display');
-                        if (state === 'chat' || state === 'call'){
-                            this.uiLayerService.toggleChatView(state);
+                        if (state === 'chat' || state === 'call') {
+                            this.uiLayerService.changeLayout(state);
                         }
                     } else {
                         this.chatFound = false;
@@ -91,28 +117,6 @@ export class ChatDirectComponent implements OnInit, OnDestroy {
                         this.notifyService.notify(title, content);
                     }
                 }),
-            this.chatService
-                .onReconnected$
-                .subscribe(() => {
-                    if (this.options) {
-                        this.chatService.addSelfToChat(this.options);
-                    }
-                }),
-            this.uiLayerService
-                .toggleChatView$
-                .subscribe(s => this.layoutState = s),
-            this.uiLayerService
-                .editMessage$
-                .subscribe(message => this.editMessageData = {
-                    visible: true,
-                    message: message,
-                }),
-            this.uiLayerService
-                .deleteMessage$
-                .subscribe(message => this.deleteMessageData = {
-                    visible: true,
-                    message: message,
-                })
         ];
     }
 

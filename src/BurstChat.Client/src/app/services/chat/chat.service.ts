@@ -1,7 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { effect, Injectable, signal, WritableSignal } from '@angular/core';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@microsoft/signalr';
-import { Subject, BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BurstChatError, tryParseError } from 'src/app/models/errors/error';
 import { TokenInfo } from 'src/app/models/identity/token-info';
@@ -29,130 +27,124 @@ export class ChatService {
 
     private connection?: HubConnection;
 
-    private onConnectedSource$ = new Subject();
+    private onConnectedSource = signal(false);
 
-    private onReconnectedSource$ = new Subject();
+    private onReconnectedSource = signal(false);
 
-    private addedServerSource$ = new Subject<Server>();
+    private addedServerSource: WritableSignal<Server | null> = signal(null);
 
-    private updatedServerSource$ = new Subject<Server>();
+    private updatedServerSource: WritableSignal<Server | null> = signal(null);
 
-    private subscriptionDeletedSource$ = new Subject<[number, Subscription]>();
+    private subscriptionDeletedSource: WritableSignal<[number, Subscription] | null> = signal(null);
 
-    private channelCreatedSource$ = new Subject<[number, Channel]>();
+    private channelCreatedSource: WritableSignal<[number, Channel] | null> = signal(null);
 
-    private channelUpdatedSource$ = new Subject<Channel>();
+    private channelUpdatedSource: WritableSignal<Channel | null> = signal(null);
 
-    private channelDeletedSource$ = new Subject<number>();
+    private channelDeletedSource: WritableSignal<number | null> = signal(null);
 
-    private userUpdatedSource$ = new Subject<User>();
+    private userUpdatedSource: WritableSignal<User | null> = signal(null);
 
-    private invitationsSource$ = new BehaviorSubject<Invitation[]>([]);
+    private invitationsSource: WritableSignal<Invitation[]> = signal([]);
 
-    private newInvitationSource$ = new Subject<Invitation>();
+    private newInvitationSource: WritableSignal<Invitation | null> = signal(null);
 
-    private updatedInvitationSource$ = new Subject<Invitation>();
+    private updatedInvitationSource: WritableSignal<Invitation | null> = signal(null);
 
-    private selfAddedToChatSource$ = new Subject();
+    private selfAddedToChatSource: WritableSignal<boolean> = signal(false);
 
-    private allMessagesReceivedSource$ = new Subject<Payload<Message[]>>();
+    private allMessagesReceivedSource: WritableSignal<Payload<Message[]> | null> = signal(null);
 
-    private messageReceivedSource$ = new Subject<Payload<Message>>();
+    private messageReceivedSource: WritableSignal<Payload<Message> | null> = signal(null);
 
-    private messageEditedSource$ = new Subject<Payload<Message>>();
+    private messageEditedSource: WritableSignal<Payload<Message> | null> = signal(null);
 
-    private messageDeletedSource$ = new Subject<Payload<Message>>();
+    private messageDeletedSource: WritableSignal<Payload<Message> | null> = signal(null);
 
-    private newDirectMessagingSource$ = new Subject<Payload<any>>();
+    private newDirectMessagingSource: WritableSignal<Payload<any> | null> = signal(null);
 
-    private errorSource$ = new Subject<BurstChatError>();
+    public onConnected = this.onConnectedSource.asReadonly();
 
-    public onConnected$ = this.onConnectedSource$.asObservable();
+    public onReconnected = this.onReconnectedSource.asReadonly();
 
-    public onReconnected$ = this.onReconnectedSource$.asObservable();
+    public addedServer = this.addedServerSource.asReadonly();
 
-    public addedServer$ = this.addedServerSource$.asObservable();
+    public updatedServer = this.updatedServerSource.asReadonly();
 
-    public updatedServer$ = this.updatedServerSource$.asObservable();
+    public subscriptionDeleted = this.subscriptionDeletedSource.asReadonly();
 
-    public subscriptionDeleted$ = this.subscriptionDeletedSource$.asObservable();
+    public channelCreated = this.channelCreatedSource.asReadonly();
 
-    public channelCreated$ = this.channelCreatedSource$.asObservable();
+    public channelUpdated = this.channelUpdatedSource.asReadonly();
 
-    public channelUpdated$ = this.channelUpdatedSource$.asObservable();
+    public channelDeleted = this.channelDeletedSource.asReadonly();
 
-    public channelDeleted$ = this.channelDeletedSource$.asObservable();
+    public userUpdated = this.userUpdatedSource.asReadonly();
 
-    public userUpdated$ = this.userUpdatedSource$.asObservable();
+    public invitations = this.invitationsSource.asReadonly();
 
-    public invitations$ = this.invitationsSource$.asObservable();
+    public newInvitation = this.newInvitationSource.asReadonly();
 
-    public newInvitation$ = this.newInvitationSource$.asObservable();
+    public updatedInvitation = this.updatedInvitationSource.asReadonly();
 
-    public updatedInvitation$ = this.updatedInvitationSource$.asObservable();
+    public selfAddedToChat = this.selfAddedToChatSource.asReadonly();
 
-    public selfAddedToChat$ = this.selfAddedToChatSource$.asObservable();
+    public allMessagesReceived = this.allMessagesReceivedSource.asReadonly();
 
-    public allMessagesReceived$ = this.allMessagesReceivedSource$.asObservable();
+    public messageReceived = this.messageReceivedSource.asReadonly();
 
-    public messageReceived$ = this.messageReceivedSource$.asObservable();
+    public messageEdited = this.messageEditedSource.asReadonly();
 
-    public messageEdited$ = this.messageEditedSource$.asObservable();
-
-    public messageDeleted$ = this.messageDeletedSource$.asObservable();
-
-    public onError$ = this.errorSource$.asObservable();
+    public messageDeleted = this.messageDeletedSource.asReadonly();
 
     /**
      * Creates an instance of ChatService.
      * @memberof ChatService
      */
     constructor(
-        private router: Router,
         private storageService: StorageService,
         private notifyService: NotifyService
     ) {
-        this.storageService
-            .tokenInfo
-            .subscribe(info => {
-                if (info) {
-                    this.disposeConnection();
-                    this.initializeConnection(info);
-                }
-            });
+        effect(() => {
+            let token = this.storageService.tokenInfo();
+            if (token) {
+                this.disposeConnection();
+                this.initializeConnection(token);
+            }
+        });
     }
 
     /**
-     * This method will process the data sent by a server signal and if the data is not of instance
+     * This method will process the data sent by a server message and if the data is not of instance
      * BurstChatError then the next method will be called from the provided subject.
      * @private
      * @template T The success type contained within the payload.
      * @param {(Payload<T | BurstChatError>)} payload The payload sent fron the signal server.
-     * @param {Subject<Payload<T>>} source The subject to be executed.
+     * @param {WritableSignal<Payload<T>>} source The signal to be set.
      * @memberof ChatService
      */
-    private ProcessSignal<T>(payload: Payload<T | BurstChatError>, source: Subject<Payload<T>>): void {
+    private ProcessMessage<T>(payload: Payload<T | BurstChatError>, source: WritableSignal<Payload<T>>): void {
         const error = tryParseError(payload.content);
         if (!error) {
-            source.next(payload as Payload<T>);
+            source.set(payload as Payload<T>);
         } else {
             this.notifyService.notifyError(error);
         }
     }
 
     /**
-     * This method will process the data sent by a server signal and if the data is not of instance
-     * BurstChatError then the next method will be called from the provided subject.
+     * This method will process the data sent by a server message and if the data is not of instance
+     * BurstChatError then the next method will be called from the provided signal.
      * @private
      * @template T The success type contained within the payload.
-     * @param {T | BurstChatError} data The data sent fron the signal server.
-     * @param {Subject<T>} source The subject to be executed.
+     * @param {T | BurstChatError} data The data sent fron the server message.
+     * @param {WritableSignal<T>} source The signal to be set.
      * @memberof ChatService
      */
-    private ProcessRawSignal<T>(data: T | BurstChatError, source: Subject<T>): void {
+    private ProcessRawMessage<T>(data: T | BurstChatError, source: WritableSignal<T>): void {
         const error = tryParseError(data);
         if (!error) {
-            source.next(data as T);
+            source.set(data as T);
         } else {
             this.notifyService.notifyError(error);
         }
@@ -182,72 +174,72 @@ export class ChatService {
             return;
         }
 
-        this.connection.onreconnected(connectionId => this.onReconnectedSource$.next());
+        this.connection.onreconnected(_connectionId => this.onReconnectedSource.set(true));
 
-        this.connection.on('addedServer', data => this.ProcessRawSignal(data, this.addedServerSource$));
+        this.connection.on('addedServer', data => this.ProcessRawMessage(data, this.addedServerSource));
 
-        this.connection.on('updatedServer', data => this.ProcessRawSignal(data, this.updatedServerSource$));
+        this.connection.on('updatedServer', data => this.ProcessRawMessage(data, this.updatedServerSource));
 
-        this.connection.on('subscriptionDeleted', data => this.ProcessRawSignal(data, this.subscriptionDeletedSource$));
+        this.connection.on('subscriptionDeleted', data => this.ProcessRawMessage(data, this.subscriptionDeletedSource));
 
-        this.connection.on('channelCreated', data => this.ProcessRawSignal(data, this.channelCreatedSource$));
+        this.connection.on('channelCreated', data => this.ProcessRawMessage(data, this.channelCreatedSource));
 
-        this.connection.on('channelUpdated', data => this.ProcessRawSignal(data, this.channelUpdatedSource$));
+        this.connection.on('channelUpdated', data => this.ProcessRawMessage(data, this.channelUpdatedSource));
 
-        this.connection.on('channelDeleted', data => this.ProcessRawSignal(data, this.channelDeletedSource$));
+        this.connection.on('channelDeleted', data => this.ProcessRawMessage(data, this.channelDeletedSource));
 
-        this.connection.on('invitations', data => this.ProcessRawSignal(data, this.invitationsSource$));
+        this.connection.on('invitations', data => this.ProcessRawMessage(data, this.invitationsSource));
 
-        this.connection.on('userUpdated', data => this.ProcessRawSignal(data, this.userUpdatedSource$));
+        this.connection.on('userUpdated', data => this.ProcessRawMessage(data, this.userUpdatedSource));
 
-        this.connection.on('newInvitation', data => this.ProcessRawSignal(data, this.newInvitationSource$));
+        this.connection.on('newInvitation', data => this.ProcessRawMessage(data, this.newInvitationSource));
 
-        this.connection.on('updatedInvitation', data => this.ProcessRawSignal(data, this.updatedInvitationSource$));
+        this.connection.on('updatedInvitation', data => this.ProcessRawMessage(data, this.updatedInvitationSource));
 
         this.connection.on('selfAddedToPrivateGroup', () => {
-            setTimeout(() => this.selfAddedToChatSource$.next(), 500);
+            setTimeout(() => this.selfAddedToChatSource.set(true), 500);
         });
 
-        this.connection.on('allPrivateGroupMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource$));
+        this.connection.on('allPrivateGroupMessagesReceived', data => this.ProcessMessage(data, this.allMessagesReceivedSource));
 
-        this.connection.on('privateGroupMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource$));
+        this.connection.on('privateGroupMessageReceived', data => this.ProcessMessage(data, this.messageReceivedSource));
 
-        this.connection.on('privateGroupMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource$));
+        this.connection.on('privateGroupMessageEdited', data => this.ProcessMessage(data, this.messageEditedSource));
 
-        this.connection.on('privateGroupMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource$));
+        this.connection.on('privateGroupMessageDeleted', data => this.ProcessMessage(data, this.messageDeletedSource));
 
         this.connection.on('selfAddedToChannel', () => {
-            setTimeout(() => this.selfAddedToChatSource$.next(), 500);
+            setTimeout(() => this.selfAddedToChatSource.set(true), 500);
         });
 
-        this.connection.on('allChannelMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource$));
+        this.connection.on('allChannelMessagesReceived', data => this.ProcessMessage(data, this.allMessagesReceivedSource));
 
-        this.connection.on('channelMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource$));
+        this.connection.on('channelMessageReceived', data => this.ProcessMessage(data, this.messageReceivedSource));
 
-        this.connection.on('channelMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource$));
+        this.connection.on('channelMessageEdited', data => this.ProcessMessage(data, this.messageEditedSource));
 
-        this.connection.on('channelMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource$));
+        this.connection.on('channelMessageDeleted', data => this.ProcessMessage(data, this.messageDeletedSource));
 
         this.connection.on('selfAddedToDirectMessaging', () => {
-            setTimeout(() => this.selfAddedToChatSource$.next(), 500);
+            setTimeout(() => this.selfAddedToChatSource.set(true), 500);
         });
 
         this.connection.on('newDirectMessaging', data => {
-            this.ProcessSignal(data, this.newDirectMessagingSource$);
-            setTimeout(() => this.selfAddedToChatSource$.next(), 500);
+            this.ProcessMessage(data, this.newDirectMessagingSource);
+            setTimeout(() => this.selfAddedToChatSource.set(true), 500);
         });
 
-        this.connection.on('allDirectMessagesReceived', data => this.ProcessSignal(data, this.allMessagesReceivedSource$));
+        this.connection.on('allDirectMessagesReceived', data => this.ProcessMessage(data, this.allMessagesReceivedSource));
 
-        this.connection.on('directMessageReceived', data => this.ProcessSignal(data, this.messageReceivedSource$));
+        this.connection.on('directMessageReceived', data => this.ProcessMessage(data, this.messageReceivedSource));
 
-        this.connection.on('directMessageEdited', data => this.ProcessSignal(data, this.messageEditedSource$));
+        this.connection.on('directMessageEdited', data => this.ProcessMessage(data, this.messageEditedSource));
 
-        this.connection.on('directMessageDeleted', data => this.ProcessSignal(data, this.messageDeletedSource$));
+        this.connection.on('directMessageDeleted', data => this.ProcessMessage(data, this.messageDeletedSource));
 
         this.connection
             .start()
-            .then(() => this.onConnectedSource$.next())
+            .then(() => this.onConnectedSource.set(true))
             .catch(error => console.warn(error));
     }
 

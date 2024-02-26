@@ -1,27 +1,30 @@
-using System;
+using BurstChat.Application.Monads;
 
-namespace BurstChat.Application.Errors
+namespace BurstChat.Application.Errors;
+
+public static class DirectMessagingErrors
 {
-    /// <summary>
-    /// This class exposes static methods that return errors associated with the execution errors of the
-    /// application about direct messaging data.
-    /// </summary>
-    public static class DirectMessagingErrors
-    {
-        public static Error DirectMessagingNotFound() => new(ErrorLevel.Critical,
-                                                             ErrorType.DataProcess,
-                                                             "The direct messages dont exist");
+    public static MonadException DirectMessagingNotFound =>
+        new MonadException(ErrorLevel.Critical, ErrorType.DataProcess, "The direct messages dont exist");
 
-        public static Error DirectMessagingAlreadyExists() => new(ErrorLevel.Critical,
-                                                                  ErrorType.DataProcess,
-                                                                  "The direct messages have already been associated");
+    public static MonadException DirectMessagingAlreadyExists =>
+        new MonadException(
+            ErrorLevel.Critical,
+            ErrorType.DataProcess,
+            "The direct messages have already been associated"
+        );
 
-        public static Error DirectMessagesNotFound() => new(ErrorLevel.Critical,
-                                                            ErrorType.DataProcess,
-                                                            "The direct messages were not found");
+    public static MonadException DirectMessagesNotFound =>
+        new MonadException(
+            ErrorLevel.Critical,
+            ErrorType.DataProcess,
+            "The direct messages were not found"
+        );
 
-        public static Error DirectMessageNotFound() => new(ErrorLevel.Critical,
-                                                           ErrorType.DataProcess,
-                                                           "The direct message was not found");
-    }
+    public static MonadException DirectMessageNotFound =>
+        new MonadException(
+            ErrorLevel.Critical,
+            ErrorType.DataProcess,
+            "The direct message was not found"
+        );
 }

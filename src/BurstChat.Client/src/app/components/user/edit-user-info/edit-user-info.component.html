@@ -2,7 +2,7 @@
 
     <div>
 
-        <burst-avatar [name]="user.name" [avatar]="user.avatar" size="lg"></burst-avatar>
+        <burst-avatar [name]="user().name" [avatar]="user().avatar" size="lg"></burst-avatar>
 
     </div>
 
@@ -12,8 +12,8 @@
 
             <div class="column column-100">
 
-                {{user.name}} <span class="text-muted">#{{user.id}} <small class="text-muted">Joined
-                        {{user.dateCreated | date}}</small></span>
+                {{user().name}} <span class="text-muted">#{{user().id}} <small class="text-muted">Joined
+                        {{user().dateCreated | date}}</small></span>
 
             </div>
 
@@ -23,7 +23,7 @@
 
             <div class="column column-100">
 
-                <small class="text-muted">email: {{user.email}}</small>
+                <small class="text-muted">email: {{user().email}}</small>
 
             </div>
 

@@ -2,11 +2,11 @@
     <div class="user-logo pl-10 pr-5">
         <burst-avatar [name]="name" [avatar]="avatar"></burst-avatar>
     </div>
-    @if(user.name) {
-        <div class="user-name">{{user.name}}</div>
+    @if(user().name) {
+        <div class="user-name">{{user().name}}</div>
     }
-    @if(user.id) {
-        <div class="user-id">#{{user.id}}</div>
+    @if(user().id) {
+        <div class="user-id">#{{user().id}}</div>
     }
     <div class="user-actions">
         <div class="button-icon text" (click)="onEditUser()">

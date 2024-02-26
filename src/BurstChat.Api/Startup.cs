@@ -9,69 +9,57 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace BurstChat.Api
+namespace BurstChat.Api;
+
+public class Startup
 {
-    public class Startup
+    private static readonly ILoggerFactory BurstChatContextLogger = LoggerFactory.Create(builder =>
+        builder.AddConsole()
+    );
+
+    public IConfiguration Configuration { get; }
+
+    public Startup(IConfiguration configuration)
     {
-        private readonly static ILoggerFactory BurstChatContextLogger = LoggerFactory.Create(builder => builder.AddConsole());
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddApplication().AddInfrastructure(Configuration);
 
-        /// <summary>
-        ///   Creates an instance of Startup.
-        /// </summary>
-        /// <param name="configuration">The IConfiguration instance of the application</param>
-        public Startup(IConfiguration configuration)
+        services.AddMvc();
+        services.AddControllers();
+        services.AddSwaggerGen(config =>
         {
-            Configuration = configuration;
+            config.SwaggerDoc("v1", new OpenApiInfo { Title = "BurstChat API", Version = "v1" });
+        });
+    }
+
+    public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            application.UseDeveloperExceptionPage();
         }
 
-        /// <summary>
-        ///   This method gets called by the runtime. Use this method to add services to the container.
-        /// </summary>
-        /// <param name="services">The services collection to be used for the configuration</param>
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddApplication()
-                .AddInfrastructure(Configuration);
-
-            services.AddMvc();
-            services.AddControllers();
-            services.AddSwaggerGen(config =>
+        application
+            .UseStaticFiles()
+            .UseRouting()
+            .UseCors(Infrastructure.DependencyInjection.CorsPolicyName)
+            .UseAuthentication()
+            .UseAuthorization()
+            .UseSwagger()
+            .UseSwaggerUI(config =>
             {
-                config.SwaggerDoc("v1", new OpenApiInfo { Title = "BurstChat API", Version = "v1" });
-            });
-        }
-
-        /// <summary>
-        ///   This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        /// </summary>
-        /// <param name="application">The application builder to be used in the configuration</param>
-        /// <param name="env">The hosting environment that the application is running</param>
-        public void Configure(IApplicationBuilder application, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
+                config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat API V1");
+            })
+            .UseEndpoints(endpoints =>
             {
-                application.UseDeveloperExceptionPage();
-            }
-
-            application
-                .UseStaticFiles()
-                .UseRouting()
-                .UseCors(Infrastructure.DependencyInjection.CorsPolicyName)
-                .UseAuthentication()
-                .UseAuthorization()
-                .UseSwagger()
-                .UseSwaggerUI(config =>
-                {
-                    config.SwaggerEndpoint("/swagger/v1/swagger.json", "BurstChat API V1");
-                })
-                .UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                })
-                .Use(async (context, next) =>
+                endpoints.MapControllers();
+            })
+            .Use(
+                async (context, next) =>
                 {
                     var path = context?.Request?.Path;
                     if (path?.Value?.IndexOf("/api", StringComparison.InvariantCulture) == -1)
@@ -80,7 +68,7 @@ namespace BurstChat.Api
                         return;
                     }
                     await next();
-                });
-        }
+                }
+            );
     }
 }

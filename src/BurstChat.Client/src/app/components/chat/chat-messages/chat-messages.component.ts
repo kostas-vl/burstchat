@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, ViewChild, effect } from '@angular/core';
 import { VirtualScrollerComponent, IPageInfo, VirtualScrollerModule } from '@iharbeck/ngx-virtual-scroller';
 import { Message } from 'src/app/models/chat/message';
 import { User } from 'src/app/models/user/user';
@@ -26,9 +25,7 @@ import { ChatMessageComponent } from 'src/app/components/chat/chat-message/chat-
         ChatMessageComponent
     ]
 })
-export class ChatMessagesComponent implements OnInit, OnDestroy {
-
-    private subscriptions?: Subscription[] = [];
+export class ChatMessagesComponent {
 
     private internalOptions?: ChatConnectionOptions;
 
@@ -57,32 +54,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         this.chatIsEmpty = false;
         this.loadingMessages = true;
         this.internalOptions = value;
-        this.unsubscribeAll();
-
-        this.subscriptions = [
-            this.chatService
-                .selfAddedToChat$
-                .subscribe(() => this.onSelfAddedToChat()),
-            this.chatService
-                .allMessagesReceived$
-                .subscribe(payload => this.onMessagesReceived(payload)),
-            this.chatService
-                .messageReceived$
-                .subscribe(payload => this.onMessageReceived(payload)),
-            this.chatService
-                .messageEdited$
-                .subscribe(payload => this.onMessageEdited(payload)),
-            this.chatService
-                .messageDeleted$
-                .subscribe(payload => this.onMessageDeleted(payload)),
-            this.chatService
-                .userUpdated$
-                .subscribe(user => this.onUserUpdated(user)),
-            this.uiLayerService
-                .search$
-                .subscribe(term => this.onSearch(term)),
-        ];
-
         this.chatService.addSelfToChat(this.options);
     }
 
@@ -94,29 +65,14 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         private chatService: ChatService,
         private notifyService: NotifyService,
         private uiLayerService: UiLayerService
-    ) { }
-
-    /**
-     * Executes any necessary start up code for the component.
-     * @memberof ChatMessagesComponent
-     */
-    public ngOnInit() { }
-
-    /**
-     * Executes any necessary code for the destruction of the component.
-     * @memberof ChatMessagesComponent
-     */
-    public ngOnDestroy() {
-        this.unsubscribeAll();
-    }
-
-    /**
-     * Unsubscribes all instanciated subscriptions of the component.
-     * @private
-     * @memberof ChatMessagesComponent
-     */
-    private unsubscribeAll() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+    ) {
+        effect(() => this.onUserUpdated(this.chatService.userUpdated()));
+        effect(() => this.onSelfAddedToChat(this.chatService.selfAddedToChat()));
+        effect(() => this.onMessagesReceived(this.chatService.allMessagesReceived()));
+        effect(() => this.onMessageReceived(this.chatService.messageReceived()));
+        effect(() => this.onMessageEdited(this.chatService.messageEdited()));
+        effect(() => this.onMessageDeleted(this.chatService.messageDeleted()));
+        effect(() => this.onSearch(this.uiLayerService.search()));
     }
 
     /**
@@ -232,10 +188,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     /**
      * Handles the successful connection to a chat.
      * @private
+     * @param {boolean} added The flag indicating if the current user was added to chat connection.
      * @memberof ChatMessagesComponent
      */
-    private onSelfAddedToChat() {
-        this.chatService.getAllMessages(this.options);
+    private onSelfAddedToChat(added: boolean) {
+        if (this.options && added) {
+            this.chatService.getAllMessages(this.options);
+        }
     }
 
     /**
@@ -244,7 +203,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @param {Payload<Message[]>} payload A payload with the messages received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessagesReceived(payload: Payload<Message[]>) {
+    private onMessagesReceived(payload: Payload<Message[]> | null) {
+        if (!this.options || !payload) return;
+
         const newBatch = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : [];
@@ -266,7 +227,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
      * @param {Payload<Message>} payload The payload with the new message received from the server.
      * @memberof ChatMessagesComponent
      */
-    private onMessageReceived(payload: Payload<Message>) {
+    private onMessageReceived(payload: Payload<Message> | null) {
+        if (!this.options || !payload) return;
+
         const message = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : null;
@@ -281,10 +244,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     /**
      * Handles the payload of a message that was edited.
-     * @param {Payload<Message>} message The message that was edited.
+     * @param {Payload<Message> | null} message The message that was edited.
      * @memberof ChatMessageComponent
      */
-    private onMessageEdited(payload: Payload<Message>) {
+    private onMessageEdited(payload: Payload<Message> | null) {
+        if (!this.options || !payload) return;
+
         const message = this.options.signalGroup === payload.signalGroup
             ? payload.content
             : null;
@@ -298,10 +263,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     /**
      * Handles the payload of a message that was deleted from the chat.
-     * @param {Payload<Message>} message The payload with the deleted message.
+     * @param {Payload<Message> | null} message The payload with the deleted message.
      * @memberof ChatMessagesComponent
      */
-    private onMessageDeleted(payload: Payload<Message>) {
+    private onMessageDeleted(payload: Payload<Message> | null) {
+        if (!this.options || !payload) return;
+
         const message= this.options.signalGroup === payload.signalGroup
             ? payload.content
             : null;
@@ -326,10 +293,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
     /**
      * Checks if the updated user that was sent is in any of the messages.
-     * @param {User} user The updated user instance.
+     * @param {User | null} user The updated user instance.
      * @memberof ChatMessagesComponent
      */
-    public onUserUpdated(user: User) {
+    public onUserUpdated(user: User | null) {
+        if (!this.options || !user) return;
+
         const messages = this.messages.filter(m => m.user.id === user.id);
         for (const message of messages) {
             message.user = { ...user };

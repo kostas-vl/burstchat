@@ -1,8 +1,6 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/chat/message';
-import { User } from 'src/app/models/user/user';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { UserService } from 'src/app/services/user/user.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
@@ -21,11 +19,7 @@ import { ChatService } from 'src/app/services/chat/chat.service';
     standalone: true,
     imports: [FormsModule]
 })
-export class ChatInputComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[];
-
-    private user?: User;
+export class ChatInputComponent {
 
     private internalOptions?: ChatConnectionOptions;
 
@@ -50,35 +44,12 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     constructor(
         private userService: UserService,
         private chatService: ChatService
-    ) { }
-
-    /**
-     * Executes any necessary start up code for the component.
-     * @memberof ChatInputComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.userService
-                .user
-                .subscribe(user => {
-                    if (user) {
-                        this.user = user;
-                    }
-                }),
-            this.chatService
-                .allMessagesReceived$
-                .subscribe(_ => {
-                    setTimeout(() => this.loading = false, 300);
-                }),
-        ];
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof ChatInputComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+    ) {
+        effect(() => {
+            if (this.chatService.allMessagesReceived()) {
+                setTimeout(() => this.loading = false, 300);
+            }
+        })
     }
 
     /**
@@ -87,10 +58,11 @@ export class ChatInputComponent implements OnInit, OnDestroy {
      * @memberof ChatInputComponent
      */
     public onEnterKeyPressed() {
-        if (this.user && this.inputContent) {
+        const user = this.userService.user();
+        if (user && this.inputContent) {
             const message: Message = {
                 id: 0,
-                userId: this.user.id,
+                userId: user.id,
                 user: null,
                 content: this.inputContent,
                 datePosted: new Date(),

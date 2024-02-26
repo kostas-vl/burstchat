@@ -1,5 +1,6 @@
-import { HttpClient, HttpHandlerFn, HttpHeaders, HttpInterceptorFn, HttpParams, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpInterceptorFn, HttpParams, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 import { catchError, filter, flatMap, map, switchMap, take } from 'rxjs/operators';
@@ -81,8 +82,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
     const router = inject(Router);
     const httpClient = inject(HttpClient);
     const storageService = inject(StorageService);
-    return storageService
-        .tokenInfo
+    return toObservable(storageService.tokenInfo)
         .pipe(
             flatMap(token => {
                 return next(requestWithAccessToken(token, request))
@@ -96,8 +96,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
                                 requestRefresh(router, httpClient, storageService, token);
                             }
 
-                            return storageService
-                                .refreshToken$
+                            return toObservable(storageService.refreshToken$)
                                 .pipe(
                                     filter(info => info !== null),
                                     take(1),

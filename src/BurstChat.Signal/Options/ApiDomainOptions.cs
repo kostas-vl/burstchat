@@ -1,13 +1,6 @@
-namespace BurstChat.Signal.Options
+namespace BurstChat.Signal.Options;
+
+public class ApiDomainOptions
 {
-    /// <summary>
-    /// Contains the domain of the BurstChat api.
-    /// </summary>
-    public class ApiDomainOptions
-    {
-        /// <summary>
-        /// The burst chat api domain url.
-        /// </summary>
-        public string BurstChatApiDomain { get; set; } = string.Empty;
-    }
+    public string BurstChatApiDomain { get; set; } = string.Empty;
 }

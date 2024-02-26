@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 
@@ -11,15 +11,13 @@ import { User } from 'src/app/models/user/user';
 @Injectable()
 export class ServersService {
 
-    private activeServerSource = new BehaviorSubject<Server | null>(null);
+    private serverInfoSource: WritableSignal<Server | null> = signal(null);
 
-    private serverInfoSource = new BehaviorSubject<Server | null>(null);
+    private serverCacheSource: WritableSignal<Server[]> = signal([]);
 
-    private serverCacheSource = new BehaviorSubject<Server[]>([]);
+    public serverInfo = this.serverInfoSource.asReadonly();
 
-    public serverInfo = this.serverInfoSource.asObservable();
-
-    public serverCache = this.serverCacheSource.asObservable();
+    public serverCache = this.serverCacheSource.asReadonly();
 
     /**
      * Creates a new instance of ServersService.
@@ -32,7 +30,7 @@ export class ServersService {
      * @memberof ServersService
      */
     public current() {
-        return this.serverInfoSource.getValue();
+        return this.serverInfoSource();
     }
 
     /**
@@ -41,7 +39,7 @@ export class ServersService {
      * @memberof ServersService
      */
     public set(serverId: number) {
-        const servers = this.serverCacheSource.getValue();
+        const servers = this.serverCacheSource();
         const server = servers.find(s => s.id === serverId);
         const invalidInfo = server
             && (server.channels?.length === 0 || server.subscriptions?.length === 0);
@@ -51,7 +49,7 @@ export class ServersService {
             return;
         }
 
-        this.serverInfoSource.next(server);
+        this.serverInfoSource.set(server);
     }
 
     /**
@@ -61,7 +59,7 @@ export class ServersService {
     public get(serverId: number) {
         this.httpClient
             .get<Server>(`/api/servers/${serverId}`)
-            .subscribe(server => this.serverInfoSource.next(server));
+            .subscribe(server => this.serverInfoSource.set(server));
     }
 
     /**
@@ -121,7 +119,7 @@ export class ServersService {
      * @memberof ServersService
      */
     public updateCache(servers: Server[]) {
-        this.serverCacheSource.next(servers);
+        this.serverCacheSource.set(servers);
     }
 
 }

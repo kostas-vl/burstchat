@@ -1,7 +1,7 @@
-@if(server) {
+@if(server()) {
     <div class="server-info">
         <div>
-            {{server.name}}
+            {{server().name}}
         </div>
         <div class="ml-auto">
             <div class="button-icon text" (click)="onEditServer()">

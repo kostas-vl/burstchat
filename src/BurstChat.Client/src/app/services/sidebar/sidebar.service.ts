@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { DisplayDirectMessages } from 'src/app/models/sidebar/display-direct-messages';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 
@@ -11,13 +10,13 @@ import { DisplayServer } from 'src/app/models/sidebar/display-server';
 @Injectable()
 export class SidebarService {
 
-    private displaySource = new BehaviorSubject<DisplayDirectMessages | DisplayServer>(new DisplayDirectMessages());
+    private displaySource: WritableSignal<DisplayDirectMessages | DisplayServer> = signal(new DisplayDirectMessages());
 
-    private addServerDialogSource = new Subject<boolean>();
+    private addServerDialogSource: WritableSignal<boolean | null> = signal(null);
 
-    public display = this.displaySource.asObservable();
+    public display = this.displaySource.asReadonly();
 
-    public addServerDialog = this.addServerDialogSource.asObservable();
+    public addServerDialog = this.addServerDialogSource.asReadonly();
 
     /**
      * Creates an instance of SidebarService.
@@ -31,7 +30,7 @@ export class SidebarService {
      * @memberof SidebarService
      */
     public toggleDisplay(options: DisplayDirectMessages | DisplayServer) {
-        this.displaySource.next(options);
+        this.displaySource.set(options);
     }
 
     /**
@@ -40,7 +39,7 @@ export class SidebarService {
      * @memberof SidebarService
      */
     public toggleAddServerDialog(visible: boolean) {
-        this.addServerDialogSource.next(visible);
+        this.addServerDialogSource.set(visible);
     }
 
 }

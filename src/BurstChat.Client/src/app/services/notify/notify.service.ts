@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import { faBomb, faInfoCircle, faExclamationCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { BurstChatError } from 'src/app/models/errors/error';
 import { PopupMessage } from 'src/app/models/notify/popup-message';
@@ -14,7 +13,7 @@ import { PopupMessage } from 'src/app/models/notify/popup-message';
 })
 export class NotifyService {
 
-    private onPopupSource = new Subject<PopupMessage>();
+    private popupMessagesSource: WritableSignal<PopupMessage[]> = signal([]);
 
     private get canDisplay() {
         return 'Notification' in window
@@ -22,13 +21,18 @@ export class NotifyService {
             && !document.hasFocus();
     }
 
-    public onPopup = this.onPopupSource.asObservable();
+    public popupMessages = this.popupMessagesSource.asReadonly();
 
     /**
      * Creates an instance of NotifyService.
      * @memberof NotifyService
      */
     constructor() { }
+
+    private pushNewMessage(value: PopupMessage[], message: PopupMessage): PopupMessage[] {
+        value.push(message);
+        return value;
+    }
 
     /**
      * Requests permission from the user for displaying notifications if the user
@@ -77,7 +81,7 @@ export class NotifyService {
      */
     public popup(icon: any, title: string, content = '') {
         const message = new PopupMessage(icon, 'text', title, content);
-        this.onPopupSource.next(message);
+        this.popupMessagesSource.update(value => this.pushNewMessage(value, message));
     }
 
     /**
@@ -89,7 +93,7 @@ export class NotifyService {
      */
     public popupSuccess(title: string, content = '') {
         const message = new PopupMessage(faCheck, 'text-success', title, content)
-        this.onPopupSource.next(message);
+        this.popupMessagesSource.update(value => this.pushNewMessage(value, message));
     }
 
     /**
@@ -101,7 +105,7 @@ export class NotifyService {
      */
     public popupInfo(title: string, content = '') {
         const message = new PopupMessage(faInfoCircle, 'text-accent', title, content)
-        this.onPopupSource.next(message);
+        this.popupMessagesSource.update(value => this.pushNewMessage(value, message));
     }
 
     /**
@@ -113,7 +117,7 @@ export class NotifyService {
      */
     public popupWarning(title: string, content = '') {
         const message = new PopupMessage(faExclamationCircle, 'text-warning', title, content);
-        this.onPopupSource.next(message);
+        this.popupMessagesSource.update(value => this.pushNewMessage(value, message));
     }
 
     /**
@@ -125,8 +129,19 @@ export class NotifyService {
     public popupError(error: BurstChatError | null): void {
         if (error) {
             const message = new PopupMessage(faBomb, 'text-danger', 'An error occured', error.message);
-            this.onPopupSource.next(message);
+            this.popupMessagesSource.update(value => this.pushNewMessage(value, message));
         }
     }
 
+    /**
+     * This method will updated the internal messages signal in order to remove the message in the specified index.
+     * @param {number} i The targer message index.
+     * @memberof NotifyService
+     */
+    public dismissPopup(i: number): void {
+        this.popupMessagesSource.update(value => {
+            value.splice(i, 1);
+            return value;
+        })
+    }
 }

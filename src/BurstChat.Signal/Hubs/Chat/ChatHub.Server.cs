@@ -1,118 +1,56 @@
 using System.Threading.Tasks;
-using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Servers;
+using BurstChat.Infrastructure.Extensions;
 using Microsoft.AspNetCore.SignalR;
 
-namespace BurstChat.Signal.Hubs.Chat
+namespace BurstChat.Signal.Hubs.Chat;
+
+public partial class ChatHub
 {
-    public partial class ChatHub
-    {
-        /// <summary>
-        /// Constructs the appropriate signal server name of all users of a server.
-        /// </summary>
-        /// <param name="id">The id of the server</param>
-        /// <returns>The string signal server name</returns>
-        private string ServerSignalName(int id) => $"server:{id}";
+    private string ServerSignalName(int id) => $"server:{id}";
 
-        /// <summary>
-        /// Adds a new server and informs the caller of the results.
-        /// </summary>
-        /// <param name="server">The server instance to be added</param>
-        /// <returns>A task instance</returns>
-        public async Task AddServer(Server server)
-        {
-            var httpContext = Context.GetHttpContext();
-            var sub = Context;
-            var monad = await _serverService.PostAsync(httpContext, server);
+    public Task AddServer(Server server) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _serverService.Insert(userId, server))
+            .InspectAsync(server => Clients.Caller.AddedServer(server))
+            .InspectErrAsync(err => Clients.Caller.AddedServer(err.Into()));
 
-            switch (monad)
-            {
-                case Success<Server, Error> success:
-                    await Clients.Caller.AddedServer(success.Value);
-                    break;
-
-                case Failure<Server, Error> failure:
-                    await Clients.Caller.AddedServer(failure.Value);
-                    break;
-
-                default:
-                    await Clients.Caller.AddedServer(SystemErrors.Exception());
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Adds a new connection to a signalr group that is based on the id of a BurstChat server.
-        /// </summary>
-        /// <param name="serverId">The id of the target server</param>
-        /// <returns>A task instance</returns>
-        public async Task AddToServer(int serverId)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _serverService.GetAsync(httpContext, serverId);
-
-            if (monad is Success<Server, Error>)
+    public Task AddToServer(int serverId) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _serverService.Get(userId, serverId))
+            .InspectAsync(async server =>
             {
                 var signalGroup = ServerSignalName(serverId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
-            }
-        }
+            });
 
-        /// <summary>
-        /// Informs all associated connection of a server, that its information were updated.
-        /// </summary>
-        /// <param name="serverId">The id of the target server</param>
-        /// <returns>A task instance</returns>
-        public async Task UpdateServerInfo(int serverId)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _serverService.GetAsync(httpContext, serverId);
-
-            switch (monad)
+    public Task UpdateServerInfo(Server server) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _serverService.Update(userId, server))
+            .InspectAsync(async server =>
             {
-                case Success<Server, Error> success:
-                    var signalGroup = ServerSignalName(serverId);
-                    await Clients.Group(signalGroup).UpdatedServer(success.Value);
-                    break;
+                var signalGroup = ServerSignalName(server.Id);
+                await Clients.Group(signalGroup).UpdatedServer(server);
+            })
+            .InspectErrAsync(err => Clients.Caller.UpdatedServer(err.Into()));
 
-                case Failure<Server, Error> failure:
-                    await Clients.Caller.UpdatedServer(failure.Value);
-                    break;
-
-                default:
-                    await Clients.Caller.UpdatedServer(SystemErrors.Exception());
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Removes a user from an existing BurstChat server.
-        /// </summary>
-        /// <param name="serverId">The id of the server</param>
-        /// <param name="subscription">The subscription to be removed</param>
-        /// <returns>A task instance</returns>
-        public async Task DeleteSubscription(int serverId, Subscription subscription)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _serverService.DeleteSubscription(httpContext, serverId, subscription);
-
-            switch (monad)
+    public Task DeleteSubscription(int serverId, Subscription subscription) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _serverService.DeleteSubscription(userId, serverId, subscription))
+            .InspectAsync(async sub =>
             {
-                case Success<Subscription, Error> success:
-                    var signalGroup = ServerSignalName(serverId);
-                    var data = new dynamic[] { serverId, subscription };
-                    await Clients.Group(signalGroup).SubscriptionDeleted(data);
-                    break;
-
-                case Failure<Subscription, Error> failure:
-                    await Clients.Caller.SubscriptionDeleted(failure.Value);
-                    break;
-
-                default:
-                    await Clients.Caller.SubscriptionDeleted(SystemErrors.Exception());
-                    break;
-            }
-        }
-    }
+                var signalGroup = ServerSignalName(serverId);
+                var data = new dynamic[] { serverId, sub };
+                await Clients.Group(signalGroup).SubscriptionDeleted(data);
+            })
+            .InspectErrAsync(err => Clients.Caller.SubscriptionDeleted(err.Into()));
 }

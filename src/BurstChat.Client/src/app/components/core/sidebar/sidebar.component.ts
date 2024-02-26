@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, computed } from '@angular/core';
 import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { SidebarSelectionComponent } from 'src/app/components/core/sidebar-selection/sidebar-selection.component';
@@ -31,43 +30,21 @@ import { SidebarUserInfoComponent } from 'src/app/components/core/sidebar-user-i
         SidebarUserInfoComponent
     ]
 })
-export class SidebarComponent implements OnInit, OnDestroy {
+export class SidebarComponent {
 
-    private displaySub?: Subscription;
-
-    public display?: 'direct' | 'server';
+    public display = computed(() => {
+        const options = this.sidebarService.display();
+        if (options instanceof DisplayServer) {
+            return 'server';
+        } else {
+            return 'direct';
+        }
+    });
 
     /**
      * Creates an instance of SidebarComponent.
      * @memberof SidebarComponent
      */
     constructor(private sidebarService: SidebarService) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof SidebarComponent
-     */
-    public ngOnInit() {
-        this.displaySub = this
-            .sidebarService
-            .display
-            .subscribe(options => {
-                if (options instanceof DisplayServer) {
-                    this.display = 'server';
-                } else {
-                    this.display = 'direct';
-                }
-            });
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof SidebarComponent
-     */
-    public ngOnDestroy() {
-        if (this.displaySub) {
-            this.displaySub.unsubscribe();
-        }
-    }
 
 }

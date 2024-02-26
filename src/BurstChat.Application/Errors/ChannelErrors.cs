@@ -1,19 +1,12 @@
-using System;
+using BurstChat.Application.Monads;
 
-namespace BurstChat.Application.Errors
+namespace BurstChat.Application.Errors;
+
+public static class ChannelErrors
 {
-    /// <summary>
-    ///   This class contains static methods that represent errors associated with channel errors when the
-    ///   application tries to either fetch or transform data.
-    /// </summary>
-    public static class ChannelErrors
-    {
-        public static Error ChannelNotFound() => new(ErrorLevel.Critical,
-                                                     ErrorType.DataProcess,
-                                                     "The channel was not found");
+    public static MonadException ChannelNotFound =>
+        new(ErrorLevel.Critical, ErrorType.DataProcess, "The channel was not found");
 
-        public static Error ChannelMessageNotFound() => new(ErrorLevel.Critical,
-                                                            ErrorType.Validation,
-                                                            "The channel message was not found");
-    }
+    public static MonadException ChannelMessageNotFound =>
+        new(ErrorLevel.Critical, ErrorType.Validation, "The channel message was not found");
 }

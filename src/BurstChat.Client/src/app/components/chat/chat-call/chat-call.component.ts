@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input, WritableSignal, effect, signal, untracked } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
@@ -32,13 +32,11 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
         AvatarComponent
     ]
 })
-export class ChatCallComponent implements OnInit, OnDestroy {
+export class ChatCallComponent {
 
     private subscriptions: Subscription[] = [];
 
-    private session?: RTCSessionContainer;
-
-    private internalOptions?: ChatConnectionOptions;
+    private session: WritableSignal<RTCSessionContainer | null> = signal(null);
 
     public icons: any = {
         hangup: faPhoneSlash,
@@ -48,14 +46,8 @@ export class ChatCallComponent implements OnInit, OnDestroy {
 
     public state: 'waiting' | 'confirmed' = 'waiting';
 
-    public get options() {
-        return this.internalOptions;
-    }
-
     @Input()
-    public set options(value: ChatConnectionOptions) {
-        this.internalOptions = value;
-    }
+    public options?: ChatConnectionOptions;
 
     /**
      * Creates a new instance of ChatCallComponent.
@@ -64,34 +56,40 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     constructor(
         private rtcSessionService: RtcSessionService,
         private uiLayerService: UiLayerService
-    ) { }
+    ) {
+        effect(() => {
+            const session = this.rtcSessionService.session();
+            if (session) {
+                this.onNewSession(session);
+                return;
+            }
+            this.reset();
+        });
 
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof ChatCallComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.rtcSessionService
-                .onSession$
-                .subscribe(session => {
-                    if (session) {
-                        this.onNewSession(session);
-                        return;
-                    }
-                    this.reset();
-                })
-        ];
+        effect(() => {
+            const session = this.session();
+            const sessionConfirmed = session?.confirmed();
+            if (sessionConfirmed && this.validSession(session)) {
+                this.onSessionConfirmed();
+            }
+        });
+
+        effect(() => {
+            const session = this.session();
+            const sessionFailed = session?.failed();
+            if (sessionFailed && this.validSession(session)) {
+                this.onSessionFailed();
+            }
+        });
+
+        effect(() => {
+            const session = this.session();
+            const sessionEnded = session?.ended();
+            if (sessionEnded && this.validSession(session)) {
+                this.onSessionEnded();
+            }
+        });
     }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof ChatCallComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
-    }
-
 
     /**
      * Resets the values of specific properties to their intended original value.
@@ -104,37 +102,42 @@ export class ChatCallComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Checks whether the provided session instance is targeted towards the two users associated with the call.
+     * @param {RTCSessionContainer} session The target rtc session instance.
+     * @returns A boolean value indicating if the session user is either of the 2 users associated with the call.
+     * @memberof ChatCallComponent
+     */
+    private validSession(session: RTCSessionContainer): boolean {
+        if (session && this.options instanceof DirectMessagingConnectionOptions) {
+            const first = this.options.directMessaging.firstParticipantUser;
+            const second = this.options.directMessaging.secondParticipantUser;
+            const sessionUser = +session.source.remote_identity.uri.user;
+            return sessionUser === first.id || sessionUser === second.id;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Executes any neccessary code for a new call session.
      * @private
      * @param {RTCSessionContainer} session The session call instance.
      * @memberof ChatCallComponent
      */
     private onNewSession(session: RTCSessionContainer) {
-        this.session = session;
+        this.session.set(session);
 
-        if (this.session && this.options instanceof DirectMessagingConnectionOptions) {
+        if (session && this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUser = +this.session.source.remote_identity.uri.user;
+            const sessionUser = +this.session().source.remote_identity.uri.user;
             if (sessionUser === first.id || sessionUser === second.id) {
                 this.users = [first, second];
 
-                this.subscriptions[1] = this
-                    .session
-                    .confirmed
-                    .subscribe(_ => this.onSessionConfirmed());
+                untracked(() => {
+                })
 
-                this.subscriptions[2] = this
-                    .session
-                    .ended
-                    .subscribe(_ => this.onSessionEnded());
-
-                this.subscriptions[3] = this
-                    .session
-                    .failed
-                    .subscribe(_ => this.onSessionFailed());
-
-                if (this.session.source.isEstablished()) {
+                if (session.source.isEstablished()) {
                     this.state = 'confirmed';
                 }
 
@@ -158,7 +161,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onSessionEnded() {
-        this.uiLayerService.toggleChatView('chat');
+        this.uiLayerService.changeLayout('chat');
     }
 
     /**
@@ -167,7 +170,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      * @memberof ChatCallComponent
      */
     private onSessionFailed() {
-        this.uiLayerService.toggleChatView('chat');
+        this.uiLayerService.changeLayout('chat');
     }
 
     /**
@@ -176,7 +179,7 @@ export class ChatCallComponent implements OnInit, OnDestroy {
      */
     public onHangup() {
         this.rtcSessionService.hangup();
-        this.uiLayerService.toggleChatView('chat');
+        this.uiLayerService.changeLayout('chat');
     }
 
 }

@@ -10,6 +10,7 @@ namespace BurstChat.Application.Monads
     /// </summary>
     /// <typeparam name="TSuccess">The type encapsulated by the success instance of the monad</typeparam>
     /// <typeparam name="TFailure">The type encapsulated by the failure instance of the monad</typeparam>
+    [Obsolete("This class is obsolete please use the Result class")]
     public abstract class Either<TSuccess, TFailure>
     {
         /// <summary>
@@ -19,7 +20,9 @@ namespace BurstChat.Application.Monads
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>An either monad</returns>
-        public virtual Either<TOut, TFailure> Bind<TOut>(Func<TSuccess, Either<TOut, TFailure>> callback)
+        public virtual Either<TOut, TFailure> Bind<TOut>(
+            Func<TSuccess, Either<TOut, TFailure>> callback
+        )
         {
             throw new NotImplementedException();
         }
@@ -31,7 +34,9 @@ namespace BurstChat.Application.Monads
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callbackTask">The callback task to be executed</param>
         /// <return>A task of an either monad</returns>
-        public virtual Task<Either<TOut, TFailure>> BindAsync<TOut>(Func<TSuccess, Task<Either<TOut, TFailure>>> callbackTask)
+        public virtual Task<Either<TOut, TFailure>> BindAsync<TOut>(
+            Func<TSuccess, Task<Either<TOut, TFailure>>> callbackTask
+        )
         {
             throw new NotImplementedException();
         }
@@ -57,7 +62,9 @@ namespace BurstChat.Application.Monads
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>A task of an either monad</returns>
-        public virtual Task<Either<TOut, TFailure>> AttachAsync<TOut>(Func<TSuccess, Task<TOut>> callback)
+        public virtual Task<Either<TOut, TFailure>> AttachAsync<TOut>(
+            Func<TSuccess, Task<TOut>> callback
+        )
         {
             throw new NotImplementedException();
         }
@@ -79,7 +86,9 @@ namespace BurstChat.Application.Monads
         /// </summary>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>An either monad</returns>
-        public virtual Task<Either<TSuccess, TFailure>> ExecuteAndContinueAsync(Func<TSuccess, Task> callback)
+        public virtual Task<Either<TSuccess, TFailure>> ExecuteAndContinueAsync(
+            Func<TSuccess, Task> callback
+        )
         {
             throw new NotImplementedException();
         }

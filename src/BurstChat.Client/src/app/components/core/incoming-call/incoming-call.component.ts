@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, effect, WritableSignal, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -34,11 +34,22 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
         AvatarComponent
     ]
 })
-export class IncomingCallComponent implements OnInit, OnDestroy {
+export class IncomingCallComponent {
 
-    private incomingSessionSub?: Subscription;
-
-    private session?: RTCSessionContainer;
+    private session = computed(() => {
+        const session = this.rtcSessionService.incomingSession();
+        if (session) {
+            const userId = +session.source.remote_identity.uri.user;
+            untracked(() => {
+                this.userService
+                    .whoIs(userId)
+                    .subscribe(user => this.user = user);
+            })
+            return session;
+        } else {
+            return undefined;
+        }
+    });
 
     public user?: User;
 
@@ -48,7 +59,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
 
     public ignoreIcon = faTimes;
 
-    public dialogVisible = false;
+    public dialogVisible = signal(false);
 
     /**
      * Creates a new instance of IncomingCallComponent.
@@ -58,44 +69,11 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
         private router: Router,
         private userService: UserService,
         private rtcSessionService: RtcSessionService
-    ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof IncomingCallComponent
-     */
-    public ngOnInit() {
-        this.incomingSessionSub = this
-            .rtcSessionService
-            .onIncomingSession$
-            .subscribe(session => this.onNewSession(session));
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof IncomingCallComponent
-     */
-    public ngOnDestroy() {
-        this.incomingSessionSub?.unsubscribe();
-    }
-
-    /**
-     * Handles the new incoming rtc session.
-     * @param {RTCSessionContainer} session The session object.
-     * @memberof IncomingCallComponent
-     */
-    private onNewSession(session: RTCSessionContainer) {
-        if (session) {
-            this.session = session;
-            const userId = +session.source.remote_identity.uri.user;
-            this.userService
-                .whoIs(userId)
-                .subscribe(user => this.user = user);
-            this.dialogVisible = true;
-        } else {
-            this.session = undefined;
-            this.dialogVisible = false;
-        }
+    ) {
+        effect(() => {
+            const session = this.rtcSessionService.incomingSession();
+            this.dialogVisible.set(session ? true : false);
+        }, { allowSignalWrites: true });
     }
 
     /**
@@ -105,14 +83,14 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
     public onAnswer() {
         this.rtcSessionService.answer();
         const first = this.user.id;
-        const second = +this.session.source.remote_identity.uri.user;
+        const second = +this.session().source.remote_identity.uri.user;
         this.router.navigate(['/core/chat/direct'], {
             queryParams: {
                 user: [first, second],
                 display: 'call'
             }
         });
-        this.dialogVisible = false;
+        this.dialogVisible.set(false);
     }
 
     /**
@@ -121,7 +99,7 @@ export class IncomingCallComponent implements OnInit, OnDestroy {
      */
     public onReject() {
         this.rtcSessionService.reject();
-        this.dialogVisible = false;
+        this.dialogVisible.set(false);
     }
 
 }

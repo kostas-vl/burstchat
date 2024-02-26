@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { Invitation } from 'src/app/models/servers/invitation';
 import { NotifyService } from 'src/app/services/notify/notify.service';
 import { SidebarService } from 'src/app/services/sidebar/sidebar.service';
@@ -43,9 +42,7 @@ import { AddServerComponent } from 'src/app/components/core/add-server/add-serve
         RtcSessionService
     ]
 })
-export class LayoutComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[];
+export class LayoutComponent implements OnInit {
 
     public loading = true;
 
@@ -58,60 +55,48 @@ export class LayoutComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private directMessagingService: DirectMessagingService,
         private chatService: ChatService,
-    ) { }
+    ) {
+        effect(() => {
+            if (this.chatService.onConnected()) {
+                setTimeout(() => {
+                    this.chatService.getInvitations();
+                    this.loading = false;
+                }, 300);
+            }
+        });
+        effect(() => {
+            if (this.chatService.onReconnected()) {
+                this.chatService.getInvitations();
+            }
+        });
+        effect(() => {
+            const data = this.chatService.invitations();
+            if (data.length > 0) {
+                data.forEach(invite => this.onInvite(invite));
+            }
+        });
+        effect(() => this.onInvite(this.chatService.newInvitation()));
+    }
 
     /**
      * Executes any neccessary start up code for the component.
      * @memberof LayoutComponent
      */
     public ngOnInit() {
-        this.subscriptions = [
-            this.chatService
-                .onConnected$
-                .subscribe(() => {
-                    setTimeout(() => {
-                        this.chatService.getInvitations();
-                        this.loading = false;
-                    }, 300);
-                }),
-            this.chatService
-                .onReconnected$
-                .subscribe(() => {
-                    this.chatService.getInvitations();
-                }),
-            this.chatService
-                .invitations$
-                .subscribe(data => {
-                    if (data.length > 0) {
-                        data.forEach(invite => this.onInvite(invite));
-                    }
-                }),
-            this.chatService
-                .newInvitation$
-                .subscribe(invite => this.onInvite(invite)),
-        ];
-
-
         this.userService.get();
         this.userService.getSubscriptions();
         this.directMessagingService.getUsers();
     }
 
     /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof LayoutComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
-    }
-
-    /**
      * Handles an incoming invitation to the user.
      * @private
-     * @param {Invitation} invitation The invitation instance.
+     * @param {Invitation | null} invitation The invitation instance.
      * @memberof LayoutComponent
      */
-    private onInvite(invitation: Invitation) {
+    private onInvite(invitation: Invitation | null) {
+        if (!invitation) return;
+
         const title = 'New invite';
         const content = `A user has invited you to join the server: ${invitation.server.name}`;
         this.notifyService.notify(title, content);

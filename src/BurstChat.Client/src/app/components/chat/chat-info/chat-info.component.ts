@@ -1,13 +1,10 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { Subscription } from 'rxjs';
 import { ChatConnectionOptions } from 'src/app/models/chat/chat-connection-options';
 import { ChannelConnectionOptions } from 'src/app/models/chat/channel-connection-options';
 import { PrivateGroupConnectionOptions } from 'src/app/models/chat/private-group-connection-options';
 import { DirectMessagingConnectionOptions } from 'src/app/models/chat/direct-messaging-connection-options';
-import { User } from 'src/app/models/user/user';
-import { RTCSessionContainer } from 'src/app/models/chat/rtc-session-container';
 import { UserService } from 'src/app/services/user/user.service';
 import { RtcSessionService } from 'src/app/services/rtc-session/rtc-session.service';
 import { UiLayerService } from 'src/app/services/ui-layer/ui-layer.service';
@@ -39,13 +36,7 @@ import {
         FontAwesomeModule
     ]
 })
-export class ChatInfoComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[] = [];
-
-    private user?: User;
-
-    private session?: RTCSessionContainer;
+export class ChatInfoComponent {
 
     private internalOptions?: ChatConnectionOptions;
 
@@ -59,26 +50,25 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
 
     public switchIcon = faClone;
 
-    public layoutState: 'chat' | 'call' = 'chat';
+    public layoutState = this.uiLayerService.layout;
 
     public searchTerm: string | null = null;
 
     public get canCall() {
-        if (this.options instanceof DirectMessagingConnectionOptions) {
-            return this.session === null;
-        }
-        return false;
+        return this.options instanceof DirectMessagingConnectionOptions
+            && this.rtcSessionService.session() === null;
     }
 
     public get displayGoToCall() {
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUserId = +this.session?.source.remote_identity.uri.user;
+            const session = this.rtcSessionService.session();
+            const sessionUserId = +session?.source.remote_identity.uri.user;
             const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
             return isRightChat
                 && !this.canCall
-                && this.layoutState === 'chat';
+                && this.layoutState() === 'chat';
         }
         return false;
     }
@@ -87,11 +77,12 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const first = this.options.directMessaging.firstParticipantUser;
             const second = this.options.directMessaging.secondParticipantUser;
-            const sessionUserId = +this.session?.source.remote_identity.uri.user;
+            const session = this.rtcSessionService.session();
+            const sessionUserId = +session?.source.remote_identity.uri.user;
             const isRightChat = sessionUserId === first.id || sessionUserId === second.id;
             return isRightChat
                 && !this.canCall
-                && this.layoutState === 'call';
+                && this.layoutState() === 'call';
         }
         return false;
     }
@@ -126,48 +117,22 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
     ) { }
 
     /**
-     * Executes any neccessary start up code for the component.
-     * @memberof ChatInfoComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.rtcSessionService
-                .onSession$
-                .subscribe(session => this.session = session),
-            this.userService
-                .user
-                .subscribe(user => this.user = user),
-            this.uiLayerService
-                .toggleChatView$
-                .subscribe(state => this.layoutState = state)
-        ];
-
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof ChatInfoComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
-    }
-
-    /**
      * Handles the call button click event.
      * @memberof ChatInfoComponent
      */
     public onCallClick() {
         if (this.options instanceof DirectMessagingConnectionOptions) {
             const dm = this.options.directMessaging;
-            if (dm.firstParticipantUser.id !== this.user.id) {
+            const user = this.userService.user();
+            if (dm.firstParticipantUser.id !== user?.id) {
                 this.rtcSessionService.call(dm.firstParticipantUser.id);
-                this.uiLayerService.toggleChatView('call');
+                this.uiLayerService.changeLayout('call');
                 return;
             }
 
-            if (dm.secondParticipantUser.id !== this.user.id) {
+            if (dm.secondParticipantUser.id !== user?.id) {
                 this.rtcSessionService.call(dm.secondParticipantUser.id);
-                this.uiLayerService.toggleChatView('call');
+                this.uiLayerService.changeLayout('call');
                 return;
             }
         }
@@ -177,8 +142,8 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * Handles the click event of both the 'Go to call' and 'Go to chat' buttons.
      * @memberof ChatInfoComponent
      */
-    public onToggleLayout(state: 'chat' | 'call') {
-        this.uiLayerService.toggleChatView(state);
+    public onChangeLayout(state: 'chat' | 'call') {
+        this.uiLayerService.changeLayout(state);
     }
 
     /**
@@ -186,7 +151,7 @@ export class ChatInfoComponent implements OnInit, OnDestroy {
      * @memberof ChatInfoComponent
      */
     public onSearch() {
-        this.uiLayerService.search(this.searchTerm);
+        this.uiLayerService.searchTerm(this.searchTerm);
     }
 
 }

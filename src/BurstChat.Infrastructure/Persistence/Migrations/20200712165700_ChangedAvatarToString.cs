@@ -12,14 +12,16 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 table: "Users",
                 nullable: true,
                 oldClrType: typeof(byte[]),
-                oldType: "bytea");
+                oldType: "bytea"
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "Avatar",
                 table: "Servers",
                 nullable: true,
                 oldClrType: typeof(byte[]),
-                oldType: "bytea");
+                oldType: "bytea"
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -30,7 +32,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 type: "bytea",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AlterColumn<byte[]>(
                 name: "Avatar",
@@ -38,7 +41,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 type: "bytea",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldNullable: true);
+                oldNullable: true
+            );
         }
     }
 }

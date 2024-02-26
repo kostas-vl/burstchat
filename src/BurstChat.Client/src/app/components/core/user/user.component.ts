@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/models/user/user';
@@ -22,11 +21,7 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
     standalone: true,
     imports: [NgClass, FontAwesomeModule, AvatarComponent]
 })
-export class UserComponent implements OnInit, OnDestroy {
-
-    private userSubscription?: Subscription;
-
-    private currentUser?: User;
+export class UserComponent {
 
     public circle = faCircle;
 
@@ -37,7 +32,8 @@ export class UserComponent implements OnInit, OnDestroy {
     public isActive = false;
 
     public get textColor() {
-        if (this.currentUser && this.currentUser.id === this.user.id) {
+        const currentUser = this.userService.user();
+        if (currentUser?.id === this.user.id) {
             return 'text-success';
         }
 
@@ -56,40 +52,15 @@ export class UserComponent implements OnInit, OnDestroy {
     ) { }
 
     /**
-     * Executes any neccessary start up code for the component.
-     * @memberof UserComponent
-     */
-    public ngOnInit() {
-        this.userSubscription = this
-            .userService
-            .user
-            .subscribe(currentUser => {
-                if (currentUser) {
-                    this.currentUser = currentUser;
-                }
-            });
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof UserComponent
-     */
-    public ngOnDestroy() {
-        if (this.userSubscription) {
-            this.userSubscription
-                .unsubscribe();
-        }
-    }
-
-    /**
      * Handles the user select click event.
      * @memberof UserComponent
      */
     public onSelect() {
-        if (this.currentUser && this.currentUser.id !== this.user.id) {
+        const currentUser = this.userService.user();
+        if (currentUser?.id !== this.user.id) {
             this.router.navigate(['/core/chat/direct'], {
                 queryParams: {
-                    user: [this.currentUser.id, this.user.id]
+                    user: [currentUser.id, this.user.id]
                 }
             });
         }

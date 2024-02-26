@@ -9,15 +9,13 @@ namespace BurstChat.Application.Monads
     /// </summary>
     /// <typeparam name="TSuccess">The type encapsulated by the success instance of the monad</typeparam>
     /// <typeparam name="TFailure">The type encapsulated by the failure instance of the monad</typeparam>
+    [Obsolete("This class is obsolete please use the Result class")]
     public class Success<TSuccess, TFailure> : Either<TSuccess, TFailure>
     {
         /// <summary>
         /// The value contained within the monad instance.
         /// </summary>
-        public TSuccess Value
-        {
-            get;
-        }
+        public TSuccess Value { get; }
 
         /// <summary>
         /// Executes any necessary start up code for the monad.
@@ -34,7 +32,9 @@ namespace BurstChat.Application.Monads
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>An either monad</returns>
-        public override Either<TOut, TFailure> Bind<TOut>(Func<TSuccess, Either<TOut, TFailure>> callback)
+        public override Either<TOut, TFailure> Bind<TOut>(
+            Func<TSuccess, Either<TOut, TFailure>> callback
+        )
         {
             return callback(Value);
         }
@@ -46,7 +46,9 @@ namespace BurstChat.Application.Monads
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callbackTask">The callback task to be executed</param>
         /// <return>A task of an either monad</returns>
-        public override async Task<Either<TOut, TFailure>> BindAsync<TOut>(Func<TSuccess, Task<Either<TOut, TFailure>>> callback)
+        public override async Task<Either<TOut, TFailure>> BindAsync<TOut>(
+            Func<TSuccess, Task<Either<TOut, TFailure>>> callback
+        )
         {
             return await callback(Value);
         }
@@ -73,7 +75,9 @@ namespace BurstChat.Application.Monads
         /// <typeparam name="TOut">The type encapsulated by the resulting Either monad</typeparam>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>A task of an either monad</returns>
-        public override async Task<Either<TOut, TFailure>> AttachAsync<TOut>(Func<TSuccess, Task<TOut>> callback)
+        public override async Task<Either<TOut, TFailure>> AttachAsync<TOut>(
+            Func<TSuccess, Task<TOut>> callback
+        )
         {
             var newValue = await callback(Value);
             return new Success<TOut, TFailure>(newValue);
@@ -97,7 +101,9 @@ namespace BurstChat.Application.Monads
         /// </summary>
         /// <param name="callback">The callback to be executed</param>
         /// <returns>An either monad</returns>
-        public override async Task<Either<TSuccess, TFailure>> ExecuteAndContinueAsync(Func<TSuccess, Task> callback)
+        public override async Task<Either<TSuccess, TFailure>> ExecuteAndContinueAsync(
+            Func<TSuccess, Task> callback
+        )
         {
             await callback(Value);
             return this;

@@ -1,338 +1,163 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Interfaces;
-using BurstChat.Application.Services.BCryptService;
-using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
+using BurstChat.Application.Monads;
+using BurstChat.Application.Services.BCryptService;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace BurstChat.Application.Services.UserService
+namespace BurstChat.Application.Services.UserService;
+
+public class UserProvider : IUserService
 {
-    /// <summary>
-    /// This class is the base implementation of the IUserService.
-    /// </summary>
-    public class UserProvider : IUserService
+    private readonly ILogger<UserProvider> _logger;
+    private readonly IBurstChatContext _burstChatContext;
+    private readonly IBCryptService _bcryptService;
+
+    public UserProvider(
+        ILogger<UserProvider> logger,
+        IBurstChatContext burstChatContext,
+        IBCryptService bcryptService
+    )
     {
-        private readonly ILogger<UserProvider> _logger;
-        private readonly IBurstChatContext _burstChatContext;
-        private readonly IBCryptService _bcryptService;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _burstChatContext =
+            burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
+        _bcryptService = bcryptService ?? throw new ArgumentNullException(nameof(bcryptService));
+    }
 
-        /// <summary>
-        /// Executes any necessary start up code for the controller.
-        ///
-        /// Exceptions:
-        ///     ArgumentNullException: When any of the parameters is null.
-        /// </summary>
-        public UserProvider(
-            ILogger<UserProvider> logger,
-            IBurstChatContext burstChatContext,
-            IBCryptService bcryptService
-        )
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _burstChatContext = burstChatContext ?? throw new ArgumentNullException(nameof(burstChatContext));
-            _bcryptService = bcryptService ?? throw new ArgumentNullException(nameof(bcryptService));
-        }
+    private Result<Unit> AlphaInvitationCodeExists(Guid alphaInvitationCode) =>
+        _burstChatContext
+            .Map(bc =>
+                bc.AlphaInvitations.Any(a =>
+                    a.Code == alphaInvitationCode && a.DateExpired >= DateTime.UtcNow
+                )
+            )
+            .And(codeExists =>
+                codeExists ? Unit.Ok : AlphaInvitationErrors.AlphaInvitationCodeIsNotValid
+            )
+            .InspectErr(e => _logger.LogError(e.Message));
 
-        /// <summary>
-        /// Will check if the provided alpha invitation code exists in the database and is valid.
-        /// </summary>
-        /// <param name="alphaInvitationCode">The alpha invitation code instance</param>
-        /// <returns>An either monad</returns>
-        private Either<Unit, Error> AlphaInvitationCodeExists(Guid alphaInvitationCode)
-        {
-            try
+    public Result<User> Get(long id) =>
+        _logger
+            .Inspect(logger => logger.LogInformation($"New user request with id: {id}"))
+            .Map(_ => _burstChatContext.Users.FirstOrDefault(u => u.Id == id))
+            .And(user => user?.Ok() ?? UserErrors.UserNotFound)
+            .InspectErr(e => _logger.LogError(e.Message));
+
+    public Result<User> Get(string email) =>
+        _burstChatContext
+            .Map(bc => bc.Users.FirstOrDefault(u => u.Email == email))
+            .And(u => u?.Ok() ?? UserErrors.UserNotFound)
+            .InspectErr(e => _logger.LogError(e.Message));
+
+    public Result<User> Insert(
+        Guid alphaInvitationCode,
+        string email,
+        string name,
+        string password
+    ) =>
+        Get(email)
+            .And<Unit>(_ => UserErrors.UserAlreadyExists)
+            .Or(() => AlphaInvitationCodeExists(alphaInvitationCode))
+            .Map(_ =>
             {
-                var codeExists = _burstChatContext
-                    .AlphaInvitations
-                    .Any(a => a.Code == alphaInvitationCode
-                              && a.DateExpired >= DateTime.UtcNow);
-
-                return codeExists
-                    ? new Success<Unit, Error>(new Unit())
-                    : new Failure<Unit, Error>(AlphaInvitationErrors.AlphaInvitationCodeIsNotValid());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method returns a User instance if the provided id belongs to one.
-        /// </summary>
-        /// <param name="id">The id of the user</param>
-        /// <returns>An either monad of a User instance or an Error instance</returns>
-        public Either<User, Error> Get(long id)
-        {
-            try
-            {
-                _logger.LogInformation($"New user request with id: {id}");
-
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Id == id);
-
-                return user is { }
-                    ? new Success<User, Error>(user)
-                    : new Failure<User, Error>(UserErrors.UserNotFound());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method returns a User instance if the provided email belongs to one.
-        /// </summary>
-        /// <param name="email">The email of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<User, Error> Get(string email)
-        {
-            try
-            {
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Email == email);
-
-                return user is { }
-                    ? new Success<User, Error>(user)
-                    : new Failure<User, Error>(UserErrors.UserNotFound());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// Registers a new user based on the provided parameters.
-        /// </summary>
-        /// <param name="alphaInvitationCode">The alpha invitation code</param>
-        /// <param name="email">The email of the new user</param>
-        /// <param name="name">The name of the new user</param>
-        /// <param name="password">The password of the new user</param>
-        /// <returns>An either monad</returns>
-        public Either<User, Error> Insert(Guid alphaInvitationCode, string email, string name, string password)
-        {
-            try
-            {
-                if (Get(email) is Success<User, Error>)
-                    return new Failure<User, Error>(UserErrors.UserAlreadyExists());
-
-                return AlphaInvitationCodeExists(alphaInvitationCode).Bind(_ =>
+                var hashedPassword = _bcryptService.GenerateHash(password);
+                var user = new User
                 {
-                    var hashedPassword = _bcryptService.GenerateHash(password);
+                    Email = email,
+                    Name = name,
+                    Password = hashedPassword,
+                    DateCreated = DateTime.UtcNow
+                };
+                _burstChatContext.Users.Add(user);
+                _burstChatContext.SaveChanges();
+                return user;
+            })
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                    var user = new User
-                    {
-                        Email = email,
-                        Name = name,
-                        Password = hashedPassword,
-                        DateCreated = DateTime.UtcNow
-                    };
-
-                    _burstChatContext.Users.Add(user);
-                    _burstChatContext.SaveChanges();
-
-                    return new Success<User, Error>(user);
-                });
-            }
-            catch (Exception e)
+    public Result<User> Update(User user) =>
+        (user?.Ok() ?? UserErrors.UserNotFound)
+            .And(user => Get(user.Id))
+            .Map(storedUser =>
             {
-                _logger.LogError(e.Message);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
+                storedUser.Email = user!.Email;
+                storedUser.Name = user!.Name;
+                storedUser.Avatar = user!.Avatar;
+                _burstChatContext.SaveChanges();
+                return storedUser;
+            })
+            .InspectErr(e => _logger.LogError(e.Message));
 
-        /// <summary>
-        /// Updates infomation about an existing user based on the user instance provided.
-        /// </summary>
-        /// <param name="user">The user instance to be updated in the database</param>
-        /// <returns>An either monad</returns>
-        public Either<User, Error> Update(User user)
-        {
-            try
+    public Result<Unit> Delete(long id) =>
+        Get(id)
+            .Map(user =>
             {
-                if (user is { })
-                {
-                    var userId = user.Id;
+                _burstChatContext.Users.Remove(user);
+                return Unit.Instance;
+            })
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                    return Get(userId).Bind(storedUser =>
-                    {
-                        storedUser.Email = user.Email;
-                        storedUser.Name = user.Name;
-                        storedUser.Avatar = user.Avatar;
+    public Result<IEnumerable<Server>> GetSubscriptions(long userId) =>
+        _burstChatContext
+            .Map(bc =>
+                bc.Servers.Include(server => server.Subscriptions)
+                    .Where(server =>
+                        server.Subscriptions.Any(subscription => subscription.UserId == userId)
+                    )
+                    .ToList()
+                    .AsEnumerable()
+            )
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                        _burstChatContext.SaveChanges();
-                        return new Success<User, Error>(storedUser);
-                    });
-                }
-                else
-                    return new Failure<User, Error>(UserErrors.UserNotFound());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
+    public Result<IEnumerable<PrivateGroup>> GetPrivateGroups(long userId) =>
+        Get(userId)
+            .Map(user =>
+                _burstChatContext
+                    .PrivateGroups.Include(pmg => pmg.Users.Where(u => u.Id == user.Id))
+                    .Include(pmg => pmg.Messages)
+                    .ToList()
+                    .AsEnumerable()
+            )
+            .InspectErr(e => _logger.LogError(e.Message));
 
-        /// <summary>
-        /// Deletes a registered user from the database based on the provided user instance.
-        /// </summary>
-        /// <param name="id">The id of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<Unit, Error> Delete(long id)
-        {
-            try
-            {
-                return Get(id).Bind(user =>
-                {
-                    _burstChatContext.Users.Remove(user);
-                    return new Success<Unit, Error>(new Unit());
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
-            }
-        }
+    public Result<IEnumerable<DirectMessaging>> GetDirectMessaging(long userId) =>
+        Get(userId)
+            .Map(user =>
+                _burstChatContext
+                    .DirectMessaging.Where(d =>
+                        d.FirstParticipantUserId == user.Id || d.SecondParticipantUserId == user.Id
+                    )
+                    .ToList()
+                    .AsEnumerable()
+            )
+            .InspectErr(e => _logger.LogError(e.Message));
 
-        /// <summary>
-        /// This method will return all available subscribed servers of a user.
-        /// <summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<Server>, Error> GetSubscriptions(long userId)
-        {
-            try
-            {
-                var servers = _burstChatContext
-                    .Servers
-                    .Include(server => server.Subscriptions)
-                    .Where(server => server.Subscriptions
-                                           .Any(subscription => subscription.UserId == userId))
-                    .ToList();
+    public Result<User> Validate(string email, string password) =>
+        Get(email)
+            .And(user =>
+                _bcryptService.VerifyHash(password, user.Password)
+                    ? user.Ok()
+                    : UserErrors.UserPasswordDidNotMatch
+            )
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                return new Success<IEnumerable<Server>, Error>(servers);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<IEnumerable<Server>, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will return all private group that the user with the provided user id
-        /// is part of.
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<PrivateGroup>, Error> GetPrivateGroups(long userId)
-        {
-            try
-            {
-                return Get(userId).Bind(user =>
-                {
-                    var group = _burstChatContext
-                        .PrivateGroups
-                        .Include(pmg => pmg.Users
-                                            .Where(u => u.Id == user.Id))
-                        .Include(pmg => pmg.Messages)
-                        .ToList();
-
-                    return new Success<IEnumerable<PrivateGroup>, Error>(group);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<IEnumerable<PrivateGroup>, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will return all direct messaging that the user is part of.
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<DirectMessaging>, Error> GetDirectMessaging(long userId)
-        {
-            try
-            {
-                return Get(userId).Bind(user =>
-                {
-                    var directMessaging = _burstChatContext
-                        .DirectMessaging
-                        .Where(d => d.FirstParticipantUserId == user.Id
-                                    || d.SecondParticipantUserId == user.Id)
-                        .ToList();
-
-                    return new Success<IEnumerable<DirectMessaging>, Error>(directMessaging);
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<IEnumerable<DirectMessaging>, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will validate the provided email and password in order to
-        /// find any user that has registered these credentials.
-        /// </summary>
-        /// <param name="email">The email of the user</param>
-        /// <param name="password">The password of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<User, Error> Validate(string email, string password)
-        {
-            try
-            {
-                return Get(email).Bind<User>(user =>
-                {
-                    return _bcryptService.VerifyHash(password, user.Password)
-                        ? new Success<User, Error>(user)
-                        : new Failure<User, Error>(UserErrors.UserPasswordDidNotMatch());
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<User, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will validate the provided email and if a user is registered with it
-        /// a new one time password will be generated for him and sent via email.
-        /// </summary>
-        /// <param name="email">The email of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<string, Error> IssueOneTimePassword(string email)
-        {
-            try
+    public Result<string> IssueOneTimePassword(string email) =>
+        _burstChatContext
+            .And(bc =>
             {
                 var user = _burstChatContext
-                    .Users
-                    .Include(u => u.OneTimePasswords)
+                    .Users.Include(u => u.OneTimePasswords)
                     .FirstOrDefault(u => u.Email == email);
 
                 if (user is null)
-                    return new Failure<string, Error>(UserErrors.UserNotFound());
+                    return UserErrors.UserNotFound;
 
                 var dateCreated = DateTime.UtcNow;
                 // TODO: Implement a better solution for one time pass generation.
@@ -343,157 +168,83 @@ namespace BurstChat.Application.Services.UserService
                     DateCreated = dateCreated,
                     ExpirationDate = dateCreated.AddMinutes(15)
                 };
-
                 user.OneTimePasswords.Add(oneTimePassword);
-
                 _burstChatContext.SaveChanges();
+                return timedOneTimePass.Ok();
+            })
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                return new Success<string, Error>(timedOneTimePass);
-            }
-            catch (Exception e)
+    public Result<Unit> ChangePassword(string email, string oneTimePass, string password) =>
+        _burstChatContext
+            .Map(bc => bc.Users.FirstOrDefault(u => u.Email == email))
+            .And(user => user?.Ok() ?? UserErrors.UserOneTimePasswordInvalid)
+            .And(user =>
             {
-                _logger.LogError(e.Message);
-                return new Failure<string, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// Changes the current hashed password of the user to the one provided.
-        /// </summary>
-        /// <param name="email">The email of the user</param>
-        /// <param name="oneTimePass">The one time password of the user</param>
-        /// <param name="password">The string value of the password that will be hashed</param>
-        /// <returns>An either monad</returns>
-        public Either<Unit, Error> ChangePassword(string email, string oneTimePass, string password)
-        {
-            try
+                var otp = _burstChatContext
+                    .Users.Where(u => u.Id == user.Id)
+                    .Include(u => u.OneTimePasswords)
+                    .Select(u => u.OneTimePasswords.Where(o => o.ExpirationDate >= DateTime.UtcNow))
+                    .AsEnumerable()
+                    .SelectMany(_ => _)
+                    .FirstOrDefault(o => _bcryptService.VerifyHash(oneTimePass, o.OTP));
+                return otp is not null ? user.Ok() : UserErrors.UserOneTimePasswordInvalid;
+            })
+            .Map(user =>
             {
-                var user = _burstChatContext
-                    .Users
-                    .FirstOrDefault(u => u.Email == email);
+                var hashedPassword = _bcryptService.GenerateHash(password);
+                user.Password = hashedPassword;
+                _burstChatContext.SaveChanges();
+                return Unit.Instance;
+            })
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                if (user is { })
-                {
-                    var otp = _burstChatContext
-                        .Users
-                        .Where(u => u.Id == user.Id)
-                        .Include(u => u.OneTimePasswords)
-                        .Select(u => u.OneTimePasswords
-                                      .Where(o => o.ExpirationDate >= DateTime.UtcNow))
-                        .AsEnumerable()
-                        .SelectMany(_ => _)
-                        .FirstOrDefault(o => _bcryptService.VerifyHash(oneTimePass, o.OTP));
-
-                    if (otp is { })
-                    {
-                        var hashedPassword = _bcryptService.GenerateHash(password);
-
-                        user.Password = hashedPassword;
-                        _burstChatContext.SaveChanges();
-
-                        return new Success<Unit, Error>(new Unit());
-                    }
-                }
-
-                return new Failure<Unit, Error>(UserErrors.UserOneTimePasswordInvalid());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Unit, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// Fetches all invitations sent to a user based on the provided id.
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<Invitation>, Error> GetInvitations(long userId)
-        {
-            try
-            {
-                var invitations = _burstChatContext
-                    .Invitations
-                    .Include(i => i.Server)
+    public Result<IEnumerable<Invitation>> GetInvitations(long userId) =>
+        _burstChatContext
+            .Map(bc =>
+                bc.Invitations.Include(i => i.Server)
                     .Include(i => i.User)
                     .Where(i => i.UserId == userId && !i.Accepted && !i.Declined)
-                    .ToList();
+                    .ToList()
+                    .AsEnumerable()
+            )
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                return new Success<IEnumerable<Invitation>, Error>(invitations);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<IEnumerable<Invitation>, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will updated the Accepted or Declined propery of an existing invitation based on the instance
-        /// provided.
-        /// </summary>
-        /// <param name="data">The server invitation to be updated</param>
-        /// <returns>An either monad</returns>
-        public Either<Invitation, Error> UpdateInvitation(long userId, UpdateInvitation data)
-        {
-            try
-            {
-                var storedInvitation = _burstChatContext
-                    .Invitations
-                    .Include(i => i.Server)
+    public Result<Invitation> UpdateInvitation(long userId, UpdateInvitation data) =>
+        _burstChatContext
+            .Map(bc =>
+                bc.Invitations.Include(i => i.Server)
                     .Include(i => i.User)
-                    .FirstOrDefault(i => i.Id == data.InvitationId && i.UserId == userId);
+                    .FirstOrDefault(i => i.Id == data.InvitationId && i.UserId == userId)
+            )
+            .And(inv => inv?.Ok() ?? UserErrors.CouldNotUpdateInvitation)
+            .Map(inv =>
+            {
+                inv.Accepted = data.Accepted;
+                inv.Declined = !data.Accepted;
+                inv.DateUpdated = DateTime.UtcNow;
 
-                if (storedInvitation == null)
-                    return new Failure<Invitation, Error>(UserErrors.CouldNotUpdateInvitation());
-
-                storedInvitation.Accepted = data.Accepted;
-                storedInvitation.Declined = !data.Accepted;
-                storedInvitation.DateUpdated = DateTime.UtcNow;
-
-                if (storedInvitation.Accepted)
+                if (inv.Accepted)
                 {
                     var subscription = new Subscription
                     {
-                        ServerId = storedInvitation.ServerId,
-                        UserId = storedInvitation.UserId,
+                        ServerId = inv.ServerId,
+                        UserId = inv.UserId,
                     };
-
-                    _burstChatContext
-                        .Subscriptions
-                        .Add(subscription);
+                    _burstChatContext.Subscriptions.Add(subscription);
                 }
 
                 _burstChatContext.SaveChanges();
+                return inv;
+            })
+            .InspectErr(e => _logger.LogError(e.Message));
 
-                return new Success<Invitation, Error>(storedInvitation);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return new Failure<Invitation, Error>(SystemErrors.Exception());
-            }
-        }
-
-        /// <summary>
-        /// This method will fetch all appropriate user claims based on the provided instance.
-        /// </summary>
-        /// <param name="user">The user instance</param>
-        /// <returns>An either monad</returns>
-        public Either<IEnumerable<Claim>, Error> GetClaims(User user)
-        {
-            if (user == null)
-                return new Failure<IEnumerable<Claim>, Error>(UserErrors.UserNotFound());
-
-            var claims = new Claim[]
+    public Result<IEnumerable<Claim>> GetClaims(User user) =>
+        (user?.Ok() ?? UserErrors.UserNotFound).Map(user =>
+            new Claim[]
             {
                 new Claim("email", user.Email),
                 new Claim("sub", user.Id.ToString()),
                 new Claim("username", user.Name)
-            };
-
-            return new Success<IEnumerable<Claim>, Error>(claims);
-        }
-    }
+            }.AsEnumerable()
+        );
 }

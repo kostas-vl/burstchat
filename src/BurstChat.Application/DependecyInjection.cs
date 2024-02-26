@@ -1,9 +1,8 @@
-using System;
 using BurstChat.Application.Services.BCryptService;
 using BurstChat.Application.Services.ChannelsService;
-using BurstChat.Application.Services.PrivateGroupsService;
 using BurstChat.Application.Services.DirectMessagingService;
 using BurstChat.Application.Services.ModelValidationService;
+using BurstChat.Application.Services.PrivateGroupsService;
 using BurstChat.Application.Services.ServersService;
 using BurstChat.Application.Services.UserService;
 using Microsoft.Extensions.DependencyInjection;

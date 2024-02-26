@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, effect, untracked } from '@angular/core';
 import { Server } from 'src/app/models/servers/server';
 import { User } from 'src/app/models/user/user';
 import { ServersService } from 'src/app/services/servers/servers.service';
@@ -24,9 +23,7 @@ import { UserComponent } from 'src/app/components/core/user/user.component';
         UserComponent
     ]
 })
-export class UserListComponent implements OnInit, OnDestroy {
-
-    private subscriptions: Subscription[] = [];
+export class UserListComponent {
 
     public server?: Server;
 
@@ -42,53 +39,39 @@ export class UserListComponent implements OnInit, OnDestroy {
         private serversService: ServersService,
         private usersService: UserService,
         private chatService: ChatService
-    ) { }
+    ) {
+        effect(() => {
+            const user = this.chatService.userUpdated();
 
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof UserListComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.serversService
-                .serverInfo
-                .subscribe(server => {
-                    if (server) {
-                        this.server = server;
-                        const users = this.usersService.getFromCache(this.server.id);
-                        if (!users) {
-                            this.getSubscribedUsers(this.server.id);
-                        } else {
-                            this.users = users;
-                        }
-                    }
-                }),
-            this.usersService
-                .usersCache
-                .subscribe(cache => {
-                    if (this.server) {
-                        const id = this.server.id.toString();
-                        this.users = cache[id] || [];
-                    }
-                }),
-            this.chatService
-                .userUpdated$
-                .subscribe(user => {
-                    const entry = this.users.find(u => u.id === user.id);
-                    if (entry) {
-                        const index = this.users.indexOf(entry);
-                        this.users[index] = { ...user };
-                    }
-                })
-        ];
-    }
+            if (!user) return;
 
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof UserListComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+            const entry = this.users.find(u => u.id === user.id);
+            if (entry) {
+                const index = this.users.indexOf(entry);
+                this.users[index] = { ...user };
+            }
+        });
+
+        effect(() => {
+            const server = this.serversService.serverInfo();
+            if (server) {
+                this.server = server;
+                const users = this.usersService.getFromCache(this.server.id);
+                if (!users) {
+                    untracked(() => this.getSubscribedUsers(this.server.id));
+                } else {
+                    this.users = users;
+                }
+            }
+        });
+
+        effect(() => {
+            const cache = this.usersService.usersCache();
+            if (this.server) {
+                const id = this.server.id.toString();
+                this.users = cache[id] || [];
+            }
+        });
     }
 
     /**
@@ -106,7 +89,7 @@ export class UserListComponent implements OnInit, OnDestroy {
                 this.users = users;
                 this.usersService.pushToCache(this.server.id, this.users);
                 this.loading = false;
-            }, error => {
+            }, _ => {
                 this.loading = false;
             });
     }

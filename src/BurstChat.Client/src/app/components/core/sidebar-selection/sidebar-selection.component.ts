@@ -1,8 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, effect, untracked } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDragon, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { User } from 'src/app/models/user/user';
 import { Server } from 'src/app/models/servers/server';
 import { DisplayServer } from 'src/app/models/sidebar/display-server';
 import { Channel } from 'src/app/models/servers/channel';
@@ -28,19 +26,13 @@ import { ServerComponent } from 'src/app/components/core/server/server.component
     standalone: true,
     imports: [FontAwesomeModule, DirectMessagingComponent, ServerComponent]
 })
-export class SidebarSelectionComponent implements OnInit, OnDestroy {
-
-    private subscriptions?: Subscription[] = [];
-
-    private user?: User;
-
-    private usersCache: { [id: string]: User[] } = {};
+export class SidebarSelectionComponent {
 
     public dragon = faDragon;
 
     public users = faUsers;
 
-    public servers: Server[] = [];
+    public servers = this.userService.subscriptions;
 
     /**
      * Creates an instance of SidebarSelectionComponent.
@@ -51,84 +43,46 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         private serversService: ServersService,
         private chatService: ChatService,
         private sidebarService: SidebarService
-    ) { }
+    ) {
+        effect(() => this.serverInfoCallback(this.chatService.addedServer()), { allowSignalWrites: true });
+        effect(() => this.updatedServer(this.chatService.updatedServer()), { allowSignalWrites: true });
+        effect(() => this.subcriptionDeletedCallback(this.chatService.subscriptionDeleted()), { allowSignalWrites: true });
+        effect(() => this.channelCreatedCallback(this.chatService.channelCreated()), { allowSignalWrites: true });
+        effect(() => this.channelUpdatedCallback(this.chatService.channelUpdated()), { allowSignalWrites: true });
+        effect(() => this.channelDeletedCallback(this.chatService.channelDeleted()), { allowSignalWrites: true });
+        effect(() => this.updatedInvitationCallback(this.chatService.updatedInvitation()), { allowSignalWrites: true });
+        effect(() => this.serverInfoCallback(this.serversService.serverInfo()), { allowSignalWrites: true });
 
-    /**
-     * Executes any necessary start up code for the component.
-     * @memberof SidebarSelectionComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.userService
-                .user
-                .subscribe(user => this.user = user),
-            this.userService
-                .subscriptions
-                .subscribe(servers => {
-                    this.servers = servers;
-                    this.serversService.updateCache(servers);
-                }),
-            this.userService
-                .usersCache
-                .subscribe(cache => this.usersCache = cache),
-            this.serversService
-                .serverInfo
-                .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .addedServer$
-                .subscribe(server => this.serverInfoCallback(server)),
-            this.chatService
-                .updatedServer$
-                .subscribe(server => this.updatedServer(server)),
-            this.chatService
-                .subscriptionDeleted$
-                .subscribe(data => this.subcriptionDeletedCallback(data)),
-            this.chatService
-                .channelCreated$
-                .subscribe(data => this.channelCreatedCallback(data)),
-            this.chatService
-                .channelUpdated$
-                .subscribe(channel => this.channelUpdatedCallback(channel)),
-            this.chatService
-                .channelDeleted$
-                .subscribe(channelId => this.channelDeletedCallback(channelId)),
-            this.chatService
-                .updatedInvitation$
-                .subscribe(invite => this.updatedInvitationCallback(invite)),
-            this.sidebarService
-                .display
-                .subscribe(options => {
-                    if (options instanceof DisplayServer && options.serverId) {
-                        this.serversService.set(options.serverId);
-                    }
-                })
-        ];
-    }
+        effect(() => {
+            const options = this.sidebarService.display();
+            if (options instanceof DisplayServer && options.serverId) {
+                untracked(() => this.serversService.set(options.serverId));
+            }
+        });
 
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof SidebarSelectionComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions?.forEach(s => s.unsubscribe());
+        effect(() => {
+            const servers = this.userService.subscriptions();
+            this.serversService.updateCache(servers);
+        }, { allowSignalWrites: true });
     }
 
     /**
      * This methos is invoked when a server's information is pushed by the server info
      * observable.
      * @private
-     * @param {Server} server The server instance.
+     * @param {Server | null} server The server instance.
      * @memberof SidebarSelectionComponent
      */
-    private serverInfoCallback(server: Server) {
+    private serverInfoCallback(server: Server | null) {
         if (server) {
-            const index = this.servers.findIndex(s => s.id === server.id);
+            const servers = this.userService.subscriptions();
+            const index = servers.findIndex(s => s.id === server.id);
             if (index !== -1) {
+                this.userService.updateSubscriptions(server, index);
                 this.servers[index] = server;
             } else {
-                this.servers.push(server);
+                this.userService.updateSubscriptions(server);
             }
-            this.serversService.updateCache(this.servers);
         }
     }
 
@@ -155,19 +109,21 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @param {[number, BurstSubscription]} data The server id and the subscription instance.
      * @memberof SidebarSelectionComponent
      */
-    private subcriptionDeletedCallback(data: [number, BurstSubscription]) {
+    private subcriptionDeletedCallback(data: [number, BurstSubscription] | null) {
+        if (!data) return;
         const serverId = data[0];
         const subscription = data[1];
-        const server = this.servers.find(s => s.id === serverId);
+        const servers = this.servers();
+        const server = servers.find(s => s.id === serverId);
         if (server && subscription) {
             const index = server
                 .subscriptions
                 .findIndex(s => s.userId === subscription.userId);
             if (index !== -1) {
                 server.subscriptions.splice(index, 1);
-                this.serversService.updateCache(this.servers);
+                this.serversService.updateCache(servers);
             }
-            const users = this.usersCache[server.id] || [];
+            const users = this.userService.usersCache()[server.id] || [];
             const usersIndex = users.findIndex(u => u.id === subscription.userId);
             if (usersIndex !== -1) {
                 users.splice(usersIndex, 1);
@@ -179,16 +135,18 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
     /**
      * This method is invoked when a new channel is pushed by the channel created observable.
      * @private
-     * @param {[number, Channel]} data The server id and the channel instance
+     * @param {[number, Channel] | null} data The server id and the channel instance
      * @memberof SidebarSelectionComponent
      */
-    private channelCreatedCallback(data: [number, Channel]) {
+    private channelCreatedCallback(data: [number, Channel] | null) {
+        if (!data) return;
         const serverId = data[0];
         const channel = data[1];
-        const server = this.servers.find(s => s.id === serverId);
+        const servers = this.servers();
+        const server = servers.find(s => s.id === serverId);
         if (server && server.channels && server.channels.length > 0) {
             server.channels.push(channel);
-            this.serversService.updateCache(this.servers);
+            this.serversService.updateCache(servers);
         }
     }
 
@@ -199,15 +157,16 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * @param {Channel} channel The updated channel instance.
      * @memberof SidebarSelectionComponent
      */
-    private channelUpdatedCallback(channel: Channel) {
-        const server = this
-            .servers
-            .find(s => s.channels.some(c => c.id === channel.id));
+    private channelUpdatedCallback(channel: Channel | null) {
+        if (!channel) return;
+
+        const servers = this.servers();
+        const server = servers.find(s => s.channels.some(c => c.id === channel.id));
         if (server) {
             const index = server.channels.findIndex(c => c.id === channel.id);
             if (index !== -1) {
                 server.channels[index] = channel;
-                this.serversService.updateCache(this.servers);
+                this.serversService.updateCache(servers);
             }
         }
     }
@@ -216,18 +175,17 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * This method is invoked when a channel deletion is pushed by the channel deleted
      * observable.
      * @private
-     * @param {number} channelId The removed channel id.
+     * @param {number | null} channelId The removed channel id.
      * @memberof SidebarSelectionComponent
      */
-    private channelDeletedCallback(channelId: number) {
-        const server = this
-            .servers
-            .find(s => s.channels.some(c => c.id === channelId));
+    private channelDeletedCallback(channelId: number | null) {
+        const servers = this.userService.subscriptions();
+        const server = servers?.find(s => s.channels.some(c => c.id === channelId));
         if (server) {
             const index = server.channels.findIndex(c => c.id === channelId);
             if (index !== -1) {
                 server.channels.splice(index, 1);
-                this.serversService.updateCache(this.servers);
+                this.serversService.updateCache(servers);
             }
         }
     }
@@ -236,14 +194,18 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
      * This method is invoked when an invitation is updated and pushed by the updated invitation
      * observable.
      * @private
-     * @param {Invitation} invite The invitation instance.
+     * @param {Invitation | null} invite The invitation instance.
      * @memberof SidebarSelectionComponent
      */
-    private updatedInvitationCallback(invite: Invitation) {
-        const inList = this.servers.some(s => s.id === invite.serverId);
+    private updatedInvitationCallback(invite: Invitation | null) {
+        if (!invite) return;
+
+        const servers = this.userService.subscriptions();
+        const inList = servers.some(s => s.id === invite.serverId);
 
         // Handle code for the user the initiated the invitation update.
-        if (invite.userId === this.user.id && invite.accepted && !inList) {
+        const user = this.userService.user();
+        if (invite.userId === user?.id && invite.accepted && !inList) {
             const server = invite.server;
             this.serversService.get(server.id);
             return;
@@ -252,13 +214,13 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
         // Handle code for all users of the server if the invitation was accepted.
         if (inList && invite.accepted) {
             const serverId = invite.serverId.toString();
-            const server = this.servers.find(s => s.id === invite.serverId);
-            const users = this.usersCache[serverId];
+            const server = servers.find(s => s.id === invite.serverId);
+            const users = this.userService.usersCache()[serverId];
 
             users.push(invite.user);
             server.subscriptions.push({ userId: invite.userId, serverId: invite.serverId });
 
-            this.serversService.updateCache(this.servers);
+            this.serversService.updateCache(servers);
             this.userService.pushToCache(server.id, users);
             return;
         }
@@ -276,7 +238,7 @@ export class SidebarSelectionComponent implements OnInit, OnDestroy {
       * A custom track method for the template loop over the server list.
       * @memberof SidebarSelectionComponent
       */
-    public trackServerBy(index: number, server: Server) {
+    public trackServerBy(server: Server) {
         return server.id;
     }
 

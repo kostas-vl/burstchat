@@ -16,12 +16,12 @@
                 </div>
             }
             @if(displayGoToCall) {
-                <div class="button-icon text mr-10" (click)="onToggleLayout('call')">
+                <div class="button-icon text mr-10" (click)="onChangeLayout('call')">
                     <fa-icon [icon]="switchIcon"></fa-icon>
                 </div>
             }
             @if(displayGoToChat) {
-                <div class="button-icon text mr-10" (click)="onToggleLayout('chat')">
+                <div class="button-icon text mr-10" (click)="onChangeLayout('chat')">
                     <fa-icon [icon]="switchIcon"></fa-icon>
                 </div>
             }

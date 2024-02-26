@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using BurstChat.Domain.Schema.Users;
 
 namespace BurstChat.Domain.Schema.Servers
@@ -27,7 +26,7 @@ namespace BurstChat.Domain.Schema.Servers
         /// <summary>
         /// The id of the target user.
         /// </summary>
-        public long UserId { get;set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// This is a reference navigation property of the server.

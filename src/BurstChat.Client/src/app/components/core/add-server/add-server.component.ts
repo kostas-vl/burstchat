@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Server, BurstChatServer } from 'src/app/models/servers/server';
 import { NotifyService } from 'src/app/services/notify/notify.service';
@@ -30,9 +29,7 @@ import { CardFooterComponent } from 'src/app/components/shared/card-footer/card-
         CardFooterComponent
     ]
 })
-export class AddServerComponent implements OnInit, OnDestroy {
-
-    private subscriptions?: Subscription[];
+export class AddServerComponent {
 
     public closeIcon = faTimes;
 
@@ -40,7 +37,7 @@ export class AddServerComponent implements OnInit, OnDestroy {
 
     public loading = false;
 
-    public visible = false;
+    public visible = this.sidebarService.addServerDialog;
 
     /**
      * Creates a new instance of AddServerComponent.
@@ -50,38 +47,18 @@ export class AddServerComponent implements OnInit, OnDestroy {
         private notifyService: NotifyService,
         private chatService: ChatService,
         private sidebarService: SidebarService
-    ) { }
-
-    /**
-     * Executes any neccessary start up code for the component.
-     * @memberof AddServerComponent
-     */
-    public ngOnInit() {
-        this.subscriptions = [
-            this.chatService
-                .addedServer$
-                .subscribe(server => {
-                    if (server.name === this.server.name) {
-                        const title = 'Success';
-                        const content = `The server ${this.server.name} was created successfully`;
-                        this.notifyService.notify(title, content);
-                        this.server = new BurstChatServer();
-                        this.loading = false;
-                        this.onClose();
-                    }
-                }),
-            this.sidebarService
-                .addServerDialog
-                .subscribe(visible => this.visible = visible)
-        ];
-    }
-
-    /**
-     * Executes any neccessary code for the destruction of the component.
-     * @memberof AddServerComponent
-     */
-    public ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+    ) {
+        effect(() => {
+            let server = this.chatService.addedServer();
+            if (server?.name === this.server.name) {
+                const title = 'Success';
+                const content = `The server ${this.server.name} was created successfully`;
+                this.notifyService.notify(title, content);
+                this.server = new BurstChatServer();
+                this.loading = false;
+                this.onClose();
+            }
+        })
     }
 
     /**

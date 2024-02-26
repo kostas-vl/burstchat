@@ -1,216 +1,148 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Domain.Schema.Chat;
 using BurstChat.Domain.Schema.Users;
+using BurstChat.Infrastructure.Errors;
+using BurstChat.Infrastructure.Extensions;
 using BurstChat.Signal.Models;
 using Microsoft.AspNetCore.SignalR;
 
-namespace BurstChat.Signal.Hubs.Chat
+namespace BurstChat.Signal.Hubs.Chat;
+
+public partial class ChatHub
 {
-    public partial class ChatHub
-    {
-        /// <summary>
-        /// Constructs the appropriate signal direct messaging name of all users connected
-        /// to a dm chat.
-        /// </summary>
-        /// <param name="id">The id of the direct messaging entry</param>
-        /// <returns>The string signal group name</returns>
-        private string DirectMessagingName(long id) => $"dm:{id}";
+    private string DirectMessagingName(long id) => $"dm:{id}";
 
-        /// <summary>
-        /// Adds a new connection to a signalr group based on the provided direct messaging id.
-        /// </summary>
-        /// <param name="directMessagingId">The id of the target direct messaging entry</param>
-        /// <returns>A task instance</returns>
-        public async Task AddToDirectMessaging(long directMessagingId)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.GetAsync(httpContext, directMessagingId);
-
-            if (monad is Success<DirectMessaging, Error> success)
+    public Task AddToDirectMessaging(long directMessagingId) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _directMessagingService.Get(userId, directMessagingId))
+            .InspectAsync(async dm =>
             {
                 var signalGroup = DirectMessagingName(directMessagingId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
                 await Clients.Caller.SelfAddedToDirectMessaging();
-            }
-        }
+            });
 
-        /// <summary>
-        /// Adds a new direct messaging entry, if it does not already exist, and also assings the callers
-        /// connection id to a signalr group based on the resulting direct messaging id.
-        /// </summary>
-        /// <param name="firstParticipantId">The user id of the first participant</param>
-        /// <param name="secondParticipantId">The user id of the second participant</param>
-        /// <returns>A Task instance</returns>
-        public async Task PostNewDirectMessaging(long firstParticipantId, long secondParticipantId)
-        {
-            // Trying to find an existing direct messaging entry based on the users provided.
-            var httpContext = Context.GetHttpContext();
-            var getMonad = await _directMessagingService.GetAsync(httpContext, firstParticipantId, secondParticipantId);
-
-            if (getMonad is Success<DirectMessaging, Error> success)
+    public Task PostNewDirectMessaging(long firstParticipantId, long secondParticipantId) =>
+        Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId =>
+                _directMessagingService
+                    .Get(userId, firstParticipantId, secondParticipantId)
+                    .Or(
+                        () =>
+                            _directMessagingService.Insert(
+                                userId,
+                                firstParticipantId,
+                                secondParticipantId
+                            )
+                    )
+            )
+            .InspectAsync(async dm =>
             {
-                var signalGroup = DirectMessagingName(success.Value.Id);
-                var payload = new Payload<DirectMessaging>(signalGroup, success.Value);
+                var signalGroup = DirectMessagingName(dm.Id);
+                var payload = new Payload<DirectMessaging>(signalGroup, dm);
                 await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
                 await Clients.Caller.NewDirectMessaging(payload);
-            }
+            })
+            .InspectErrAsync(err => Clients.Caller.NewDirectMessaging(err.Into()));
 
-            // Creates a new direct messaging entry between two users.
-            var directMessaging = new DirectMessaging
+    public async Task GetAllDirectMessages(
+        long directMessagingId,
+        string? searchTerm,
+        long? lastMessageId
+    )
+    {
+        var signalGroup = DirectMessagingName(directMessagingId);
+
+        await Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId =>
+                _directMessagingService.GetMessages(
+                    userId,
+                    directMessagingId,
+                    searchTerm,
+                    lastMessageId
+                )
+            )
+            .InspectAsync(async dm =>
             {
-                FirstParticipantUserId = firstParticipantId,
-                SecondParticipantUserId = secondParticipantId
-            };
-            var monad = await _directMessagingService.PostAsync(httpContext, directMessaging);
-
-            switch (monad)
+                var payload = new Payload<IEnumerable<Message>>(signalGroup, dm);
+                await Clients.Caller.AllDirectMessagesReceived(payload);
+            })
+            .InspectErrAsync(async err =>
             {
-                case Success<DirectMessaging, Error> postSuccess:
-                    var signalGroup = DirectMessagingName(postSuccess.Value.Id);
-                    var payload = new Payload<DirectMessaging>(signalGroup, postSuccess.Value);
-                    await Groups.AddToGroupAsync(Context.ConnectionId, signalGroup);
-                    await Clients.Caller.NewDirectMessaging(payload);
-                    break;
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.AllDirectMessagesReceived(errorPayload);
+            });
+    }
 
-                case Failure<DirectMessaging, Error> failure:
-                    await Clients.Caller.NewDirectMessaging(failure.Value);
-                    break;
+    public async Task PostDirectMessage(long directMessagingId, Message message)
+    {
+        var signalGroup = DirectMessagingName(directMessagingId);
 
-                default:
-                    await Clients.Caller.NewDirectMessaging(SystemErrors.Exception());
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Informs the caller of all messages posted to a direct messaging chat.
-        /// </summary>
-        /// <param name="directMessagingId">The id of the target direct messaging chat</param>
-        /// <param name="searchTerm">A search term that needs to be present in all returned messages</param>
-        /// <param name="lastMessageId">The message id from which all previous messages will be fetched</param>
-        /// <returns>A Task instance</returns>
-        public async Task GetAllDirectMessages(long directMessagingId, string? searchTerm, long? lastMessageId)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.GetMessagesAsync(httpContext,
-                                                                       directMessagingId,
-                                                                       searchTerm,
-                                                                       lastMessageId);
-            var signalGroup = DirectMessagingName(directMessagingId);
-
-            switch (monad)
+        await Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId =>
+                _directMessagingService.InsertMessage(userId, directMessagingId, message)
+            )
+            .InspectAsync(async dm =>
             {
-                case Success<IEnumerable<Message>, Error> success:
-                    var payload = new Payload<IEnumerable<Message>>(signalGroup, success.Value);
-                    await Clients.Caller.AllDirectMessagesReceived(payload);
-                    break;
-
-                case Failure<IEnumerable<Message>, Error> failure:
-                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.AllDirectMessagesReceived(errorPayload);
-                    break;
-
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.AllDirectMessagesReceived(exceptionPayload);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Informs a direct messaging chat about a new message from a user.
-        /// </summary>
-        /// <param name="directMessagingId">The id of the direct messaging chat</param>
-        /// <param name="message">The message to be posted</param>
-        /// <returns>A Task instance</returns>
-        public async Task PostDirectMessage(long directMessagingId, Message message)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.PostMessageAsync(httpContext, directMessagingId, message);
-            var signalGroup = DirectMessagingName(directMessagingId);
-
-            switch (monad)
-            {
-                case Success<Message, Error> success:
-                var payload = new Payload<Message>(signalGroup, success.Value);
+                var payload = new Payload<Message>(signalGroup, dm);
                 await Clients.Groups(signalGroup).DirectMessageReceived(payload);
-                    break;
-
-                case Failure<Message, Error> failure:
-                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Groups(signalGroup).DirectMessageReceived(errorPayload);
-                    break;
-
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Groups(signalGroup).DirectMessageReceived(exceptionPayload);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Informs a direct messaging chat about a message that was edited from a user.
-        /// </summary>
-        /// <param name="directMessageId">The id of the direct messaging chat</param>
-        /// <param name="message">The message to be updated</param>
-        /// <returns>A Task instance</returns>
-        public async Task PutDirectMessage(long directMessageId, Message message)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.PutMessageAsync(httpContext, directMessageId, message);
-            var signalGroup = DirectMessagingName(directMessageId);
-
-            switch (monad)
+            })
+            .InspectErrAsync(async err =>
             {
-                case Success<Message, Error> success:
-                    var payload = new Payload<Message>(signalGroup, success.Value);
-                    await Clients.Groups(signalGroup).DirectMessageEdited(payload);
-                    break;
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Groups(signalGroup).DirectMessageReceived(errorPayload);
+            });
+    }
 
-                case Failure<Message, Error> failure:
-                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.DirectMessageEdited(errorPayload);
-                    break;
+    public async Task PutDirectMessage(long directMessageId, Message message)
+    {
+        var signalGroup = DirectMessagingName(directMessageId);
 
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.DirectMessageEdited(exceptionPayload);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Informs a direct messaging chat about a message that was deleted from a user.
-        /// </summary>
-        /// <param name="directMessageId">The id of the direct messaging chat</param>
-        /// <param name="message">The message to be updated</param>
-        /// <returns>A Task instance</returns>
-        public async Task DeleteDirectMessage(long directMessageId, Message message)
-        {
-            var httpContext = Context.GetHttpContext();
-            var monad = await _directMessagingService.DeleteMessageAsync(httpContext, directMessageId, message);
-            var signalGroup = DirectMessagingName(directMessageId);
-
-            switch (monad)
+        await Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId => _directMessagingService.UpdateMessage(userId, directMessageId, message))
+            .InspectAsync(async dm =>
             {
-                case Success<Message, Error> success:
-                    var payload = new Payload<Message>(signalGroup, success.Value);
-                    await Clients.Groups(signalGroup).DirectMessageDeleted(payload);
-                    break;
+                var payload = new Payload<Message>(signalGroup, dm);
+                await Clients.Groups(signalGroup).DirectMessageEdited(payload);
+            })
+            .InspectErrAsync(async err =>
+            {
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.DirectMessageEdited(errorPayload);
+            });
+    }
 
-                case Failure<Message, Error> failure:
-                    var errorPayload = new Payload<Error>(signalGroup, failure.Value);
-                    await Clients.Caller.DirectMessageDeleted(errorPayload);
-                    break;
+    public async Task DeleteDirectMessage(long directMessageId, Message message)
+    {
+        var signalGroup = DirectMessagingName(directMessageId);
 
-                default:
-                    var exceptionPayload = new Payload<Error>(signalGroup, SystemErrors.Exception());
-                    await Clients.Caller.DirectMessageDeleted(exceptionPayload);
-                    break;
-            }
-        }
+        await Context
+            .GetHttpContext()
+            .GetUserId()
+            .And(userId =>
+                _directMessagingService.DeleteMessage(userId, directMessageId, message.Id)
+            )
+            .InspectAsync(async dm =>
+            {
+                var payload = new Payload<Message>(signalGroup, dm);
+                await Clients.Groups(signalGroup).DirectMessageDeleted(payload);
+            })
+            .InspectErrAsync(async err =>
+            {
+                var errorPayload = new Payload<Error>(signalGroup, err.Into());
+                await Clients.Caller.DirectMessageDeleted(errorPayload);
+            });
     }
 }

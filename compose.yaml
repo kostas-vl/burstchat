@@ -5,6 +5,7 @@ services:
       context: ./src
       dockerfile: Dockerfile.Api
     depends_on:
+      - identity
       - database
       - asterisk-database
     environment:
@@ -25,6 +26,9 @@ services:
     build:
       context: ./src
       dockerfile: Dockerfile.Signal
+    depends_on:
+      - identity
+      - database
     environment:
       BURST_CHAT_SIGNAL_HOST: 0.0.0.0
       BURST_CHAT_SIGNAL_PORT: 5001

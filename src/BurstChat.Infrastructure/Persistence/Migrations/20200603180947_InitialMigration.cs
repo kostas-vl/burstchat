@@ -12,8 +12,12 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 name: "AlphaInvitations",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Code = table.Column<Guid>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     DateExpired = table.Column<DateTime>(nullable: false)
@@ -21,69 +25,94 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AlphaInvitations", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "DirectMessaging",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     FirstParticipantUserId = table.Column<long>(nullable: false),
                     SecondParticipantUserId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DirectMessaging", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "PrivateGroups",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Name = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PrivateGroups", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Servers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Name = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Servers", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Sip",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Username = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sip", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Channels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Name = table.Column<string>(nullable: false),
                     IsPublic = table.Column<bool>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
@@ -97,15 +126,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.ServerId,
                         principalTable: "Servers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+                        onDelete: ReferentialAction.Restrict
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Email = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: false),
@@ -121,21 +156,28 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.PrivateGroupId,
                         principalTable: "PrivateGroups",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Restrict
+                    );
                     table.ForeignKey(
                         name: "FK_Users_Sip_SipId",
                         column: x => x.SipId,
                         principalTable: "Sip",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Invitations",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     ServerId = table.Column<int>(nullable: false),
                     UserId = table.Column<long>(nullable: false),
                     Accepted = table.Column<bool>(nullable: false),
@@ -151,21 +193,28 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.ServerId,
                         principalTable: "Servers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Cascade
+                    );
                     table.ForeignKey(
                         name: "FK_Invitations_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     UserId = table.Column<long>(nullable: false),
                     Content = table.Column<string>(nullable: false),
                     Edited = table.Column<bool>(nullable: false),
@@ -182,33 +231,42 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.ChannelId,
                         principalTable: "Channels",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Restrict
+                    );
                     table.ForeignKey(
                         name: "FK_Messages_DirectMessaging_DirectMessagingId",
                         column: x => x.DirectMessagingId,
                         principalTable: "DirectMessaging",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Restrict
+                    );
                     table.ForeignKey(
                         name: "FK_Messages_PrivateGroups_PrivateGroupId",
                         column: x => x.PrivateGroupId,
                         principalTable: "PrivateGroups",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Restrict
+                    );
                     table.ForeignKey(
                         name: "FK_Messages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "OneTimePassword",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     OTP = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     ExpirationDate = table.Column<DateTime>(nullable: false),
@@ -222,15 +280,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+                        onDelete: ReferentialAction.Restrict
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Subscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     UserId = table.Column<long>(nullable: false),
                     ServerId = table.Column<int>(nullable: false)
                 },
@@ -242,21 +306,28 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.ServerId,
                         principalTable: "Servers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Cascade
+                    );
                     table.ForeignKey(
                         name: "FK_Subscriptions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Links",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Url = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     MessageId = table.Column<long>(nullable: true)
@@ -269,112 +340,111 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                         column: x => x.MessageId,
                         principalTable: "Messages",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+                        onDelete: ReferentialAction.Restrict
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Channels_ServerId",
                 table: "Channels",
-                column: "ServerId");
+                column: "ServerId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invitations_ServerId",
                 table: "Invitations",
-                column: "ServerId");
+                column: "ServerId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invitations_UserId",
                 table: "Invitations",
-                column: "UserId");
+                column: "UserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Links_MessageId",
                 table: "Links",
-                column: "MessageId");
+                column: "MessageId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChannelId",
                 table: "Messages",
-                column: "ChannelId");
+                column: "ChannelId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_DirectMessagingId",
                 table: "Messages",
-                column: "DirectMessagingId");
+                column: "DirectMessagingId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_PrivateGroupId",
                 table: "Messages",
-                column: "PrivateGroupId");
+                column: "PrivateGroupId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_UserId",
                 table: "Messages",
-                column: "UserId");
+                column: "UserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_OneTimePassword_UserId",
                 table: "OneTimePassword",
-                column: "UserId");
+                column: "UserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_ServerId",
                 table: "Subscriptions",
-                column: "ServerId");
+                column: "ServerId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_UserId",
                 table: "Subscriptions",
-                column: "UserId");
+                column: "UserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_PrivateGroupId",
                 table: "Users",
-                column: "PrivateGroupId");
+                column: "PrivateGroupId"
+            );
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_SipId",
-                table: "Users",
-                column: "SipId");
+            migrationBuilder.CreateIndex(name: "IX_Users_SipId", table: "Users", column: "SipId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AlphaInvitations");
+            migrationBuilder.DropTable(name: "AlphaInvitations");
 
-            migrationBuilder.DropTable(
-                name: "Invitations");
+            migrationBuilder.DropTable(name: "Invitations");
 
-            migrationBuilder.DropTable(
-                name: "Links");
+            migrationBuilder.DropTable(name: "Links");
 
-            migrationBuilder.DropTable(
-                name: "OneTimePassword");
+            migrationBuilder.DropTable(name: "OneTimePassword");
 
-            migrationBuilder.DropTable(
-                name: "Subscriptions");
+            migrationBuilder.DropTable(name: "Subscriptions");
 
-            migrationBuilder.DropTable(
-                name: "Messages");
+            migrationBuilder.DropTable(name: "Messages");
 
-            migrationBuilder.DropTable(
-                name: "Channels");
+            migrationBuilder.DropTable(name: "Channels");
 
-            migrationBuilder.DropTable(
-                name: "DirectMessaging");
+            migrationBuilder.DropTable(name: "DirectMessaging");
 
-            migrationBuilder.DropTable(
-                name: "Users");
+            migrationBuilder.DropTable(name: "Users");
 
-            migrationBuilder.DropTable(
-                name: "Servers");
+            migrationBuilder.DropTable(name: "Servers");
 
-            migrationBuilder.DropTable(
-                name: "PrivateGroups");
+            migrationBuilder.DropTable(name: "PrivateGroups");
 
-            migrationBuilder.DropTable(
-                name: "Sip");
+            migrationBuilder.DropTable(name: "Sip");
         }
     }
 }

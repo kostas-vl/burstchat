@@ -55,7 +55,7 @@ export class ChatMessageComponent implements OnInit {
      * @memberof ChatMessageComponent
      */
     public onEdit() {
-        this.uiLayerService.editMessage(this.message);
+        this.uiLayerService.edit(this.message);
     }
 
     /**
@@ -63,7 +63,7 @@ export class ChatMessageComponent implements OnInit {
      * @memberof ChatMessageComponent
      */
     public onDelete() {
-        this.uiLayerService.deleteMessage(this.message);
+        this.uiLayerService.delete(this.message);
     }
 
 }

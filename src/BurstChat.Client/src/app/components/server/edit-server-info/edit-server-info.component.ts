@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Server } from 'src/app/models/servers/server';
 import { ServersService } from 'src/app/services/servers/servers.service';
@@ -33,8 +33,8 @@ import { AvatarComponent } from 'src/app/components/shared/avatar/avatar.compone
 })
 export class EditServerInfoComponent implements OnInit {
 
-    @Input()
-    public server?: Server;
+    @Input({ required: true })
+    public server: Signal<Server | null>;
 
     public changeAvatarVisible = false;
 
@@ -77,7 +77,7 @@ export class EditServerInfoComponent implements OnInit {
      * @memberof EditServerInfoComponent
      */
     public onSaveNewAvatar() {
-        const server = { ...this.server, avatar: this.newAvatar };
+        const server = { ...this.server(), avatar: this.newAvatar };
         this.serversService
             .put(server)
             .subscribe(s => this.chatService.updateServerInfo(s.id));
