@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk
+FROM mcr.microsoft.com/dotnet/sdk:6.0
 ENV PATH="$PATH:/root/.dotnet/tools"
 COPY . /burstchat
 WORKDIR /burstchat/BurstChat.IdentityServer
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 6.0.27
 ENTRYPOINT dotnet ef database update -c ConfigurationDbContext && dotnet ef database update -c PersistedGrantDbContext && dotnet run
