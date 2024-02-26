@@ -1,6 +1,6 @@
 namespace BurstChat.Application.Errors;
 
-public record AuthenticationError : Error
+public class AuthenticationError : Error
 {
     public AuthenticationError()
         : base(ErrorLevel.Critical, ErrorType.Validation, "The user was not found") { }

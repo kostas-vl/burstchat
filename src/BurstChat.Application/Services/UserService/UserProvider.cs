@@ -64,8 +64,8 @@ public class UserProvider : IUserService
         string password
     ) =>
         Get(email)
-            .And<User>(_ => UserErrors.UserAlreadyExists)
-            .And(_ => AlphaInvitationCodeExists(alphaInvitationCode))
+            .And<Unit>(_ => UserErrors.UserAlreadyExists)
+            .Or(() => AlphaInvitationCodeExists(alphaInvitationCode))
             .Map(_ =>
             {
                 var hashedPassword = _bcryptService.GenerateHash(password);
