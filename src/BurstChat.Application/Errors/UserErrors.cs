@@ -1,26 +1,24 @@
 using BurstChat.Application.Monads;
-using Level = BurstChat.Application.Monads.ErrorLevel;
-using Type = BurstChat.Application.Monads.ErrorType;
 
 namespace BurstChat.Application.Errors;
 
 public static class UserErrors
 {
     public static MonadException UserNotFound =>
-        new(Level.Critical, Type.Validation, "The user was not found");
+        new(ErrorLevel.Critical, ErrorType.Validation, "The user was not found");
 
     public static MonadException UserAlreadyExists =>
-        new(Level.Critical, Type.Validation, "The email is already registered");
+        new(ErrorLevel.Critical, ErrorType.Validation, "The email is already registered");
 
     public static MonadException UserPasswordDidNotMatch =>
-        new(Level.Critical, Type.Validation, "The email or password is incorrect");
+        new(ErrorLevel.Critical, ErrorType.Validation, "The email or password is incorrect");
 
     public static MonadException UserOneTimePasswordInvalid =>
-        new(Level.Critical, Type.Validation, "The one time password is invalid");
+        new(ErrorLevel.Critical, ErrorType.Validation, "The one time password is invalid");
 
-    public static Error UserOneTimePasswordExpired() =>
+    public static MonadException UserOneTimePasswordExpired() =>
         new(ErrorLevel.Critical, ErrorType.Validation, "The one time password has expired");
 
     public static MonadException CouldNotUpdateInvitation =>
-        new(Level.Critical, Type.DataProcess, "Could not update invitation");
+        new(ErrorLevel.Critical, ErrorType.DataProcess, "Could not update invitation");
 }
