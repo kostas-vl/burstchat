@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BurstChat.Api.Extensions;
-using BurstChat.Application.Errors;
 using BurstChat.Application.Models;
 using BurstChat.Application.Services.UserService;
 using BurstChat.Domain.Schema.Servers;
 using BurstChat.Domain.Schema.Users;
+using BurstChat.Infrastructure.Errors;
 using BurstChat.Infrastructure.Extensions;
 using BurstChat.Infrastructure.Services.AsteriskService;
 using Microsoft.AspNetCore.Authorization;
