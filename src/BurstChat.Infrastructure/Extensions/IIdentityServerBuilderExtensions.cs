@@ -8,7 +8,10 @@ namespace BurstChat.Infrastructure.Extensions;
 
 public static class IIdentityServerBuilderExtensions
 {
-    public static IIdentityServerBuilder AddBurstChatSigningCredentials(this IIdentityServerBuilder identityServerBuilder, Action<SigningCredentialsOptions> callback)
+    public static IIdentityServerBuilder AddBurstChatSigningCredentials(
+        this IIdentityServerBuilder identityServerBuilder,
+        Action<SigningCredentialsOptions> callback
+    )
     {
         var options = new SigningCredentialsOptions();
         callback(options);
@@ -20,5 +23,4 @@ public static class IIdentityServerBuilderExtensions
 
         return identityServerBuilder;
     }
-
 }

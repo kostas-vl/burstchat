@@ -10,144 +10,158 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiClaims_ApiResources_ApiResourceId",
-                table: "ApiClaims");
+                table: "ApiClaims"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiProperties_ApiResources_ApiResourceId",
-                table: "ApiProperties");
+                table: "ApiProperties"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiScopeClaims_ApiScopes_ApiScopeId",
-                table: "ApiScopeClaims");
+                table: "ApiScopeClaims"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiScopes_ApiResources_ApiResourceId",
-                table: "ApiScopes");
+                table: "ApiScopes"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_IdentityProperties_IdentityResources_IdentityResourceId",
-                table: "IdentityProperties");
+                table: "IdentityProperties"
+            );
 
-            migrationBuilder.DropTable(
-                name: "ApiSecrets");
+            migrationBuilder.DropTable(name: "ApiSecrets");
 
-            migrationBuilder.DropTable(
-                name: "IdentityClaims");
+            migrationBuilder.DropTable(name: "IdentityClaims");
 
-            migrationBuilder.DropIndex(
-                name: "IX_ApiScopes_ApiResourceId",
-                table: "ApiScopes");
+            migrationBuilder.DropIndex(name: "IX_ApiScopes_ApiResourceId", table: "ApiScopes");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_IdentityProperties",
-                table: "IdentityProperties");
+                table: "IdentityProperties"
+            );
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ApiProperties",
-                table: "ApiProperties");
+            migrationBuilder.DropPrimaryKey(name: "PK_ApiProperties", table: "ApiProperties");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ApiClaims",
-                table: "ApiClaims");
+            migrationBuilder.DropPrimaryKey(name: "PK_ApiClaims", table: "ApiClaims");
 
-            migrationBuilder.DropColumn(
-                name: "ApiResourceId",
-                table: "ApiScopes");
+            migrationBuilder.DropColumn(name: "ApiResourceId", table: "ApiScopes");
 
             migrationBuilder.RenameTable(
                 name: "IdentityProperties",
-                newName: "IdentityResourceProperties");
+                newName: "IdentityResourceProperties"
+            );
 
-            migrationBuilder.RenameTable(
-                name: "ApiProperties",
-                newName: "ApiResourceProperties");
+            migrationBuilder.RenameTable(name: "ApiProperties", newName: "ApiResourceProperties");
 
-            migrationBuilder.RenameTable(
-                name: "ApiClaims",
-                newName: "ApiResourceClaims");
+            migrationBuilder.RenameTable(name: "ApiClaims", newName: "ApiResourceClaims");
 
             migrationBuilder.RenameColumn(
                 name: "ApiScopeId",
                 table: "ApiScopeClaims",
-                newName: "ScopeId");
+                newName: "ScopeId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ApiScopeClaims_ApiScopeId",
                 table: "ApiScopeClaims",
-                newName: "IX_ApiScopeClaims_ScopeId");
+                newName: "IX_ApiScopeClaims_ScopeId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_IdentityProperties_IdentityResourceId",
                 table: "IdentityResourceProperties",
-                newName: "IX_IdentityResourceProperties_IdentityResourceId");
+                newName: "IX_IdentityResourceProperties_IdentityResourceId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ApiProperties_ApiResourceId",
                 table: "ApiResourceProperties",
-                newName: "IX_ApiResourceProperties_ApiResourceId");
+                newName: "IX_ApiResourceProperties_ApiResourceId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ApiClaims_ApiResourceId",
                 table: "ApiResourceClaims",
-                newName: "IX_ApiResourceClaims_ApiResourceId");
+                newName: "IX_ApiResourceClaims_ApiResourceId"
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "AllowedIdentityTokenSigningAlgorithms",
                 table: "Clients",
                 type: "character varying(100)",
                 maxLength: 100,
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<bool>(
                 name: "RequireRequestObject",
                 table: "Clients",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: false
+            );
 
             migrationBuilder.AddColumn<bool>(
                 name: "Enabled",
                 table: "ApiScopes",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: false
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "AllowedAccessTokenSigningAlgorithms",
                 table: "ApiResources",
                 type: "character varying(100)",
                 maxLength: 100,
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<bool>(
                 name: "ShowInDiscoveryDocument",
                 table: "ApiResources",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: false
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_IdentityResourceProperties",
                 table: "IdentityResourceProperties",
-                column: "Id");
+                column: "Id"
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_ApiResourceProperties",
                 table: "ApiResourceProperties",
-                column: "Id");
+                column: "Id"
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_ApiResourceClaims",
                 table: "ApiResourceClaims",
-                column: "Id");
+                column: "Id"
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceScopes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Scope = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
+                    Scope = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    ),
                     ApiResourceId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -158,21 +172,45 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceSecrets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     ApiResourceId = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Value = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
-                    Expiration = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Type = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    Description = table.Column<string>(
+                        type: "character varying(1000)",
+                        maxLength: 1000,
+                        nullable: true
+                    ),
+                    Value = table.Column<string>(
+                        type: "character varying(4000)",
+                        maxLength: 4000,
+                        nullable: false
+                    ),
+                    Expiration = table.Column<DateTime>(
+                        type: "timestamp without time zone",
+                        nullable: true
+                    ),
+                    Type = table.Column<string>(
+                        type: "character varying(250)",
+                        maxLength: 250,
+                        nullable: false
+                    ),
+                    Created = table.Column<DateTime>(
+                        type: "timestamp without time zone",
+                        nullable: false
+                    )
                 },
                 constraints: table =>
                 {
@@ -182,18 +220,32 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiScopeProperties",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     ScopeId = table.Column<int>(type: "integer", nullable: false),
-                    Key = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    Value = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false)
+                    Key = table.Column<string>(
+                        type: "character varying(250)",
+                        maxLength: 250,
+                        nullable: false
+                    ),
+                    Value = table.Column<string>(
+                        type: "character varying(2000)",
+                        maxLength: 2000,
+                        nullable: false
+                    )
                 },
                 constraints: table =>
                 {
@@ -203,17 +255,27 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ScopeId,
                         principalTable: "ApiScopes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "IdentityResourceClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     IdentityResourceId = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
+                    Type = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    )
                 },
                 constraints: table =>
                 {
@@ -223,28 +285,34 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.IdentityResourceId,
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceScopes_ApiResourceId",
                 table: "ApiResourceScopes",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceSecrets_ApiResourceId",
                 table: "ApiResourceSecrets",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopeProperties_ScopeId",
                 table: "ApiScopeProperties",
-                column: "ScopeId");
+                column: "ScopeId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResourceClaims_IdentityResourceId",
                 table: "IdentityResourceClaims",
-                column: "IdentityResourceId");
+                column: "IdentityResourceId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiResourceClaims_ApiResources_ApiResourceId",
@@ -252,7 +320,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ApiResourceId",
                 principalTable: "ApiResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiResourceProperties_ApiResources_ApiResourceId",
@@ -260,7 +329,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ApiResourceId",
                 principalTable: "ApiResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiScopeClaims_ApiScopes_ScopeId",
@@ -268,7 +338,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ScopeId",
                 principalTable: "ApiScopes",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_IdentityResourceProperties_IdentityResources_IdentityResour~",
@@ -276,142 +347,166 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "IdentityResourceId",
                 principalTable: "IdentityResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiResourceClaims_ApiResources_ApiResourceId",
-                table: "ApiResourceClaims");
+                table: "ApiResourceClaims"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiResourceProperties_ApiResources_ApiResourceId",
-                table: "ApiResourceProperties");
+                table: "ApiResourceProperties"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ApiScopeClaims_ApiScopes_ScopeId",
-                table: "ApiScopeClaims");
+                table: "ApiScopeClaims"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_IdentityResourceProperties_IdentityResources_IdentityResour~",
-                table: "IdentityResourceProperties");
+                table: "IdentityResourceProperties"
+            );
 
-            migrationBuilder.DropTable(
-                name: "ApiResourceScopes");
+            migrationBuilder.DropTable(name: "ApiResourceScopes");
 
-            migrationBuilder.DropTable(
-                name: "ApiResourceSecrets");
+            migrationBuilder.DropTable(name: "ApiResourceSecrets");
 
-            migrationBuilder.DropTable(
-                name: "ApiScopeProperties");
+            migrationBuilder.DropTable(name: "ApiScopeProperties");
 
-            migrationBuilder.DropTable(
-                name: "IdentityResourceClaims");
+            migrationBuilder.DropTable(name: "IdentityResourceClaims");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_IdentityResourceProperties",
-                table: "IdentityResourceProperties");
+                table: "IdentityResourceProperties"
+            );
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_ApiResourceProperties",
-                table: "ApiResourceProperties");
+                table: "ApiResourceProperties"
+            );
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_ApiResourceClaims",
-                table: "ApiResourceClaims");
+                table: "ApiResourceClaims"
+            );
 
             migrationBuilder.DropColumn(
                 name: "AllowedIdentityTokenSigningAlgorithms",
-                table: "Clients");
+                table: "Clients"
+            );
 
-            migrationBuilder.DropColumn(
-                name: "RequireRequestObject",
-                table: "Clients");
+            migrationBuilder.DropColumn(name: "RequireRequestObject", table: "Clients");
 
-            migrationBuilder.DropColumn(
-                name: "Enabled",
-                table: "ApiScopes");
+            migrationBuilder.DropColumn(name: "Enabled", table: "ApiScopes");
 
             migrationBuilder.DropColumn(
                 name: "AllowedAccessTokenSigningAlgorithms",
-                table: "ApiResources");
+                table: "ApiResources"
+            );
 
-            migrationBuilder.DropColumn(
-                name: "ShowInDiscoveryDocument",
-                table: "ApiResources");
+            migrationBuilder.DropColumn(name: "ShowInDiscoveryDocument", table: "ApiResources");
 
             migrationBuilder.RenameTable(
                 name: "IdentityResourceProperties",
-                newName: "IdentityProperties");
+                newName: "IdentityProperties"
+            );
 
-            migrationBuilder.RenameTable(
-                name: "ApiResourceProperties",
-                newName: "ApiProperties");
+            migrationBuilder.RenameTable(name: "ApiResourceProperties", newName: "ApiProperties");
 
-            migrationBuilder.RenameTable(
-                name: "ApiResourceClaims",
-                newName: "ApiClaims");
+            migrationBuilder.RenameTable(name: "ApiResourceClaims", newName: "ApiClaims");
 
             migrationBuilder.RenameColumn(
                 name: "ScopeId",
                 table: "ApiScopeClaims",
-                newName: "ApiScopeId");
+                newName: "ApiScopeId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ApiScopeClaims_ScopeId",
                 table: "ApiScopeClaims",
-                newName: "IX_ApiScopeClaims_ApiScopeId");
+                newName: "IX_ApiScopeClaims_ApiScopeId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_IdentityResourceProperties_IdentityResourceId",
                 table: "IdentityProperties",
-                newName: "IX_IdentityProperties_IdentityResourceId");
+                newName: "IX_IdentityProperties_IdentityResourceId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ApiResourceProperties_ApiResourceId",
                 table: "ApiProperties",
-                newName: "IX_ApiProperties_ApiResourceId");
+                newName: "IX_ApiProperties_ApiResourceId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ApiResourceClaims_ApiResourceId",
                 table: "ApiClaims",
-                newName: "IX_ApiClaims_ApiResourceId");
+                newName: "IX_ApiClaims_ApiResourceId"
+            );
 
             migrationBuilder.AddColumn<int>(
                 name: "ApiResourceId",
                 table: "ApiScopes",
                 type: "integer",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_IdentityProperties",
                 table: "IdentityProperties",
-                column: "Id");
+                column: "Id"
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_ApiProperties",
                 table: "ApiProperties",
-                column: "Id");
+                column: "Id"
+            );
 
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_ApiClaims",
-                table: "ApiClaims",
-                column: "Id");
+            migrationBuilder.AddPrimaryKey(name: "PK_ApiClaims", table: "ApiClaims", column: "Id");
 
             migrationBuilder.CreateTable(
                 name: "ApiSecrets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     ApiResourceId = table.Column<int>(type: "integer", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Expiration = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Type = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    Value = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false)
+                    Created = table.Column<DateTime>(
+                        type: "timestamp without time zone",
+                        nullable: false
+                    ),
+                    Description = table.Column<string>(
+                        type: "character varying(1000)",
+                        maxLength: 1000,
+                        nullable: true
+                    ),
+                    Expiration = table.Column<DateTime>(
+                        type: "timestamp without time zone",
+                        nullable: true
+                    ),
+                    Type = table.Column<string>(
+                        type: "character varying(250)",
+                        maxLength: 250,
+                        nullable: false
+                    ),
+                    Value = table.Column<string>(
+                        type: "character varying(4000)",
+                        maxLength: 4000,
+                        nullable: false
+                    )
                 },
                 constraints: table =>
                 {
@@ -421,17 +516,27 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "IdentityClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     IdentityResourceId = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
+                    Type = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    )
                 },
                 constraints: table =>
                 {
@@ -441,23 +546,28 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.IdentityResourceId,
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_ApiResourceId",
                 table: "ApiScopes",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiSecrets_ApiResourceId",
                 table: "ApiSecrets",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityClaims_IdentityResourceId",
                 table: "IdentityClaims",
-                column: "IdentityResourceId");
+                column: "IdentityResourceId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiClaims_ApiResources_ApiResourceId",
@@ -465,7 +575,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ApiResourceId",
                 principalTable: "ApiResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiProperties_ApiResources_ApiResourceId",
@@ -473,7 +584,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ApiResourceId",
                 principalTable: "ApiResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiScopeClaims_ApiScopes_ApiScopeId",
@@ -481,7 +593,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ApiScopeId",
                 principalTable: "ApiScopes",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiScopes_ApiResources_ApiResourceId",
@@ -489,7 +602,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "ApiResourceId",
                 principalTable: "ApiResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_IdentityProperties_IdentityResources_IdentityResourceId",
@@ -497,7 +611,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 column: "IdentityResourceId",
                 principalTable: "IdentityResources",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }

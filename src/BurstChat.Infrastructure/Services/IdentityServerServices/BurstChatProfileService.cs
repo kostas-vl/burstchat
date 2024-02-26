@@ -1,8 +1,8 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Services.UserService;
@@ -38,7 +38,8 @@ public class BurstChatProfileService : IProfileService
             var userId = Convert.ToInt64(subjectId);
             var result = _userService.Get(userId).And(_userService.GetClaims);
 
-            if (result.IsOk) context.AddRequestedClaims(new Claim[0]);
+            if (result.IsOk)
+                context.AddRequestedClaims(new Claim[0]);
         }
 
         context.LogIssuedClaims(_logger);

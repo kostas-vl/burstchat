@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using BurstChat.Application.Errors;
 using BurstChat.Application.Monads;
 using BurstChat.Application.Services.UserService;
@@ -42,12 +42,16 @@ public class BurstChatResourceOwnerPasswordValidator : IResourceOwnerPasswordVal
                 user.Id.ToString(),
                 OidcConstants.AuthenticationMethods.Password,
                 _clock.UtcNow.UtcDateTime,
-                claims);
+                claims
+            );
         }
         else
         {
             var error = UserErrors.UserPasswordDidNotMatch;
-            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, error.Message);
+            context.Result = new GrantValidationResult(
+                TokenRequestErrors.InvalidGrant,
+                error.Message
+            );
         }
 
         return Task.CompletedTask;

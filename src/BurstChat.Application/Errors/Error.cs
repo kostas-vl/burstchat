@@ -13,28 +13,19 @@ namespace BurstChat.Application.Errors
         /// The level of the error.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ErrorLevel Level
-        {
-            get;
-        }
+        public ErrorLevel Level { get; }
 
         /// <summary>
         /// The type of the error in the context of the program's execution.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ErrorType Type
-        {
-            get;
-        }
+        public ErrorType Type { get; }
 
         /// <summary>
         /// The descriptive message of the error.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public string Message
-        {
-            get;
-        }
+        public string Message { get; }
 
         /// <summary>
         /// Makes all the necessary assignements for the proper construction

@@ -34,7 +34,10 @@ public class EmailProvider : IEmailService, IDisposable
         };
     }
 
-    public async Task<Result<Unit>> SendOneTimePasswordAsync(string recipient, string oneTimePassword)
+    public async Task<Result<Unit>> SendOneTimePasswordAsync(
+        string recipient,
+        string oneTimePassword
+    )
     {
         try
         {

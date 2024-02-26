@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using BurstChat.Application.Monads;
 using BurstChat.Application.Models;
+using BurstChat.Application.Monads;
 
 namespace BurstChat.Infrastructure.Services.AsteriskService;
 

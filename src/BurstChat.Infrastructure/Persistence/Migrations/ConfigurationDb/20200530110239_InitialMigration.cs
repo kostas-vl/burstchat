@@ -12,8 +12,12 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 name: "ApiResources",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Enabled = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 200, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 200, nullable: true),
@@ -26,14 +30,19 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApiResources", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Clients",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Enabled = table.Column<bool>(nullable: false),
                     ClientId = table.Column<string>(maxLength: 200, nullable: false),
                     ProtocolType = table.Column<string>(maxLength: 200, nullable: false),
@@ -79,14 +88,19 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clients", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "IdentityResources",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Enabled = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 200, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 200, nullable: true),
@@ -101,14 +115,19 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IdentityResources", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Type = table.Column<string>(maxLength: 200, nullable: false),
                     ApiResourceId = table.Column<int>(nullable: false)
                 },
@@ -120,15 +139,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiProperties",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Key = table.Column<string>(maxLength: 250, nullable: false),
                     Value = table.Column<string>(maxLength: 2000, nullable: false),
                     ApiResourceId = table.Column<int>(nullable: false)
@@ -141,15 +166,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiScopes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Name = table.Column<string>(maxLength: 200, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 200, nullable: true),
                     Description = table.Column<string>(maxLength: 1000, nullable: true),
@@ -166,15 +197,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiSecrets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Description = table.Column<string>(maxLength: 1000, nullable: true),
                     Value = table.Column<string>(maxLength: 4000, nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
@@ -190,15 +227,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Type = table.Column<string>(maxLength: 250, nullable: false),
                     Value = table.Column<string>(maxLength: 250, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
@@ -211,15 +254,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientCorsOrigins",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Origin = table.Column<string>(maxLength: 150, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
@@ -231,15 +280,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientGrantTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     GrantType = table.Column<string>(maxLength: 250, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
@@ -251,15 +306,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientIdPRestrictions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Provider = table.Column<string>(maxLength: 200, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
@@ -271,15 +332,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientPostLogoutRedirectUris",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     PostLogoutRedirectUri = table.Column<string>(maxLength: 2000, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
@@ -291,15 +358,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientProperties",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Key = table.Column<string>(maxLength: 250, nullable: false),
                     Value = table.Column<string>(maxLength: 2000, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
@@ -312,15 +385,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientRedirectUris",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     RedirectUri = table.Column<string>(maxLength: 2000, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
@@ -332,15 +411,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientScopes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Scope = table.Column<string>(maxLength: 200, nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
@@ -352,15 +437,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ClientSecrets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Description = table.Column<string>(maxLength: 2000, nullable: true),
                     Value = table.Column<string>(maxLength: 4000, nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
@@ -376,15 +467,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "IdentityClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Type = table.Column<string>(maxLength: 200, nullable: false),
                     IdentityResourceId = table.Column<int>(nullable: false)
                 },
@@ -396,15 +493,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.IdentityResourceId,
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "IdentityProperties",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Key = table.Column<string>(maxLength: 250, nullable: false),
                     Value = table.Column<string>(maxLength: 2000, nullable: false),
                     IdentityResourceId = table.Column<int>(nullable: false)
@@ -417,15 +520,21 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.IdentityResourceId,
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ApiScopeClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Type = table.Column<string>(maxLength: 200, nullable: false),
                     ApiScopeId = table.Column<int>(nullable: false)
                 },
@@ -437,172 +546,175 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.ConfigurationDb
                         column: x => x.ApiScopeId,
                         principalTable: "ApiScopes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiClaims_ApiResourceId",
                 table: "ApiClaims",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiProperties_ApiResourceId",
                 table: "ApiProperties",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResources_Name",
                 table: "ApiResources",
                 column: "Name",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopeClaims_ApiScopeId",
                 table: "ApiScopeClaims",
-                column: "ApiScopeId");
+                column: "ApiScopeId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_ApiResourceId",
                 table: "ApiScopes",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_Name",
                 table: "ApiScopes",
                 column: "Name",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiSecrets_ApiResourceId",
                 table: "ApiSecrets",
-                column: "ApiResourceId");
+                column: "ApiResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientClaims_ClientId",
                 table: "ClientClaims",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientCorsOrigins_ClientId",
                 table: "ClientCorsOrigins",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientGrantTypes_ClientId",
                 table: "ClientGrantTypes",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientIdPRestrictions_ClientId",
                 table: "ClientIdPRestrictions",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientPostLogoutRedirectUris_ClientId",
                 table: "ClientPostLogoutRedirectUris",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientProperties_ClientId",
                 table: "ClientProperties",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientRedirectUris_ClientId",
                 table: "ClientRedirectUris",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_ClientId",
                 table: "Clients",
                 column: "ClientId",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientScopes_ClientId",
                 table: "ClientScopes",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientSecrets_ClientId",
                 table: "ClientSecrets",
-                column: "ClientId");
+                column: "ClientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityClaims_IdentityResourceId",
                 table: "IdentityClaims",
-                column: "IdentityResourceId");
+                column: "IdentityResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityProperties_IdentityResourceId",
                 table: "IdentityProperties",
-                column: "IdentityResourceId");
+                column: "IdentityResourceId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResources_Name",
                 table: "IdentityResources",
                 column: "Name",
-                unique: true);
+                unique: true
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ApiClaims");
+            migrationBuilder.DropTable(name: "ApiClaims");
 
-            migrationBuilder.DropTable(
-                name: "ApiProperties");
+            migrationBuilder.DropTable(name: "ApiProperties");
 
-            migrationBuilder.DropTable(
-                name: "ApiScopeClaims");
+            migrationBuilder.DropTable(name: "ApiScopeClaims");
 
-            migrationBuilder.DropTable(
-                name: "ApiSecrets");
+            migrationBuilder.DropTable(name: "ApiSecrets");
 
-            migrationBuilder.DropTable(
-                name: "ClientClaims");
+            migrationBuilder.DropTable(name: "ClientClaims");
 
-            migrationBuilder.DropTable(
-                name: "ClientCorsOrigins");
+            migrationBuilder.DropTable(name: "ClientCorsOrigins");
 
-            migrationBuilder.DropTable(
-                name: "ClientGrantTypes");
+            migrationBuilder.DropTable(name: "ClientGrantTypes");
 
-            migrationBuilder.DropTable(
-                name: "ClientIdPRestrictions");
+            migrationBuilder.DropTable(name: "ClientIdPRestrictions");
 
-            migrationBuilder.DropTable(
-                name: "ClientPostLogoutRedirectUris");
+            migrationBuilder.DropTable(name: "ClientPostLogoutRedirectUris");
 
-            migrationBuilder.DropTable(
-                name: "ClientProperties");
+            migrationBuilder.DropTable(name: "ClientProperties");
 
-            migrationBuilder.DropTable(
-                name: "ClientRedirectUris");
+            migrationBuilder.DropTable(name: "ClientRedirectUris");
 
-            migrationBuilder.DropTable(
-                name: "ClientScopes");
+            migrationBuilder.DropTable(name: "ClientScopes");
 
-            migrationBuilder.DropTable(
-                name: "ClientSecrets");
+            migrationBuilder.DropTable(name: "ClientSecrets");
 
-            migrationBuilder.DropTable(
-                name: "IdentityClaims");
+            migrationBuilder.DropTable(name: "IdentityClaims");
 
-            migrationBuilder.DropTable(
-                name: "IdentityProperties");
+            migrationBuilder.DropTable(name: "IdentityProperties");
 
-            migrationBuilder.DropTable(
-                name: "ApiScopes");
+            migrationBuilder.DropTable(name: "ApiScopes");
 
-            migrationBuilder.DropTable(
-                name: "Clients");
+            migrationBuilder.DropTable(name: "Clients");
 
-            migrationBuilder.DropTable(
-                name: "IdentityResources");
+            migrationBuilder.DropTable(name: "IdentityResources");
 
-            migrationBuilder.DropTable(
-                name: "ApiResources");
+            migrationBuilder.DropTable(name: "ApiResources");
         }
     }
 }

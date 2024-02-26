@@ -22,7 +22,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.PersistedGrantDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeviceCodes", x => x.UserCode);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "PersistedGrants",
@@ -39,37 +40,40 @@ namespace BurstChat.Infrastructure.Persistence.Migrations.PersistedGrantDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
-                });
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
                 table: "DeviceCodes",
                 column: "DeviceCode",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_Expiration",
                 table: "DeviceCodes",
-                column: "Expiration");
+                column: "Expiration"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_Expiration",
                 table: "PersistedGrants",
-                column: "Expiration");
+                column: "Expiration"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_SubjectId_ClientId_Type",
                 table: "PersistedGrants",
-                columns: new[] { "SubjectId", "ClientId", "Type" });
+                columns: new[] { "SubjectId", "ClientId", "Type" }
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "DeviceCodes");
+            migrationBuilder.DropTable(name: "DeviceCodes");
 
-            migrationBuilder.DropTable(
-                name: "PersistedGrants");
+            migrationBuilder.DropTable(name: "PersistedGrants");
         }
     }
 }

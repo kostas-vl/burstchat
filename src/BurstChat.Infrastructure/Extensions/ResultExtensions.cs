@@ -13,7 +13,8 @@ public static class ResultExtensions
         {
             Ok<T> { Value: var value } => new OkObjectResult(value),
 
-            Err<T> { Value: AuthenticationException err } => new UnauthorizedObjectResult(err.Into()),
+            Err<T> { Value: AuthenticationException err }
+                => new UnauthorizedObjectResult(err.Into()),
 
             Err<T> { Value: var err } => new BadRequestObjectResult(err.Into()),
 

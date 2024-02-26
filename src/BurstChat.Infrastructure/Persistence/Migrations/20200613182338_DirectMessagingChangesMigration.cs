@@ -9,12 +9,14 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DirectMessaging_FirstParticipantUserId",
                 table: "DirectMessaging",
-                column: "FirstParticipantUserId");
+                column: "FirstParticipantUserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_DirectMessaging_SecondParticipantUserId",
                 table: "DirectMessaging",
-                column: "SecondParticipantUserId");
+                column: "SecondParticipantUserId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_DirectMessaging_Users_FirstParticipantUserId",
@@ -22,7 +24,8 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 column: "FirstParticipantUserId",
                 principalTable: "Users",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_DirectMessaging_Users_SecondParticipantUserId",
@@ -30,26 +33,31 @@ namespace BurstChat.Infrastructure.Persistence.Migrations
                 column: "SecondParticipantUserId",
                 principalTable: "Users",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_DirectMessaging_Users_FirstParticipantUserId",
-                table: "DirectMessaging");
+                table: "DirectMessaging"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_DirectMessaging_Users_SecondParticipantUserId",
-                table: "DirectMessaging");
+                table: "DirectMessaging"
+            );
 
             migrationBuilder.DropIndex(
                 name: "IX_DirectMessaging_FirstParticipantUserId",
-                table: "DirectMessaging");
+                table: "DirectMessaging"
+            );
 
             migrationBuilder.DropIndex(
                 name: "IX_DirectMessaging_SecondParticipantUserId",
-                table: "DirectMessaging");
+                table: "DirectMessaging"
+            );
         }
     }
 }
